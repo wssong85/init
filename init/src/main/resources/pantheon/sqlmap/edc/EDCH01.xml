@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCH01DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+	
+	
+	<select id="selectDmFileDetailList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT    DFD.DETAIL_SN
+		        , DFD.FILE_MASTR_SN
+		        , DFD.ORGINL_FILE_NM
+		        , DECODE(ELDF.INTRLCK_AT, 'Y', '연동', '미연동') INTRLCK_AT
+		        , TO_CHAR(DFD.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+		        , FN_GET_USER_NAME(DFD.REGIST_ID)	REGIST_ID        
+		  FROM    DM_FILE_DETAIL DFD
+		        , DM_FILE_MASTR DFM
+		        , EDC_LAB_DTA_FILE ELDF
+		 WHERE    DFD.FILE_MASTR_SN = DFM.FILE_MASTR_SN
+		   AND    DFM.FILE_MASTR_SN = ELDF.FILE_MASTR_SN
+		   AND	  ELDF.TASK_SN = #TASK_SN#
+	</select>
+	
+	<select id="selectEdcLabDtaList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT    ELD.LAB_DTA_SN
+		        , (
+		              SELECT    TASK_NO
+		                FROM    EDC_CR_TASK
+		               WHERE    TASK_SN = ELDF.TASK_SN
+		          ) TASK_NO
+		        , ELD.LAB_NM
+		        , ELD.SUBJECT_INITIAL
+		        , ELD.SEXDSTN
+		        , ELD.SUBJECT_NO
+		        , TO_CHAR(ELD.SMPLERING_DE, 'YYYYMMDDHH24MISS') SMPLERING_DE
+		        , TO_CHAR(ELD.SMPLERING_DE, 'YYYYMMDD') SMPLERING_DE2
+		        , ELD.VISIT_LBL
+		        , ELD.ANALS_PARAMTR
+		        , ELD.ANALS_RESULT
+		        , ELD.GROUP_LBL
+		        , ELD.INSTT_CODE
+		  FROM    EDC_LAB_DTA_FILE ELDF
+		        , EDC_LAB_DTA ELD
+		 WHERE    ELDF.FILE_MASTR_SN = ELD.FILE_MASTR_SN
+		   AND    ELDF.TASK_SN = #TASK_SN#
+		   AND    ELDF.FILE_MASTR_SN = #FILE_MASTR_SN#
+	</select>
+	
+	<!-- AnalysisParameter 코드집 -->
+	<select id="selectLabTemplate" parameterClass="hashMap" resultClass="hashMap" >
+      	SELECT	CC.CL_CODE_SN, 
+      			CC.CDISC_SUBMIT_VALUE, 
+      			CC.CDISC_SYNONM
+      	FROM	CDISC_CL_CODE CC
+      	JOIN	CDISC_RULE CR
+      	ON		CR.CDISC_RULE_SN = CC.CDISC_RULE_SN
+      	AND		CR.CDISC_RULE_SN = (SELECT MAX(CR.CDISC_RULE_SN) FROM CDISC_RULE)
+      	<isEmpty property="MODULE">
+      	JOIN	EDC_CR_TASK CT
+      	ON		CT.CDISC_RULE_SN = CR.CDISC_RULE_SN
+      	AND		CT.TASK_SN = #TASK_SN#
+      	</isEmpty>
+      	WHERE	CC.CDISC_UPPER_CODE = 'C65047'
+      	<isNotEmpty property="SEARCH">
+      	AND		CC.CDISC_SUBMIT_VALUE LIKE '%' || #CDISC_SUBMIT_VALUE# || '%'
+      	</isNotEmpty>
+	</select>
+	
+	<!-- 기관양식 코드 조회 -->
+	<select id="selectInsttFormSn" parameterClass="hashMap" resultClass="String" >
+		SELECT 	INSTT_FORM_SN
+		FROM	EDC_CR_INSTT_FORM
+		WHERE	TASK_SN = #TASK_SN#
+    	AND   	INSTT_CODE = #INSTT_CODE#
+	</select>
+	
+	<!-- 전체 키값 조회 -->
+	<select id="selectVriablKey" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT  CVG.VISIT_SN,
+	            CVG.VISIT_GROUP_SN,
+	            CVG.SET_ROW_SN,
+	            CVG.SET_VRIABL_SN,
+	            CVG.SET_SN
+	            FROM  CDISC_CL_CODE CC
+	            JOIN  (SELECT 	CVG.VISIT_SN, 
+	            				CVG.VISIT_GROUP_SN,
+	            				CSV.SET_ROW_SN,
+	            				CSV.SET_VRIABL_SN,
+	            				CVR.CL_CODE_SN,
+                				ECS.SET_SN
+	                  FROM  EDC_CR_VISIT_SCHDUL CVS
+	                  JOIN  EDC_CR_VISIT_GROUP CVG
+	                  ON    CVS.TASK_SN = CVG.TASK_SN
+	                  AND   CVS.EDC_VER = CVG.EDC_VER
+	                  AND   CVS.VISIT_SN = CVG.VISIT_SN
+	                  AND   CVS.USE_AT = CVG.USE_AT
+	                  AND   CVS.TASK_SN = #TASK_SN#
+	                  AND   CVS.EDC_VER = #EDC_VER#
+	                  AND   CVS.VISIT_LBL = #VISIT_LBL#
+	                  AND   CVS.USE_AT = 'Y'
+	                  JOIN  EDC_CR_GROUP CGR
+	                  ON    CGR.TASK_SN = CVG.TASK_SN
+	                  AND   CGR.EDC_VER = CVG.EDC_VER
+	                  AND   CGR.GROUP_SN = CVG.GROUP_SN
+	                  AND   CVS.USE_AT = CGR.USE_AT
+	                  AND   CGR.GROUP_LBL = #GROUP_LBL#
+	                  JOIN  EDC_CR_VRIABL CVR
+	                  ON    CVR.TASK_SN = CGR.TASK_SN
+	                  AND   CVR.EDC_VER = CVG.EDC_VER
+	                  AND   CVR.GROUP_SN = CVG.GROUP_SN
+	                  AND   CVR.CL_CODE_SN = #ANALS_PARAMTR#
+	                  AND   CVS.USE_AT = CGR.USE_AT
+	                  JOIN  EDC_CR_SET_VRIABL CSV
+	                  ON    CSV.TASK_SN = CVR.TASK_SN
+	                  AND   CSV.EDC_VER = CVR.EDC_VER
+	                  AND   CSV.VISIT_GROUP_SN = CVG.VISIT_GROUP_SN
+	                  AND   CSV.VRIABL_SN = CVR.VRIABL_SN
+	                  AND   CSV.GROUP_SN = CVR.GROUP_SN
+	                  AND   VRIABL_SE_CODE = '09'    
+	                  AND   CVS.USE_AT = CSV.USE_AT
+	                  JOIN  EDC_CR_SET ECS
+                      ON    ECS.TASK_SN = CSV.TASK_SN
+                      AND   ECS.EDC_VER = CSV.EDC_VER
+                      AND   ECS.VISIT_GROUP_SN = CSV.VISIT_GROUP_SN
+                      AND   ECS.SET_SN = CSV.SET_SN    
+                  	) CVG
+            ON    CC.CL_CODE_SN = CVG.CL_CODE_SN
+            WHERE CC.CDISC_UPPER_CODE = 'C65047'
+	</select>
+	
+	<!--  정상여부 넣을 variabl의 모든 키값 조회 -->
+	<select id="selectNorValue" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT  CVG.VISIT_SN,
+	            CVG.VISIT_GROUP_SN,
+	            CVG.SET_ROW_SN,
+	            CVG.SET_VRIABL_SN,
+	            CVG.SET_SN
+	            FROM  EDC_USER_VRIABL UV
+	            JOIN  (SELECT 	CVG.VISIT_SN, 
+	            				CVG.VISIT_GROUP_SN,
+	            				CSV.SET_ROW_SN,
+	            				CSV.SET_VRIABL_SN,
+	            				ECS.SET_SN
+	                  FROM  EDC_CR_VISIT_SCHDUL CVS
+	                  JOIN  EDC_CR_VISIT_GROUP CVG
+	                  ON    CVS.TASK_SN = CVG.TASK_SN
+	                  AND   CVS.EDC_VER = CVG.EDC_VER
+	                  AND   CVS.VISIT_SN = CVG.VISIT_SN
+	                  AND   CVS.USE_AT = CVG.USE_AT
+	                  AND   CVS.TASK_SN = #TASK_SN#
+	                  AND   CVS.EDC_VER = #EDC_VER#
+	                  AND   CVS.VISIT_LBL = #VISIT_LBL#
+	                  AND   CVS.USE_AT = 'Y'
+	                  JOIN  EDC_CR_GROUP CGR
+	                  ON    CGR.TASK_SN = CVG.TASK_SN
+	                  AND   CGR.EDC_VER = CVG.EDC_VER
+	                  AND   CGR.GROUP_SN = CVG.GROUP_SN
+	                  AND   CVS.USE_AT = CGR.USE_AT
+	                  AND   CGR.GROUP_LBL = #GROUP_LBL#
+	                  JOIN  EDC_CR_VRIABL CVR
+	                  ON    CVR.TASK_SN = CGR.TASK_SN
+	                  AND   CVR.EDC_VER = CVG.EDC_VER
+	                  AND   CVR.GROUP_SN = CVG.GROUP_SN
+	                  AND   CVR.CL_CODE_SN = #ANALS_PARAMTR#
+	                  AND   CVS.USE_AT = CGR.USE_AT
+	                  JOIN  EDC_CR_SET_VRIABL CSV
+	                  ON    CSV.TASK_SN = CVR.TASK_SN
+	                  AND   CSV.EDC_VER = CVR.EDC_VER
+	                  AND   CSV.VISIT_GROUP_SN = CVG.VISIT_GROUP_SN
+	                  AND   CSV.VRIABL_SN = CVR.VRIABL_SN
+	                  AND   CSV.GROUP_SN = CVR.GROUP_SN
+	                  AND   CVS.USE_AT = CSV.USE_AT
+	                  JOIN  EDC_CR_SET ECS
+                      ON    ECS.TASK_SN = CSV.TASK_SN
+                      AND   ECS.EDC_VER = CSV.EDC_VER
+                      AND   ECS.VISIT_GROUP_SN = CSV.VISIT_GROUP_SN
+                      AND   ECS.SET_SN = CSV.SET_SN    
+                  	) CVG
+            ON    UV.DOMN_VRIABL_SN = UV.DOMN_VRIABL_SN
+            WHERE UV.TASK_SN = #TASK_SN#
+            AND	 UV.VRIABL_NM = 'LBNOR'
+	</select>
+	
+	<select id="selectAgeVriablValue" parameterClass="hashMap" resultClass="hashMap" >	
+		SELECT CV.STRE_VALUE
+		FROM    EDC_CF_VRIABL CV
+		JOIN    EDC_CR_VISIT_GROUP CVG
+		ON      CV.VISIT_GROUP_SN = CVG.VISIT_GROUP_SN
+		AND     CVG.TASK_SN = #TASK_SN#
+		AND     CVG.EDC_VER = #EDC_VER#
+		JOIN    EDC_CR_SET_VRIABL CSV
+		ON      CSV.TASK_SN = CVG.TASK_SN
+		AND     CSV.EDC_VER = CVG.EDC_VER
+		AND     CSV.VISIT_GROUP_SN = CVG.VISIT_GROUP_SN
+		AND     CSV.SET_VRIABL_SN = CV.SET_VRIABL_SN
+		JOIN    EDC_CR_VRIABL CVR
+		ON      CVR.TASK_SN = CSV.TASK_SN
+		AND     CVR.EDC_VER = CSV.EDC_VER
+		AND     CVR.GROUP_SN = CSV.GROUP_SN
+		AND     CVR.VRIABL_SN = CSV.VRIABL_SN
+		JOIN    CDISC_DOMN_VRIABL DV
+		ON      DV.DOMN_VRIABL_SN = CVR.DOMN_VRIABL_SN
+		AND     DV.VRIABL_NM = 'AGE'
+		WHERE   CV.INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND     CV.SUBJECT_NO = #SUBJECT_NO#
+		AND     CV.VISIT_SN = #VISIT_SN#
+		AND     CV.SN = 1
+		AND     CV.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND     CV.SET_ROW_SN = 1
+		AND     CV.VRIABL_ROW_SN = 1
+		AND     CV.SET_VRIABL_SN = #SET_VRIABL_SN#
+	</select>
+	
+	<select id="selectSexVriablValue" parameterClass="hashMap" resultClass="hashMap" >	
+		SELECT CV.STRE_VALUE
+		FROM    EDC_CF_VRIABL CV
+		JOIN    EDC_CR_VISIT_GROUP CVG
+		ON      CV.VISIT_GROUP_SN = CVG.VISIT_GROUP_SN
+		AND     CVG.TASK_SN = #TASK_SN#
+		AND     CVG.EDC_VER = #EDC_VER#
+		JOIN    EDC_CR_SET_VRIABL CSV
+		ON      CSV.TASK_SN = CVG.TASK_SN
+		AND     CSV.EDC_VER = CVG.EDC_VER
+		AND     CSV.VISIT_GROUP_SN = CVG.VISIT_GROUP_SN
+		AND     CSV.SET_VRIABL_SN = CV.SET_VRIABL_SN
+		JOIN    EDC_CR_VRIABL CVR
+		ON      CVR.TASK_SN = CSV.TASK_SN
+		AND     CVR.EDC_VER = CSV.EDC_VER
+		AND     CVR.GROUP_SN = CSV.GROUP_SN
+		AND     CVR.VRIABL_SN = CSV.VRIABL_SN
+		JOIN    CDISC_DOMN_VRIABL DV
+		ON      DV.DOMN_VRIABL_SN = CVR.DOMN_VRIABL_SN
+		AND     DV.VRIABL_NM = 'SEX'
+		WHERE   CV.INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND     CV.SUBJECT_NO = #SUBJECT_NO#
+		AND     CV.VISIT_SN = #VISIT_SN#
+		AND     CV.SN = 1
+		AND     CV.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND     CV.SET_ROW_SN = 1
+		AND     CV.VRIABL_ROW_SN = 1
+		AND     CV.SET_VRIABL_SN = #SET_VRIABL_SN#
+	</select>
+	
+	<select id="selectSubjectNoCount" parameterClass="String" resultClass="int" >
+		SELECT COUNT(*) FROM EDC_CF_SUBJECT WHERE SUBJECT_NO = #SubjectNo#
+	</select>
+	
+	<select id="selectStydyNoCount" parameterClass="String" resultClass="int" >
+		SELECT COUNT(*) FROM EDC_CR_TASK WHERE TASK_NO = #StudyNo#
+	</select>
+	
+	<select id="selectLabCount" parameterClass="String" resultClass="int" >
+		SELECT COUNT(*) FROM EDC_CF_LAB WHERE LAB_NM = #LabName#
+	</select>
+	
+	<select id="selectVisitCount" parameterClass="hashMap" resultClass="int" >
+		SELECT COUNT(*) FROM EDC_CR_VISIT_SCHDUL WHERE TASK_SN =  #TASK_SN# AND EDC_VER = #EDC_VER# AND VISIT_LBL = #VisitNo#
+	</select>
+	
+	<select id="selectAnalParamCount" parameterClass="hashMap" resultClass="int" >
+		SELECT COUNT(*) FROM EDC_CF_LAB_DETAIL WHERE INSTT_CODE = #INSTT_CODE# AND LAB_NM = #LabName# AND ANALS_PARAMTR = #AnalysisParameter#
+	</select>
+	
+	<!-- 그룹 건수 count -->
+	<select id="selectCfGroupCount" parameterClass="hashMap" resultClass="int" >
+		SELECT 	COUNT(*)
+	    FROM 	EDC_CF_GROUP CG
+	    WHERE 	CG.INSTT_FORM_SN = #INSTT_FORM_SN#
+	    AND   	CG.SUBJECT_NO = #SUBJECT_NO#
+	    AND   	CG.VISIT_SN = #VISIT_SN#
+	    AND   	CG.VISIT_GROUP_SN =#VISIT_GROUP_SN#
+	</select>
+	
+	<!-- ROW 건수 count  -->
+	<select id="selectCfRowCount" parameterClass="hashMap" resultClass="int" >
+		SELECT 	COUNT(*)
+    	FROM 	EDC_CF_ROW CR
+	    WHERE 	CR.INSTT_FORM_SN = #INSTT_FORM_SN#
+	    AND   	CR.SUBJECT_NO = #SUBJECT_NO#
+	    AND   	CR.VISIT_SN = #VISIT_SN#
+	    AND   	CR.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+	    AND   	CR.SET_ROW_SN = #SET_ROW_SN#
+	    AND		CR.SN = 1
+	    AND		CR.VRIABL_ROW_SN = 1
+	</select>
+	
+	<!-- VRIABL 건수 count  -->
+	<select id="selectCfVriablCount" parameterClass="hashMap" resultClass="int" >
+		SELECT 	COUNT(*)
+	    FROM 	EDC_CF_VRIABL CV
+	    WHERE 	CV.INSTT_FORM_SN = #INSTT_FORM_SN#
+	    AND   	CV.SUBJECT_NO = #SUBJECT_NO#
+	    AND   	CV.VISIT_SN = #VISIT_SN#
+	    AND   	CV.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+	    AND   	CV.SET_ROW_SN = #SET_ROW_SN#
+	    AND   	CV.SET_VRIABL_SN = #SET_VRIABL_SN#
+	    AND		CV.SN = 1
+	    AND		CV.VRIABL_ROW_SN = 1
+	</select>
+	
+	<insert id="insertLabDataFile" parameterClass="hashMap">
+		INSERT INTO EDC_LAB_DTA_FILE(
+				    FILE_MASTR_SN,
+				    TASK_SN,
+				    FRST_CREDE,
+				    FRST_CRTR,
+				    LAST_UPDDE,
+				    LAST_UPDUSR
+				    )
+				    VALUES(
+				    #FILE_MASTR_SN#,
+				    #TASK_SN#,
+				    SYSDATE,
+				    #USER_ID#,
+				    SYSDATE,
+				    #USER_ID#
+				    )
+	</insert>
+	
+	<insert id="insertLabData" parameterClass="hashMap">
+		INSERT INTO EDC_LAB_DTA(
+				    LAB_DTA_SN,
+				    FILE_MASTR_SN,
+				    INSTT_CODE,
+				    STRE_CODE,
+				    LAB_NM,
+				    SMPLERING_DE,
+				    VISIT_LBL,
+				    ANALS_PARAMTR,
+				    ANALS_RESULT,
+				    SUBJECT_NO,
+				    GROUP_LBL,
+				    FRST_CREDE,
+				    FRST_CRTR,
+				    LAST_UPDDE,
+				    LAST_UPDUSR
+				    )
+				    VALUES(
+				    #LAB_DTA_SN#,
+				    #MstrSn#,
+				    #INSTT_CODE#,
+				    '02',
+				    #LabName#,
+				    #SamplingDate#,
+				    #Visit#,
+				    #AnalysisParameter#,
+				    #Result#,
+				    #SubjectNo#,
+				    #Group#,
+				    SYSDATE,
+				    #USER_ID#,
+				    SYSDATE,
+				    #USER_ID#
+				    )
+	</insert>
+	
+	<insert id="insertCfGroup" parameterClass="hashMap">
+		INSERT INTO EDC_CF_GROUP (
+				    INSTT_FORM_SN,
+				    SUBJECT_NO,
+				    VISIT_SN,
+				    SN,
+				    VISIT_GROUP_SN,
+				    STRE_CODE,
+				    SDV_STTUS_CODE,
+				    SDV_COMPT_STTUS_CODE,
+				    STRE_CRF_VER,
+				    STRE_EDC_VER,
+				    FRST_CREDE,
+				    FRST_CRTR,
+				    LAST_UPDDE,
+				    LAST_UPDUSR
+				    )
+				    VALUES(
+				    #INSTT_FORM_SN#,
+				    #SUBJECT_NO#,
+				    #VISIT_SN#,
+				    '1',
+				    #VISIT_GROUP_SN#,
+				    '01',
+				    '01',
+				    '01',
+				    #CRF_VER#,
+				    #EDC_VER#,
+				    SYSDATE,
+				    #USER_ID#,
+				    SYSDATE,
+				    #USER_ID#
+				    )
+	</insert> 
+	
+	<insert id="insertCfRow" parameterClass="hashMap">
+		INSERT INTO EDC_CF_ROW (
+				    INSTT_FORM_SN,
+				    SUBJECT_NO,
+				    VISIT_SN,
+				    SN,
+				    VISIT_GROUP_SN,
+				    SET_ROW_SN,
+				    VRIABL_ROW_SN,
+				    VRIABL_ROW_ORDR,
+				    SDV_AT,
+				    FRST_CREDE,
+				    FRST_CRTR,
+				    LAST_UPDDE,
+				    LAST_UPDUSR
+				    )
+				    VALUES(
+				    #INSTT_FORM_SN#,
+				    #SUBJECT_NO#,
+				    #VISIT_SN#,
+				    '1',
+				    #VISIT_GROUP_SN#,
+				    #SET_ROW_SN#,
+				    '1',
+				    '1',
+				    'N',
+				    SYSDATE,
+				    #USER_ID#,
+				    SYSDATE,
+				    #USER_ID#
+				    )
+	</insert>
+	
+	<insert id="insertCfVraiabl" parameterClass="hashMap">
+		INSERT INTO EDC_CF_VRIABL (
+				    INSTT_FORM_SN,
+				    SUBJECT_NO,
+				    VISIT_SN,
+				    SN,
+				    VISIT_GROUP_SN,
+				    SET_ROW_SN,
+				    VRIABL_ROW_SN,
+				    SET_VRIABL_SN,
+				    SET_SN,
+				    STRE_VALUE,
+				    PV_CNFIRM_CODE,
+				    CRA_CNFIRM_CODE,
+				    LABDTA_STRE_CODE,
+				    FRST_CREDE,
+				    FRST_CRTR,
+				    LAST_UPDDE,
+				    LAST_UPDUSR
+				    )
+				    VALUES(
+				    #INSTT_FORM_SN#,
+				    #SUBJECT_NO#,
+				    #VISIT_SN#,
+				    '1',
+				    #VISIT_GROUP_SN#,
+				    #SET_ROW_SN#,
+				    '1',
+				    #SET_VRIABL_SN#,
+				    #SET_SN#,
+				    <isEqual property="PARAM_TYPE" compareValue="1">
+				    	#ANALS_PARAMTR#,
+				    </isEqual>
+				    <isEqual property="PARAM_TYPE" compareValue="2">
+				    	#ANALS_RESULT#,
+				    </isEqual>
+				    '01',
+				    '01',
+				    '02',
+				    SYSDATE,
+				    #USER_ID#,
+				    SYSDATE,
+				    #USER_ID#
+				    )
+	</insert>
+	
+	<update id="updateCfVriabl" parameterClass="hashMap">
+		UPDATE	EDC_CF_VRIABL
+		SET   	
+				<isEqual property="PARAM_TYPE" compareValue="1">
+			    	STRE_VALUE = #ANALS_PARAMTR#,
+			    </isEqual>
+			    <isEqual property="PARAM_TYPE" compareValue="2">
+			    	STRE_VALUE = #ANALS_RESULT#, 
+			    </isEqual>
+				LABDTA_STRE_CODE = '01',
+			    LAST_UPDDE = SYSDATE,
+			    LAST_UPDUSR = #USER_ID#
+		WHERE	INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND	    SUBJECT_NO = #SUBJECT_NO#
+		AND	    VISIT_SN = #VISIT_SN#
+		AND	    SN = 1
+		AND	    VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND	    SET_ROW_SN = #SET_ROW_SN#
+		AND	    VRIABL_ROW_SN = 1
+		AND	    SET_VRIABL_SN = #SET_VRIABL_SN#
+	</update>
+	
+	<update id="updateLabDtaFile" parameterClass="hashMap">
+		UPDATE	EDC_LAB_DTA_FILE 
+		SET		INTRLCK_AT = 'Y', 
+				LAST_UPDDE = SYSDATE, 
+				LAST_UPDUSR = #USER_ID#
+		WHERE	FILE_MASTR_SN = #FILE_MASTR_SN#
+	</update>
+	
+	<select id="selectLabDetailData" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT  SCOPE_LWLT_VALUE,
+		        SCOPE_UPLMT_VALUE,
+		        TO_CHAR(APPLC_BGNDE,'YYYYMMDD') AS APPLC_BGNDE,
+		        TO_CHAR(APPLC_ENDDE,'YYYYMMDD') AS APPLC_ENDDE,
+		        AGE,
+		        SEXDSTN
+		FROM    EDC_CF_LAB_DETAIL
+		WHERE   INSTT_CODE = #INSTT_CODE#
+		AND     LAB_NM = #LAB_NM#
+		AND     ANALS_PARAMTR = #ANALS_PARAMTR#
+	</select>
+</sqlMap>

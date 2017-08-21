@@ -1,0 +1,282 @@
+/*1. 공통컨텐츠*/
+
+/*기본폰트설정*/
+body {font-family:'NanumGothic','맑은 고딕','HelveticaNeue', sans-serif; font-size:14px; line-height:1.5em; color:#444;}
+
+/* 웹폰트 CSS */
+@font-face{font-family:'AppleGothic'; 
+src:url(테이블AppleGothic.eot), url(../../../font/AppleGothicBold.eot?#iefix) format('embedded-opentype'), 
+url(../../../font/AppleGothic.woff) format('woff'),
+url(../../../font/AppleGothic.ttf) format('truetype');}
+
+@font-face{font-family:'AppleGothicBold'; 
+src:url(../../../font/AppleGothicBold.eot), url(../../../font/AppleGothicBold.eot?#iefix) format('embedded-opentype'), 
+url(../../../font/AppleGothicBold.woff) format('woff'),
+url(../../../font/AppleGothicBold.ttf) format('truetype');}
+
+@font-face{font-family:'NanumGothic'; 
+src: url(../../../font/NanumGothic.eot), url(../../../font/NanumGothic.eot?#iefix) format('embedded-opentype'), 
+url(../../../font/NanumGothic.woff) format('woff'),
+url(../../../font/NanumGothic.ttf) format('truetype');}
+
+@font-face{font-family:'NanumGothicLight'; 
+src: url(../../../font/NanumGothicLight.eot), url(../../../font/NanumGothicLight.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NanumGothicLight.woff) format('woff'),
+url(../../../font/NanumGothicLight.ttf) format('truetype');}
+
+@font-face{font-family:'NanumGothicBold'; 
+src: url(../../../font/NanumGothicBold.eot), url(../../../font/NanumGothicBold.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NanumGothicBold.woff) format('woff');}
+
+@font-face{font-family:'NanumGothicExtraBold'; 
+src: url(../../../font/NanumBarunGothic.eot), url(../../../font/NanumBarunGothic.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NanumGothicExtraBold.woff) format('woff'),
+url(../../../font/NanumGothicExtraBold.ttf) format('truetype');}
+
+@font-face{font-family:'NanumBarunGothic'; 
+src: url(../../../font/NanumBarunGothic.eot), url(../../../font/NanumBarunGothic.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NanumBarunGothic.woff) format('woff'),
+url(../../../font/NanumBarunGothic.ttf) format('truetype');}
+
+@font-face{font-family:'NanumBarunGothicBold'; 
+src: url(../../../font/NanumBarunGothicBold.eot), url(../../../font/NanumBarunGothicBold.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NanumBarunGothicBold.woff) format('woff'),
+url(../../../font/NanumBarunGothicBold.ttf) format('truetype');}
+
+@font-face{font-family:'NanumBarunGothicLight'; 
+src: url(../../../font/NanumBarunGothicLight.eot), url(../../../font/NanumBarunGothicLight.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NanumBarunGothicLight.woff) format('woff'),
+url(../../../font/NanumBarunGothicLight.ttf) format('truetype');}
+
+@font-face{font-family:'NanumBarunGothicUltraLight'; 
+src: url(../../../font/NanumBarunGothicUltraLight.eot), url(../../../font/NanumBarunGothicUltraLight.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NanumBarunGothicUltraLight.woff) format('woff'),
+url(../../../font/NanumBarunGothicUltraLight.ttf) format('truetype');}
+
+@font-face{font-family:'MyriadPro-Regular'; 
+src: url(../../../font/MyriadPro-Regular.eot), url(../../../font/MyriadPro-Regular.eot?#iefix) format('embedded-opentype'),
+url(../../../font/MyriadPro-Regular.woff) format('woff'),
+url(../../../font/MyriadPro-Regular.ttf) format('truetype');}
+
+@font-face{font-family:'MyriadPro-Cond';
+src: url(../../../font/MyriadPro-Cond.eot), url(../../../font/MyriadPro-Cond.eot?#iefix) format('embedded-opentype'),
+url(../../../font/MyriadPro-Cond.woff) format('woff'),
+url(../../../font/MyriadPro-Cond.ttf) format('truetype');}
+
+@font-face{font-family:'SourceSansPro-Regular'; 
+src: url(../../../font/SourceSansPro-Regular.eot), url(../../../font/SourceSansPro-Regular.eot?#iefix) format('embedded-opentype'),
+url(../../../font/SourceSansPro-Regular.woff) format('woff'),
+url(../../../font/SourceSansPro-Regular.ttf) format('truetype');}
+
+@font-face{font-family:'SourceSansPro-Light'; 
+src: url(../../../font/SourceSansPro-Light.eot), url(../../../font/SourceSansPro-Light.eot?#iefix) format('embedded-opentype'),
+url(../../../font/SourceSansPro-Light.woff) format('woff'),
+url(../../../font/SourceSansPro-Light.ttf) format('truetype');}
+
+@font-face{font-family:'SourceSansPro-Bold'; 
+src: url(../../../font/SourceSansPro-Bold.eot), url(../../../font/SourceSansPro-Bold.eot?#iefix) format('embedded-opentype'),
+url(../../../font/SourceSansPro-Bold.woff) format('woff'),
+url(../../../font/SourceSansPro-Bold.ttf) format('truetype');}
+
+@font-face{font-family:'SourceSansPro-Semibold'; 
+src: url(../../../font/SourceSansPro-Semibold.eot), url(../../../font/SourceSansPro-Semibold.eot?#iefix) format('embedded-opentype'),
+url(../../../font/SourceSansPro-Semibold.woff) format('woff'),
+url(../../../font/SourceSansPro-Semibold.ttf) format('truetype');}
+
+@font-face{font-family:'SourceSansPro-ExtraLight'; 
+src: url(../../../font/SourceSansPro-ExtraLight.eot), url(../../../font/SourceSansPro-ExtraLight.eot?#iefix) format('embedded-opentype'),
+url(../../../font/SourceSansPro-ExtraLight.woff) format('woff'),
+url(../../../font/SourceSansPro-ExtraLight.ttf) format('truetype');}
+
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+@font-face{font-family:'NotoSansKR-Medium-Hestia'; 
+src: url(../../../font/NotoSansKR-Medium-Hestia.eot), url(../../../font/NotoSansKR-Medium-Hestia.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NotoSansKR-Medium-Hestia.woff) format('woff'),
+url(../../../font/NotoSansKR-Medium-Hestia.otf) format('opentype');}
+
+@font-face{font-family:'NotoSansKR-Regular-Hestia'; 
+src: url(../../../font/NotoSansKR-Regular-Hestia.eot), url(../../../font/NotoSansKR-Regular-Hestia.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NotoSansKR-Regular-Hestia.woff) format('woff'),
+url(../../../font/NotoSansKR-Regular-Hestia.otf) format('opentype');}
+
+@font-face{font-family:'NotoSansKR-Thin-Hestia'; 
+src: url(../../../font/NotoSansKR-Thin-Hestia.eot), url(../../../font/NotoSansKR-Thin-Hestia.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NotoSansKR-Thin-Hestia.woff) format('woff'),
+url(../../../font/NotoSansKR-Thin-Hestia.otf) format('opentype');}
+
+@font-face{font-family:'NotoSansKR-Bold-Hestia'; 
+src: url(../../../font/NotoSansKR-Bold-Hestia.eot), url(../../../font/NotoSansKR-Bold-Hestia.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NotoSansKR-Bold-Hestia.woff) format('woff'),
+url(../../../font/NotoSansKR-Bold-Hestia.otf) format('opentype');}
+
+@font-face{font-family:'NotoSansKR-Black-Hestia'; 
+src: url(../../../font/NotoSansKR-Black-Hestia.eot), url(../../../font/NotoSansKR-Black-Hestia.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NotoSansKR-Black-Hestia.woff) format('woff'),
+url(../../../font/NotoSansKR-Black-Hestia.otf) format('opentype');}
+
+@font-face{font-family:'NotoSansKR-DemiLight-Hestia'; 
+src: url(../../../font/NotoSansKR-DemiLight-Hestia.eot), url(../../../font/NotoSansKR-DemiLight-Hestia.eot?#iefix) format('embedded-opentype'),
+url(../../../font/NotoSansKR-DemiLight-Hestia.woff) format('woff'),
+url(../../../font/otoSansKR-DemiLight-Hestia.otf) format('opentype');}
+
+/* @font-face{font-family:'Helvetica';  */
+/* src: url(../../../font/Helvetica.eot), url(../../../font/Helvetica.eot?#iefix) format('embedded-opentype'), */
+/* url(../../../font/Helvetica.woff) format('woff') */
+/* } */
+
+@font-face{font-family:'HelveticaNarrow'; 
+src: url(../../../font/HelveticaNarrow.eot), url(../../../font/HelveticaNarrow.eot?#iefix) format('embedded-opentype'),
+url(../../../font/HelveticaNarrow.woff) format('woff'),
+url(../../../font/HelveticaNarrow.ttf) format('truetype');}
+
+@font-face{font-family:'HelveticaLight'; 
+src: url(../../../font/HelveticaLight.eot), url(../../../font/HelveticaLight.eot?#iefix) format('embedded-opentype'),
+url(../../../font/HelveticaLight.woff) format('woff'),
+url(../../../font/HelveticaLight.ttf) format('truetype');}
+
+@font-face{font-family:'HelveticaNarrowBold'; 
+src: url(../../../font/HelveticaNarrowBold.eot), url(../../../font/HelveticaNarrowBold.eot?#iefix) format('embedded-opentype'),
+url(../../../font/HelveticaNarrowBold.woff) format('woff'),
+url(../../../font/HelveticaNarrowBold.ttf) format('truetype');}
+
+@font-face{font-family:'HelveticaUltraCompressed'; 
+src: url(../../../font/HelveticaUltraCompressed.eot), url(../../../font/HelveticaUltraCompressed.eot?#iefix) format('embedded-opentype'),
+url(../../../font/HelveticaUltraCompressed.woff) format('woff'),
+url(../../../font/HelveticaUltraCompressed.ttf) format('truetype');}
+
+@font-face{font-family:'HelveticaCondensedBold'; 
+src: url(../../../font/HelveticaCondensedBold.eot), url(../../../font/HelveticaCondensedBold.eot?#iefix) format('embedded-opentype'),
+url(../../../font/HelveticaCondensedBold.woff) format('woff'),
+url(../../../font/HelveticaCondensedBold.ttf) format('truetype');}
+
+@font-face{font-family:'HelveticaCompressed'; 
+src: url(../../../font/HelveticaCompressed.eot), url(../../../font/HelveticaCompressed.eot?#iefix) format('embedded-opentype'),
+url(../../../font/HelveticaCompressed.woff) format('woff'),
+url(../../../font/HelveticaCompressed.ttf) format('truetype');}
+
+/*폰트설정*/
+.ftKr {font-family:'NanumGothic' !important;} .ftKrL {font-family:'NanumGothicLight' !important;}
+.ftKrB {font-family:'NanumGothicBold' !important;} .ftKrEB {font-family:'NanumGothicExtraBold' !important;}
+
+.ftEn {font-family:'Helvetica' !important;} .ftEnL {font-family:'HelveticaLight' !important;} 
+.ftEnB {font-family:'HelveticaNarrowBold' !important;}
+
+/*폰트사이즈*/
+.ftSz0 {font-size: 0px !important;} .ftSz1 {font-size: 1px !important;} .ftSz2 {font-size: 2px !important;}
+.ftSz3 {font-size: 3px !important;} .ftSz4 {font-size: 4px !important;} .ftSz5 {font-size: 5px !important;}
+.ftSz6 {font-size: 6px !important;} .ftSz7 {font-size: 7px !important;} .ftSz8 {font-size: 8px !important;}
+.ftSz0 {font-size: 9px !important;} .ftSz10 {font-size: 10px !important;} .ftSz11 {font-size: 11px !important;} 
+.ftSz12 {font-size: 12px !important;} .ftSz13 {font-size: 13px !important;} .ftSz14 {font-size: 14px !important;} 
+.ftSz15 {font-size: 15px !important;} .ftSz16 {font-size: 16px !important;} .ftSz17 {font-size: 17px !important;} 
+.ftSz18 {font-size: 18px !important;} .ftSz19 {font-size: 19px !important;} .ftSz20 {font-size: 20px !important;} 
+.ftSz21 {font-size: 21px !important;} .ftSz22 {font-size: 22px !important;} .ftSz23 {font-size: 23px !important;} 
+.ftSz24 {font-size: 24px !important;} .ftSz25 {font-size: 25px !important;} .ftSz26 {font-size: 26px !important;} 
+.ftSz27 {font-size: 27px !important;} .ftSz28 {font-size: 28px !important;} .ftSz29 {font-size: 29px !important;} 
+.ftSz30 {font-size: 30px !important;} .ftSz31 {font-size: 31px !important;} .ftSz32 {font-size: 32px !important;} 
+.ftSz33 {font-size: 33px !important;} .ftSz34 {font-size: 34px !important;} .ftSz35 {font-size: 35px !important;} 
+.ftSz36 {font-size: 36px !important;} .ftSz37 {font-size: 37px !important;} .ftSz38 {font-size: 38px !important;} 
+.ftSz39 {font-size: 39px !important;} .ftSz40 {font-size: 40px !important;} .ftSz41 {font-size: 41px !important;} 
+.ftSz42 {font-size: 42px !important;} .ftSz43 {font-size: 43px !important;} .ftSz44 {font-size: 44px !important;} 
+.ftSz45 {font-size: 45px !important;} .ftSz46 {font-size: 46px !important;} .ftSz47 {font-size: 47px !important;} 
+.ftSz48 {font-size: 48px !important;} .ftSz49 {font-size: 49px !important;} .ftSz50 {font-size: 50px !important;}
+
+/*폰트굵기*/
+.ftWtB {font-weight: bold !important;} .ftWtN {font-weight: normal !important;} .ftWtL {font-weight: lighter !important;}
+.ftWt100 {font-weight: 100 !important;} .ftWt200 {font-weight: 200 !important;} .ftWt300 {font-weight: 300 !important;}
+.ftWt400 {font-weight: 400 !important;} .ftWt500 {font-weight: 500 !important;} .ftWt600 {font-weight: 600 !important;}
+.ftWt700 {font-weight: 700 !important;} .ftWt800 {font-weight: 800 !important;} .ftWt900 {font-weight: 900 !important;}
+
+/*폰트색상*/
+.ftCor00 {color:#000 !important;} .ftCor33 {color:#333 !important;} .ftCor44 {color:#444 !important;} 
+.ftCor66 {color:#666 !important;} .ftCor99 {color:#999 !important;} 
+.ftCorFf {color:#fff !important;} .ftCorEe {color:#eee !important;} .ftCorDd {color:#ddd !important;} 
+.ftCorCc {color:#ccc !important;} .ftCorBb {color:#bbb !important;}
+
+/*행간*/
+.lhD8e {line-height:0.5em !important;} .lhD8e {line-height:0.6em !important;} 
+.lhD8e {line-height:0.7em !important;} .lhD8e {line-height:0.8em !important;} 
+.lhD8e {line-height:0.9em !important;} .lh1e {line-height:1em !important;}
+.lh1D1e {line-height:1.1em !important;} .lh1D2e {line-height:1.2em !important;} 
+.lh1D3e {line-height:1.3em !important;} .lh1D4e {line-height:1.4em !important;} 
+.lh1D5e {line-height:1.5em !important;} .lh1D6e {line-height:1.6em !important;}
+.lh1D7e {line-height:1.7em !important;} .lh1D8e {line-height:1.8em !important;} 
+.lh1D9e {line-height:1.9em !important;} .lh2e {line-height:2em !important;} 
+.lh2D1e {line-height:2.1em !important;} .lh2D2e {line-height:2.2em !important;}
+.lh2D3e {line-height:2.3em !important;} .lh2D4e {line-height:2.4em !important;} 
+.lh2D5e {line-height:2.5em !important;}
+
+.lh10 {line-height: 10px !important;} .lh11 {line-height: 11px !important;} .lh12 {line-height: 12px !important;} 
+.lh13 {line-height: 13px !important;} .lh14 {line-height: 14px !important;} .lh15 {line-height: 15px !important;} 
+.lh16 {line-height: 16px !important;} .lh17 {line-height: 17px !important;} .lh18 {line-height: 18px !important;} 
+.lh19 {line-height: 19px !important;} .lh20 {line-height: 20px !important;} .lh21 {line-height: 21px !important;}
+.lh22 {line-height: 22px !important;} .lh23 {line-height: 23px !important;} .lh24 {line-height: 24px !important;} 
+.lh25 {line-height: 25px !important;} .lh26 {line-height: 26px !important;} .lh27 {line-height: 27px !important;} 
+.lh28 {line-height: 28px !important;} .lh29 {line-height: 29px !important;} .lh30 {line-height: 30px !important;} 
+.lh31 {line-height: 31px !important;} .lh32 {line-height: 32px !important;} .lh33 {line-height: 33px !important;}
+.lh34 {line-height: 34px !important;} .lh35 {line-height: 35px !important;} .lh36 {line-height: 36px !important;} 
+.lh37 {line-height: 37px !important;} .lh38 {line-height: 38px !important;} .lh39 {line-height: 39px !important;} 
+.lh40 {line-height: 40px !important;} .lh41 {line-height: 41px !important;} .lh42 {line-height: 42px !important;}
+.lh43 {line-height: 43px !important;} .lh44 {line-height: 44px !important;} .lh45 {line-height: 45px !important;}
+.lh46 {line-height: 46px !important;} .lh47 {line-height: 47px !important;} .lh48 {line-height: 48px !important;}
+.lh49 {line-height: 49px !important;} .lh50 {line-height: 50px !important;}
+
+/*폰트개별설정*/
+body h1 {font-size:42px; line-height:1.5em;}
+body h2 {font-size:36px; line-height:1.5em;}
+body h3 {font-size:24px; line-height:1.5em; color:#555; display: inline-block; font-family: 'NanumGothic', '맑은 고딕'; font-weight: normal;}
+body h4 {font-size:21px; line-height:1.5em;} 
+body h5 {font-size:18px; line-height:1.5em; color:#666; display: inline-block; font-family: 'NanumGothic', '맑은 고딕'; font-weight: normal;}
+body h6 {font-size:16px; line-height:1.5em;}
+body h1 small {font-size:21px; line-height:1.5em; color:#999;}
+body h2 small {font-size:18px; line-height:1.5em; color:#999;}
+body h3 small {font-size:12px; line-height:1.5em; color:#999;}
+body h4 small {font-size:10.5px; line-height:1.5em; color:#999;} 
+body h5 small {font-size:9px; line-height:1.5em; color:#999;}
+body h6 small {font-size:8px; line-height:1.5em; color:#999;}
+body pre {font-family:NanumGothic; font-size:14px; line-height:1.5em;}
+small {font-size: 85%;} /*상속형*/
+
+/*문단*/
+p {margin-bottom:8px; line-height:1.5em;}
+p:last-of-type {margin-bottom:0; line-height:1.5em;}
+body dt, dl {margin-bottom:8px; line-height:1.5em;}
+body figure figcaption {margin-bottom:8px; line-height:1.5em;}
+i {font-style:italic;}
+
+/*컨텐츠칼럼*/
+.conCol2 {column-width:50%; column-count:2; column-gap:1em;}
+.conCol3 {column-width:33.33333333333333%; column-count:3; column-gap:1em;}
+.conCol4 {column-width:25%; column-count:4; column-gap:1em;}
+.conCol5 {column-width:20%; column-count:5; column-gap:1em;}
+.conCol6 {column-width:16.66666666666667%; column-count:6; column-gap:1em;}
+.conCol7 {column-width:14.28571428571429%; column-count:7; column-gap:1em;}
+.conCol8 {column-width:12.5%; column-count:8; column-gap:1em;}
+.conCol9 {column-width:11.11111111111111%; column-count:9; column-gap:1em;}
+.conCol10 {column-width:10%; column-count:10; column-gap:1em;}
+.conCol11 {column-width:9.090909090909091%; column-count:11; column-gap:1em;}
+.conCol12 {column-width:8.333333333333333%; column-count:12; column-gap:1em;}
+
+/*텍스트정렬*/
+.taL {text-align: left !important;} .taR {text-align: right !important;} 
+.taC {text-align: center !important;} .taJ {text-align: justify !important;}
+.vaT {display:table-cell !important; vertical-align:top !important;} 
+.vaM {display:table-cell !important; vertical-align:middle !important;} 
+.vaB {display:table-cell !important; vertical-align:bottom !important;} 
+.vaBs {display:table-cell !important; vertical-align:baseline !important;}
+.tVaCM {text-align: center !important; display:table-cell !important; vertical-align:middle !important;}
+
+/*기본선*/
+hr {height:0.1px; border-style:solid; border-width:1px 0px 0px 0px;}
+
+/*공통컨텐츠제목*/
+#contents .tit {}
+#contents .tit small {}
+
+/*공통컨텐츠내용*/
+
+/*공통컨텐츠아이콘*/
+.txtIco01 {background: url(../../images/common/아이콘이름.png) no-repeat 0px 2px;}
+
+
+/*2. 개별컨텐츠*/

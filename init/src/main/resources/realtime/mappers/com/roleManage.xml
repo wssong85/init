@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="realtime.com.role.mapper.RoleManageMapper">
+	
+	<select id="selectTbProgramList" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT 
+	PROGRAM_ID
+	,PROGRAM_URL
+	,PROGRAM_DC
+	,PROGRAM_NM
+	,USE_YN
+	,DATE_FORMAT(IN_DT, '%Y-%m-%d') IN_DT
+	,DATE_FORMAT(UP_DT, '%Y-%m-%d') UP_DT
+	,WRITE_ID
+	FROM TB_PROGRAM
+	WHERE 1=1
+	]]>
+	<if test="USE_YN != null">
+	<![CDATA[
+	AND USE_YN = #{USE_YN, jdbcType=VARCHAR}
+	]]>
+	</if>
+	</select>
+	
+	<insert id="insertTbProgram" parameterType="map">
+	<![CDATA[
+	INSERT
+	INTO
+	TB_PROGRAM
+	(
+	PROGRAM_ID
+	,PROGRAM_URL
+	,PROGRAM_DC
+	,PROGRAM_NM
+	,USE_YN
+	,IN_DT
+	,UP_DT
+	,WRITE_ID
+	)
+	VALUES
+	(
+	#{PROGRAM_ID, jdbcType=VARCHAR}
+	,#{PROGRAM_URL, jdbcType=VARCHAR}
+	,#{PROGRAM_DC , jdbcType=VARCHAR}
+	,#{PROGRAM_NM , jdbcType=VARCHAR}
+	,#{USE_YN     , jdbcType=VARCHAR}
+	,NOW()
+	,NOW()
+	,#{WRITE_ID   , jdbcType=VARCHAR}
+	)
+	]]>
+	</insert>
+	
+	<update id="updateTbProgram" parameterType="map">
+	<![CDATA[
+	UPDATE TB_PROGRAM
+	SET
+	PROGRAM_URL   = #{PROGRAM_URL, jdbcType=VARCHAR}
+	,PROGRAM_DC   = #{PROGRAM_DC, jdbcType=VARCHAR}
+	,PROGRAM_NM   = #{PROGRAM_NM, jdbcType=VARCHAR}
+	,USE_YN       = #{USE_YN    , jdbcType=VARCHAR}
+	,UP_DT        = NOW()
+	,WRITE_ID     = #{WRITE_ID  , jdbcType=VARCHAR}
+	WHERE PROGRAM_ID = #{PROGRAM_ID, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<delete id="deleteTbProgram" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_PROGRAM WHERE PROGRAM_ID = #{PROGRAM_ID, jdbcType=VARCHAR}
+	]]> 
+	</delete>
+	
+	<select id="selectTbMenuList" parameterType="map" resultType="map">
+	<![CDATA[]]>
+	SELECT
+	UP_MENU_ID
+	,MENU_ID
+	,PROGRAM_ID
+	,MENU_NM
+	,MENU_DC
+	,USE_YN
+	,MENU_SEQ
+	,DATE_FORMAT(IN_DT, '%Y-%m-%d') IN_DT
+	,DATE_FORMAT(UP_DT, '%Y-%m-%d') UP_DT
+	,WRITE_ID
+	FROM TB_MENU
+	WHERE UP_MENU_ID = #{UP_MENU_ID, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertTbMenu" parameterType="map">
+	<![CDATA[]]>
+	INSERT
+	INTO
+	TB_MENU
+	(
+	UP_MENU_ID
+	,MENU_ID
+	,PROGRAM_ID
+	,MENU_NM
+	,MENU_DC
+	,USE_YN
+	,MENU_SEQ
+	,IN_DT
+	,UP_DT
+	,WRITE_ID
+	)
+	VALUES
+	(
+	#{UP_MENU_ID, jdbcType=VARCHAR}
+	,#{MENU_ID   , jdbcType=VARCHAR}
+	,#{PROGRAM_ID, jdbcType=VARCHAR}
+	,#{MENU_NM   , jdbcType=VARCHAR}
+	,#{MENU_DC   , jdbcType=VARCHAR}
+	,#{USE_YN    , jdbcType=VARCHAR}
+	,#{MENU_SEQ    , jdbcType=VARCHAR}
+	,NOW()
+	,NOW()
+	,#{WRITE_ID  , jdbcType=VARCHAR}
+	)
+	</insert>
+	
+	<update id="updateTbMenu" parameterType="map"> 
+	<![CDATA[]]>
+	UPDATE TB_MENU
+	SET
+	,MENU_NM , #{MENU_NM , jdbcType=VARCHAR}   
+	,MENU_DC , #{MENU_DC , jdbcType=VARCHAR}
+	,USE_YN  , #{USE_YN  , jdbcType=VARCHAR}
+	,MENU_SEQ, #{MENU_SEQ, jdbcType=VARCHAR}
+	,IN_DT   , #{IN_DT   , jdbcType=VARCHAR}
+	,UP_DT   , #{UP_DT   , jdbcType=VARCHAR}
+	,WRITE_ID, #{WRITE_ID, jdbcType=VARCHAR}
+	WHERE MENU_ID = #{MENU_ID, jdbcType=VARCHAR} AND UP_MENU_ID = #{UP_MENU_ID, jdbcType=VARCHAR} 
+	</update>
+	
+	<delete id="deleteTbMenu" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_MENU WHERE WHERE MENU_ID = #{MENU_ID, jdbcType=VARCHAR} AND UP_MENU_ID = #{UP_MENU_ID, jdbcType=VARCHAR}
+	]]> 
+	</delete>
+	
+	<select id="selectTbUpMenuList" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT
+	UP_MENU_ID
+	,UP_MENU_DC
+	,UP_MENU_NM
+	,USE_YN
+	,UP_MENU_SEQ
+	,DATE_FORMAT(IN_DT, '%Y-%m-%d') IN_DT
+	,DATE_FORMAT(UP_DT, '%Y-%m-%d') UP_DT
+	,WRITE_ID
+	FROM TB_UP_MENU
+	]]>
+	</select>
+	
+	<insert id="insertTbUpMenu" parameterType="map">
+	<![CDATA[
+	INSERT
+	INTO
+	TB_UP_MENU
+	(
+	UP_MENU_ID
+	,UP_MENU_DC
+	,UP_MENU_NM
+	,USE_YN
+	,UP_MENU_SEQ
+	,IN_DT
+	,UP_DT
+	,WRITE_ID
+	)
+	VALUES
+	(
+	#{UP_MENU_ID , jdbcType=VARCHAR}  
+	,#{UP_MENU_DC, jdbcType=VARCHAR}
+	,#{UP_MENU_NM, jdbcType=VARCHAR}
+	,#{USE_YN, jdbcType=VARCHAR}
+	,#{UP_MENU_SEQ, jdbcType=VARCHAR}
+	,NOW()
+	,NOW()
+	,#{WRITE_ID  , jdbcType=VARCHAR}
+	)
+	]]>
+	</insert>
+	
+	<update id="updateTbUpMenu" parameterType="map">
+	<![CDATA[
+	UPDATE TB_UP_MENU
+	SET 
+	UP_MENU_DC = #{UP_MENU_DC, jdbcType=VARCHAR}
+	,UP_MENU_NM = #{UP_MENU_NM, jdbcType=VARCHAR}
+	,USE_YN = #{USE_YN, jdbcType=VARCHAR}
+	,UP_MENU_SEQ = #{UP_MENU_SEQ, jdbcType=VARCHAR}
+	,UP_DT      = NOW() 
+	,WRITE_ID   = #{WRITE_ID  , jdbcType=VARCHAR}
+	WHERE UP_MENU_ID = #{UP_MENU_ID , jdbcType=VARCHAR}
+	]]>  
+	</update>
+	
+	<delete id="deleteTbUpMenu" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_UP_MENU WHERE UP_MENU_ID = #{UP_MENU_ID , jdbcType=VARCHAR}
+	]]>   
+	</delete>
+	
+	<select id="selectTbRolesList" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT 
+	ROLE
+	,ROLE_NM
+	,ROLE_DC
+	,DATE_FORMAT(IN_DT, '%Y-%m-%d') IN_DT
+	,DATE_FORMAT(UP_DT, '%Y-%m-%d') UP_DT
+	,WRITE_ID
+	FROM TB_ROLES
+	WHERE 1=1
+	]]>
+	</select>
+	
+	<insert id="insertTbRoles" parameterType="map">
+	<![CDATA[]]>
+	INSERT
+	INTO
+	TB_ROLES
+	(
+	ROLE
+	,ROLE_NM
+	,ROLE_DC
+	,IN_DT
+	,UP_DT
+	,WRITE_ID
+	)
+	VALUES
+	(
+	 #{ROLE    , jdbcType=VARCHAR}    
+	,#{ROLE_NM , jdbcType=VARCHAR}
+	,#{ROLE_DC , jdbcType=VARCHAR}
+	,NOW()
+	,NOW()
+	,#{WRITE_ID, jdbcType=VARCHAR}
+	)
+	</insert>
+	
+	<update id="updateTbRoles" parameterType="map">
+	<![CDATA[
+	UPDATE TB_ROLES
+	SET
+	ROLE_NM  = #{ROLE_NM, jdbcType=VARCHAR}
+	,ROLE_DC  = #{ROLE_DC, jdbcType=VARCHAR}
+	,UP_DT    = NOW()
+	,WRITE_ID = #{WRITE_ID, jdbcType=VARCHAR}
+	WHERE ROLE = #{ROLE, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<delete id="deleteTbRoles" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_ROLES WHERE ROLE = #{ROLE, jdbcType=VARCHAR}
+	]]>
+	</delete>
+</mapper> 

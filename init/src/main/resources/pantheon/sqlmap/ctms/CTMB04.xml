@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMB04">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="CTMB04DAO.selectTaskTrustInsttList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           TI.SN
+         , TI.TASK_SN
+         , TI.TASK_SE
+         , TI.INSTT_CODE
+         , SAP.NAME1   AS INSTT_NAME
+         , TI.USER_ID
+         , CU.USER_NM  AS  USER_NAME
+         , TI.ODR
+         , TI.RCPMNY_DTE
+         , TI.RCPMNY_AM
+         , TI.PYMNT_SE_CODE
+         , NVL(TI.RM, '') AS RM
+      FROM CTMS_CO_TASK_TRUST_INSTT TI
+         , CM_USER       CU
+         , CM_BCNCUSER   CB
+         , CM_INSTT      CI
+         , SAP_BCNC_INFO SAP
+     WHERE TI.TASK_SN    = #TASK_SN#
+       AND TI.USER_ID    = CU.USER_ID
+       AND CU.USER_ID    = CB.USER_ID
+       AND CB.INSTT_CODE = CI.INSTT_CODE(+)
+       AND CI.KUNNR      = SAP.KUNNR(+)
+]]>
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="1">
+    <![CDATA[
+    SAP.NAME1 LIKE #SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+    
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="2">
+    <![CDATA[
+    CU.USER_NM LIKE #SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+    
+    ORDER BY TI.TASK_SN, CU.USER_NM, TI.ODR
+</select>
+
+<!--과제별 수탁기관 생성 -->
+<insert id="CTMB04DAO.insertTaskTrustInstt" parameterClass="hashMap"> 
+<![CDATA[
+    INSERT INTO CTMS_CO_TASK_TRUST_INSTT(
+           TASK_SN
+         , SN
+         , TASK_SE
+         , INSTT_CODE
+         , USER_ID
+         , ODR
+         , RCPMNY_DTE
+         , RCPMNY_AM
+         , PYMNT_SE_CODE
+         , RM
+         , USE_AT
+         , FRST_CREAT_DE
+         , FRST_CRTR
+         , LAST_UPDT_DE
+         , LAST_UPDUSR
+    ) VALUES (
+           #TASK_SN#
+         , #SN#
+         , #TASK_SE#
+         , #INSTT_CODE#
+         , #USER_ID#
+         , #ODR#
+         , REPLACE(#RCPMNY_DTE#, '/', '')
+         , #RCPMNY_AM#
+         , #PYMNT_SE_CODE#
+         , #RM#
+         , 'Y'
+         , SYSDATE
+         , #UPDATE_ID#
+         , SYSDATE
+         , #UPDATE_ID#
+    )
+]]>
+</insert>
+
+<!--과제별 수탁기관 수정 -->
+<update id="CTMB04DAO.updateTaskTrustInstt" parameterClass="hashMap">
+<![CDATA[
+    UPDATE CTMS_CO_TASK_TRUST_INSTT SET
+           TASK_SE       = #TASK_SE#
+         , INSTT_CODE    = #INSTT_CODE#
+         , USER_ID       = #USER_ID#
+         , ODR           = #ODR#
+         , RCPMNY_DTE    = REPLACE(#RCPMNY_DTE#, '/', '')
+         , RCPMNY_AM     = #RCPMNY_AM#
+         , PYMNT_SE_CODE = #PYMNT_SE_CODE#
+         , RM            = #RM#
+         , LAST_UPDT_DE  = SYSDATE
+         , LAST_UPDUSR   = #UPDATE_ID#
+     WHERE TASK_SN       = #TASK_SN#
+       AND SN            = #SN#
+]]>		
+</update>
+
+<!--과제별 수탁기관 삭제 -->
+<update id="CTMB04DAO.deleteTaskTrustInstt" parameterClass="hashMap">
+<![CDATA[
+    UPDATE CTMS_CO_TASK_TRUST_INSTT SET
+           USE_AT        = 'N'
+         , LAST_UPDT_DE  = SYSDATE
+         , LAST_UPDUSR   = #UPDATE_ID#
+     WHERE TASK_SN       = #TASK_SN#
+       AND SN            = #SN#
+]]>		
+</update>
+
+
+</sqlMap>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTML02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+
+<select id="CTML02DAO.selectGridByTodoList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 M.SN
+		,M.TASK_SN
+		,M.INSTT_CODE
+		,M.PLAN_DETAIL
+		,M.PLAN_SE
+		,M.USER_ID
+		,M.USER_NM
+		,M.INSTT_CODE
+		,M.INSTT_NAME
+		,M.NAME1
+		,M.PLAN_BEGIN
+		,M.PLAN_END
+		,M.EXECUT_BEGIN
+		,M.EXECUT_END
+		,M.CHARGER_ID
+		,M.RM
+		,M.INPUT_SE
+		,M.FRST_CREAT_DE
+FROM 	((SELECT	 MI.SN
+					,MI.TASK_SN	
+					,MI.INSTT_CODE		
+					,MI.PLAN_DETAIL
+					,MI.PLAN_SE
+					,MI.USER_ID
+					,US.USER_NM		
+					,BC.NAME1 AS INSTT_NAME
+					,BC.NAME1
+					,TO_CHAR(MI.PLAN_BEGIN, 'YYYYMMDDHH24MISS') AS PLAN_BEGIN
+					,TO_CHAR(MI.PLAN_END, 'YYYYMMDDHH24MISS') AS PLAN_END
+					,TO_CHAR(MI.EXECUT_BEGIN, 'YYYYMMDDHH24MISS') AS EXECUT_BEGIN
+					,TO_CHAR(MI.EXECUT_END, 'YYYYMMDDHH24MISS') AS EXECUT_END
+					,MI.CHARGER_ID
+					,MI.RM
+					,MI.INPUT_SE
+			        ,MI.FRST_CREAT_DE
+			FROM	 CTMS_ST_MILESTONE MI
+					,CM_USER US
+					,CM_RSRCHUSER RS
+					,CM_INSTT IT
+					,SAP_BCNC_INFO BC
+			WHERE    MI.USER_ID = US.USER_ID
+			  AND 	 US.USER_ID = RS.USER_ID
+			  AND 	 RS.INSTT_CODE = IT.INSTT_CODE
+			  AND 	 IT.KUNNR = BC.KUNNR
+			  AND 	 MI.USE_AT = 'Y'
+			  AND 	 MI.TASK_SN = #TASK_SN#
+			)UNION ALL(
+			SELECT	 MI.SN
+					,MI.TASK_SN	
+					,MI.INSTT_CODE		
+					,MI.PLAN_DETAIL
+					,MI.PLAN_SE
+					,MI.USER_ID
+					,US.USER_NM	
+					,BC.NAME1 AS INSTT_NAME
+					,BC.NAME1
+					,TO_CHAR(MI.PLAN_BEGIN, 'YYYYMMDDHH24MISS') AS PLAN_BEGIN
+					,TO_CHAR(MI.PLAN_END, 'YYYYMMDDHH24MISS') AS PLAN_END
+					,TO_CHAR(MI.EXECUT_BEGIN, 'YYYYMMDDHH24MISS') AS EXECUT_BEGIN
+					,TO_CHAR(MI.EXECUT_END, 'YYYYMMDDHH24MISS') AS EXECUT_END
+					,MI.CHARGER_ID
+					,MI.RM
+					,MI.INPUT_SE
+			    	,MI.FRST_CREAT_DE
+			FROM	 CTMS_ST_MILESTONE MI
+					,CM_USER US
+					,CM_BCNCUSER RS
+					,CM_INSTT IT
+					,SAP_BCNC_INFO BC
+					,CM_TASK_USER_ROLE UR
+			WHERE    MI.USER_ID = US.USER_ID
+			  AND 	 US.USER_ID = RS.USER_ID
+			  AND 	 RS.INSTT_CODE = IT.INSTT_CODE
+			  AND 	 IT.KUNNR = BC.KUNNR
+			  AND	 US.USER_ID = UR.USER_ID
+			  AND 	 MI.USE_AT = 'Y'
+			  AND 	 MI.TASK_SN = #TASK_SN#
+			  AND    UR.ROLE_ID = 'ROLE_PI'
+))M
+ORDER BY M.INSTT_CODE DESC, M.FRST_CREAT_DE DESC, M.PLAN_SE DESC
+]]>
+</select>
+
+<update id="CTML02DAO.insertGridByTodoList" parameterClass="hashMap">
+<![CDATA[
+INSERT INTO CTMS_ST_MILESTONE(
+	 SN
+	,TASK_SN
+	,INSTT_CODE
+	,PLAN_SE
+	,PLAN_DETAIL
+	,PLAN_BEGIN
+	,PLAN_END
+	,EXECUT_BEGIN
+	,EXECUT_END
+	,CHARGER_ID
+	,RM
+	,USE_AT
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,LAST_UPDUSR
+	,INPUT_SE
+	,USER_ID
+)VALUES(
+	 CTMS_ST_MILESTONE_SEQ.NEXTVAL
+	,#TASK_SN#
+	,#INSTT_CODE#
+	,#PLAN_SE#
+	,#PLAN_DETAIL#
+	,TO_DATE(REPLACE(REPLACE(#PLAN_BEGIN#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	,TO_DATE(REPLACE(REPLACE(#PLAN_END#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	,TO_DATE(REPLACE(REPLACE(#EXECUT_BEGIN#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	,TO_DATE(REPLACE(REPLACE(#EXECUT_END#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	,#CHARGER_ID#
+	,#RM#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,#INPUT_SE#
+	,#USER_ID#
+)
+]]>		
+</update>
+
+<update id="CTML02DAO.updateGridByTodoList" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_ST_MILESTONE SET 
+		 PLAN_DETAIL = #PLAN_DETAIL#
+		,PLAN_BEGIN = #PLAN_BEGIN#
+		,PLAN_END = #PLAN_END#
+		,EXECUT_BEGIN = #EXECUT_BEGIN#
+		,EXECUT_END = #EXECUT_END#
+		,RM = #RM#
+		,LAST_UPDT_DE = SYSDATE
+		,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE   SN = #SN#
+]]>		
+</update>
+
+<update id="CTML02DAO.deleteGridByTodoList" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_ST_MILESTONE SET 
+		 USE_AT = 'N'
+		,LAST_UPDT_DE = SYSDATE
+		,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE   SN = #SN#
+]]>		
+</update>
+
+</sqlMap>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMA01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+
+	<select id="COMA01DAO.selectCmMenuListForUpperMenuId" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.MENU_ID
+	         , A.MENU_NM
+			 , A.MENU_ENG_NM
+	         , A.MENU_JAPAN_NM
+	         , A.MENU_CHINA1_NM
+	         , A.MENU_CHINA2_NM
+	         , A.MENU_ENG_NM
+	         , A.MENU_JAPAN_NM
+	         , A.MENU_CHINA1_NM
+	         , A.MENU_CHINA2_NM
+	         , A.MENU_DC
+	         , A.MODULE_CODE
+	         , A.MENU_ORDR
+	         , A.UPPER_MENU_ID
+	         , A.USE_YN
+	         , A.REGIST_ID
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , A.UPDATE_ID
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+	     FROM CM_MENU A
+	    WHERE A.UPPER_MENU_ID IS NULL
+	 ORDER BY A.LAST_UPDDE DESC
+	    ]]>
+	</select>
+	
+	<insert id="COMA01DAO.insertCmMenu" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_MENU
+		     ( MENU_ID
+	         , MENU_NM
+	         , MENU_ENG_NM
+	         , MENU_JAPAN_NM
+	         , MENU_CHINA1_NM
+	         , MENU_CHINA2_NM
+	         , MENU_DC
+	         , MODULE_CODE
+	         , MODULE_SE
+	         , MENU_ORDR
+	         , UPPER_MENU_ID
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+		     )
+		     VALUES
+		     ( #MENU_ID#
+	         , #MENU_NM#
+			 , NVL(#MENU_ENG_NM#, #MENU_NM#)
+	         , NVL(#MENU_JAPAN_NM#, #MENU_NM#)
+	         , NVL(#MENU_CHINA1_NM#, #MENU_NM#)
+	         , NVL(#MENU_CHINA2_NM#, #MENU_NM#)
+	         , #MENU_DC#
+	         , #MODULE_CODE#
+	         , #MODULE_SE#
+	         , '1'
+	         , #UPPER_MENU_ID#
+	         , #USE_YN#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+		     )
+		]]>
+	</insert>
+	
+	<update id="COMA01DAO.updateCmMenuForUpperMenuId" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_MENU
+		   SET MENU_NM = #MENU_NM#
+		     , MENU_ENG_NM = #MENU_ENG_NM#
+		     , MENU_JAPAN_NM = #MENU_JAPAN_NM#
+		     , MENU_CHINA1_NM = #MENU_CHINA1_NM#
+		     , MENU_CHINA2_NM = #MENU_CHINA2_NM# 
+		     , MENU_ORDR = #MENU_ORDR#
+		     , MENU_DC = #MENU_DC#
+		     , USE_YN = #USE_YN#
+		 WHERE MENU_ID = #MENU_ID#
+		]]>
+	</update>
+	
+	<delete id="COMA01DAO.deleteCmMenuForUpperMenuId" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM CM_MENU  WHERE MENU_ID = #MENU_ID# OR UPPER_MENU_ID = #MENU_ID#
+		]]>
+	</delete>
+	
+	<select id="COMA01DAO.selectCmMenuListByUpperMenuId" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.MENU_ID
+	         , A.MENU_NM
+	         , A.MENU_ENG_NM
+	         , A.MENU_JAPAN_NM
+	         , A.MENU_CHINA1_NM
+	         , A.MENU_CHINA2_NM
+	         , A.MENU_DC
+	         , A.MODULE_CODE
+	         , A.MODULE_SE
+	         , A.MENU_ORDR
+	         , A.UPPER_MENU_ID
+	         , A.USE_YN
+	         , A.REGIST_ID
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , UPDATE_ID
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+	     FROM CM_MENU A
+	    WHERE A.UPPER_MENU_ID = #UPPER_MENU_ID#
+	 ORDER BY A.LAST_UPDDE DESC
+	    ]]>
+	</select>
+	
+	<update id="COMA01DAO.updateCmMenuForMenuId" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_MENU
+		   SET MENU_NM = #MENU_NM#
+			 , MENU_ENG_NM = NVL(#MENU_ENG_NM#, #MENU_NM#)
+		     , MENU_JAPAN_NM = NVL(#MENU_JAPAN_NM#, #MENU_NM#)
+		     , MENU_CHINA1_NM = NVL(#MENU_CHINA1_NM#, #MENU_NM#)
+		     , MENU_CHINA2_NM = NVL(#MENU_CHINA2_NM#, #MENU_NM#) 
+		     , MENU_ORDR = #MENU_ORDR#
+		     , MODULE_SE = #MODULE_SE#
+		     , MENU_DC = #MENU_DC#
+		     , USE_YN = #USE_YN#
+		     , LAST_UPDDE = SYSDATE
+		     , UPDATE_ID = #UPDATE_ID#
+		 WHERE MENU_ID = #MENU_ID# 
+		]]>
+	</update>
+	
+	<update id="COMA01DAO.updateCmMenuForDelete" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_MENU
+		   SET USE_YN = 'N'
+		 WHERE MENU_ID = #MENU_ID#
+		]]>
+	</update>
+	
+	<select id="COMA01DAO.selectCmMenuForDelete" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_MENU
+		 WHERE UPPER_MENU_ID = #MENU_ID#
+		   AND USE_YN = 'Y'
+		]]>
+	</select>
+	
+	<select id="COMA01DAO.selectCmMenuForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_MENU
+		 WHERE MENU_ID = #MENU_ID#
+		]]>
+	</select>
+	
+	<select id="COMA01DAO.selectCmProgrmForDulCheckByEssntlAt" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_PROGRM
+		 WHERE PROGRM_ID = #MENU_ID#
+		   AND ESSNTL_AT IN ('Y', 'A')
+		]]>
+	</select>
+		
+	<delete id="COMA01DAO.deleteCmMenuForMenuId" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM CM_MENU  WHERE MENU_ID = #MENU_ID#
+		]]>
+	</delete>
+</sqlMap>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="SDBF07">
+	<typeAlias  alias="hashMap" type="java.util.HashMap"/>
+
+	<select id="SDBF07.selectAssessmentSettingInfo" parameterClass="hashMap" resultClass="hashMap">
+	    SELECT SN
+	          ,SE_CODE
+	          ,GROUP_AT
+	          ,UPPER_SN
+	          ,QESTN_SN
+	          ,QESTN_CN
+	          ,YES_SCORE
+	          ,NO_SCORE
+	          ,NOT_KNOW_SCORE
+	      FROM SDB_SM_EVL_ESTBS
+	     WHERE SE_CODE = #SE_CODE#
+	       AND USE_AT = 'Y'
+	  ORDER BY QESTN_SN
+	</select>
+	
+	<insert id="SDBF07.insertAssessmentInfo" parameterClass="hashMap">
+	    INSERT INTO SDB_SM_EVL_ESTBS
+	                (
+	                  SN
+	                , SE_CODE
+	                , GROUP_AT
+	                , UPPER_SN
+	                , QESTN_SN
+	                , QESTN_CN
+	                , YES_SCORE
+	                , NO_SCORE
+	                , NOT_KNOW_SCORE
+	                , USE_AT
+	                , FRST_CREDE
+	                , REGIST_ID
+	                , LAST_UPDDE
+	                , UPDATE_ID
+	                )
+	         VALUES (
+	                  SDB_ASSESSMENT_SEQ.nextval
+	                , #SE_CODE#
+	                , #GROUP_AT#
+	                , #UPPER_SN#
+	                , #QESTN_SN#
+	                , #QESTN_CN#
+	                , #YES_SCORE#
+	                , #NO_SCORE#
+	                , #NOT_KNOW_SCORE#
+	                , #USE_AT#
+	                , SYSDATE
+	                , #USER_ID#
+	                , SYSDATE
+	                , #USER_ID#
+	                )
+	</insert>
+	
+	<update id="SDBF07.updateAssessmentInfo" parameterClass="hashMap">
+		UPDATE SDB_SM_EVL_ESTBS
+		   SET QESTN_SN = #QESTN_SN#
+		      ,QESTN_CN = #QESTN_CN#
+		      ,YES_SCORE = #YES_SCORE#
+		      ,NO_SCORE = #NO_SCORE#
+		      ,NOT_KNOW_SCORE = #NOT_KNOW_SCORE#
+		      ,LAST_UPDDE = SYSDATE
+		      ,UPDATE_ID = #USER_ID#
+		 WHERE SN = #SN#
+		   AND SE_CODE = #SE_CODE#
+	</update>
+	
+	<update id="SDBF07.deleteAssessmentInfo" parameterClass="hashMap">
+		UPDATE SDB_SM_EVL_ESTBS
+		   SET USE_AT = #USE_AT#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,UPDATE_ID = #USER_ID#
+		 WHERE SN = #SN#
+		   AND SE_CODE = #SE_CODE#
+	</update>
+</sqlMap>

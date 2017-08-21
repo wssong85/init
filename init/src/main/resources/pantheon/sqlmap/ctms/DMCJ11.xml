@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMJ11">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<!-- 기관조회 DMCJ1103 -->
+<select id="DMCJ11DAO.selectInsttList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT
+	       SAP.NAME1                              AS INSTT_NAME
+           ,CI.INSTT_CODE                         AS INSTT_CODE
+	       ,SAP.ORT01 ||' '|| DAMO_DEC(SAP.STRAS) AS ADDRESS
+	       ,SAP.ORT01
+	       ,DAMO_DEC(SAP.STRAS)                   AS STRAS
+	       ,SAP.REGIO
+	       ,SAP.PSTLZ
+	       ,DAMO_DEC(SAP.STCD2)                   AS BIZ_NO
+	       ,SAP.KUNNR
+]]>
+	<isEqual property="INSTT_TYPE" compareValue="Y">
+	<![CDATA[
+	       ,US.USER_ID
+	       ,US.USER_NM
+	]]>
+	</isEqual>
+<![CDATA[    
+	FROM   SAP_BCNC_INFO SAP
+           ,CM_INSTT CI           
+]]>
+    <isEqual property="INSTT_TYPE" compareValue="Y">
+    <![CDATA[ 
+   		   ,CM_RSRCHUSER RS
+           ,CM_USERTASK UT
+           ,CM_USER US
+    ]]>
+    </isEqual>
+<![CDATA[
+    WHERE  SAP.KUNNR = CI.KUNNR
+]]>
+	<isEqual property="INSTT_TYPE" compareValue="Y">
+	<![CDATA[ 
+   		   AND  CI.INSTT_CODE = RS.INSTT_CODE(+)
+     	   AND  RS.USER_ID = UT.USER_ID(+)
+     	   AND  RS.USER_ID = US.USER_ID
+      	   AND  UT.TASK_SN = #TASK_SN#
+    ]]>
+    </isEqual>
+    <isNotEqual property="INSTT_TYPE" compareValue="Y">
+	<isNotEmpty property="INSTT_NM" prepend="AND">	
+	<![CDATA[ 
+	SAP.NAME1 LIKE '%' ||UPPER(#INSTT_NM#)|| '%' 
+	]]>	
+	</isNotEmpty>
+	</isNotEqual>
+	 ORDER BY SAP.NAME1
+</select>
+
+<!-- To do List 기관조회 DMCJ1103 -->
+<select id="DMCJ11DAO.selectTodoListInsttInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 M.TASK_SN
+		,M.INSTT_CODE
+		,M.INSTT_NAME
+		,M.ADDRESS
+		,M.BIZ_NO
+		,M.USER_ID
+		,M.USER_NM
+FROM	((SELECT UT.TASK_SN
+				,IT.INSTT_CODE
+				,BC.NAME1 AS INSTT_NAME
+				,BC.ORT01 ||' '|| DAMO_DEC(BC.STRAS) AS ADDRESS
+				,DAMO_DEC(BC.STCD2)                  AS BIZ_NO
+				,US.USER_ID
+				,US.USER_NM
+	    		,US.FRST_CREDE
+		  FROM	 CM_USER US
+				,CM_USERTASK UT
+				,CM_RSRCHUSER RS
+				,CM_INSTT IT
+				,SAP_BCNC_INFO BC
+		  WHERE  UT.USER_ID = US.USER_ID
+	  	    AND  US.USER_ID = RS.USER_ID
+	  		AND  RS.INSTT_CODE = IT.INSTT_CODE
+	  		AND  IT.KUNNR = BC.KUNNR
+	  		AND  UT.TASK_SN = #TASK_SN#
+	  		AND  BC.NAME1 LIKE '%' ||UPPER(#INSTT_NM#)|| '%'
+		  )UNION ALL(
+		  SELECT UT.TASK_SN
+				,IT.INSTT_CODE
+				,BC.NAME1 AS INSTT_NAME
+				,BC.ORT01 ||' '|| DAMO_DEC(BC.STRAS) AS ADDRESS
+				,DAMO_DEC(BC.STCD2)                  AS BIZ_NO
+				,US.USER_ID
+				,US.USER_NM
+	    	    ,US.FRST_CREDE
+		  FROM   CM_USER US
+			    ,CM_USERTASK UT
+			    ,CM_BCNCUSER BU
+			    ,CM_INSTT IT
+			    ,SAP_BCNC_INFO BC
+			    ,CM_TASK_USER_ROLE  UR
+	      WHERE  UT.USER_ID = US.USER_ID
+	 	    AND  US.USER_ID = BU.USER_ID
+	  	    AND  BU.INSTT_CODE = IT.INSTT_CODE
+	  	    AND  IT.KUNNR = BC.KUNNR
+	  	    AND  US.USER_ID = UR.USER_ID
+	  	    AND  UT.TASK_SN = #TASK_SN#
+	  	    AND  BC.NAME1 LIKE '%' ||UPPER(#INSTT_NM#)|| '%'
+	  	    AND  UR.ROLE_ID = 'ROLE_PI'
+	))M
+ORDER BY M.INSTT_CODE , M.FRST_CREDE DESC
+]]>	
+</select>
+
+<select id="DMCJ11DAO.selectTaskUserList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT CT.TASK_SN
+	     , CT.TASK_NO
+	     , UT.USER_ID
+	     , CU.USER_NM
+	     , CU.USER_ENGNM
+	     , CI.INSTT_CODE
+	     , SAP.NAME1 AS INSTT_NAME
+	     , DAMO_DEC(CU.EMAIL) AS EMAIL
+	     , UR.ROLE_ID
+	     , DAMO_DEC(CU.TELNO) AS TEL_NO
+	     , CR.CNTRCT_STTUS
+	     , CU.STD_TIME_SN
+	  FROM EDC_CR_TASK   CT
+	     , CM_USERTASK   UT
+	     , CM_USER       CU
+	     , CM_RSRCHUSER  CR
+	     , CM_INSTT      CI
+	     , SAP_BCNC_INFO SAP
+	     , CM_USER_ROLE UR
+	 WHERE CT.TASK_SN = UT.TASK_SN
+	   AND UT.USER_ID = CU.USER_ID
+	   AND CU.USER_ID = CR.USER_ID
+	   AND CR.INSTT_CODE = CI.INSTT_CODE
+	   AND CI.KUNNR      = SAP.KUNNR
+	   AND CU.USER_ID    = UR.USER_ID(+)
+]]>
+    <isNotEmpty property="TASK_NO" prepend="AND">
+	<![CDATA[ 
+	CT.TASK_NO LIKE '%'||UPPER(#TASK_NO#)||'%'
+	]]>
+	</isNotEmpty>
+
+	<isNotEmpty property="USER_NM" prepend="AND">
+	<![CDATA[ 
+	CU.USER_NM LIKE '%'||#USER_NM#||'%'
+	]]>
+	</isNotEmpty>
+	
+	<isEqual property="CNTRCT_STTUS" prepend="AND" compareValue="Y">
+	<![CDATA[ 
+	CR.CNTRCT_STTUS = 'Y'
+	]]>
+	</isEqual>
+
+	 ORDER BY CU.USER_NM
+</select>
+
+<select id="DMCJ11DAO.selectUserList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT US.USER_ID
+	     , US.USER_NM
+	     , DAMO_DEC(US.TELNO) AS TELNO
+	     , DAMO_DEC(US.EMAIL) AS EMAIL
+]]>
+	     <isEqual property="USER_TYPE" compareValue="Y">
+         , DE.DEPT_NM
+         </isEqual>
+         <isEqual property="USER_TYPE" compareValue="N">
+         , BU.INSTT_CODE
+         , BC.NAME1 AS DEPT_NM
+         </isEqual>
+
+<![CDATA[
+	  FROM CM_USER US         
+]]>
+         <isEqual property="USER_TYPE" compareValue="Y">
+         ,CM_JOBUSER JO
+         ,CM_DEPTINFO DE
+         </isEqual>
+         <isEqual property="USER_TYPE" compareValue="N">
+         ,CM_BCNCUSER BU 
+         ,CM_INSTT IT 
+         ,SAP_BCNC_INFO BC
+         </isEqual>
+
+<![CDATA[
+	 WHERE 1=1
+]]>
+	 <isEqual property="USER_TYPE" prepend="" compareValue="Y">
+	   AND US.USER_ID = JO.USER_ID
+       AND JO.COMP_CD = DE.COMP_CD
+       AND JO.DEPT_CD = DE.DEPT_CD
+     </isEqual>
+     
+     <isEqual property="USER_TYPE" prepend="" compareValue="N">
+	   AND US.USER_ID = BU.USER_ID(+)
+       AND BU.INSTT_CODE = IT.INSTT_CODE(+)
+       AND IT.KUNNR = BC.KUNNR(+)
+     </isEqual>
+
+<![CDATA[
+       AND US.USER_SE_CODE = DECODE(#USER_TYPE#, 'Y', '01', '02')
+	   AND US.USE_YN = 'Y'
+]]>
+	<isNotEmpty property="USER_NM" prepend="AND">
+	<![CDATA[ 
+	USER_NM LIKE '%'||#USER_NM#||'%'
+	]]>
+	</isNotEmpty>
+    <isNotEmpty property="USER_ID" prepend="AND">
+	<![CDATA[ 
+	US.USER_ID LIKE '%'||#USER_ID#||'%'
+	]]>
+	</isNotEmpty>
+	 ORDER BY USER_NM
+</select>
+
+<select id="DMCJ11DAO.selectReturnReasonInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT SN
+		 , RTN_SN
+		 , CN
+	  FROM CTMS_DMC_RTN_RESN
+	 WHERE RTN_SN = #RTN_SN#
+]]>
+</select>
+
+	<insert id="DMCJ11DAO.insertReturnReasonInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO CTMS_DMC_RTN_RESN (
+		      SN
+		    , RTN_SN
+		    , CN
+		    , USE_AT
+		    , FRST_CREAT_DE
+		    , FRST_CRTR
+		    , LAST_UPDT_DE
+		    , LAST_UPDUSR
+		)
+		VALUES (
+		      #SN#
+		    , #RTN_SN#
+		    , #CN#
+		    , #USE_AT#
+		    , SYSDATE
+		    , #UPDATE_ID#
+		    , SYSDATE
+		    , #UPDATE_ID#
+		)
+		]]>
+	</insert>
+
+	<update id="DMCJ11DAO.updateReturnReasonInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_DMC_RTN_RESN SET
+		      CN           = #CN#
+		    , USE_AT       = #USE_AT#
+		    , LAST_UPDT_DE   = SYSDATE
+		    , LAST_UPDUSR  = #UPDATE_ID#
+        WHERE RTN_SN       = #RTN_SN#
+		]]>
+	</update>
+	
+	<update id="DMCJ11DAO.deleteReturnReasonInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_DMC_RTN_RESN SET
+		      USE_AT       = 'N'
+		    , LAST_UPDT_DE   = SYSDATE
+		    , LAST_UPDUSR  = #UPDATE_ID#
+        WHERE RTN_SN       = #RTN_SN#
+		]]>
+	</update>
+<!-- ******************************************************************** -->   
+<select id="DMCJ11DAO.selectCommonCodeList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT CMMN_CODE    AS CODE
+     , CMMN_CODE_NM AS NAME
+ FROM CM_CMMNCODE
+ WHERE CMMN_CLCODE = #CMMN_CLCODE#
+ AND     USE_AT = 'Y'
+ ORDER BY SORT_ORDR
+]]>
+</select>
+
+
+<select id="DMCJ11DAO.selectRsrchUserInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 UT.TASK_SN
+		,UT.TASK_NO
+		,RS.INSTT_CODE
+		,RS.HSPTL_NM
+		,RS.USER_ID
+		,CU.USER_NM
+		,DAMO_DEC(CU.EMAIL) AS EMAIL
+		,DAMO_DEC(CU.TELNO) AS TELNO
+FROM	 CM_RSRCHUSER RS
+		,CM_USER CU
+		,CM_USERTASK UT
+    ,CTMS_CO_CNTRCT_MANAGE MA
+WHERE    RS.USER_ID = CU.USER_ID
+  AND 	 CU.USER_ID = UT.USER_ID
+  AND    UT.USER_ID = MA.USER_ID(+)
+  AND    UT.TASK_SN = MA.TASK_SN(+)
+  AND 	 CU.USER_NM LIKE '%'||UPPER('')||'%'
+  AND    UT.TASK_SN = '1'
+  AND 	 UT.CONFM_SE = '03'
+  AND    MA.CNTRCT_SN IS NULL
+]]>
+</select>
+
+<select id="DMCJ11DAO.selectUserRoleInfoList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT UR.ROLE_ID
+     , UT.TASK_SN
+     , UT.TASK_NO
+     , UR.USER_ID
+     , CU.USER_NM
+     , CR.ROLE_NM
+     , CR.RM
+  FROM CM_USER_ROLE UR
+     , CM_ROLE CR
+     , CM_USER CU
+     , CM_USERTASK UT
+ WHERE UR.ROLE_ID = CR.ROLE_ID
+   AND UR.USER_ID = CU.USER_ID
+   AND UR.USER_ID = UT.USER_ID  
+   AND CU.USE_YN  = 'Y'   
+   AND TASK_SN LIKE '%'||UPPER(#TASK_SN#)||'%'
+]]> 
+
+<isNotEmpty property="ROLE_ID" prepend="AND">
+	UR.ROLE_ID LIKE '%'||UPPER(#ROLE_ID#)||'%'
+</isNotEmpty>
+</select>
+
+<select id="DMCJ11DAO.selectDmFileMasterForSN" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT 
+		MAX(FILE_MASTR_SN) AS  FILE_MASTR_SN
+FROM 	DM_FILE_MASTR 
+ORDER BY 
+		FILE_MASTR_SN DESC
+]]>
+</select>   
+<select id="DMCJ11DAO.selectTaskList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT		TASK_SN
+			,TASK_NO
+			,TASK_TY_CODE
+			,PROGRS_CODE
+			,TASK_DC
+			,PHASE_CODE
+			,PHASE_ETC_NM
+			,IWRS_USE_AT			
+			,TASK_NM
+			,TASK_END_AT
+			,RSRCH_PURPS
+			,RRCS_CO
+			,CTRTC_FILE_SN
+			,TO_CHAR(PRMISN_DE, 'YYYYMMDDHH24MISS') 	AS PRMISN_DE
+			,TO_CHAR(REJDGE_BEGIN, 'YYYYMMDDHH24MISS')  AS REJDGE_BEGIN
+			,TO_CHAR(REJDGE_END, 'YYYYMMDDHH24MISS') 	AS REJDGE_END
+			,STUDY_NM
+			,TRGET_DISS
+			,BLIND_CODE
+			,TO_CHAR(RSRCH_BEGIN, 'YYYYMMDDHH24MISS') 	AS RSRCH_BEGIN
+			,TO_CHAR(RSRCH_END, 'YYYYMMDDHH24MISS') 	AS RSRCH_END
+			,USE_AT
+			,TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') 	AS FRST_CREDE
+			,FRST_CRTR
+			,TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') 	AS LAST_UPDDE
+			,LAST_UPDUSR
+			,DOMN_URL
+FROM    	EDC_CR_TASK
+WHERE 1=1
+]]>
+		<isNotEmpty property="TASK_NO" prepend="AND">
+			TASK_NO LIKE '%'||UPPER(#TASK_NO#)|| '%'
+		</isNotEmpty>
+		<isNotEmpty property="TASK_TY_CODE" prepend="AND">
+			TASK_TY_CODE LIKE  '%'||UPPER(#TASK_TY_CODE#)|| '%'
+		</isNotEmpty>
+<![CDATA[
+AND 		USE_AT = 'Y'
+]]>
+</select>
+
+<insert id="DMCJ11DAO.insertDmFileMastr" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO DM_FILE_MASTR
+		  	 (  FILE_MASTR_SN      
+	          , MODULE_KND         
+	          , UPLOAD_PHYSIC_COURS
+	          , DWLD_PHYSIC_COURS  
+	          , DRM_RELIS_AT       
+	          , USE_AT             
+	          , FRST_CREDE         
+	          , REGIST_ID          
+	          , LAST_UPDDE         
+	          , UPDATE_ID          
+		  	 )
+		VALUES
+		     ( #FILE_MASTR_SN#      
+	         , #MODULE_KND#         
+	         , #UPLOAD_PHYSIC_COURS#
+	         , #DWLD_PHYSIC_COURS#  
+	         , NVL(#DRM_RELIS_AT#, 'N')       
+	         , NVL(#USE_AT#, 'Y')             
+	         , SYSDATE         
+	         , #UPDATE_ID#          
+	         , SYSDATE         
+	         , #UPDATE_ID#          
+		     )
+		]]>
+	</insert>
+	
+	<insert id="DMCJ11DAO.insertDmFileDetail" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO DM_FILE_DETAIL
+		  	 (  DETAIL_SN       
+	          , FILE_MASTR_SN   
+	          , ORGINL_FILE_NM  
+	          , ORGINL_EXTSN_NM 
+	          , ORGINL_SIZE     
+	          , UPLOAD_FILE_NM  
+	          , USE_AT          
+	          , FRST_CREDE      
+	          , REGIST_ID       
+	          , LAST_UPDDE      
+	          , UPDATE_ID       
+		  	 )
+		VALUES
+		     ( #DETAIL_SN#      
+	         , #FILE_MASTR_SN#  
+	         , #ORGINL_FILE_NM# 
+	         , #ORGINL_EXTSN_NM#
+	         , #ORGINL_SIZE#    
+	         , #UPLOAD_FILE_NM# 
+	         , NVL(#USE_AT#, 'Y')         
+	         , SYSDATE     
+	         , #UPDATE_ID#      
+	         , SYSDATE     
+	         , #UPDATE_ID#      
+		     )
+		]]>
+	</insert>
+
+<select id="DMCJ11DAO.selectDmFileDetailInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT FM.FILE_MASTR_SN
+         , FM.UPLOAD_PHYSIC_COURS AS UP_PATH
+         , FM.DWLD_PHYSIC_COURS   AS DN_PATH
+         , FD.DETAIL_SN
+         , FD.ORGINL_FILE_NM
+         , FD.ORGINL_EXTSN_NM
+         , FD.UPLOAD_FILE_NM
+      FROM DM_FILE_MASTR  FM
+         , DM_FILE_DETAIL FD
+     WHERE FM.FILE_MASTR_SN = FD.FILE_MASTR_SN
+       AND FM.FILE_MASTR_SN = #FILE_MASTR_SN#
+]]>
+</select>  
+
+</sqlMap>

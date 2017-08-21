@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SDBB03">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<insert id="SDBB03DAO.insertOrganList" parameterClass="hashMap">
+	<![CDATA[
+		INSERT
+		INTO SDB_IM_INSTT_INFO
+		    (
+		        INSTT_NO
+		      , INSTT_NM
+		      , INSTT_CODE
+		      , NATION_CODE
+		      , ADRES
+		      , ENG_ADRES
+		      , ADRES_DSTNC
+		      , ADRES_CTY
+		      , ADRES_LCLTY
+		      , ADRES_ZIP
+		      , REPORTR
+		      , REPORTR_APPN_NM
+		      , REPORTR_MIDDLE_NM
+		      , REPORTR_FAMILY_NM
+		      , REPORTR_DEPT
+		      , QUALF
+		      , REPRT_TY
+		      , REPRT_TY_DETAIL
+		      , CLASS
+		      , MAJOR
+		      , REPRT_SJ
+		      , SPCLTYREALM
+		      , EMAIL
+		      , TELNO
+		      , FAX
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		      , INSTT_SE
+		    )
+		    VALUES
+		    (
+		        #INSTT_NO#
+		      , #INSTT_NM#
+		      , #INSTT_CODE#
+		      , #NATION_CODE#
+		      , #ADRES#
+		      , #ENG_ADRES#
+		      , #ADRES_DSTNC#
+		      , #ADRES_CTY#
+		      , #ADRES_LCLTY#
+		      , #ADRES_ZIP#
+		      , #REPORTR#
+		      , #REPORTR_APPN_NM#
+		      , #REPORTR_MIDDLE_NM#
+		      , #REPORTR_FAMILY_NM#
+		      , #REPORTR_DEPT#
+		      , #QUALF#
+		      , #REPRT_TY#
+		      , #REPRT_TY_DETAIL#
+		      , #CLASS#
+		      , #MAJOR#
+		      , #REPRT_SJ#
+		      , #SPCLTYREALM#
+		      , damo_enc(#EMAIL#)
+		      , damo_enc(#TELNO#)
+		      , #FAX#
+		      ,'Y'
+		      ,sysdate
+		      ,#UPDATE_ID#
+		      ,sysdate
+		      ,#UPDATE_ID#
+		      , #INSTT_SE#
+		    )
+	]]>
+	</insert>
+	
+	<update id="SDBB03DAO.updateOrganList" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_IM_INSTT_INFO
+	   SET LAST_UPDDE = sysdate 
+	]]>
+	<isNotEmpty property="INSTT_NM" prepend=",">
+    <![CDATA[ 
+    	   INSTT_NM = #INSTT_NM# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="INSTT_CODE" prepend=",">
+    <![CDATA[ 
+    	   INSTT_CODE = #INSTT_CODE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="NATION_CODE" prepend=",">
+    <![CDATA[ 
+    	   NATION_CODE = #NATION_CODE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ADRES" prepend=",">
+    <![CDATA[ 
+    	   ADRES = #ADRES# 
+    ]]>
+    </isNotEmpty>  
+    <isNotEmpty property="ENG_ADRES" prepend=",">
+    <![CDATA[ 
+    	   ENG_ADRES = ENG_ADRES
+    ]]>
+    </isNotEmpty>   
+    <isNotEmpty property="ADRES_DSTNC" prepend=",">
+    <![CDATA[ 
+    	   ADRES_DSTNC = #ADRES_DSTNC# 
+    ]]>
+    </isNotEmpty>   
+    <isNotEmpty property="ADRES_CTY" prepend=",">
+    <![CDATA[ 
+    	   ADRES_CTY = #ADRES_CTY# 
+    ]]>
+    </isNotEmpty>   
+    <isNotEmpty property="ADRES_LCLTY" prepend=",">
+    <![CDATA[ 
+    	   ADRES_LCLTY = #ADRES_LCLTY# 
+    ]]>
+    </isNotEmpty>   
+    <isNotEmpty property="EMAIL" prepend=",">
+    <![CDATA[ 
+    	   EMAIL = damo_enc(#EMAIL#)
+    ]]>
+    </isNotEmpty>   
+    <isNotEmpty property="ADRES_ZIP" prepend=",">
+    <![CDATA[ 
+    	   ADRES_ZIP = #ADRES_ZIP# 
+    ]]>
+    </isNotEmpty> 
+    <isNotEmpty property="REPORTR" prepend=",">
+    <![CDATA[ 
+    	   REPORTR = #REPORTR#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="REPORTR_APPN_NM" prepend=",">
+    <![CDATA[ 
+    	   REPORTR_APPN_NM = #REPORTR_APPN_NM#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="REPORTR_MIDDLE_NM" prepend=",">
+    <![CDATA[ 
+    	   REPORTR_MIDDLE_NM = #REPORTR_MIDDLE_NM#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="REPORTR_FAMILY_NM" prepend=",">
+    <![CDATA[ 
+    	   REPORTR_FAMILY_NM = #REPORTR_FAMILY_NM#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="REPORTR_DEPT" prepend=",">
+    <![CDATA[ 
+    	   REPORTR_DEPT = #REPORTR_DEPT#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="QUALF" prepend=",">
+    <![CDATA[ 
+    	   QUALF = #QUALF#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="REPRT_TY" prepend=",">
+    <![CDATA[ 
+    	   REPRT_TY = #REPRT_TY#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="REPRT_TY_DETAIL" prepend=",">
+    <![CDATA[ 
+    	   REPRT_TY_DETAIL = #REPRT_TY_DETAIL#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CLASS" prepend=",">
+    <![CDATA[ 
+    	   CLASS = #CLASS#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="MAJOR" prepend=",">
+    <![CDATA[ 
+    	   MAJOR = #MAJOR#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="REPRT_SJ" prepend=",">
+    <![CDATA[ 
+    	   REPRT_SJ = #REPRT_SJ#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="SPCLTYREALM" prepend=",">
+    <![CDATA[ 
+    	   SPCLTYREALM = #SPCLTYREALM#
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="TELNO" prepend=",">
+    <![CDATA[ 
+    	   TELNO = damo_enc(#TELNO#)
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="FAX" prepend=",">
+    <![CDATA[ 
+    	   FAX = #FAX#
+    ]]>
+    </isNotEmpty>  
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE INSTT_NO = #INSTT_NO#
+   	]]> 
+	</update>
+	
+	<delete id="SDBB03DAO.deleteOrganListByPk" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_IM_INSTT_INFO
+	   SET USE_AT = 'N'	
+   	 WHERE INSTT_NO = #INSTT_NO#
+   	]]>	
+	</delete>
+	
+	<select id="SDBB03DAO.selectOrganInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		   SELECT 
+					INSTT_NO
+			      , INSTT_NM
+			      , FN_GET_MULLANG_SELECT(INSTT_NM,'K') AS INSTT_NM_KOR
+			      , FN_GET_MULLANG_SELECT(INSTT_NM,'E') AS INSTT_NM_ENG
+			      , INSTT_CODE
+			      , NATION_CODE
+			      , ADRES
+			      , ENG_ADRES
+			      , ADRES_DSTNC
+			      , FN_GET_MULLANG_SELECT(ADRES_DSTNC,'K') AS ADRES_DSTNC_KOR
+			      , FN_GET_MULLANG_SELECT(ADRES_DSTNC,'E') AS ADRES_DSTNC_ENG
+			      , ADRES_CTY
+			      , FN_GET_MULLANG_SELECT(ADRES_CTY,'K') AS ADRES_CTY_KOR
+			      , FN_GET_MULLANG_SELECT(ADRES_CTY,'E') AS ADRES_CTY_ENG
+			      , ADRES_LCLTY
+			      , FN_GET_MULLANG_SELECT(ADRES_LCLTY,'K') AS ADRES_LCLTY_KOR
+			      , FN_GET_MULLANG_SELECT(ADRES_LCLTY,'E') AS ADRES_LCLTY_ENG
+			      , ADRES_ZIP
+			      , REPORTR
+			      , FN_GET_MULLANG_SELECT(REPORTR,'K') AS REPORTR_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR,'E') AS REPORTR_ENG
+			      , REPORTR_APPN_NM
+			      , FN_GET_MULLANG_SELECT(REPORTR_APPN_NM,'K') AS REPORTR_APPN_NM_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR_APPN_NM,'E') AS REPORTR_APPN_NM_ENG
+			      , REPORTR_MIDDLE_NM
+			      , FN_GET_MULLANG_SELECT(REPORTR_MIDDLE_NM,'K') AS REPORTR_MIDDLE_NM_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR_MIDDLE_NM,'E') AS REPORTR_MIDDLE_NM_ENG
+			      , REPORTR_FAMILY_NM
+			      , FN_GET_MULLANG_SELECT(REPORTR_FAMILY_NM,'K') AS REPORTR_FAMILY_NM_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR_FAMILY_NM,'E') AS REPORTR_FAMILY_NM_ENG
+			      , REPORTR_DEPT
+			      , FN_GET_MULLANG_SELECT(REPORTR_DEPT,'K') AS REPORTR_DEPT_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR_DEPT,'E') AS REPORTR_DEPT_ENG
+			      , QUALF
+			      , REPRT_TY
+			      , REPRT_TY_DETAIL
+			      , FN_GET_MULLANG_SELECT(REPRT_TY_DETAIL,'K') AS REPRT_TY_DETAIL_KOR
+			      , FN_GET_MULLANG_SELECT(REPRT_TY_DETAIL,'E') AS REPRT_TY_DETAIL_ENG
+			      , CLASS
+			      , FN_GET_MULLANG_SELECT(CLASS,'K') AS CLASS_KOR
+			      , FN_GET_MULLANG_SELECT(CLASS,'E') AS CLASS_ENG
+			      , MAJOR
+			      , FN_GET_MULLANG_SELECT(MAJOR,'K') AS MAJOR_KOR
+			      , FN_GET_MULLANG_SELECT(MAJOR,'E') AS MAJOR_ENG
+			      , REPRT_SJ
+			      , FN_GET_MULLANG_SELECT(REPRT_SJ,'K') AS REPRT_SJ_KOR
+			      , FN_GET_MULLANG_SELECT(REPRT_SJ,'E') AS REPRT_SJ_ENG
+			      , SPCLTYREALM
+			      , FN_GET_MULLANG_SELECT(SPCLTYREALM,'K') AS SPCLTYREALM_KOR
+			      , FN_GET_MULLANG_SELECT(SPCLTYREALM,'E') AS SPCLTYREALM_ENG
+			      , damo_dec(EMAIL) AS EMAIL
+			      , damo_dec(TELNO) AS TELNO
+			      , FAX
+			      , USE_AT
+			      , FRST_CREDE
+			      , REGIST_ID
+			      , LAST_UPDDE
+			      , UPDATE_ID
+			      , INSTT_SE
+				FROM SDB_IM_INSTT_INFO
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="INSTT_NO" prepend="AND">
+	     <![CDATA[ 
+	     	   INSTT_NO = #INSTT_NO# 
+	     	   
+	     ]]>
+	     </isNotEmpty>	  
+	</select>
+	
+	<select id="SDBB03DAO.selectOrganList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		   SELECT *
+			 FROM (
+			SELECT INSTT_NO
+			    ,FN_GET_MULLANG(INSTT_NM) AS INSTT_NM
+			    ,INSTT_CODE
+			    ,FN_GET_COMMONCODE('SDB067', INSTT_SE, #LOCALE#) AS INSTT_SE
+			    ,FN_GET_MULLANG(REPORTR) AS REPORTR
+    			,damo_dec(EMAIL) AS EMAIL
+			  FROM SDB_IM_INSTT_INFO
+			  WHERE USE_AT='Y'
+			)
+			WHERE 1 =1       	         
+	     ]]>
+	     <isNotEmpty property="INSTT_NM" prepend="AND">
+	     <![CDATA[ 
+	     	    INSTT_NM LIKE '%'|| #INSTT_NM# ||'%' 
+	     ]]>
+	     </isNotEmpty>
+	</select>
+	
+	<select id="SDBB03DAO.selectOrganListPop" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		   SELECT *
+			 FROM (
+			SELECT INSTT_NO
+			   	  , INSTT_NM
+			   	  ,FN_GET_MULLANG(INSTT_NM) AS INSTT_NM_TXT
+			      , FN_GET_MULLANG_SELECT(INSTT_NM,'K') AS INSTT_NM_KOR
+			      , FN_GET_MULLANG_SELECT(INSTT_NM,'E') AS INSTT_NM_ENG
+			      , INSTT_CODE
+			      , NATION_CODE
+			      , ADRES
+			      , NVL(ENG_ADRES, ' ') AS ENG_ADRES
+			      , ADRES_DSTNC
+			      , FN_GET_MULLANG_SELECT(ADRES_DSTNC,'K') AS ADRES_DSTNC_KOR
+			      , FN_GET_MULLANG_SELECT(ADRES_DSTNC,'E') AS ADRES_DSTNC_ENG
+			      , ADRES_CTY
+			      , FN_GET_MULLANG_SELECT(ADRES_CTY,'K') AS ADRES_CTY_KOR
+			      , FN_GET_MULLANG_SELECT(ADRES_CTY,'E') AS ADRES_CTY_ENG
+			      , ADRES_LCLTY
+			      , FN_GET_MULLANG_SELECT(ADRES_LCLTY,'K') AS ADRES_LCLTY_KOR
+			      , FN_GET_MULLANG_SELECT(ADRES_LCLTY,'E') AS ADRES_LCLTY_ENG
+			      , ADRES_ZIP
+			      , REPORTR
+			      , FN_GET_MULLANG_SELECT(REPORTR,'K') AS REPORTR_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR,'E') AS REPORTR_ENG
+			      , REPORTR_APPN_NM
+			      , FN_GET_MULLANG_SELECT(REPORTR_APPN_NM,'K') AS REPORTR_APPN_NM_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR_APPN_NM,'E') AS REPORTR_APPN_NM_ENG
+			      , REPORTR_MIDDLE_NM
+			      , FN_GET_MULLANG_SELECT(REPORTR_MIDDLE_NM,'K') AS REPORTR_MIDDLE_NM_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR_MIDDLE_NM,'E') AS REPORTR_MIDDLE_NM_ENG
+			      , REPORTR_FAMILY_NM
+			      , FN_GET_MULLANG_SELECT(REPORTR_FAMILY_NM,'K') AS REPORTR_FAMILY_NM_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR_FAMILY_NM,'E') AS REPORTR_FAMILY_NM_ENG
+			      , REPORTR_DEPT
+			      , FN_GET_MULLANG_SELECT(REPORTR_DEPT,'K') AS REPORTR_DEPT_KOR
+			      , FN_GET_MULLANG_SELECT(REPORTR_DEPT,'E') AS REPORTR_DEPT_ENG
+			      , QUALF
+			      , REPRT_TY
+			      , REPRT_TY_DETAIL
+			      , FN_GET_MULLANG_SELECT(REPRT_TY_DETAIL,'K') AS REPRT_TY_DETAIL_KOR
+			      , FN_GET_MULLANG_SELECT(REPRT_TY_DETAIL,'E') AS REPRT_TY_DETAIL_ENG
+			      , CLASS
+			      , FN_GET_MULLANG_SELECT(CLASS,'K') AS CLASS_KOR
+			      , FN_GET_MULLANG_SELECT(CLASS,'E') AS CLASS_ENG
+			      , MAJOR
+			      , FN_GET_MULLANG_SELECT(MAJOR,'K') AS MAJOR_KOR
+			      , FN_GET_MULLANG_SELECT(MAJOR,'E') AS MAJOR_ENG
+			      , REPRT_SJ
+			      , FN_GET_MULLANG_SELECT(REPRT_SJ,'K') AS REPRT_SJ_KOR
+			      , FN_GET_MULLANG_SELECT(REPRT_SJ,'E') AS REPRT_SJ_ENG
+			      , SPCLTYREALM
+			      , FN_GET_MULLANG_SELECT(SPCLTYREALM,'K') AS SPCLTYREALM_KOR
+			      , FN_GET_MULLANG_SELECT(SPCLTYREALM,'E') AS SPCLTYREALM_ENG
+			      , damo_dec(EMAIL) AS EMAIL
+			      , damo_dec(TELNO) AS TELNO
+			  FROM SDB_IM_INSTT_INFO
+			  WHERE USE_AT='Y'
+			    AND INSTT_SE ='02'
+			)
+			WHERE 1 =1       	         
+	     ]]>
+	     <isNotEmpty property="INSTT_NM" prepend="AND">
+	     <![CDATA[ 
+	     	    INSTT_NM_TXT LIKE '%'|| #INSTT_NM# ||'%' 
+	     ]]>
+	     </isNotEmpty>
+	</select>
+</sqlMap>
+

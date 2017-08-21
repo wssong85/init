@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMI02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<select id="COMI02DAO.selectCmUserCountByPasswordCode" parameterClass="hashmap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID# 
+		   AND PASSWORD_CODE = #PASSWORD_CODE#
+		   AND LAST_UPDDE > SYSDATE -1
+		]]>
+	</select>
+	
+	<select id="COMI02DAO.selectCmUserForFindId" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT USER_ID
+		     , USER_NM
+		  FROM CM_USER
+		 WHERE USER_NM = #USER_NM#
+	       AND EMAIL = DAMO_ENC(#EMAIL#)
+		]]>	   
+	</select>
+	
+	<update id="COMI02DAO.updateCmUserForChgPassword" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_USER
+		   SET PASSWORD = DAMO_HASH(#PASSWORD#)
+		     , PASSWORD_ODR = DECODE(PASSWORD_ODR, '1', '2', '2', '3', '3', '1', NULL, '1')
+	         , PASSWORD1 = DECODE(PASSWORD_ODR, '3', DAMO_HASH(#PASSWORD#), NULL, DAMO_HASH(#PASSWORD#), PASSWORD1)
+	         , PASSWORD2 = DECODE(PASSWORD_ODR, '1', DAMO_HASH(#PASSWORD#), PASSWORD2)
+	         , PASSWORD3 = DECODE(PASSWORD_ODR, '2', DAMO_HASH(#PASSWORD#), PASSWORD3)
+	         , PASSWORD_CHANGE_DE = SYSDATE
+	         , LAST_UPDDE = SYSDATE
+	         , UPDATE_ID = #USER_ID#
+	         , ACNT_LOCK_AT = 'N'
+	         , LOGIN_FAILR_CO = '0'
+		 WHERE USER_ID = #USER_ID#
+		   AND PASSWORD = DAMO_HASH(#OLD_PASSWORD#)
+		]]>
+	</update>
+	
+	<update id="COMI02DAO.updateCmUserForChgPasswordByPasswordCode" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_USER
+		   SET PASSWORD = DAMO_HASH(#PASSWORD#)
+		     , PASSWORD_ODR = DECODE(PASSWORD_ODR, '1', '2', '2', '3', '3', '1', NULL, '1')
+	         , PASSWORD1 = DECODE(PASSWORD_ODR, '3', DAMO_HASH(#PASSWORD#), NULL, DAMO_HASH(#PASSWORD#), PASSWORD1)
+	         , PASSWORD2 = DECODE(PASSWORD_ODR, '1', DAMO_HASH(#PASSWORD#), PASSWORD2)
+	         , PASSWORD3 = DECODE(PASSWORD_ODR, '2', DAMO_HASH(#PASSWORD#), PASSWORD3)
+	         , PASSWORD_CHANGE_DE = SYSDATE
+	         , LAST_UPDDE = SYSDATE
+	         , UPDATE_ID = #USER_ID#
+	         , ACNT_LOCK_AT = 'N'
+	         , LOGIN_FAILR_CO = '0'
+		 WHERE USER_ID = #USER_ID#
+		   AND PASSWORD_CODE = #PASSWORD_CODE#
+		]]>
+	</update>
+	
+	<update id="COMI02DAO.updateCmUserForSendTmpMail" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_USER
+		   SET PASSWORD_CODE = #PASSWORD_CODE#
+		     , LAST_UPDDE = SYSDATE
+		     , UPDATE_ID = #USER_ID#
+		 WHERE USER_ID = #USER_ID#
+		   AND EMAIL = DAMO_ENC(#EMAIL#)
+		   AND USER_NM = #USER_NM#
+		]]>
+	</update>
+	
+	<select id="COMI02DAO.selectCmUserForSendTmpMail" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		   AND EMAIL = DAMO_ENC(#EMAIL#)
+		   AND USER_NM = #USER_NM#
+		]]>
+	</select>
+	
+	<update id="COMI02DAO.updateCmUserByPasswordCode" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_USER
+		   SET PASSWORD_CODE = ''
+             , LAST_UPDDE = SYSDATE
+	         , UPDATE_ID = #USER_ID#
+		 WHERE USER_ID = #USER_ID#
+		]]>
+	</update>
+	
+	<select id="COMI02DAO.selectCmUserForChgPassword" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT SUM(COUNT)
+		  FROM (
+	    SELECT COUNT(*) COUNT
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		   AND PASSWORD1 = DAMO_HASH(#PASSWORD#)
+		UNION ALL
+	    SELECT COUNT(*) COUNT
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		   AND PASSWORD2 = DAMO_HASH(#PASSWORD#)
+		UNION ALL
+		SELECT COUNT(*) COUNT
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		   AND PASSWORD3 = DAMO_HASH(#PASSWORD#)
+		)
+		]]>
+	</select>
+	
+</sqlMap>

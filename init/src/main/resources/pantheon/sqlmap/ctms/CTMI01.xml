@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMI01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+<select id="CTMI01DAO.selectCalMilestoneList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT MS.SN AS "id"
+         , ( SELECT CASE WHEN CT.TASK_TY_CODE = '01' THEN (
+                                                      SELECT CMM.CMMN_CODE_NM || ' ' || BI.NAME1
+                                                        FROM CM_CMMNCODE CMM
+                                                       WHERE CMM.CMMN_CLCODE = 'CTMS038'
+                                                       AND CMM.CMMN_CODE = MS.PLAN_SE
+                                                    )
+                         ELSE (
+                          SELECT CMM.CMMN_CODE_NM || ' ' || BI.NAME1
+                                FROM CM_CMMNCODE CMM
+                               WHERE CMM.CMMN_CLCODE = 'CTMS037'
+                               AND CMM.CMMN_CODE = MS.PLAN_SE
+                        )
+                     END
+               FROM DUAL
+           ) AS "title"  
+         , TO_CHAR(PLAN_BEGIN, 'YYYY-MM-DD') AS "start"
+         , TO_CHAR(PLAN_END  , 'YYYY-MM-DD') AS "end"
+      FROM CTMS_ST_MILESTONE MS
+         , EDC_CR_TASK       CT
+         , SAP_BCNC_INFO     BI
+     WHERE MS.TASK_SN = CT.TASK_SN
+       AND MS.TASK_SN = '6'
+       AND MS.INSTT_CODE = BI.KUNNR
+
+]]>	
+</select> 
+
+
+</sqlMap>

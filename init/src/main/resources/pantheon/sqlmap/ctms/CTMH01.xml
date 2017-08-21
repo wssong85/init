@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMH01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+
+<select id="CTMH01DAO.selectCommonCodeList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT CMMN_CODE    AS CODE
+     , CMMN_CODE_NM AS NAME
+ FROM CM_CMMNCODE
+ WHERE CMMN_CLCODE = #CMMN_CLCODE#
+ AND     USE_AT = 'Y'
+ ORDER BY SORT_ORDR	
+
+]]>	
+</select> 
+
+<select id="CTMH01DAO.selectUserInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT		DECODE(USER_SE_CODE, '01', 
+				(SELECT X.DEPT_NM 
+					FROM CM_JOBUSER Y, CM_DEPTINFO X
+					WHERE Y.DEPT_CD = X.DEPT_CD
+					AND Y.COMP_CD = X.COMP_CD
+					AND Y.USER_ID = A.USER_ID)
+			,'02',
+				(SELECT X.NAME1 
+  					FROM CM_INSTT Y, SAP_BCNC_INFO X
+  					WHERE Y.KUNNR = X.KUNNR
+ 					AND Y.INSTT_CODE = (SELECT X.INSTT_CODE FROM CM_RSRCHUSER X WHERE X.USER_ID = A.USER_ID
+ 					UNION 
+ 					SELECT X.INSTT_CODE FROM CM_BCNCUSER X WHERE X.USER_ID = A.USER_ID))
+			) DEPT_NM
+			,UR.ROLE_ID
+			,RO.ROLE_NM
+FROM 
+			CM_USER A 
+			,CM_USER_ROLE UR
+			,CM_ROLE RO
+WHERE 1=1
+AND	 		A.USER_ID = UR.USER_ID
+AND 		UR.ROLE_ID = RO.ROLE_ID
+AND 		A.USER_ID = #USER_ID#
+
+]]>	
+</select> 
+
+<select id="CTMH01DAO.selectRequestFileNm" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT 		 MA.FILE_MASTR_SN
+			,DE.ORGINL_FILE_NM
+			,DE.DETAIL_SN
+			,TO_CHAR(DE.FRST_CREDE, 'YYYYMMDDHH24MISS') AS FRST_CREDE
+FROM 
+			 DM_FILE_MASTR MA
+			,DM_FILE_DETAIL DE
+WHERE 1=1
+AND			 DE.FILE_MASTR_SN = MA.FILE_MASTR_SN
+AND 		 MA.FILE_MASTR_SN = #FILE_MASTR_SN#
+AND 		 DE.USE_AT = 'Y'
+]]>	
+</select>    
+
+<select id="CTMH01DAO.selectRequestListByCount" parameterClass="hashMap" resultClass="integer">
+<![CDATA[
+SELECT	 COUNT(*) AS COUNT
+FROM 
+		CTMS_CO_REQUEST_FORM RE
+		JOIN EDC_CR_TASK TA
+		ON RE.TASK_SN = TA.TASK_SN
+WHERE
+   		TA.TASK_NO LIKE '%'||UPPER(#TASK_NO#)||'%'
+AND		RE.RQESTER = #USER_ID#
+AND 	RE.USE_AT= 'Y'
+
+]]>	
+</select>
+
+<select id="CTMH01DAO.selectRequestList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT M.SN										
+		,M.TASK_SN									
+		,M.TASK_NO									
+		,M.RQESTER	
+		,M.USER_NM								
+		,M.PSITN									
+		,M.OPERT_HOPEDE				
+		,M.MODULESE								
+		,M.REQUSTSE								
+		,M.SJ										
+		,M.CN	
+		,M.STTUS									
+		,M.FRST_CREDE
+		,M.ROLE									
+		,M.FILE_MASTR_SN
+FROM(
+		SELECT	 ROW_NUMBER() OVER(ORDER BY RE.SN DESC) RN
+				,RE.SN										
+				,RE.TASK_SN									
+				,TA.TASK_NO									
+				,RE.RQESTER	
+				,US.USER_NM								
+				,RE.PSITN									
+				,TO_CHAR(RE.OPERT_HOPEDE, 'YYYYMMDDHH24MISS') AS OPERT_HOPEDE					
+				,RE.MODULESE								
+				,RE.REQUSTSE								
+				,RE.SJ										
+				,RE.CN	
+				,RE.STTUS									
+				,TO_CHAR(RE.FRST_CREDE, 'YYYYMMDDHH24MISS')	AS FRST_CREDE
+				,RE.ROLE									
+				,RE.FILE_MASTR_SN
+		FROM 
+				CTMS_CO_REQUEST_FORM RE
+				JOIN EDC_CR_TASK TA
+				ON RE.TASK_SN = TA.TASK_SN
+				JOIN CM_USER US
+		        ON RE.RQESTER = US.USER_ID
+		WHERE
+		   		TA.TASK_NO LIKE '%'||UPPER(#TASK_NO#)||'%'
+]]>
+		<isEqual prepend="AND" property="ROLE_ID" compareValue="ROLE_CRA">
+				RE.RQESTER = #USER_ID#
+		</isEqual>
+		AND 	RE.USE_AT= 'Y'
+		AND     RE.INPUT_SE = '02'
+<![CDATA[		
+		) M
+ORDER BY FRST_CREDE DESC
+
+]]>	
+</select>
+
+<insert id="CTMH01DAO.insertRequestForm" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CTMS_CO_REQUEST_FORM(
+	 SN
+	,TASK_SN
+	,RQESTER
+	,PSITN
+	,OPERT_HOPEDE
+	,MODULESE
+	,REQUSTSE
+	,SJ
+	,CN
+	,STTUS
+	,USE_AT
+	,FRST_CREDE
+	,FRST_CRTR
+	,LAST_UPDDE
+	,LAST_UPDUSR
+	,ROLE
+	,FILE_MASTR_SN
+	,INPUT_SE
+)VALUES(
+	 #SN#
+	,#TASK_SN#
+	,#RQESTER#
+	,#PSITN#
+	,#OPERT_HOPEDE#
+	,#MODULESE#
+	,#REQUSTSE#
+	,#SJ#
+	,#CN#
+	,#STTUS#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,#ROLE#
+	,#FILE_MASTR_SN#
+	,'02'
+)
+]]>
+</insert>
+
+<update id="CTMH01DAO.updateRequestForm" parameterClass="hashMap"> 
+<![CDATA[
+UPDATE CTMS_CO_REQUEST_FORM 
+SET
+	 OPERT_HOPEDE = #OPERT_HOPEDE#
+	,MODULESE = #MODULESE#
+	,REQUSTSE = #REQUSTSE#
+	,SJ = #SJ#
+	,CN = #CN#
+	,STTUS = #STTUS#
+	,FILE_MASTR_SN = #FILE_MASTR_SN#
+	,LAST_UPDDE = SYSDATE
+	,LAST_UPDUSR = #LAST_UPDUSR#	
+WHERE 
+ 	 SN = #SN#
+]]>
+</update>
+
+<update id="CTMH01DAO.deleteRequestForm" parameterClass="hashMap"> 
+<![CDATA[
+UPDATE CTMS_CO_REQUEST_FORM 
+SET
+	 USE_AT='N'
+	,LAST_UPDDE = SYSDATE
+	,LAST_UPDUSR = #LAST_UPDUSR#
+	
+WHERE 
+ 	 SN = #SN#
+]]>
+</update>
+
+<update id="CTMH01DAO.updateRequestFormBySttus" parameterClass="hashMap"> 
+<![CDATA[
+UPDATE CTMS_CO_REQUEST_FORM 
+SET
+	 STTUS = '01'	
+WHERE 
+ 	 SN = #SN#
+]]>
+</update>
+
+<update id="CTMH01DAO.deleteUploadFile" parameterClass="hashMap"> 
+<![CDATA[
+UPDATE DM_FILE_DETAIL 
+SET
+			 USE_AT = 'N'
+			,UPDATE_ID = #LAST_UPDUSR#
+			,LAST_UPDDE = SYSDATE
+	
+WHERE 1=1
+AND  		 DETAIL_SN = #DETAIL_SN#
+AND 		 FILE_MASTR_SN = #FILE_MASTR_SN#	
+]]>
+</update>
+
+</sqlMap>

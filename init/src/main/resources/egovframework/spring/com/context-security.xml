@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:egov-security="http://www.egovframe.go.kr/schema/egov-security"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.egovframe.go.kr/schema/egov-security http://www.egovframe.go.kr/schema/egov-security/egov-security-3.0.xsd">
+
+<!--
+수정일      			수정자				수정내용
+=========	======= 		=================================================
+2011.09.07		서준식				일반, 업무사용자의 경우 조직아이디가 없어 로그인이 안되던 문제 수정(SQL 수정)
+2011.09.25		서준식				usersByUsernameQuery 쿼리의 조직 아이디 비교 부분  오류 수정 > alias 추가
+2014.06.13		Vincent Han		표준프레임워크 3.0 적용 (간소화 설정 사용)
+-->
+<!-- select username,password, enabled from users where username=? -->
+<!-- select username, role from user_roles where username=? -->
+<!-- 		logoutSuccessUrl="/EgovContent.do" -->
+<!-- 		jdbcUsersByUsernameQuery="SELECT USER_ID, ESNTL_ID AS PASSWORD, 1 ENABLED, USER_NM, USER_ZIP, -->
+<!--                                                               USER_ADRES, USER_EMAIL, USER_SE, ORGNZT_ID, ESNTL_ID, -->
+<!--                                                               (select a.ORGNZT_NM from COMTNORGNZTINFO a where a.ORGNZT_ID = m.ORGNZT_ID) ORGNZT_NM -->
+<!--                                                        FROM COMVNUSERMASTER m WHERE CONCAT(USER_SE, USER_ID) = ?" -->
+<!-- 		jdbcAuthoritiesByUsernameQuery="SELECT A.SCRTY_DTRMN_TRGET_ID USER_ID, A.AUTHOR_CODE AUTHORITY -->
+<!--                                                              FROM COMTNEMPLYRSCRTYESTBS A, COMVNUSERMASTER B -->
+<!--                                                              WHERE A.SCRTY_DTRMN_TRGET_ID = B.ESNTL_ID AND B.USER_ID = ?" -->
+
+
+<!-- 		sqlHierarchicalRoles=" -->
+<!-- 			SELECT a.CHLDRN_ROLE child, a.PARNTS_ROLE parent -->
+<!-- 			FROM COMTNROLES_HIERARCHY a LEFT JOIN COMTNROLES_HIERARCHY b on (a.CHLDRN_ROLE = b.PARNTS_ROLE)" -->
+
+	<!-- 
+	<security:http pattern="/data/AUIGrid/**" security="none"/>
+	<security:http pattern="/font/**" security="none"/>
+	<security:http pattern="/css/**" security="none"/>
+	<security:http pattern="/html/**" security="none"/>
+    <security:http pattern="/images/**" security="none"/>
+ 	<security:http pattern="/js/**" security="none"/>
+ 	<security:http pattern="/resource/**" security="none"/>
+ 	<security:http pattern="/data/**" security="none"/>
+ 	<security:http pattern="\A/WEB-INF/jsp/.*\Z" request-matcher="regex" security="none"/>
+
+    <egov-security:config id="securityConfig"
+		loginUrl="/com/i01/pantheonLoginUsr.do"
+		logoutSuccessUrl="/com/i01/pantheonLoginUsr.do"
+		loginFailureUrl="/com/i01/pantheonLoginUsr.do"
+		accessDeniedUrl="/com/i01/code403.do"
+		jdbcUsersByUsernameQuery="
+			SELECT A.USER_ID
+	      		  ,A.USER_ID PASSWORD
+	      		  ,1 ENABLED
+	              ,A.USER_NM
+	              ,A.USER_SE_CODE
+	              ,A.USER_ENGNM
+	              ,A.EMAIL
+	              ,A.TELNO
+	              ,A.LOGIN_FAILR_CO
+	              ,TO_CHAR(A.PASSWORD_CHANGE_DE, 'YYYYMMDDHH24MISS') PASSWORD_CHANGE_DE
+	              ,TO_CHAR(A.SBSCRB_DE, 'YYYYMMDDHH24MISS') SBSCRB_DE
+	              ,A.ACNT_LOCK_AT
+	              ,A.USE_YN
+	              ,TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	              ,A.REGIST_ID
+	              ,TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	              ,A.UPDATE_ID
+	              ,(SELECT X.STD_TIME_STDR FROM CM_STD_TIME X WHERE X.STD_TIME_SN = A.STD_TIME_SN) STD_TIME_STDR
+	         FROM CM_USER A
+	        WHERE A.USER_ID = ?
+	          AND A.USE_YN = 'Y'"
+		jdbcAuthoritiesByUsernameQuery="SELECT USER_ID, ROLE_ID AS AUTHORITY FROM CM_USER_ROLE WHERE USER_ID = ? AND USE_YN ='Y'"
+		dataSource="egov.dataSource"
+		jdbcMapClass="egovframework.com.sec.security.common.EgovSessionMapping"
+		requestMatcherType="regex"
+		hash="plaintext"
+		hashBase64="false"
+
+		concurrentMaxSessons="1"
+		concurrentExpiredUrl="/com/i01/pantheonLoginUsr.do"
+
+		defaultTargetUrl="/com/i01/intro.do"
+	/>
+
+	<egov-security:secured-object-config id="securedObjectConfig"
+	    sqlHierarchicalRoles="
+			SELECT CHLDRN_ROLE child, PARNTS_ROLE parent
+			FROM COMTNROLES_HIERARCHY
+    		ORDER BY DECODE (PARENT, 'ROLE_ANONYMOUS', 1, 'IS_AUTHENTICATED_ANONYMOUSLY', 2, 'IS_AUTHENTICATED_REMEMBERED', 3, 'IS_AUTHENTICATED_FULLY', 4, 'ROLE_EXTENDS', 5, 'ROLE_USER', 6)"
+		sqlRolesAndUrl="
+          SELECT URL, AUTHORITY 
+            FROM
+      	  (SELECT X.URL, X.AUTHORITY  
+            FROM COMTNROLEURL X 
+           WHERE X.AUTHORITY != 'ROLE_USER'
+           ORDER BY  DECODE(X.AUTHORITY, 'ROLE_EXTENDS', 'ROLE_BEXTENDS', X.AUTHORITY))
+          UNION ALL              
+          SELECT URL, AUTHORITY
+          FROM
+          (SELECT A.PROGRM_URL URL , B.ROLE_ID AUTHORITY
+            FROM CM_PROGRM A, CM_ROLE_AUTHOR B
+           WHERE A.PROGRM_ID = B.PROGRM_ID
+             AND A.USE_YN = 'Y'
+             AND B.USE_YN = 'Y'
+           ORDER BY URL)
+          UNION ALL
+          SELECT X.URL, X.AUTHORITY  
+            FROM COMTNROLEURL X 
+           WHERE X.AUTHORITY = 'ROLE_USER'"
+		sqlRolesAndMethod=
+			"SELECT URL method, AUTHORITY authority  
+            FROM COMTNROLEURL WHERE 1!=1"
+		sqlRolesAndPointcut="
+			SELECT URL pointcut, AUTHORITY authority  
+            FROM COMTNROLEURL WHERE 1!=1"
+		sqlRegexMatchedRequestMapping="
+			SELECT URL uri, AUTHORITY authority  
+            FROM COMTNROLEURL WHERE 1!=1"
+	/>
+
+	<egov-security:initializer id="initializer" supportMethod="true" supportPointcut="false" />
+	
+	<beans:bean id="databaseSecurityMetadataSource2" class="pantheon.com.utl.service.impl.PantheonReloadableFilterInvocationSecurityMetadataSource">
+		<beans:constructor-arg ref="hierarchyStrings" />	
+		<beans:property name="securedObjectService" ref="securedObjectService"/>
+	</beans:bean>
+	 -->
+</beans>

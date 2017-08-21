@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMG01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<resultMap id="cmNoticeClobMap" class="java.util.HashMap">
+		<result property="RN" column="RN"/>
+    	<result property="NOTICE_SN" column="NOTICE_SN"/>
+    	<result property="FIXING_AT" column="FIXING_AT"/>
+    	<result property="NOTICE_SJ" column="NOTICE_SJ"/>
+    	<result property="INQIRE_NUM" column="INQIRE_NUM"/>
+    	<result property="FILE_MASTR_SN" column="FILE_MASTR_SN"/>
+    	<result property="FILE_EXIST" column="FILE_EXIST"/>
+    	<result property="NOTICE_BGNDE" column="NOTICE_BGNDE"/>
+    	<result property="NOTICE_ENDDE" column="NOTICE_ENDDE"/>
+    	<result property="USE_AT" column="USE_AT"/>
+    	<result property="FRST_CREDE" column="FRST_CREDE"/>
+    	<result property="REGIST_ID" column="REGIST_ID"/>
+    	<result property="LAST_UPDDE" column="LAST_UPDDE"/>
+    	<result property="UPDATE_ID" column="UPDATE_ID"/>
+    	<result property="UPDATE_NM" column="UPDATE_NM"/>
+    	<result property="NOTICE_CN" column="NOTICE_CN" jdbcType="CLOB" javaType="java.lang.String"/>
+	</resultMap>
+		
+	<select id="COMG01DAO.selectCmNoticeListCountByPk" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT SUM(COUNT)
+		FROM
+		(
+		SELECT COUNT(*) COUNT
+		  FROM CM_NOTICE A
+		 WHERE A.USE_AT = 'Y'
+		   AND A.FIXING_AT = 'Y'
+		]]>
+		
+		<isNotEmpty property="SDATE">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		   AND A.LAST_UPDDE >= TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS')
+		   AND A.LAST_UPDDE <= TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_BGNDE">
+		<isNotEmpty property="NOTICE_ENDDE">
+		<![CDATA[
+		AND A.NOTICE_BGNDE <= SYSDATE + 1
+		AND A.NOTICE_ENDDE >= SYSDATE - 1
+		]]>		  			
+		</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_SJ" prepend="AND">
+		<![CDATA[
+		A.NOTICE_SJ LIKE '%' || #NOTICE_SJ# || '%'
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="UPDATE_ID" prepend="AND">
+		<![CDATA[
+		A.UPDATE_ID IN (SELECT X.USER_ID FROM CM_USER X WHERE X.USER_NM LIKE '%' || #UPDATE_ID# || '%')
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_CN" prepend="AND">
+		<![CDATA[
+		A.NOTICE_CN LIKE '%' || #NOTICE_CN:CLOB# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_SJ_CN" prepend="AND">
+		<![CDATA[
+		A.NOTICE_CN LIKE '%' || #NOTICE_SJ_CN# || '%' OR A.NOTICE_SJ LIKE '%' || #NOTICE_SJ_CN# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<![CDATA[
+		UNION ALL
+		SELECT COUNT(*) COUNT
+		  FROM CM_NOTICE A
+		 WHERE A.USE_AT = 'Y'
+		   AND A.FIXING_AT = 'N'
+		]]>
+		
+		<isNotEmpty property="SDATE">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		   AND A.LAST_UPDDE >= TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS')
+		   AND A.LAST_UPDDE <= TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_BGNDE">
+		<isNotEmpty property="NOTICE_ENDDE">
+		<![CDATA[
+		AND A.NOTICE_BGNDE <= SYSDATE + 1
+		AND A.NOTICE_ENDDE >= SYSDATE - 1
+		]]>		  			
+		</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_SJ" prepend="AND">
+		<![CDATA[
+		A.NOTICE_SJ LIKE '%' || #NOTICE_SJ# || '%'
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="UPDATE_ID" prepend="AND">
+		<![CDATA[
+		A.UPDATE_ID IN (SELECT X.USER_ID FROM CM_USER X WHERE X.USER_NM LIKE '%' || #UPDATE_ID# || '%')
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_CN" prepend="AND">
+		<![CDATA[
+		A.NOTICE_CN LIKE '%' || #NOTICE_CN:CLOB# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_SJ_CN" prepend="AND">
+		<![CDATA[
+		A.NOTICE_CN LIKE '%' || #NOTICE_SJ_CN# || '%' OR A.NOTICE_SJ LIKE '%' || #NOTICE_SJ_CN# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		)
+	</select>
+	
+	<select id="COMG01DAO.selectCmNoticeListByPk" parameterClass="hashMap" resultMap="cmNoticeClobMap">
+		<![CDATA[
+		SELECT RN 
+		     , NOTICE_SN
+	         , FIXING_AT
+	         , NOTICE_SJ
+	         , NOTICE_CN
+	         , INQIRE_NUM
+	         , FILE_MASTR_SN
+	         , (SELECT COUNT(*) FROM DM_FILE_DETAIL X WHERE X.FILE_MASTR_SN = INN_FILE_MASTR_SN) FILE_EXIST
+	         , TO_CHAR(NOTICE_BGNDE, 'YYYYMMDDHH24MISS') NOTICE_BGNDE
+	         , TO_CHAR(NOTICE_ENDDE, 'YYYYMMDDHH24MISS') NOTICE_ENDDE
+	         , USE_AT
+	         , TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , REGIST_ID
+	         , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , UPDATE_ID
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = INN_UPDATE_ID) UPDATE_NM
+		  FROM
+		(
+		SELECT ROW_NUMBER() OVER(ORDER BY DECODE(FIXING_AT, 'Y', 'A', 'N', 'Z'), NOTICE_SN DESC) RN
+		     , NOTICE_SN
+	         , FIXING_AT
+	         , NOTICE_SJ
+	         , NOTICE_CN
+	         , INQIRE_NUM
+	         , FILE_MASTR_SN
+	         , FILE_MASTR_SN INN_FILE_MASTR_SN
+	         , NOTICE_BGNDE
+	         , NOTICE_ENDDE
+	         , USE_AT
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	         , UPDATE_ID INN_UPDATE_ID
+		FROM
+		(
+		SELECT A.NOTICE_SN
+	         , A.FIXING_AT
+	         , A.NOTICE_SJ
+	         , A.NOTICE_CN
+	         , A.INQIRE_NUM
+	         , A.FILE_MASTR_SN
+	         , A.NOTICE_BGNDE
+	         , A.NOTICE_ENDDE
+	         , A.USE_AT
+	         , A.FRST_CREDE
+	         , A.REGIST_ID
+	         , A.LAST_UPDDE
+	         , A.UPDATE_ID
+	      FROM CM_NOTICE A
+		 WHERE A.USE_AT = 'Y'
+	       AND A.FIXING_AT = 'Y'
+		]]>
+		
+		<isNotEmpty property="SDATE">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		   AND A.LAST_UPDDE >= TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS')
+		   AND A.LAST_UPDDE <= TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_BGNDE">
+		<isNotEmpty property="NOTICE_ENDDE">
+		<![CDATA[
+		AND A.NOTICE_BGNDE <= SYSDATE + 1
+		AND A.NOTICE_ENDDE >= SYSDATE - 1
+		]]>		  			
+		</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_SJ" prepend="AND">
+		<![CDATA[
+		A.NOTICE_SJ LIKE '%' || #NOTICE_SJ# || '%'
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="UPDATE_ID" prepend="AND">
+		<![CDATA[
+		A.UPDATE_ID IN (SELECT X.USER_ID FROM CM_USER X WHERE X.USER_NM LIKE '%' || #UPDATE_ID# || '%')
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_CN" prepend="AND">
+		<![CDATA[
+		A.NOTICE_CN LIKE '%' || #NOTICE_CN:CLOB# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_SJ_CN" prepend="AND">
+		<![CDATA[
+		A.NOTICE_CN LIKE '%' || #NOTICE_SJ_CN# || '%' OR A.NOTICE_SJ LIKE '%' || #NOTICE_SJ_CN# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<![CDATA[	       
+		UNION ALL
+		SELECT A.NOTICE_SN
+	         , A.FIXING_AT
+	         , A.NOTICE_SJ
+	         , A.NOTICE_CN
+	         , A.INQIRE_NUM
+	         , A.FILE_MASTR_SN
+	         , A.NOTICE_BGNDE
+	         , A.NOTICE_ENDDE
+	         , A.USE_AT
+	         , A.FRST_CREDE
+	         , A.REGIST_ID
+	         , A.LAST_UPDDE
+	         , A.UPDATE_ID
+	      FROM CM_NOTICE A
+		 WHERE A.USE_AT = 'Y'
+	       AND A.FIXING_AT = 'N'
+		]]>
+		
+		<isNotEmpty property="SDATE">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		   AND A.LAST_UPDDE >= TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS')
+		   AND A.LAST_UPDDE <= TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_BGNDE">
+		<isNotEmpty property="NOTICE_ENDDE">
+		<![CDATA[
+   		AND A.NOTICE_BGNDE <= SYSDATE + 1
+		AND A.NOTICE_ENDDE >= SYSDATE - 1
+		]]>		  			
+		</isNotEmpty>
+		</isNotEmpty>
+				
+		<isNotEmpty property="NOTICE_SJ" prepend="AND">
+		<![CDATA[
+		A.NOTICE_SJ LIKE '%' || #NOTICE_SJ# || '%'
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="UPDATE_ID" prepend="AND">
+		<![CDATA[
+		A.UPDATE_ID IN (SELECT X.USER_ID FROM CM_USER X WHERE X.USER_NM LIKE '%' || #UPDATE_ID# || '%')
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_CN" prepend="AND">
+		<![CDATA[
+		A.NOTICE_CN LIKE '%' || #NOTICE_CN:CLOB# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="NOTICE_SJ_CN" prepend="AND">
+		<![CDATA[
+		A.NOTICE_CN LIKE '%' || #NOTICE_SJ_CN# || '%' OR A.NOTICE_SJ LIKE '%' || #NOTICE_SJ_CN# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<![CDATA[
+		)
+		)
+		WHERE RN > ($page$ - 1) * $count$
+	      AND RN <= ($page$ * $count$)     
+		]]>
+	</select>
+	
+	<insert id="COMG01DAO.insertCmNotice" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_NOTICE
+		     ( NOTICE_SN
+	         , FIXING_AT
+	         , NOTICE_SJ
+	         , NOTICE_CN
+	         , INQIRE_NUM
+	         , FILE_MASTR_SN
+	         , NOTICE_BGNDE
+	         , NOTICE_ENDDE
+	         , USE_AT
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+		     )
+		VALUES
+		     ( #NOTICE_SN#
+	         , #FIXING_AT#	
+	         , #NOTICE_SJ#
+	         , #NOTICE_CN:CLOB#
+	         , 0
+	         , #FILE_MASTR_SN#
+	         , TO_DATE(REPLACE(#NOTICE_BGNDE#, '-') || '000000', 'YYYYMMDDHH24MISS')
+	         , TO_DATE(REPLACE(#NOTICE_ENDDE#, '-') || '235959', 'YYYYMMDDHH24MISS')
+	         , 'Y'
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+		     )
+		]]>
+	</insert>
+	
+	<update id="COMG01DAO.updateCmNotice" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_NOTICE
+		   SET FIXING_AT = #FIXING_AT#
+		     , NOTICE_SJ = #NOTICE_SJ#
+		     , NOTICE_CN = #NOTICE_CN:CLOB#
+		     , FILE_MASTR_SN = #FILE_MASTR_SN#
+		     , NOTICE_BGNDE = #NOTICE_BGNDE#
+		     , NOTICE_ENDDE = #NOTICE_ENDDE#
+		     , LAST_UPDDE = SYSDATE
+		     , UPDATE_ID = #UPDATE_ID#
+		 WHERE NOTICE_SN = #NOTICE_SN#
+		]]>
+	</update>
+	
+	<update id="COMG01DAO.updateCmNoticeForDelete" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_NOTICE
+		   SET USE_AT = 'N'
+		     , LAST_UPDDE = SYSDATE
+		     , UPDATE_ID = #UPDATE_ID#
+		 WHERE NOTICE_SN = #NOTICE_SN#
+		]]>
+	</update>
+	
+	<update id="COMG01DAO.updateCmNoticeForInqireNum" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_NOTICE
+		   SET INQIRE_NUM = (SELECT X.INQIRE_NUM FROM CM_NOTICE X WHERE X.NOTICE_SN = #NOTICE_SN#) + 1
+		 WHERE NOTICE_SN = #NOTICE_SN#
+		]]>
+	</update>
+	
+	<select id="COMG01DAO.selectCmNoticeByPk" parameterClass="hashMap" resultMap="cmNoticeClobMap">
+		<![CDATA[
+		SELECT ROWNUM RN
+			 , A.NOTICE_SN
+	         , A.FIXING_AT
+	         , A.NOTICE_SJ
+	         , A.NOTICE_CN
+	         , A.INQIRE_NUM
+	         , A.FILE_MASTR_SN
+	         , TO_CHAR(A.NOTICE_BGNDE, 'YYYYMMDDHH24MISS') NOTICE_BGNDE
+	         , TO_CHAR(A.NOTICE_ENDDE, 'YYYYMMDDHH24MISS') NOTICE_ENDDE
+	         , A.USE_AT
+	         , A.REGIST_ID
+	         , A.UPDATE_ID
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+	         , '' FILE_EXIST
+	     FROM CM_NOTICE A
+	    WHERE A.NOTICE_SN = #NOTICE_SN#
+	      AND A.USE_AT = 'Y'
+	    ]]>
+	</select>
+</sqlMap>

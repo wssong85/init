@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ <sqlMap namespace="IWRD04">
+	<typeAlias  alias="hashMap" type="java.util.HashMap"/>
+	
+	<select id="IWRD04.selectFactoryInventoryInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT A.IP_TYPE
+	          ,A.IP_CODE
+	          ,FN_GET_COMMONCODE('IWRS005', A.IP_STTUS_CODE, #LOCALE#) IP_STTUS_NM
+	          ,A.IP_STTUS_CODE
+	          ,NVL(B.INSTT_CODE, ' ') INSTT_CODE
+	          ,A.IP_STTUS_ETC
+	          ,D.NAME1 INSTT_NM
+	          ,TO_CHAR(B.DLVY_RQESTDE, 'YYYYMMDDHH24MISS') DLVY_RQESTDE
+	          ,CASE WHEN A.IP_STTUS_CODE = '06' THEN FN_GET_COMMONCODE('IWRS002', A.IP_ERROR_CODE, #LOCALE#)
+	          		WHEN A.IP_STTUS_CODE = '08' THEN FN_GET_COMMONCODE('IWRS011', A.IP_ERROR_CODE, #LOCALE#)
+	          		END IP_ERROR_CODE
+	          ,A.CREAT_CODE
+	          ,ROW_NUMBER() OVER(ORDER BY A.IP_TYPE, A.IP_CODE) RN
+	      FROM IWRS_IP_IP_CODE A
+	 LEFT JOIN (SELECT A.INSTT_CODE
+	                  ,A.TASK_CODE
+	                  ,B.IP_CODE
+	                  ,B.CREAT_CODE
+	                  ,B.IP_TYPE
+	                  ,A.DLVY_RQESTDE
+	              FROM IWRS_DL_DLVYMANAGE A
+	        INNER JOIN IWRS_DL_DLVY_IP_INFO B
+	                ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+	               AND A.SN = B.SN
+	               AND B.USE_AT = 'Y'
+	             WHERE A.DLVY_STTUS_CODE != '05'
+	               AND A.USE_AT = 'Y') B
+	        ON A.IP_CODE = B.IP_CODE
+	       AND A.CREAT_CODE = B.CREAT_CODE
+	       AND A.IP_TYPE = B.IP_TYPE
+	INNER JOIN IWRS_IP_CREATMASTR C
+			ON A.CREAT_CODE = C.CREAT_CODE
+		   AND C.TASK_CODE = #task_code#
+	 LEFT JOIN (SELECT A.TASK_SN TASK_CODE
+		              ,C.INSTT_CODE
+		              ,D.NAME1
+		          FROM EDC_CR_INSTT_FORM A
+		    INNER JOIN CM_RSRCHUSER B
+		            ON A.INSTT_CODE = B.INSTT_CODE
+		    INNER JOIN CM_INSTT C
+		            ON B.INSTT_CODE = C.INSTT_CODE
+		    INNER JOIN SAP_BCNC_INFO D
+		            ON C.KUNNR = D.KUNNR
+		         WHERE TASK_SN = #task_code#
+		      GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1) D
+	      	ON B.TASK_CODE = D.TASK_CODE
+	       AND B.INSTT_CODE = D.INSTT_CODE
+	     WHERE 1 = 1 
+    <isNotEmpty property="IP_TYPE">
+	       AND A.IP_TYPE = #IP_TYPE#
+	</isNotEmpty>
+	<isNotEmpty property="IP_STTUS_CODE">
+	       AND A.IP_STTUS_CODE = #IP_STTUS_CODE#
+	</isNotEmpty>
+	  ORDER BY A.IP_TYPE, A.IP_CODE
+	</select>
+	
+	<select id="IWRD04.selectFactoryInventoryCount" parameterClass="hashMap" resultClass="int">
+		SELECT COUNT(*) cnt
+	      FROM IWRS_IP_IP_CODE A
+	 LEFT JOIN (SELECT A.INSTT_CODE
+	                  ,A.TASK_CODE
+	                  ,B.IP_CODE
+	                  ,B.CREAT_CODE
+	                  ,B.IP_TYPE
+	                  ,A.DLVY_RQESTDE
+	              FROM IWRS_DL_DLVYMANAGE A
+	        INNER JOIN IWRS_DL_DLVY_IP_INFO B
+	                ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+	               AND A.SN = B.SN
+	               AND B.USE_AT = 'Y'
+	             WHERE A.DLVY_STTUS_CODE != '05'
+	               AND A.USE_AT = 'Y') B
+	        ON A.IP_CODE = B.IP_CODE
+	       AND A.CREAT_CODE = B.CREAT_CODE
+	       AND A.IP_TYPE = B.IP_TYPE
+	INNER JOIN IWRS_IP_CREATMASTR C
+			ON A.CREAT_CODE = C.CREAT_CODE
+		   AND C.TASK_CODE = #task_code#
+	 LEFT JOIN (SELECT A.TASK_SN TASK_CODE
+		              ,C.INSTT_CODE
+		              ,D.NAME1
+		          FROM EDC_CR_INSTT_FORM A
+		    INNER JOIN CM_RSRCHUSER B
+		            ON A.INSTT_CODE = B.INSTT_CODE
+		    INNER JOIN CM_INSTT C
+		            ON B.INSTT_CODE = C.INSTT_CODE
+		    INNER JOIN SAP_BCNC_INFO D
+		            ON C.KUNNR = D.KUNNR
+		         WHERE TASK_SN = #task_code#
+		      GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1) D
+	      	ON B.TASK_CODE = D.TASK_CODE
+	       AND B.INSTT_CODE = D.INSTT_CODE
+	     WHERE 1 = 1 
+    <isNotEmpty property="IP_TYPE">
+	       AND A.IP_TYPE = #IP_TYPE#
+	</isNotEmpty>
+	<isNotEmpty property="IP_STTUS_CODE">
+	       AND A.IP_STTUS_CODE = #IP_STTUS_CODE#
+	</isNotEmpty>
+	</select>
+	
+	<select id="IWRD04.selectFactoryInvntoryTotalCount" parameterClass="hashMap" resultClass="int">
+		SELECT COUNT(*) CNT
+	      FROM IWRS_IP_IP_CODE A
+	INNER JOIN IWRS_IP_CREATMASTR C
+			ON A.CREAT_CODE = C.CREAT_CODE
+		   AND C.TASK_CODE = #task_code#
+	</select>
+	
+	<update id="IWRD04.updateIpStatus" parameterClass="hashMap">
+		UPDATE IWRS_IP_IP_CODE
+		   SET IP_STTUS_CODE = #IP_STTUS_CODE#
+		   	  ,IP_ERROR_CODE = #IP_ERROR_CODE#
+		   	  ,IP_STTUS_ETC = #IP_STTUS_ETC#
+		   	  ,IP_ERROR_COMMENT = #IP_ERROR_COMMENT#
+		   	  ,IP_ERROR_REGISTER_ID = #IP_ERROR_REGISTER_ID#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,UPDATE_ID = #UPDATE_ID#
+		 WHERE IP_CODE = #IP_CODE#
+		   AND IP_TYPE = #IP_TYPE#
+		   AND CREAT_CODE = #CREAT_CODE#
+	</update>
+	
+	<update id="IWRD04.updateDeliveryIpStatus" parameterClass="hashMap">
+		UPDATE IWRS_DL_DLVY_IP_INFO
+		   SET IP_STTUS_CODE = #IP_STTUS_CODE#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,UPDATE_ID = #UPDATE_ID#
+		 WHERE IP_CODE = #IP_CODE#
+		   AND CREAT_CODE = #CREAT_CODE#
+		   AND IP_TYPE = #IP_TYPE#
+	</update>
+	
+	<select id="IWRD04DAO.selectDeliveryIpStatus" parameterClass="hashMap" resultClass="int">
+		SELECT COUNT(*) CNT
+		  FROM IWRS_DL_DLVY_IP_INFO
+		 WHERE IP_CODE = #IP_CODE#
+		   AND CREAT_CODE = #CREAT_CODE#
+		   AND IP_TYPE = #IP_TYPE#
+	</select>
+	
+	<update id="IWRD04.updateDrugStockIpStatus" parameterClass="hashMap">
+		UPDATE IWRS_DS_INVNTRYMANAGE_IP_INFO
+		   SET IP_STTUS_CODE = #IP_STTUS_CODE#
+		   	  ,IP_ERROR_CODE = #IP_ERROR_CODE#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,UPDATE_ID = #UPDATE_ID#
+		 WHERE IP_CODE = #IP_CODE#
+		   AND IP_TYPE = #IP_TYPE#
+		   AND CREAT_CODE = #CREAT_CODE#
+	</update>
+	
+	<select id="IWRD04DAO.selectDrugStockIpStatus" parameterClass="hashMap" resultClass="int">
+		SELECT COUNT(*) CNT
+		  FROM IWRS_DS_INVNTRYMANAGE_IP_INFO
+		 WHERE IP_CODE = #IP_CODE#
+		   AND IP_TYPE = #IP_TYPE#
+		   AND CREAT_CODE = #CREAT_CODE#
+	</select>
+	
+	<select id="IWRD04DAO.selectFactoryInventorySummary" parameterClass="hashMap" resultClass="hashMap">
+		SELECT A.CREAT_CODE
+	          ,A.TASK_CODE
+	          ,A.IP_TYPE
+	          ,A.CNT AS STTUS01
+	          ,B.CNT AS STTUS02
+	          ,C.CNT AS STTUS03
+	          ,D.CNT AS STTUS04
+	          ,E.CNT AS STTUS05
+	          ,F.CNT AS STTUS06
+	          ,G.CNT AS STTUS08
+	      FROM (SELECT A.CREAT_CODE
+	                  ,A.TASK_CODE
+	                  ,B.IP_TYPE
+	                  ,COUNT(C.IP_TYPE) CNT
+	              FROM IWRS_IP_CREATMASTR A
+	        INNER JOIN IWRS_IP_IP_CREATMASTR B
+	                ON A.CREAT_CODE = B.CREAT_CODE
+	         LEFT JOIN IWRS_IP_IP_CODE C
+	                ON B.CREAT_CODE = C.CREAT_CODE
+	               AND B.IP_TYPE = C.IP_TYPE
+	               AND C.IP_STTUS_CODE = '01'
+	             WHERE A.TASK_CODE = #TASK_CODE#
+	          GROUP BY A.CREAT_CODE, A.TASK_CODE, B.IP_TYPE) A
+	INNER JOIN (SELECT A.CREAT_CODE
+	                  ,A.TASK_CODE
+	                  ,B.IP_TYPE
+	                  ,COUNT(C.IP_CODE) CNT
+	              FROM IWRS_IP_CREATMASTR A
+	        INNER JOIN IWRS_IP_IP_CREATMASTR B
+	                ON A.CREAT_CODE = B.CREAT_CODE
+	         LEFT JOIN IWRS_IP_IP_CODE C
+	                ON B.CREAT_CODE = C.CREAT_CODE
+	               AND B.IP_TYPE = C.IP_TYPE
+	               AND C.IP_STTUS_CODE = '02'
+	             WHERE A.TASK_CODE = #TASK_CODE#
+	          GROUP BY A.CREAT_CODE, A.TASK_CODE, B.IP_TYPE) B
+	        ON A.CREAT_CODE = B.CREAT_CODE
+	       AND A.TASK_CODE = B.TASK_CODE
+	       AND A.IP_TYPE = B.IP_TYPE
+	INNER JOIN (SELECT A.CREAT_CODE
+	                  ,A.TASK_CODE
+	                  ,B.IP_TYPE
+	                  ,COUNT(C.IP_CODE) CNT
+	              FROM IWRS_IP_CREATMASTR A
+	        INNER JOIN IWRS_IP_IP_CREATMASTR B
+	                ON A.CREAT_CODE = B.CREAT_CODE
+	         LEFT JOIN IWRS_IP_IP_CODE C
+	                ON B.CREAT_CODE = C.CREAT_CODE
+	               AND B.IP_TYPE = C.IP_TYPE
+	               AND C.IP_STTUS_CODE = '03'
+	             WHERE A.TASK_CODE = #TASK_CODE#
+	          GROUP BY A.CREAT_CODE, A.TASK_CODE, B.IP_TYPE) C
+	        ON A.CREAT_CODE = C.CREAT_CODE
+	       AND A.TASK_CODE = C.TASK_CODE
+	       AND A.IP_TYPE = C.IP_TYPE
+	INNER JOIN (SELECT A.CREAT_CODE
+	                  ,A.TASK_CODE
+	                  ,B.IP_TYPE
+	                  ,COUNT(C.IP_CODE) CNT
+	              FROM IWRS_IP_CREATMASTR A
+	        INNER JOIN IWRS_IP_IP_CREATMASTR B
+	                ON A.CREAT_CODE = B.CREAT_CODE
+	         LEFT JOIN IWRS_IP_IP_CODE C
+	                ON B.CREAT_CODE = C.CREAT_CODE
+	               AND B.IP_TYPE = C.IP_TYPE
+	               AND C.IP_STTUS_CODE = '04'
+	             WHERE A.TASK_CODE = #TASK_CODE#
+	          GROUP BY A.CREAT_CODE, A.TASK_CODE, B.IP_TYPE) D
+	        ON A.CREAT_CODE = D.CREAT_CODE
+	       AND A.TASK_CODE = D.TASK_CODE
+	       AND A.IP_TYPE = D.IP_TYPE
+	INNER JOIN (SELECT A.CREAT_CODE
+	                  ,A.TASK_CODE
+	                  ,B.IP_TYPE
+	                  ,COUNT(C.IP_CODE) CNT
+	              FROM IWRS_IP_CREATMASTR A
+	        INNER JOIN IWRS_IP_IP_CREATMASTR B
+	                ON A.CREAT_CODE = B.CREAT_CODE
+	         LEFT JOIN IWRS_IP_IP_CODE C
+	                ON B.CREAT_CODE = C.CREAT_CODE
+	               AND B.IP_TYPE = C.IP_TYPE
+	               AND C.IP_STTUS_CODE = '05'
+	             WHERE A.TASK_CODE = #TASK_CODE#
+	          GROUP BY A.CREAT_CODE, A.TASK_CODE, B.IP_TYPE) E
+	        ON A.CREAT_CODE = E.CREAT_CODE
+	       AND A.TASK_CODE = E.TASK_CODE
+	       AND A.IP_TYPE = E.IP_TYPE
+	INNER JOIN (SELECT A.CREAT_CODE
+	                  ,A.TASK_CODE
+	                  ,B.IP_TYPE
+	                  ,COUNT(C.IP_CODE) CNT
+	              FROM IWRS_IP_CREATMASTR A
+	        INNER JOIN IWRS_IP_IP_CREATMASTR B
+	                ON A.CREAT_CODE = B.CREAT_CODE
+	         LEFT JOIN IWRS_IP_IP_CODE C
+	                ON B.CREAT_CODE = C.CREAT_CODE
+	               AND B.IP_TYPE = C.IP_TYPE
+	               AND C.IP_STTUS_CODE = '06'
+	             WHERE A.TASK_CODE = #TASK_CODE#
+	          GROUP BY A.CREAT_CODE, A.TASK_CODE, B.IP_TYPE) F
+	        ON A.CREAT_CODE = F.CREAT_CODE
+	       AND A.TASK_CODE = F.TASK_CODE
+	       AND A.IP_TYPE = F.IP_TYPE
+	INNER JOIN (SELECT A.CREAT_CODE
+	                  ,A.TASK_CODE
+	                  ,B.IP_TYPE
+	                  ,COUNT(C.IP_CODE) CNT
+	              FROM IWRS_IP_CREATMASTR A
+	        INNER JOIN IWRS_IP_IP_CREATMASTR B
+	                ON A.CREAT_CODE = B.CREAT_CODE
+	         LEFT JOIN IWRS_IP_IP_CODE C
+	                ON B.CREAT_CODE = C.CREAT_CODE
+	               AND B.IP_TYPE = C.IP_TYPE
+	               AND C.IP_STTUS_CODE = '08'
+	             WHERE A.TASK_CODE = #TASK_CODE#
+	          GROUP BY A.CREAT_CODE, A.TASK_CODE, B.IP_TYPE) G
+	        ON A.CREAT_CODE = G.CREAT_CODE
+	       AND A.TASK_CODE = G.TASK_CODE
+	       AND A.IP_TYPE = G.IP_TYPE
+	  ORDER BY A.IP_TYPE
+	</select>
+</sqlMap>

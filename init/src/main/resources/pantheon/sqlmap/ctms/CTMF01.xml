@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMF01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="CTMF01DAO.selectCommonCodeListByIRB_AT" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT CMMN_CODE    AS CODE
+     , CMMN_CODE_NM AS NAME
+ FROM CM_CMMNCODE
+ WHERE CMMN_CLCODE = 'CTMS001'
+ AND     USE_AT = 'Y'
+ ORDER BY SORT_ORDR
+]]>
+</select>
+
+<select id="CTMF01DAO.selectCommonCodeListBySTTUS" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT  CMMN_CODE    AS CODE
+        ,CMMN_CODE_NM AS NAME
+FROM 	CM_CMMNCODE
+WHERE   CMMN_CLCODE = 'CTMS020'
+AND     USE_AT = 'Y'
+ORDER BY CODE ASC
+]]>
+</select>
+    
+<select id="CTMF01DAO.selectPaperContractList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 CN.CNTRCT_SN						
+		,TA.TASK_SN							
+		,TA.TASK_NO      					
+		,RS.INSTT_CODE						
+		,RS.HSPTL_NM				 		
+		,US.USER_NM	 						
+		,US.USER_ID	 						
+		,DAMO_DEC(US.EMAIL)	 				AS EMAIL	
+		,DAMO_DEC(US.TELNO)	 				AS TELNO	
+		,CN.GOAL_NO	 						
+		,CN.IRB_AT	 						
+		,CN.STTUS	 						
+		,CN.STTUS_DTE						
+		,CN.ATCH_FILE	 					
+		,(SELECT COUNT(1) 
+		FROM DM_FILE_DETAIL 
+		WHERE FILE_MASTR_SN = CN.ATCH_FILE)	AS FILE_CNT
+FROM 
+		EDC_CR_TASK TA
+		JOIN CTMS_CO_CNTRCT_MANAGE CN
+		ON TA.TASK_SN = CN.TASK_SN
+		JOIN CM_RSRCHUSER RS
+		ON CN.USER_ID = RS.USER_ID
+		JOIN CM_USER US
+		ON RS.USER_ID = US.USER_ID
+WHERE 	CNTRCT_SE = '02'
+AND 	TA.TASK_NO LIKE '%'||UPPER(#TASK_NO#)||'%'	   
+AND 	CN.USE_AT = 'Y'
+ORDER BY CN.FRST_CREAT_DE DESC
+]]>	
+</select>
+
+<!--  계약서 팝업 리스트 조회-->
+<select id="CTMF01DAO.selectContractPopUpList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT M.FILE_MASTR_SN
+	     , D.DETAIL_SN
+	     , D.ORGINL_FILE_NM
+	     , D.ORGINL_EXTSN_NM
+	     , D.UPLOAD_FILE_NM
+	     , M.DWLD_PHYSIC_COURS
+	     , TO_CHAR(D.LAST_UPDDE,'YYYY-MM-DD') AS LAST_UPDDE
+	  FROM DM_FILE_MASTR M
+	     , DM_FILE_DETAIL D
+	 WHERE M.FILE_MASTR_SN = D.FILE_MASTR_SN
+	   AND M.FILE_MASTR_SN = #FILE_MASTR_SN#
+	]]>	
+</select>
+
+
+<!--  연구사용자 중복체크 조회-->
+<select id="CTMF01DAO.selectRsrchUserOverlap" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 USER_ID
+		,TASK_SN
+		,USE_YN
+FROM     CM_USERTASK
+WHERE    TASK_SN = #TASK_SN#
+  AND    USER_ID = #USER_ID# 
+
+	]]>	
+</select>
+
+<!--  Paper 기관정보 저장-->
+<insert id="CTMF01DAO.insertCM_INSTT" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CM_INSTT(
+	INSTT_CODE
+	,KUNNR
+	,INSTT_TY
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+)VALUES(
+	 #KUNNR#
+	,#KUNNR#
+	,'01'
+	,'Y'
+	,SYSDATE
+	,#USER_ID#
+	,SYSDATE
+	,#USER_ID#
+)
+]]>
+</insert>
+
+<!--  Paper 계약 계약정보-->
+<insert id="CTMF01DAO.insertPaperContractByCNT" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CTMS_CO_CNTRCT_MANAGE(
+CNTRCT_SN
+,USER_ID
+,TASK_SN
+,GOAL_NO
+,IRB_AT
+,CNTRCT_SE
+,STTUS
+,STTUS_DTE
+,ATCH_FILE
+,USE_AT
+,FRST_CREAT_DE
+,FRST_CRTR
+,LAST_UPDT_DE
+,LAST_UPDUSR
+)VALUES(
+'C'||CTMS_CO_CNTRCT_MANAGE_SEQ.NEXTVAL
+,#USER_ID#
+,#TASK_SN#
+,#GOAL_NO#
+,#IRB_AT#
+,'02'
+,'07'
+,SYSDATE
+,#ATCH_FILE#
+,'Y'
+,SYSDATE
+,#UPDATE_ID#
+,SYSDATE
+,#UPDATE_ID#
+)
+
+]]>
+</insert>
+	
+
+<!--  사용자 과제정보-->
+<insert id="CTMF01DAO.insertTaskUserInfo" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_USERTASK 
+USING DUAL ON( USER_ID = #USER_ID# AND TASK_SN = #TASK_SN#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y', LAST_UPDDE = SYSDATE, UPDATE_ID = #UPDATE_ID#
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+	,TASK_NO
+	,TASK_SN
+	,CONFM_SE
+	,DSCNTC_AT
+	,DSCNTC_DE
+)VALUES(
+	 #USER_ID#
+	,'Y'
+	,SYSDATE
+	,#UPDATE_ID#
+	,SYSDATE
+	,#UPDATE_ID#
+	,#TASK_NO#
+	,#TASK_SN#
+	,'02'
+	,'N'
+	,''
+)
+]]>
+</insert>
+
+<!-- 사용자 Role 저장 -->
+<insert id="CTMF01DAO.insertUserRoleInfo" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_USER_ROLE 
+USING DUAL ON( USER_ID = #USER_ID#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,ROLE_ID
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+)VALUES(
+	 #USER_ID#
+	,#ROLE_ID#
+	,'N'
+	,SYSDATE
+	,#UPDATE_ID#
+	,SYSDATE
+	,#UPDATE_ID#
+)
+]]>
+</insert>
+
+<!-- 사용자 과제 Role 저장전 삭제 -->
+<delete id="CTMF01DAO.deleteTaskUserRoleInfo" parameterClass="hashMap"> 
+<![CDATA[
+DELETE FROM CM_TASK_USER_ROLE 
+ WHERE USER_ID = #USER_ID# 
+   AND TASK_SN = #TASK_SN#
+]]>
+</delete>
+
+<!-- 사용자 과제 Role 저장 -->
+<insert id="CTMF01DAO.insertTaskUserRoleInfo" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CM_TASK_USER_ROLE(
+	 ROLE_SN
+	,USER_ID
+	,ROLE_ID
+	,TASK_SN
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,FRST_UPDUSR
+)VALUES(
+	 CM_TASK_USER_ROLE_SEQ.NEXTVAL
+	,#USER_ID#
+	,#ROLE_ID#
+	,#TASK_SN#
+	,SYSDATE
+	,#UPDATE_ID#
+	,SYSDATE
+	,#UPDATE_ID#
+)
+]]>
+</insert>
+
+<!--  사용자정보 저장-->
+<insert id="CTMF01DAO.insertPaperContractByUSER" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_USER 
+USING DUAL ON( USER_ID = #USER_ID#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,PASSWORD
+	,USER_NM
+	,USER_SE_CODE
+	,USER_ENGNM
+	,EMAIL
+	,TELNO
+	,LOGIN_FAILR_CO
+	,PASSWORD_CHANGE_DE
+	,SBSCRB_DE
+	,ACNT_LOCK_AT
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+)VALUES(
+	 #USER_ID#
+	,#USER_ID#
+	,#USER_NM#
+	,'02'
+	,''
+	,DAMO_ENC(#EMAIL#)
+	,DAMO_ENC(#TELNO#)
+	,''
+	,''
+	,SYSDATE
+	,''
+	,'Y'
+	,SYSDATE
+	,#UPDATE_ID#
+	,SYSDATE
+	,#UPDATE_ID#
+)
+]]>
+</insert>
+
+<!--  연구자정보 저장-->
+<insert id="CTMF01DAO.insertPaperContractByRSRCHUSER" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_RSRCHUSER 
+USING DUAL ON( USER_ID = #USER_ID#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,INSTT_CODE
+	,IRB_AT
+	,HSPTL_NM
+	,ZIP
+	,ADDRONE
+	,ADDRTWO
+	,CNTRCT_STTUS
+	,FILE_MASTR_SN
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+	,ISF_PYMNT_AT
+	,ISF_PYMNT_DE
+	,RM
+	,CONFM_SE
+)VALUES(
+	 #USER_ID#
+	,#KUNNR#
+	,#IRB_AT#
+	,#HSPTL_NM#
+	,#PSTLZ#
+	,DAMO_ENC(#ORT01#)
+	,DAMO_ENC(#STRAS#)
+	,'Y'
+	,''
+	,'Y'
+	,SYSDATE
+	,#UPDATE_ID#
+	,SYSDATE
+	,#UPDATE_ID#
+	,''
+	,''
+	,''
+	,'02'
+)
+]]>
+</insert>
+
+<update id="CTMF01DAO.updatePaperContractByCNT" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_CO_CNTRCT_MANAGE
+SET 
+		TASK_SN = #TASK_SN#
+		,GOAL_NO = #GOAL_NO#
+		,IRB_AT = #IRB_AT#
+		,ATCH_FILE = #ATCH_FILE#
+		,LAST_UPDT_DE = SYSDATE
+		,LAST_UPDUSR = #UPDATE_ID#
+
+WHERE   CNTRCT_SN = #CNTRCT_SN#   
+]]>		
+</update>
+
+<update id="CTMF01DAO.updatePaperContractByUSER" parameterClass="hashMap">
+<![CDATA[
+UPDATE CM_USER
+SET
+		USER_NM = #USER_NM#
+		,EMAIL = DAMO_ENC(#EMAIL#)
+		,TELNO = DAMO_ENC(#TELNO#)
+		,LAST_UPDDE = SYSDATE
+		,UPDATE_ID = #UPDATE_ID#
+WHERE 	USER_ID = #USER_ID#
+]]>			   
+</update>
+
+<update id="CTMF01DAO.updatePaperContractByRSRCHUSER" parameterClass="hashMap">
+<![CDATA[
+UPDATE CM_RSRCHUSER
+SET
+		INSTT_CODE = #INSTT_CODE#
+		,HSPTL_NM = #HSPTL_NM#
+		,IRB_AT = #IRB_AT#
+		,LAST_UPDDE = SYSDATE
+		,UPDATE_ID = #UPDATE_ID#
+WHERE   USER_ID = #USER_ID#
+
+]]>			   
+</update>
+<!-- ******************************************************************** -->    
+<select id="CTMF01DAO.selectTotalContractList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+         CT.TASK_SN       
+        ,CT.TASK_NO       
+        ,CT.TASK_NM       
+        ,SAP.NAME1  AS INSTT_NM       
+        ,CU.USER_NM       
+        ,CUT.USER_ID      
+        ,DAMO_DEC(CU.EMAIL) AS  EMAIL
+        ,DAMO_DEC(CU.TELNO) AS  TELNO  
+        ,CM.GOAL_NO       
+        ,DECODE(CM.IRB_AT, 'Y', 'YES', 'NO') AS IRB_AT
+        ,CM.STTUS
+        ,CM.STTUS_DTE 
+        ,CASE WHEN CM.STTUS <> '' THEN CMM.CMMN_CODE_NM||' '||TO_CHAR(CM.STTUS_DTE,'YYYY/MM/DD') ELSE '신규' END STATUS_NM
+        ,CMM2.CMMN_CODE_NM AS CNTRCT_TYPE
+        ,CM.CNTRCT_SE       
+        ,CM.ATCH_FILE       
+        ,(SELECT COUNT(1) FROM DM_FILE_DETAIL WHERE FILE_MASTR_SN = CM.ATCH_FILE) AS FILE_CNT
+        ,CM.CNTRCT_SN    
+    FROM
+         EDC_CR_TASK CT       
+        ,CTMS_CO_CNTRCT_MANAGE CM       
+        ,CM_USERTASK CUT       
+        ,CM_USER CU       
+        ,CM_CMMNCODE CMM       
+        ,CM_RSRCHUSER RSR       
+        ,CM_INSTT CI       
+        ,SAP_BCNC_INFO SAP        
+        ,CM_CMMNCODE CMM2   
+    WHERE
+        CT.TASK_SN              = CM.TASK_SN(+)     
+        AND CT.TASK_NO          = CUT.TASK_NO(+)     
+        AND CUT.USER_ID         = CU.USER_ID(+)     
+        AND CM.STTUS            = CMM.CMMN_CODE(+)     
+        AND CMM.CMMN_CLCODE(+)  = 'CTM001'     
+        AND CU.USER_ID          = RSR.USER_ID(+)     
+        AND RSR.INSTT_CODE      = CI.INSTT_CODE(+)     
+        AND CI.KUNNR            = SAP.KUNNR(+)        
+        AND CM.CNTRCT_SE        = CMM2.CMMN_CODE(+)        
+        AND CMM2.CMMN_CLCODE    = 'CTM002'
+]]>
+	<isNotEmpty property="TASK_NO" prepend="AND">
+	<![CDATA[ 
+	CT.TASK_NO LIKE #TASK_NO#||'%' 
+	]]>
+	</isNotEmpty>
+
+	 ORDER BY CT.TASK_SN DESC
+</select>
+
+<select id="CTMF01DAO.selectElectContractList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT CT.TASK_SN
+	     , CT.TASK_NO
+	     , CT.TASK_NM
+	     , SAP.NAME1  AS INSTT_NM
+	     , CU.USER_NM
+	     , CUT.USER_ID
+	     , CU.EMAIL
+	     , CU.TELNO
+	     , CM.GOAL_CO
+	     , DECODE(CM.IRB_AT, 'Y', 'YES',  'NO') AS IRB_AT
+	     , CM.STTUS
+	     , CM.STTUS_DTE
+	     , CASE WHEN CM.STTUS <> '' THEN CMM.CMMN_CODE_NM||' '||TO_CHAR(CM.STTUS_DTE, 'YYYY/MM/DD')
+	            ELSE '신규'
+	        END STATUS_NM
+	     , CM.CONFM_ENNC
+	     , CM.ATCH_FILE
+	     , (SELECT COUNT(1) FROM DM_FILE_DETAIL WHERE FILE_MASTR_SN = CM.ATCH_FILE) AS FILE_CNT
+	     , CM.INSTT_CODE
+	     , CM.RSRCHMAN_NO
+	     , CM.CNTRCT_SN
+	  FROM EDC_CR_TASK CT
+	     , CTMS_CO_CNTRCT_MANAGE CM
+	     , CM_USERTASK CUT
+	     , CM_USER CU
+	     , CM_CMMNCODE CMM
+	     , CM_RSRCHUSER RSR
+	     , CM_INSTT CI
+	     , SAP_BCNC_INFO SAP
+	 WHERE CT.TASK_NO         = CM.TASK_NO
+	   AND CT.TASK_NO         = CUT.TASK_NO
+	   AND CUT.USER_ID        = CU.USER_ID
+	   AND CM.CNTRCT_SE(+)    = '01'
+	   AND CM.STTUS           = CMM.CMMN_CODE(+)
+	   AND CMM.CMMN_CLCODE(+) = 'CTM001'
+	   AND CU.USER_ID         = RSR.USER_ID(+)
+	   AND RSR.INSTT_CODE     = CI.INSTT_CODE(+)
+	   AND CI.KUNNR           = SAP.KUNNR(+)
+]]>
+	<isNotEmpty property="TASK_NO" prepend="AND">
+	<![CDATA[ 
+	CT.TASK_NO LIKE #TASK_NO#||'%' 
+	]]>
+	</isNotEmpty>
+
+	 ORDER BY CT.TASK_SN DESC
+</select>
+
+<update id="CTMF01DAO.updateElectContractStatus" parameterClass="hashMap">
+<![CDATA[
+	UPDATE CTMS_CO_CNTRCT_MANAGE SET
+	       GOAL_CO     = #GOAL_CO#
+	     , STTUS       = #STTUS#
+	     , STTUS_DTE   = SYSDATE
+	 WHERE TASK_NO     = #TASK_NO#
+	   AND INSTT_CODE  = #INSTT_CODE#
+	   AND RSRCHMAN_NO = #RSRCHMAN_NO#
+	   AND CNTRCT_SN   = #CNTRCT_SN#
+]]>			   
+</update>
+
+</sqlMap>

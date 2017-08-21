@@ -1,0 +1,11 @@
+mariadb utf8설정
+
+services.msc -> 서비스 중지
+
+maria db -> data 폴더 -> my.ini -> character_set_server=utf8 추가
+
+services.msc -> 서비스 시작
+
+show variables like 'c%'; -> utf8확인
+
+기존에 만들어놓은 database 는 utf-8로 바꾸던가 drop 후 새로 create 해야 함

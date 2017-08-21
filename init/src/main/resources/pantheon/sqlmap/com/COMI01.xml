@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMZ02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias alias="loginVO2" type="pantheon.com.i01.web.LoginVO"/>
+	
+	<!-- 로그인 처리를 위한 resultMap -->
+	<resultMap id="login" class="pantheon.com.i01.web.LoginVO">
+		<result property="userId" column="userId" columnIndex="1"/>
+		<result property="userSeCode" column="userSeCode" columnIndex="2"/>
+		<result property="password" column="password" columnIndex="3"/>
+		<result property="passwordChangeDe" column="passwordChangeDe" columnIndex="4"/>
+		<result property="userNm" column="userNm" columnIndex="5"/>
+		<result property="userEngNm" column="userEngNm" columnIndex="6"/>
+		<result property="email" column="email" columnIndex="7"/>
+		<result property="telno" column="telno" columnIndex="8"/>		
+		<result property="loginFailrCo" column="loginFailrCo" columnIndex="9"/>		
+		<result property="acntLockAt" column="acntLockAt" columnIndex="10"/>		
+		<result property="useYn" column="useYn" columnIndex="11"/>		
+		<result property="stdTimeStdr" column="stdTimeStdr" columnIndex="12"/>		
+	</resultMap>
+	
+	<select id="COMI01DAO.selectCmUserForCmSysConect" parameterClass="loginVO2" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*) 
+		  FROM CM_USER
+		 WHERE USER_ID = #userId#
+		]]>
+	</select>
+
+	<select id="COMI01DAO.actionLogin" resultMap="login">
+		<![CDATA[
+		SELECT A.USER_ID as userId
+			  ,A.PASSWORD as password
+			  ,A.USER_NM as userNm
+              ,A.USER_SE_CODE as userSeCode
+              ,A.USER_ENGNM as userEngNm
+              ,DAMO_DEC(A.EMAIL) as email
+              ,DAMO_DEC(A.TELNO) as telno
+              ,A.LOGIN_FAILR_CO as loginFailrCo
+              ,TO_CHAR(A.PASSWORD_CHANGE_DE, 'YYYYMMDDHH24MISS') as passwordChangeDe
+              ,TO_CHAR(A.SBSCRB_DE, 'YYYYMMDDHH24MISS') as sbscrbDe
+              ,A.ACNT_LOCK_AT as acntLockAt
+              ,A.USE_YN as useYn
+              ,(SELECT X.STD_TIME_STDR FROM CM_STD_TIME X WHERE X.STD_TIME_SN = A.STD_TIME_SN) as stdTimeStdr 
+          FROM CM_USER A
+         WHERE A.PASSWORD = DAMO_HASH(#password#)
+           AND A.USER_ID = #userId#
+           AND A.USE_YN = 'Y'
+	    ]]>	   
+	</select>
+	
+	<select id="COMI01DAO.selectCmMenuForModuleCode" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+    	SELECT DISTINCT(MODULE_CODE) MODULE_CODE
+    	  FROM CM_MENU A,
+               CM_PROGRM B,
+               CM_ROLE_AUTHOR C,
+               CM_USER_ROLE D,
+               CM_TASK_USER_ROLE E
+         WHERE D.ROLE_ID = C.ROLE_ID                  
+           AND C.PROGRM_ID = B.PROGRM_ID                  
+           AND A.MENU_ID = B.MENU_ID                  
+           AND D.USER_ID = E.USER_ID
+           AND B.ESSNTL_AT = 'Y'
+           AND D.USER_ID = #USER_ID#
+           AND A.USE_YN = 'Y'                
+           AND B.USE_YN = 'Y'                
+           AND C.USE_YN = 'Y'                
+           AND D.USE_YN = 'Y'            
+		UNION
+    	SELECT DISTINCT(MODULE_CODE) MODULE_CODE
+    	  FROM CM_MENU A,
+               CM_PROGRM B,
+               CM_ROLE_AUTHOR C,
+               CM_USER_ROLE D              
+         WHERE D.ROLE_ID = C.ROLE_ID                  
+           AND C.PROGRM_ID = B.PROGRM_ID                  
+           AND A.MENU_ID = B.MENU_ID                  
+		   AND B.ESSNTL_AT = 'A'
+           AND D.USER_ID = #USER_ID#   
+           AND A.USE_YN = 'Y'                
+           AND B.USE_YN = 'Y'                
+           AND C.USE_YN = 'Y'                
+           AND D.USE_YN = 'Y' 
+		]]>
+	</select>
+	
+	<select id="COMI01DAO.selectCmMenuByModuleCode" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT CASE 
+		       WHEN #LOCALE# = 'kr'   THEN A.MENU_NM       
+               WHEN #LOCALE# = 'en'   THEN A.MENU_ENG_NM   
+               WHEN #LOCALE# = 'jp'   THEN A.MENU_JAPAN_NM 
+               WHEN #LOCALE# = 'ch_1' THEN A.MENU_CHINA1_NM
+               WHEN #LOCALE# = 'ch_2' THEN A.MENU_CHINA2_NM
+               ELSE A.MENU_NM
+			   END MENU_NM
+	         , A.MENU_ID 
+	         , A.MODULE_SE 
+	         , DECODE(B.ESSNTL_AT, 'Y', '/edc/system/EDCA0101.do?MODULE_CODE=' || A.MODULE_CODE, 'A', B.PROGRM_URL) PROGRM_URL
+	         , A.MODULE_CODE
+	         , (SELECT COUNT(*)
+                  FROM CM_MENU X,
+	                   CM_PROGRM Y 
+		         WHERE X.MENU_ID = Y.MENU_ID      
+		           AND X.MENU_ID = Y.PROGRM_ID   
+                   AND X.MODULE_CODE = #MODULE_CODE#
+                   AND Y.ESSNTL_AT IN ('Y', 'A')
+                   AND X.USE_YN = 'Y'
+                   AND Y.USE_YN = 'Y'
+                   ) MODULE_COUNT
+          FROM CM_MENU A,
+	           CM_PROGRM B 
+		 WHERE A.MENU_ID = B.MENU_ID
+		   AND A.MENU_ID = B.PROGRM_ID
+		   AND A.USE_YN = 'Y'
+		   AND B.USE_YN = 'Y'
+		   AND B.ESSNTL_AT IN ('Y', 'A')         
+           AND A.MODULE_CODE = #MODULE_CODE#
+		]]>           
+<!-- 		   AND A.MODULE_SE != 0 -->
+	</select>
+	
+	<select id="COMI01DAO.selectCmMenuCountByModuleCode" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+          FROM CM_MENU A,
+	           CM_PROGRM B, 
+	           CM_ROLE_AUTHOR C, 
+	           CM_USER_ROLE D 
+		 WHERE D.ROLE_ID = C.ROLE_ID
+	       AND C.PROGRM_ID = B.PROGRM_ID         
+		   AND A.MENU_ID = B.MENU_ID   
+		   AND A.MENU_ID = B.PROGRM_ID      
+		   AND A.MODULE_SE != 0
+		   AND D.USER_ID =  #USER_ID#   
+		   AND A.USE_YN = 'Y'
+		   AND B.USE_YN = 'Y'
+		   AND C.USE_YN = 'Y'      
+		   AND D.USE_YN = 'Y'
+           AND A.MODULE_CODE = #MODULE_CODE#
+		]]>           
+	</select>
+	
+	<select id="COMI01DAO.selectCmMenuForLeftMenu" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.MENU_ID
+		     , CASE WHEN #LOCALE# = 'kr'   THEN A.MENU_NM
+                    WHEN #LOCALE# = 'en'   THEN A.MENU_ENG_NM
+                    WHEN #LOCALE# = 'jp'   THEN A.MENU_JAPAN_NM
+                    WHEN #LOCALE# = 'ch_1' THEN A.MENU_CHINA1_NM
+                    WHEN #LOCALE# = 'ch_2' THEN A.MENU_CHINA2_NM
+                    ELSE A.MENU_NM
+               END MENU_NM
+		     , A.MODULE_SE 	         
+		     , A.MODULE_CODE
+	         , B.PROGRM_URL
+	         , B.PROGRM_ID
+	         , A.MENU_ORDR
+	         , A.UPPER_MENU_ID
+             , CASE WHEN #LOCALE# = 'kr'   THEN (SELECT X.MENU_NM        FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                    WHEN #LOCALE# = 'en'   THEN (SELECT X.MENU_ENG_NM    FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                    WHEN #LOCALE# = 'jp'   THEN (SELECT X.MENU_JAPAN_NM  FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                    WHEN #LOCALE# = 'ch_1' THEN (SELECT X.MENU_CHINA1_NM FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                    WHEN #LOCALE# = 'ch_2' THEN (SELECT X.MENU_CHINA2_NM FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                    ELSE A.MENU_NM
+                END UPPER_MENU_NM
+	    FROM CM_MENU A,
+		     CM_PROGRM B, 
+             ( SELECT A.PROGRM_ID
+                 FROM CM_ROLE_AUTHOR A, CM_USER_ROLE B
+                WHERE A.ROLE_ID = B.ROLE_ID
+                  AND B.USER_ID = #USER_ID#
+                  AND A.USE_YN = 'Y'
+                  AND B.USE_YN = 'Y'
+             GROUP BY A.PROGRM_ID  ) C
+	   	WHERE B.PROGRM_ID = C.PROGRM_ID         
+		  AND A.MENU_ID = B.MENU_ID
+		  AND A.MENU_ID = B.PROGRM_ID         
+		  AND A.USE_YN = 'Y'
+		  AND B.USE_YN = 'Y'
+	      AND A.MODULE_CODE = #MODULE_CODE#
+	      AND B.TASK_AT = 'N'
+	   	ORDER BY MENU_ORDR
+	    ]]>
+	</select>
+	
+	<select id="COMI01DAO.selectCmMenuDistinctForLeftMenu" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT DISTINCT(UPPER_MENU_NM) UPPER_MENU_NM
+		     , MENU_ORDR
+		     , MENU_ID
+		     , MENU_COUNT
+          FROM
+          (
+       	  SELECT CASE WHEN #LOCALE# = 'kr'   THEN (SELECT X.MENU_NM        FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                 	  WHEN #LOCALE# = 'en'   THEN (SELECT X.MENU_ENG_NM    FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                 	  WHEN #LOCALE# = 'jp'   THEN (SELECT X.MENU_JAPAN_NM  FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                 	  WHEN #LOCALE# = 'ch_1' THEN (SELECT X.MENU_CHINA1_NM FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                 	  WHEN #LOCALE# = 'ch_2' THEN (SELECT X.MENU_CHINA2_NM FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID)
+                 	  ELSE A.MENU_NM
+				 END UPPER_MENU_NM
+    	        ,(SELECT X.MENU_ORDR FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID) MENU_ORDR
+    	        ,(SELECT X.MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.UPPER_MENU_ID) MENU_ID
+    	        ,(SELECT COUNT(*) FROM CM_MENU X WHERE X.UPPER_MENU_ID = A.UPPER_MENU_ID) MENU_COUNT
+            FROM CM_MENU A,
+	             CM_PROGRM B, 
+	             CM_ROLE_AUTHOR C, 
+	             CM_USER_ROLE D 
+		   WHERE D.ROLE_ID = C.ROLE_ID
+	         AND C.PROGRM_ID = B.PROGRM_ID         
+		     AND A.MENU_ID = B.MENU_ID 
+		     AND A.MENU_ID = B.PROGRM_ID         
+		     AND D.USER_ID =  #USER_ID#
+		     AND A.USE_YN = 'Y'
+		     AND B.USE_YN = 'Y'
+		     AND C.USE_YN = 'Y'       
+		     AND D.USE_YN = 'Y'
+             AND A.MODULE_CODE = #MODULE_CODE#
+             AND B.TASK_AT = 'N'
+          )
+       	ORDER BY MENU_ORDR
+       	]]>
+	</select>
+	
+	<select id="COMI01DAO.selectDistinctTaskByLeftMenu" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+        SELECT DISTINCT UPPER_MENU_NM
+             , MENU_ORDR
+             , MENU_ID
+             , MENU_COUNT
+          FROM (
+                SELECT CASE WHEN #LOCALE# = 'kr'   THEN (SELECT X.MENU_NM        FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                            WHEN #LOCALE# = 'en'   THEN (SELECT X.MENU_ENG_NM    FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                            WHEN #LOCALE# = 'jp'   THEN (SELECT X.MENU_JAPAN_NM  FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                            WHEN #LOCALE# = 'ch_1' THEN (SELECT X.MENU_CHINA1_NM FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                            WHEN #LOCALE# = 'ch_2' THEN (SELECT X.MENU_CHINA2_NM FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                            ELSE CM.MENU_NM
+                        END UPPER_MENU_NM
+                     , (SELECT X.MENU_ORDR FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID) AS MENU_ORDR
+                     , (SELECT X.MENU_ID   FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID) AS MENU_ID
+                     , (SELECT COUNT(*)    FROM CM_MENU X WHERE X.UPPER_MENU_ID = CM.UPPER_MENU_ID) MENU_COUNT
+                  FROM CTMS_DMC_TASK_ROLE TR
+                     , CM_PROGRM          CP
+                     , CM_MENU            CM
+                 WHERE TR.ROLE_ID     = #ROLE_ID#
+                   AND TR.TASK_SN     = #TASK_SN#
+                   AND TR.BUTTON_ORDR = '0'
+                   AND TR.PROGRM_ID   = CP.PROGRM_ID
+                   AND CP.PROGRM_ID   = CM.MENU_ID
+                   AND CM.MODULE_CODE = #MODULE_CODE#
+                   AND CP.USE_YN      = 'Y'
+                   AND CM.USE_YN      = 'Y'
+                   AND CP.TASK_AT     = 'Y'
+               ) M
+         ORDER BY M.MENU_ORDR
+		]]>
+	</select>
+
+	<select id="COMI01DAO.selectTaskByLeftMenu" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+        SELECT CM.MENU_ID
+             , CP.PROGRM_ID
+             , CASE WHEN #LOCALE# = 'kr'   THEN CM.MENU_NM
+                    WHEN #LOCALE# = 'en'   THEN CM.MENU_ENG_NM
+                    WHEN #LOCALE# = 'jp'   THEN CM.MENU_JAPAN_NM
+                    WHEN #LOCALE# = 'ch_1' THEN CM.MENU_CHINA1_NM
+                    WHEN #LOCALE# = 'ch_2' THEN CM.MENU_CHINA2_NM
+                    ELSE CM.MENU_NM
+                END MENU_NM
+             , CM.MODULE_SE
+             , CM.MODULE_CODE
+             , CP.PROGRM_URL
+             , CM.MENU_ORDR
+             , CM.UPPER_MENU_ID
+             , CASE WHEN #LOCALE# = 'kr'   THEN (SELECT X.MENU_NM        FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                    WHEN #LOCALE# = 'en'   THEN (SELECT X.MENU_ENG_NM    FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                    WHEN #LOCALE# = 'jp'   THEN (SELECT X.MENU_JAPAN_NM  FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                    WHEN #LOCALE# = 'ch_1' THEN (SELECT X.MENU_CHINA1_NM FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                    WHEN #LOCALE# = 'ch_2' THEN (SELECT X.MENU_CHINA2_NM FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+                    ELSE CM.MENU_NM
+                END UPPER_MENU_NM
+          FROM CTMS_DMC_TASK_ROLE TR
+             , CM_PROGRM          CP
+             , CM_MENU            CM
+         WHERE TR.ROLE_ID     = #ROLE_ID#
+           AND TR.TASK_SN     = #TASK_SN#
+           AND TR.BUTTON_ORDR = '0'
+           AND TR.PROGRM_ID   = CP.PROGRM_ID
+           AND CP.PROGRM_ID   = CM.MENU_ID
+           AND CM.MODULE_CODE = #MODULE_CODE#
+           AND CP.USE_YN      = 'Y'
+           AND CM.USE_YN      = 'Y'  
+           AND CP.TASK_AT     = 'Y'
+         ORDER BY CM.MENU_ORDR
+		]]>
+	</select>
+
+	<select id="COMI01DAO.selectTaskByMenuCnt" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+        SELECT COUNT(TR.PROGRM_ID)
+          FROM CTMS_DMC_TASK_ROLE TR
+             , CM_PROGRM          CP
+             , CM_MENU            CM
+         WHERE TR.ROLE_ID     = #ROLE_ID#
+           AND TR.TASK_SN     = #TASK_SN#
+           AND TR.PROGRM_ID   = #PROGRM_ID#
+           AND TR.BUTTON_ORDR = '0'
+           AND TR.PROGRM_ID   = CP.PROGRM_ID
+           AND CP.PROGRM_ID   = CM.MENU_ID
+           AND CP.USE_YN      = 'Y'
+           AND CM.USE_YN      = 'Y'  
+		]]>
+	</select>
+	
+	<select id="COMI01DAO.selectCmUserForPasswordChangeDe" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT TO_DATE(TO_CHAR(SYSDATE, 'YYYYMMDD')) - TO_DATE(TO_CHAR(PASSWORD_CHANGE_DE, 'YYYYMMDD'))
+	      FROM CM_USER
+	     WHERE USER_ID = #USER_ID#
+		]]>
+	</select>
+	
+	<select id="COMI01DAO.selectCmProgrmForHeaderAllModule" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.MODULE_CODE 
+		     , B.PROGRM_URL
+	      FROM CM_MENU A
+	         , CM_PROGRM B
+	         , CM_ROLE_AUTHOR C
+	         , CM_USER_ROLE D              
+	     WHERE D.ROLE_ID = C.ROLE_ID                  
+	       AND C.PROGRM_ID = B.PROGRM_ID                  
+	       AND A.MENU_ID = B.MENU_ID                  
+		   AND B.ESSNTL_AT = 'A'
+	       AND D.USER_ID = #USER_ID#
+	       AND A.USE_YN = 'Y'                
+	       AND B.USE_YN = 'Y'                
+	       AND C.USE_YN = 'Y'                
+	       AND D.USE_YN = 'Y'           
+	    GROUP BY A.MODULE_CODE, B.PROGRM_URL
+	    ]]>  
+	</select>
+	
+	<select id="COMI01DAO.selectCmProgrmForHeaderTaskModule" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.MODULE_CODE
+	      FROM CM_MENU A
+	         , CM_PROGRM B
+	         , CM_ROLE_AUTHOR C
+	         , CM_USER_ROLE D              
+	     WHERE D.ROLE_ID = C.ROLE_ID                  
+	       AND C.PROGRM_ID = B.PROGRM_ID                  
+	       AND A.MENU_ID = B.MENU_ID                  
+		   AND B.ESSNTL_AT = 'Y'
+	       AND D.USER_ID = #USER_ID#
+	       AND A.USE_YN = 'Y'                
+	       AND B.USE_YN = 'Y'                
+	       AND C.USE_YN = 'Y'                
+	       AND D.USE_YN = 'Y'           
+	    GROUP BY A.MODULE_CODE
+	    ]]>              
+	</select>
+
+</sqlMap>

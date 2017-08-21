@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMC03">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<insert id="COMC03DAO.insertEdcCrMic" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO EDC_CR_MDIC
+		     ( DICARY_SE_CODE
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , DICARY_VER
+		     )
+		VALUES
+		     ( '05'
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+	         , #DICARY_VER#
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COMC03DAO.insertEdcCrKcd" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO EDC_CR_KCD
+		     ( DISS_CODE
+	         , KCD_SN
+	         , KOREAN_NM
+	         , ENG_NM
+	         , DICARY_SE_CODE
+	         , DICARY_VER
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+		     )
+		VALUES
+		     ( #DISS_CODE#
+	         , #KCD_SN#
+	         , #KOREAN_NM#
+	         , #ENG_NM#
+	         , '05'
+	         , #DICARY_VER#
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMC03DAO.selectEdcCrMdicByDicarySeCode" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.DICARY_SE_CODE
+		     , A.USE_AT
+		     , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+		     , A.FRST_CRTR
+		     , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.FRST_CRTR) FRST_CRTR_NM
+		     , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+		     , A.LAST_UPDUSR
+		     , A.DICARY_VER
+		  FROM EDC_CR_MDIC A
+		 WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		ORDER BY FRST_CRTR DESC
+		]]>
+	</select>
+	
+	<select id="COMC03DAO.selectEdcCrKcdByKcdSn" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT RN
+		     , DISS_CODE
+	         , KCD_SN
+	         , KOREAN_NM
+	         , ENG_NM
+	         , DICARY_SE_CODE
+	         , DICARY_VER
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = FRST_CRTR) FRST_CRTR_NM
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	      FROM
+	    ( 	
+		SELECT ROWNUM RN
+		     , DISS_CODE
+	         , KCD_SN
+	         , KOREAN_NM
+	         , ENG_NM
+	         , DICARY_SE_CODE
+	         , DICARY_VER
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	      FROM EDC_CR_KCD
+	     WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+	       AND DICARY_VER = #DICARY_VER#
+		)
+		]]>
+		<isNotEmpty property="page">
+		<isNotEmpty property="count">
+		<![CDATA[
+		WHERE RN > ($page$ - 1) * $count$
+		  AND RN <= ($page$ * $count$)
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>
+	
+	<select id="COMC03DAO.selectEdcCrKcdCountByKcdSn" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+	      FROM EDC_CR_KCD
+	     WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+	       AND DICARY_VER = #DICARY_VER#
+		]]>
+	</select>
+</sqlMap>

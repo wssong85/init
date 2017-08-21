@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<bean name="IWRS_DL_DLVYREQUSTMANAGE_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="IWRS_DL_DLVYREQUSTMANAGE"/>
+	            <entry key="TABLE_PK" value="DLVYREQUSTMANAGE_CODE"/>
+	            <entry key="COLUMN_NM" value="INSTT_CODE,TASK_CODE,DLVY_RQESTER_ID,DLVY_RQESTDE,DLVY_REQUST_COMMENT,DLVY_REQUST_CNFIRM_AT,USE_AT"/>
+	            <entry key="LABEL_NM" value="기관코드,과제코드,배송요청자ID,배송요청일,배송요청 코멘트,배송요청 확인여부,사용여부"/>
+	            <entry key="MODULE" value="IWRS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="IWRS_DL_DLVYMANAGE_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="IWRS_DL_DLVYMANAGE"/>
+	            <entry key="TABLE_PK" value="DLVYMANAGE_CODE,SN"/>
+	            <entry key="COLUMN_NM" value="INSTT_CODE,TASK_CODE,DLVY_REQUST_OCCRRNC_CODE,DLVY_REQUST_QTT,IP_TYPE,DLVY_RQESTER_ID,DLVY_REQUST_CONFMER_ID,DLVY_REQUST_CNCLR_ID,DLVY_HOPEDE,DLVY_RQESTDE,DLVY_REQUST_COMMENT,DLVY_REQUST_CANCL_COMMENT,REAL_DLVY_QTT,DLVY_CNFRMR_ID,DLVY_CNCLR_ID,DLVY_BGNDE,DLVY_COMPTDE,DLVY_CNFIRM_COMMENT,DLVY_CANCL_COMMENT,DLVY_CNCDE,DLVY_STTUS_CODE,SHIPMNTREQUSTOFE_OUTPT_AT,ACPTRSMOFE_OUTPT_AT,UNDTAKE_CNFRMR_ID,UNDTAKECNFIRM_COMMENT,USE_AT"/>
+	            <entry key="LABEL_NM" value="기관코드,과제코드,배송요청발생코드,배송요청수량,IP TYPE,배송요청자ID,배송요청 승인자ID,배송요청취소자ID,배송희망일,배송요청일,배송요청코멘트,배송요청취소코멘트,실제배송수량,배송확인자ID,배송취소자ID,배송시작일,배송완료일,배송확인코멘트,배송취소코멘트,배송취소일,배송상태코드,출하요청서출력여부,인수인계서출력여부,인수확인자ID,인수확인코멘트,사용여부"/>
+	            <entry key="MODULE" value="IWRS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="IWRS_DL_DLVY_IP_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="IWRS_DL_DLVY_IP_INFO"/>
+	            <entry key="TABLE_PK" value="IP_TRGET_NO,DLVYMANAGE_CODE,IP_CODE,CREAT_CODE,IP_TYPE,SN"/>
+	            <entry key="COLUMN_NM" value="IP_STTUS_CODE,USE_AT"/>
+	            <entry key="LABEL_NM" value="IP상태코드,사용여부"/>
+	            <entry key="MODULE" value="IWRS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="IWRS_DL_DLVY_IP_STATUS_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="IWRS_DL_DLVY_IP_INFO"/>
+	            <entry key="TABLE_PK" value="IP_TYPE,CREAT_CODE,IP_CODE"/>
+	            <entry key="COLUMN_NM" value="IP_STTUS_CODE"/>
+	            <entry key="LABEL_NM" value="IP상태코드"/>
+	            <entry key="MODULE" value="IWRS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="IWRS_IP_IP_CODE_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="IWRS_IP_IP_CODE"/>
+	            <entry key="TABLE_PK" value="IP_CODE,CREAT_CODE,IP_TYPE"/>
+	            <entry key="COLUMN_NM" value="MDLRTGR_CODE,IP_STTUS_CODE,IP_ERROR_CODE,USE_AT,IP_ERROR_COMMENT,IP_ERROR_REGISTER_ID,IP_STTUS_ETC"/>
+	            <entry key="LABEL_NM" value="치료군코드,IP상태코드,IP에러코드,사용여부,IP에러코멘트,IP에러등록자ID,IP상태기타"/>
+	            <entry key="MODULE" value="IWRS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="IWRS_DS_INVNTRYMANAGE_DETAIL_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="IWRS_DS_INVNTRYMANAGE_DETAIL"/>
+	            <entry key="TABLE_PK" value="DLVYMANAGE_CODE,SN,INVNTRYMANAGE_CODE"/>
+	            <entry key="COLUMN_NM" value="TASK_CODE,INSTT_CODE,IP_TYPE,CREAT_CODE,PARMACY_INVNTRY_QTT,USEFUL_INVNTRY_QTT,USE_AT"/>
+	            <entry key="LABEL_NM" value="과제코드,기관코드,IP TYPE,생성코드,약국재고수량,가용재고수량,사용유무"/>
+	            <entry key="MODULE" value="IWRS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="IWRS_DS_INVNTRYMANAGE_IP_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="IWRS_DS_INVNTRYMANAGE_IP_INFO"/>
+	            <entry key="TABLE_PK" value="IP_CODE,DLVYMANAGE_CODE,SN,INVNTRYMANAGE_CODE"/>
+	            <entry key="COLUMN_NM" value="CREAT_CODE,IP_TYPE,WRHOUSNGDE,IP_STTUS_CODE,IP_ERROR_CODE,MNFCTURNO,VALIDPD,USEFUL_INVNTRY_AT,USE_AT"/>
+	            <entry key="LABEL_NM" value="생성코드,IP TYPE,입고일,IP상태코드,IP에러코드,제조번호,유효기간,가용재고여부,사용여부"/>
+	            <entry key="MODULE" value="IWRS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="IWRS_DS_TRIGR_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="IWRS_DS_TRIGR"/>
+	            <entry key="TABLE_PK" value="TRIGR_NO"/>
+	            <entry key="COLUMN_NM" value="APPLCDE,TRIGR_LVL,MXMM_INVNTRY_QTT,IP_TYPE,MEMO,TASK_CODE,INSTT_CODE,USE_AT"/>
+	            <entry key="LABEL_NM" value="적용일,트리거레벨,재고유지수량,IP TYPE,메모,과제코드,기관코드,사용여부"/>
+	            <entry key="MODULE" value="IWRS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="IWRS_SJ_RTUNMANAGE_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="IWRS_SJ_RTUNMANAGE"/>
+	            <entry key="TABLE_PK" value="RTUN_NO,IP_CODE,DLVYMANAGE_CODE,SN,INVNTRYMANAGE_CODE"/>
+	            <entry key="COLUMN_NM" value="INSTT_CODE,SUBJECT_CODE,VISIT_CODE,RTUN_QTT,RTURN_QTT,TAKNG_QTT,RTUN_DT,RTURN_DT,IP_STTUS_CODE,RTUNMAN_ID,RTUN_COMMENT,RTNPSN_ID,RTURN_COMMENT,RTUN_RTURN_CNFIRM_AT,ADITIEMVALUEONE,ADITIEMVALUETWO,ADITIEMVALUETHREE,ADITIEMVALUEFOUR,ADITIEMVALUEFIVE,ADITIEMVALUESIX,IPASIGN_DE,USE_AT"/>
+	            <entry key="LABEL_NM" value="기관코드,피험자코드,VISIT코드,불출수량,반납수량,복용수량,불출일자,반납일자,IP상태코드,불출자ID,불출코멘트,반납자ID,반납코멘트,불출반납확인여부,추가항목1,추가항목2,추가항목3,추가항목4,추가항목5,추가항목6,IP배정일,사용유무"/>
+	            <entry key="MODULE" value="IWRS"/>
+			</map>
+		</property>
+	</bean>
+</beans>	

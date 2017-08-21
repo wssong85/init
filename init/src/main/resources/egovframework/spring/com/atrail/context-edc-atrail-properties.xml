@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<!-- 분류코드 -->
+	<bean name="ATRAIL_EDC_CR_TASK" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_TASK"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="TASK_NO,TASK_NM,TASK_TY_CODE,PHASE_CODE,USE_AT,TASK_END_AT,PHASE_ETC_NM,IWRS_USE_AT,TASK_DC,RSRCH_PURPS,RRCS_CO,CTRTC_FILE_SN,PRMISN_DE,REJDGE_BEGIN,REJDGE_END,STUDY_NM,TRGET_DISS,BLIND_CODE,RSRCH_BEGIN,RSRCH_END,DOMN_URL"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="TASK_NO,TASK_NM,TASK_TY_CODE,PHASE_CODE,USE_AT,TASK_END_AT,PHASE_ETC_NM,IWRS_USE_AT,TASK_DC,RSRCH_PURPS,RRCS_CO,CTRTC_FILE_SN,PRMISN_DE,REJDGE_BEGIN,REJDGE_END,STUDY_NM,TRGET_DISS,BLIND_CODE,RSRCH_BEGIN,RSRCH_END,DOMN_URL"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_FORM" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_FORM"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="CRF_VER,CRF_PROGRS_CODE,USE_AT,CHANGE_RESN,BNDE_APPLC_DE,BNDE_APPLC_CODE"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="CRF_VER,CRF_PROGRS_CODE,USE_AT,CHANGE_RESN,BNDE_APPLC_DE,BNDE_APPLC_CODE"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CF_SUBJECT" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CF_SUBJECT"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="INSTT_FORM_SN, SUBJECT_NO"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="SUBJECT_INITIAL, DOCMNT_AGRE_DE, BLIND_STTUS_CODE, RELIS_RESN, RELIS_DE, RELIS_CONFM_NO, RELIS_CONFM_AT, DOCMNT_AGRE_AT, SUBJECT_STTUS_CODE, IMDTL_RELIS_AT, IMDTL_RELIS_CODE, ELTSGN_STTUS_CODE, FREEZING_STTUS_CODE, USE_AT, BLIND_REQUST_CODE, REQUST_NO"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="SUBJECT_INITIAL, DOCMNT_AGRE_DE, BLIND_STTUS_CODE, RELIS_RESN, RELIS_DE, RELIS_CONFM_NO, RELIS_CONFM_AT, DOCMNT_AGRE_AT, SUBJECT_STTUS_CODE, IMDTL_RELIS_AT, IMDTL_RELIS_CODE, ELTSGN_STTUS_CODE, FREEZING_STTUS_CODE, USE_AT, BLIND_REQUST_CODE, REQUST_NO"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_GROUP" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_GROUP"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,GROUP_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="GROUP_LBL,GROUP_SE_CODE,GROUP_DC,GROUP_ORDR,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="GROUP_LBL,GROUP_SE_CODE,GROUP_DC,GROUP_ORDR,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_VRIABL" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_VRIABL"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,GROUP_SN,VRIABL_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="DOMN_VRIABL_SN,CL_CODE_SN,VRIABL_ORDR,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="DOMN_VRIABL_SN,CL_CODE_SN,VRIABL_ORDR,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_VISIT_GROUP" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_VISIT_GROUP"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,VISIT_GROUP_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="VISIT_SN,GROUP_SN,GROUP_ORDR,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="VISIT_SN,GROUP_SN,GROUP_ORDR,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_VISIT_SCHDUL" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_VISIT_SCHDUL"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,VISIT_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="VISIT_LBL,VISIT_TY,VISIT_BFE_DAYCNT,VISIT_AFTER_DAYCNT,VISIT_PREARNGE_CODE,VISIT_DAYCNT,REFRN_BEGIN_AT,REFRN_END_AT,USE_AT,VISIT_ORDR"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="VISIT_LBL,VISIT_TY,VISIT_BFE_DAYCNT,VISIT_AFTER_DAYCNT,VISIT_PREARNGE_CODE,VISIT_DAYCNT,REFRN_BEGIN_AT,REFRN_END_AT,USE_AT,VISIT_ORDR"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_TE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_TE"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,TE_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="TE_SN,USE_AT,TE_CODE,TE_LBL,TE_BEGIN_CND,TE_END_CND,TE_PD"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="TE_SN,USE_AT,TE_CODE,TE_LBL,TE_BEGIN_CND,TE_END_CND,TE_PD"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_TA" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_TA"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,TA_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="TA_CODE,TA_LBL,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="TA_CODE,TA_LBL,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_TADETAIL" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_TADETAIL"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,TA_DETAIL_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="TA_SN,TE_SN,TA_QU_CND,TA_TRAN_RULE,TA_EPOCH,TE_SORTORDR,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="TA_SN,TE_SN,TA_QU_CND,TA_TRAN_RULE,TA_EPOCH,TE_SORTORDR,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_TI" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_TI"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,TI_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="TI_VER,TI_CODE,TI_SE_CODE,TI_CL,TI_CN,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="TI_VER,TI_CODE,TI_SE_CODE,TI_CL,TI_CN,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_TS" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_TS"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,TS_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="TS_NO,TS_GROUP_ID,TS_PARAMTR_CODE,TS_PARAMTR,TS_VALUE,TS_NFLAVOR,TS_VALUE_CODE,TS_VALUE_CODE_REFRN,TS_REFRN_VER,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="TS_NO,TS_GROUP_ID,TS_PARAMTR_CODE,TS_PARAMTR,TS_VALUE,TS_NFLAVOR,TS_VALUE_CODE,TS_VALUE_CODE_REFRN,TS_REFRN_VER,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_USER_VRIABL" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_USER_VRIABL"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,DOMN_VRIABL_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="VRIABL_NM,VRIABL_LBL,VRIABL_TY,USE_AT,VRIABL_TY_CODE,CRF_LBL_ONE,CRF_LBL_TWO,TASK_SN,CDISC_DOMN_SN"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="VRIABL_NM,VRIABL_LBL,VRIABL_TY,USE_AT,VRIABL_TY_CODE,CRF_LBL_ONE,CRF_LBL_TWO,TASK_SN,CDISC_DOMN_SN"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_USER_VRIABLOPTN" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_USER_VRIABLOPTN"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,DOMN_VRIABL_SN,VRIABL_OPTN_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="VRIABL_OPTN_CODE,VRIABL_OPTN_NM,VRIABL_OPTN_ORDR,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="VRIABL_OPTN_CODE,VRIABL_OPTN_NM,VRIABL_OPTN_ORDR,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean name="ATRAIL_EDC_CR_EDITCECK" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<entry key="TABLE_NM" value="EDC_CR_EDITCECK"/>
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,VISIT_GROUP_SN,SET_VRIABL_SN,EDITCECK_SN"/>
+				<entry key="COLUMN_NM" value="QUERY_MSSAGE,QUERY_SE_CODE"/>
+				<entry key="LABEL_NM" value="QUERY_MSSAGE,QUERY_SE_CODE"/>
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_INPUTLMTT" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<entry key="TABLE_NM" value="EDC_CR_INPUTLMTT"/>
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,VISIT_GROUP_SN,SET_VRIABL_SN,INPUT_LMTT_SN"/>
+				<entry key="COLUMN_NM" value="LMTT_VISIT_GROUP_SN,LMTT_SET_SN,LMTT_SET_ROW_SN,LMTT_SET_VRIABL_SN,USE_AT"/>
+				<entry key="LABEL_NM" value="LMTT_VISIT_GROUP_SN,LMTT_SET_SN,LMTT_SET_ROW_SN,LMTT_SET_VRIABL_SN,USE_AT"/>
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CF_GROUP" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CF_GROUP"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="INSTT_FORM_SN,SUBJECT_NO,VISIT_SN,SN,VISIT_GROUP_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="STRE_CODE,STRE_RESN_CODE,STRE_ETC_RESN,SDV_STTUS_CODE,SDV_COMPT_STTUS_CODE,STRE_CRF_VER,STRE_EDC_VER,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="STRE_CODE,STRE_RESN_CODE,STRE_ETC_RESN,SDV_STTUS_CODE,SDV_COMPT_STTUS_CODE,STRE_CRF_VER,STRE_EDC_VER,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_CODING" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_CODING"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="TASK_SN,EDC_VER,CODING_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="DOMN_VRIABL_SN,DOMN_SE_CODE,CODING_AT,DICARY_SE_CODE,DICARY_VER,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="DOMN_VRIABL_SN,DOMN_SE_CODE,CODING_AT,DICARY_SE_CODE,DICARY_VER,USE_AT"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_CM_SANCLINE_DETAIL" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="CM_SANCLINE_DETAIL"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="SANCLINE_SN,DETAIL_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="SANCTN_CODE,USE_YN,REGIST_ID,CONFMER_ID,SANCTN_ORDR,STTUS_ORDR"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="SANCTN_CODE,USE_YN,REGIST_ID,CONFMER_ID,SANCTN_ORDR,STTUS_ORDR"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CF_VRIABL" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CF_VRIABL"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="INSTT_FORM_SN,SUBJECT_NO,VISIT_SN,SN,VISIT_GROUP_SN,SET_ROW_SN,VRIABL_ROW_SN,SET_VRIABL_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="PV_CNFIRM_CODE,CRA_CNFIRM_CODE"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="PV_CNFIRM_CODE,CRA_CNFIRM_CODE"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CF_QUERY" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CF_QUERY"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="QUERY_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="INSTT_FORM_SN,QUERY_SN,SET_ROW_SN,SET_VRIABL_SN,SN,SUBJECT_NO,USE_AT,VISIT_GROUP_SN,VISIT_SN,VRIABL_ROW_SN"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="INSTT_FORM_SN,QUERY_SN,SET_ROW_SN,SET_VRIABL_SN,SN,SUBJECT_NO,USE_AT,VISIT_GROUP_SN,VISIT_SN,VRIABL_ROW_SN"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CR_INSTT_FORM" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CR_INSTT_FORM"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="INSTT_FORM_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="INSTT_CODE,TASK_SN,FREEZING_STTUS_CODE,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="기관코드,과제순번,FREEZING 상태 코드,사용여부"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_LAB_DTA_FILE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_LAB_DTA_FILE"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="FILE_MASTR_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="TASK_SN,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="과제순번,사용여부"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_LAB_DTA" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_LAB_DTA"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="FILE_MASTR_SN,LAB_DTA_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="INSTT_CODE,STRE_CODE,LAB_NM,SMPLERING_DE,VISIT_LBL,ANALS_PARAMTR,ANALS_RESULT,SUBJECT_NO,GROUP_LBL,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="기관코드,저장코드,LAB명,샘플링일,방문명,분석파라미터,분석결과,피험자번호,그룹명,사용여부"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CF_VISIT" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CF_VISIT"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="INSTT_FORM_SN,SUBJECT_NO,VISIT_SN,SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="ELTSGN_STTUS_CODE,VMODE_SN,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="전자서명 상태 코드,V모드 순번,사용여부"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_CM_QUERY" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="CM_QUERY"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="QUERY_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="MODULE_CODE,QUERY_TY_CODE,QUERY_STTUS_CODE,QUERY_GROUP,QUERY_CN,END_AT,RESN,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="모듈코드,쿼리 유형 코드,쿼리 상태 코드,쿼리그룹,쿼리내용,종료여부,사유,사용여부"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CF_LAB_DETAIL" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CF_LAB_DETAIL"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="LAB_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="INSTT_CODE,LAB_NM,ANALS_PARAMTR,UNIT,SCOPE_LWLT_VALUE,SCOPE_UPLMT_VALUE,APPLC_BGNDE,APPLC_ENDDE,AGE,SEXDSTN,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="모듈코드,쿼리 유형 코드,쿼리 상태 코드,쿼리그룹,쿼리내용,종료여부,사유,사용여부"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_EDC_CF_ROW" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+				<entry key="TABLE_NM" value="EDC_CF_ROW"/>
+				<!-- 테이름 PK 목록 "," 구분자로 여러개 지정 -->
+				<entry key="TABLE_PK" value="INSTT_FORM_SN,SUBJECT_NO,VISIT_SN,SN,VISIT_GROUP_SN,SET_ROW_SN,VRIABL_ROW_SN"/>
+				<!-- 이력남길컬럼들 "," 구분자로 여러개 지정 -->
+				<entry key="COLUMN_NM" value="VRIABL_ROW_ORDR,SDV_AT,SDV_USER,USE_AT"/>
+				<!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+				<entry key="LABEL_NM" value="변수 행 순서,SDV 여부,SDV 사용자,사용여부"/>
+				<!-- 모듈이름 -->
+				<entry key="MODULE" value="EDC"/>
+			</map>
+		</property>
+	</bean>
+</beans>	

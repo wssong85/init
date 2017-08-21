@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<!-- 분류코드 -->
+	<bean name="ATRAIL_CM_CLCODE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+				<!-- 테이블이름 -->
+	            <entry key="TABLE_NM" value="CM_CLCODE"/>
+	            <!-- 테이름 PK 목록 "," 구분자로 여러개 지정(빈공간없이입력) -->
+	            <entry key="TABLE_PK" value="CMMN_CLCODE"/>
+	            <!-- 이력남길컬럼들 "," 구분자로 여러개 지정(빈공간없이입력) -->
+	            <entry key="COLUMN_NM" value="CMMN_CLCODE_NM,CMMN_CLCODE_DC,CMMN_CLCODE_ENGNM,USE_AT"/>
+	            <!-- 이력남길컬럼명들"," 구분자로 여러개 지정(빈공간없이입력) -->
+	            <entry key="LABEL_NM" value="공통 분류코드 명,공통 분류코드 설명,공통 분류코드 영문명,사용 여부"/>
+	            <!-- 모듈이름 -->
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 공통코드 -->
+	<bean name="ATRAIL_CM_CMMNCODE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_CMMNCODE"/>
+	            <entry key="TABLE_PK" value="CMMN_CODE,CMMN_CLCODE"/>
+	            <entry key="COLUMN_NM" value="CMMN_CODE_NM,CMMN_CODE_ENGNM,CMMN_CODE_DC,SORT_ORDR,CMMN_CLCODE,UPPER_CMMNCODE,USE_AT"/>
+	            <entry key="LABEL_NM" value="공통 코드 명,공통 코드 영문명,공통 코드 설명,정렬 순서,공통 분류코드,상위 공통코드,사용 여부"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 결제선 -->
+	<bean name="ATRAIL_CM_SANCLINE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_SANCLINE"/>
+	            <entry key="TABLE_PK" value="SANCLINE_SN"/>
+	            <entry key="COLUMN_NM" value="SANCLINE_NM,USE_YN"/>
+	            <entry key="LABEL_NM" value="결재선 명,사용 여부"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 결제선 상세 -->
+	<bean name="ATRAIL_CM_SANCLINE_DETAIL" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_SANCLINE_DETAIL"/>
+	            <entry key="TABLE_PK" value="DETAIL_SN,SANCLINE_SN"/>
+	            <entry key="COLUMN_NM" value="SANCTN_CODE,USE_YN,CONFMER_ID"/>
+	            <entry key="LABEL_NM" value="결재 코드,사용 여부,승인자 ID"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 결제선 요청 -->
+	<bean name="ATRAIL_CM_SANCTN_REQUST" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_SANCTN_REQUST"/>
+	            <entry key="TABLE_PK" value="REQUST_NO"/>
+	            <entry key="COLUMN_NM" value="RQESTER_ID,STTUS_CODE,REQUST_COMMENT,USE_YN"/>
+	            <entry key="LABEL_NM" value="요청자 ID,상태 코드,요청 코멘트,요청 코멘트"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 결제선 처리 -->
+	<bean name="ATRAIL_CM_SANCTN_PROCESS" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_SANCTN_PROCESS"/>
+	            <entry key="TABLE_PK" value="REQUST_NO,SANCTN_NO"/>
+	            <entry key="COLUMN_NM" value="SANCTN_CODE,SANCTNER_ID,STTUS_CODE,SANCTN_COMMENT,USE_YN"/>
+	            <entry key="LABEL_NM" value="결재 코드,결재자 ID,상태 코드,결재 코멘트,결재 코멘트"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 부서 정보 -->
+	<bean name="ATRAIL_CM_DEPTINFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_DEPTINFO"/>
+	            <entry key="TABLE_PK" value="COMP_CD,DEPT_CD"/>
+	            <entry key="COLUMN_NM" value="DEPT_NM,DEPT_UP,DEPT_LEVEL,DEPT_ORDER,USE_YN"/>
+	            <entry key="LABEL_NM" value="부서 명,상위 부서 코드,부서 레벨,부서 순서,사용 여부"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 업무사용자 정보 -->
+	<bean name="ATRAIL_CM_JOBUSER" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_JOBUSER"/>
+	            <entry key="TABLE_PK" value="USER_ID"/>
+	            <entry key="COLUMN_NM" value="COMP_CD,EMPL_NO,DEPT_CD,COST_CNTER,HFFC_AT,CLSF_CODE,ECNY_DE,RETIRE_DE,DTY_CODE,DPRLR_AT,USE_YN"/>
+	            <entry key="LABEL_NM" value="회사 코드,사원 번호,부서 코드,COST 센터,재직 여부,직급 코드,입사 일,퇴직 일,직무 코드,부서장 여부,사용 여부"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 사용자 정보 -->
+	<bean name="ATRAIL_CM_USER" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_USER"/>
+	            <entry key="TABLE_PK" value="USER_ID"/>
+	            <entry key="COLUMN_NM" value="USER_NM,USER_SE_CODE,USER_ENGNM,EMAIL,TELNO,LOGIN_FAILR_CO,PASSWORD_CHANGE_DE,SBSCRB_DE,ACNT_LOCK_AT,USE_YN,STD_TIME_SN"/>
+	            <entry key="LABEL_NM" value="사용자 명,사용자 구분 코드 ,사용자 영문명,이메일,전화번호,로그인 실패 수,비밀번호 변경 일,가입 일,계정 잠금 여부,사용 여부,표준 시간 순번"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 기관 정보 -->
+	<bean name="ATRAIL_SAP_BCNC_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SAP_BCNC_INFO"/>
+	            <entry key="TABLE_PK" value="KUNNR"/>
+	            <entry key="COLUMN_NM" value="NAME1,LAND1,VTWEG,PSTLZ,ORT01,REGIO,STRAS,STCD1,STCD2,J_1KFREPRE,STCD3,TELF1,TELFX,J_1KFTBUS,J_1KFTIND,VKGRP,VKBUR,CESSION_KZ,LOEVM,VKGRP_T,ZERDAT,ZERZET,VKBUR_T,USE_YN,LANDX"/>
+	            <entry key="LABEL_NM" value="거래처명,국가키,유통경로,우편번호,주소 도시,주소 지역,주소 상세,식별번호,사업자등록번호,대표자 이름,대표자 주민번호,전화번호,FAX 번호,업태,업종,영업그룹코드,사업장코드,고객거래상태,중앙삭제여부,영업그룹 내역,자료 생성일,자료 입력시간,사업장 내역,사용여부,국가명"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 메뉴관리 -->
+	<bean name="ATRAIL_CM_MENU" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_MENU"/>
+	            <entry key="TABLE_PK" value="MENU_ID"/>
+	            <entry key="COLUMN_NM" value="MENU_NM,MENU_DC,MODULE_CODE,MENU_ORDR,UPPER_MENU_ID,USE_YN"/>
+	            <entry key="LABEL_NM" value="메뉴 명,메뉴 설명,모듈 코드,메뉴 순서,상위 메뉴 ID,사용 여부"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 프로그램관리 -->
+	<bean name="ATRAIL_CM_PROGRM" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_PROGRM"/>
+	            <entry key="TABLE_PK" value="PROGRM_ID"/>
+	            <entry key="COLUMN_NM" value="PROGRM_NM,PROGRM_DC,USE_YN,PROGRM_URL,PROGRM_ORDR,MENU_ID"/>
+	            <entry key="LABEL_NM" value="프로그램 명,프로그램 설명,사용 여부,프로그램 URL,프로그램 순서,메뉴 ID"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 버튼관리 -->
+	<bean name="ATRAIL_CM_BUTTON" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_BUTTON"/>
+	            <entry key="TABLE_PK" value="BUTTON_ID"/>
+	            <entry key="COLUMN_NM" value="BUTTON_NM,BUTTON_DC,BUTTON_ORDR,USE_YN,PROGRM_ID"/>
+	            <entry key="LABEL_NM" value="버튼 명,버튼 설명,버튼 순서,사용 여부,프로그램 ID"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 역할관리 -->
+	<bean name="ATRAIL_CM_ROLE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_ROLE"/>
+	            <entry key="TABLE_PK" value="ROLE_ID"/>
+	            <entry key="COLUMN_NM" value="ROLE_NM,RM,USE_YN"/>
+	            <entry key="LABEL_NM" value="역할 명,비고,사용 여부"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 역할별 권한 -->
+	<bean name="ATRAIL_CM_ROLE_AUTHOR" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_ROLE_AUTHOR"/>
+	            <entry key="TABLE_PK" value="ROLE_ID,PROGRM_ID"/>
+	            <entry key="COLUMN_NM" value="PROGRM_ID"/>
+	            <entry key="LABEL_NM" value="프로그램 ID"/>
+	            <entry key="MODULE" value="COM"/>
+			</map>
+		</property>
+	</bean>
+</beans>	

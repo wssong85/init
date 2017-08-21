@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	
+	
+	<!-- Protocol -->
+	<bean name="ATRAIL_CM_PROTOCOL" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_ST_PROTOCOL"/>
+	            <entry key="TABLE_PK" value="SN"/>
+	            <entry key="COLUMN_NM" value="SN,VER,CONFMDE,FRMLA_OFFIC_PRESENTNDE,CHGHY,RM,EXPRSE,USE_AT,TASK_SN"/>
+	            <entry key="LABEL_NM" value="순번,버전,승인일,식약처제출일,변경사유,비고,시험구분,사용여부,과제순번"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- NIS 임상및 과제정보 -->
+	<bean name="ATRAIL_TO_NIS_TASK" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_TO_NIS_TASK"/>
+	            <entry key="TABLE_PK" value="SN"/>
+	            <entry key="COLUMN_NM" value="SN,TASK_SN,VISIT_INFO,COST,USE_AT"/>
+	            <entry key="LABEL_NM" value="순번,과제번호,VISIT 정보,COST,사용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- PMS 연차보고서 -->
+	<bean name="ATRAIL_CM_PMSRT" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_ST_YRYCREPRT"/>
+	            <entry key="TABLE_PK" value="SN"/>
+	            <entry key="COLUMN_NM" value="SN,TASK_SN,ANNUAL,SUMMARY,PERIOD_FROM,PERIOD_TO,SAFETY,EFFICACY,FDRMREPORT_PRESENTNDE,EXAMINPD_FROM,EXAMINPD_TO,USE_AT,EXPRSE"/>
+	            <entry key="LABEL_NM" value="순번,과제번호,연차,SUMMARY,기간_FROM,기간_TO,SAFETY,SAFETY,정기보고 제출일,조사기간_FROM,조사기간_TO,사용여부,시험구분"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- Request Form -->
+	<bean name="ATRAIL_CO_REQUEST_FORM" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_CO_REQUEST_FORM"/>
+	            <entry key="TABLE_PK" value="SN"/>
+	            <entry key="COLUMN_NM" value="SN,TASK_SN,RQESTER,PSITN,OPERT_HOPEDE,MODULESE,REQUSTSE,SJ,CN,STTUS,USE_AT,ROLE,FILE_MASTR_SN"/>
+	            <entry key="LABEL_NM" value="순번,과제순번,요청자,소속,작업 희망일,모듈구분,요청구분,제목,내용,상태,사용여부,역할,파일순번"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+
+	<!-- 과제별 역할권한 -->
+	<bean name="ATRAIL_DMC_TASK_ROLE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_DMC_TASK_ROLE"/>
+	            <entry key="TABLE_PK" value="ROLE_ID,PROGRM_ID,TASK_SN"/>
+	            <entry key="COLUMN_NM" value="ROLE_ID,PROGRM_ID,TASK_SN,BUTTON_ID,MODULE_CODE"/>
+	            <entry key="LABEL_NM" value="역할ID,프로그램ID,과제순번,버튼ID,모듈"/>
+	            <entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 교육관리 -->
+	<bean name="ATRAIL_DMC_EDC_MGR" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_DMC_EDC_MANAGE"/>
+	            <entry key="TABLE_PK" value="EDC_SN,MODULE"/>
+	            <entry key="COLUMN_NM" value="EDC_SN,MODULE,TASK_SN,SJ,VER,ATCH_FILE_SN,CN,USE_AT"/>
+	            <entry key="LABEL_NM" value="교육순번,모듈,과제순번,제목,버전,첨부파일순번,내용,사용여부"/>
+	            <entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+
+	<!-- 교육관리 역할 -->
+	<bean name="ATRAIL_DMC_EDC_ROLE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_DMC_EDC_ROLE"/>
+	            <entry key="TABLE_PK" value="EDC_SN,MODULE,ROLE_SN"/>
+	            <entry key="COLUMN_NM" value="EDC_SN,MODULE,ROLE_SN,ROLE_ID"/>
+	            <entry key="LABEL_NM" value="교육순번,모듈,역할순번,역할ID"/>
+	            <entry key="MODULE" value="DMC"/>
+			</map>
+		</property>
+	</bean>
+
+	<!-- 연구자정보 -->
+	<bean name="ATRAIL_CTMS_RSRCHUSER" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_RSRCHUSER"/>
+	            <entry key="TABLE_PK" value="USER_ID,INSTT_CODE"/>
+	            <entry key="COLUMN_NM" value="USER_ID,INSTT_CODE,IRB_AT,HSPTL_NM,ZIP,ADDRONE,ADDRTWO,CNTRCT_STTUS,FILE_MASTR_SN,USE_YN,ISF_PYMNT_AT,ISF_PYMNT_DE,RM,CONFM_SE"/>
+	            <entry key="LABEL_NM" value="사용자 ID,기관 코드,IRB 여부,병원 명,우편번호,주소1,주소2,계약 상태,파일 마스터 순번,사용 여부,ISF 지급 여부,ISF 지급 일,비고,승인여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 연구자관리 조사연구 기관 -->
+	<bean name="ATRAIL_CTMS_RSRCH_INSTT" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_CO_RSRCH_INSTT"/>
+	            <entry key="TABLE_PK" value="SN,USER_ID,TASK_SN"/>
+	            <entry key="COLUMN_NM" value="USER_ID,TASK_SN,SN,HSPTL_SE,DSCNTC_AT,DSCNTC_DE,USE_AT,CHRG_CRA"/>
+	            <entry key="LABEL_NM" value="ID,과제순분,순분,병원구분,중단여부,중단일,사용여부,담당CRA"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 연구자관리 연구비 -->
+	<bean name="ATRAIL_CTMS_RSRCH_RSRCCT" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_CO_RSRCH_RSRCCT"/>
+	            <entry key="TABLE_PK" value="SN,USER_ID,TASK_SN"/>
+	            <entry key="COLUMN_NM" value="USER_ID,TASK_SN,SN,ODR,RCPMNY_DE,RCPMNY_AM,LAST_PYMNT_DE,LAST_PYMNT_AT,RSRCCT_SUM,USE_AT"/>
+	            <entry key="LABEL_NM" value="사용자 ID,과제 순번,순번,차수,입금일,입금액,최종 연구비 지급일,최종 연구비 지급 여부,연구비 합계,사용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 연구자관리 IRB심의 -->
+	<bean name="ATRAIL_CTMS_RSRCH_DLBRT" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_CO_RSRCH_DLBRT"/>
+	            <entry key="TABLE_PK" value="SN,USER_ID,TASK_SN"/>
+	            <entry key="COLUMN_NM" value="USER_ID,TASK_SN,SN,DLBRT_KND,PRESENTN_DE,DLBRT_DE,DLBRT_RESULT,DLBRT_RESULT_DE,DLBRTCT_RCPMNY_DE,DLBRTCT_RCPMNY_AM,CONFM_NTC_DOC,USE_AT"/>
+	            <entry key="LABEL_NM" value="사용자 ID,과제 순번,순번,심의종류,제출일,심의일,심의결과,심의결과일,심의비 입금일,심의비 입금액,승인통보서,사용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 연구자관리 동의서 -->
+	<bean name="ATRAIL_CTMS_RSRCH_WRTCNS" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_CO_RSRCH_WRTCNS"/>
+	            <entry key="TABLE_PK" value="SN,USER_ID,TASK_SN"/>
+	            <entry key="COLUMN_NM" value="USER_ID,TASK_SN,SN,AT,DLIV_AT,VALID_DE,VER,RM,USE_AT"/>
+	            <entry key="LABEL_NM" value="사용자 ID,과제 순번,순번,여부,전달 여부,유효일,버전,비고,사용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 계약관리 -->
+	<bean name="ATRAIL_CTMS_CNTRCT_MANAGE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_CO_CNTRCT_MANAGE"/>
+	            <entry key="TABLE_PK" value="CNTRCT_SN,TASK_SN"/>
+	            <entry key="COLUMN_NM" value="CNTRCT_SN,USER_ID,TASK_SN,GOAL_NO,IRB_AT,CNTRCT_SE,STTUS,STTUS_DTE,ATCH_FILE,USE_AT,EXMNT_REQUST_DE,PYMNT_PLAN_CNT,PYMNT_CNT,CNTRCT_DE"/>
+	            <entry key="LABEL_NM" value="계약 순번,사용자 ID,과제 순번,목표 례수,IRB 여부,계약 구분,상태,상태 변경 일자,첨부 파일,사용 여부,검토 요청일,분할 지급 계획 횟수,분할 지급 횟수,계약일"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+
+	<!-- 연구자 info 버전관리 -->
+	<bean name="ATRAIL_CTMS_RSRCH_VER" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_CO_RSRCH_VER"/>
+	            <entry key="TABLE_PK" value="USER_ID,TASK_SN"/>
+	            <entry key="COLUMN_NM" value="USER_ID,TASK_SN,SN,IEM,KND,VER,DLBRT_KND,CONFM_DE,USE_AT"/>
+	            <entry key="LABEL_NM" value="USER_ID,관제순번,순번,항목 ,종류,버전,심의종류,승인일,상용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+
+	<!-- 종료과제 버전관리 -->
+	<bean name="ATRAIL_CTMS_PROGRS_ROLE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_ST_PROGRS_CN"/>
+	            <entry key="TABLE_PK" value="SN,TASK_SN,USER_ID"/>
+	            <entry key="COLUMN_NM" value="USER_ID,ISESTATN,DETAIL_CN"/>
+	            <entry key="LABEL_NM" value="연구자ID,내역,상세내용"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 공지사항 작성 -->
+	<bean name="ATRAIL_CTMS_DMC_NOTICE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_DMC_NOTICE"/>
+	            <entry key="TABLE_PK" value="SN"/>
+	            <entry key="COLUMN_NM" value="SN,TASK_SN,MODULE_SE,NOTICE_SE,SJ,CN,ATCH_FILE_SN,USE_AT"/>
+	            <entry key="LABEL_NM" value="순번,과제 순번,모듈 구분,공지구분,제목,내용,첨부파일 순번,사용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+
+	
+	<!-- 거래처 정보 -->
+	<bean name="ATRAIL_CM_BCNCUSER" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_BCNCUSER"/>
+	            <entry key="TABLE_PK" value="USER_ID"/>
+	            <entry key="COLUMN_NM" value="USER_ID,INSTT_CODE,USE_YN"/>
+	            <entry key="LABEL_NM" value="사용자 ID,기관 코드,사용 여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 기관 정보 -->
+	<bean name="ATRAIL_CM_INSTT" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_INSTT"/>
+	            <entry key="TABLE_PK" value="INSTT_CODE"/>
+	            <entry key="COLUMN_NM" value="INSTT_CODE,KUNNR,USE_YN,INSTT_TY"/>
+	            <entry key="LABEL_NM" value="기관 코드,거래처코드,사용 여부,기관유형"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 사용자 과제 정보 -->
+	<bean name="ATRAIL_CM_USERTASK" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_USERTASK"/>
+	            <entry key="TABLE_PK" value="USER_ID,TASK_SN"/>
+	            <entry key="COLUMN_NM" value="USER_ID,USE_YN,TASK_NO,TASK_SN,CONFM_SE,DSCNTC_AT,DSCNTC_DE"/>
+	            <entry key="LABEL_NM" value="사용자 ID,사용 여부,과제 번호,과제 순번,승인 구분,중단 여부,중단일"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 사용자 역할 -->
+	<bean name="ATRAIL_CM_USER_ROLE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_USER_ROLE"/>
+	            <entry key="TABLE_PK" value="USER_ID,ROLE_ID"/>
+	            <entry key="COLUMN_NM" value="USER_ID,ROLE_ID,USE_YN"/>
+	            <entry key="LABEL_NM" value="사용자 ID,역할 ID,사용 여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 과제 사용자 역할 -->
+	<bean name="ATRAIL_CM_TASK_USER_ROLE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CM_TASK_USER_ROLE"/>
+	            <entry key="TABLE_PK" value="ROLE_SN,USER_ID,ROLE_ID,TASK_SN"/>
+	            <entry key="COLUMN_NM" value="ROLE_SN,USER_ID,ROLE_ID,TASK_SN"/>
+	            <entry key="LABEL_NM" value="역할 순번,사용자 ID,역할 ID,과제 순번"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 공지사항 작성 -->
+	<bean name="ATRAIL_CTMS_ST_NOTIFY" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_ST_NOTIFY"/>
+	            <entry key="TABLE_PK" value="NOTIFY_SN,REQUEST_SN,JOB_TYPE"/>
+	            <entry key="COLUMN_NM" value="NOTIFY_SN,REQUEST_SN,JOB_TYPE,NOTIFY_SJ,CHARGER_ID,LINK_URL,LINK_KEY,LINK_VALUE,USE_AT"/>
+	            <entry key="LABEL_NM" value="알림순번,요청번호,업무구분,알림제목,담당자 ID,URL Link,Link Key,Link Value,사용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- CTMS_ST_REPORT_MAIN 작성 -->
+	<bean name="ATRAIL_CTMS_ST_REPORT_MAIN" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_ST_REPORT_MAIN"/>
+	            <entry key="TABLE_PK" value="REPORT_SN,MILESTONE_SN,TASK_SN,REPORT_TYPE"/>
+	            <entry key="COLUMN_NM" value="REPORT_SN,MILESTONE_SN,TASK_SN,REPORT_TYPE,REPORT_SE,JOB_SE,RSRCHMAN_ID,INSTT_CODE,OPRTN_DE,EXPECT_DE,PLACE,RSPOFC,CHARGER_ID,COL_A,COL_B,COL_C,COL_D,COL_E,COL_F,COL_H,PURPS,VISIT_ODR,ITEM_A,ITEM_B,ITEM_C,ITEM_D,ITEM_E,ITEM_F,ITEM_G,ITEM_H,ITEM_I,ITEM_J,ITEM_K,SETLE_NO,REMARK_A,REMARK_B,USE_AT"/>
+	            <entry key="LABEL_NM" value="보고서 순번,Milestone순번,과제 순번,계획_방문_구분(P:계획/V:방문),보고서 구분,업무 구분(PMS/NIS/임상), 연구자 또는 시험책임자,기관코드,실시일/방문일/조사실시일/예상기간From,예상기간To,장소,직책,방문자/평가자/실시자CRA,작성일/첫피험자등록/피험자번호,작성자/첫피험자 스크리닝/성별,마지막 피험자 등록,마지막 피험자 마지막 방문,CRF 수거 완료,예비 컬럼,예비 컬럼,목적,방문차수,조사대상자수/목표피험자수,첫모니터링/등록/필수점수/평가방법/완료피험자수/스크리닝,이후모니터링/완료/선택항목점수/평가방법/스크리닝피험자수/등록,첫모니터링/탈락/총점/평가방법/탈락피험자수/약국모니터링/완료,이후정기모니터링/진행중/탈락,종료방문/비고/평가방법-기타내용/종료방문/진행중,유해사례 건수/수거된 CRF,이상반응건수,일탈 건수,예비 컬럼,예비 컬럼,결제 번호,비고/논의사항/기타 특이사항,조치사항,사용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- CTMS_ST_REPORT_ITEM 작성 -->
+	<bean name="ATRAIL_CTMS_ST_REPORT_ITEM" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_ST_REPORT_ITEM"/>
+	            <entry key="TABLE_PK" value="MILESTONE_SN,TASK_SN,ITEM_SE,REPORT_TYPE"/>
+	            <entry key="COLUMN_NM" value="REPORT_SN,MILESTONE_SN,TASK_SN,REPORT_TYPE,ITEM_SE,ITEM_VALUE,ITEM_VALUE_A,CHARGER_ID,RM,SUBJECT_CO,DTE,USE_AT"/>
+	            <entry key="LABEL_NM" value="보고서 순번,Milestone 순번,과제 순번,계획/방문 구분(P:계획/V:방문),항목 구분,항목 값(Y/N/NA),항목 값(Y/N/NA),담당자 ID,비고,피험자 수,일정,사용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- CTMS_ST_REPORT_VISIT 작성 -->
+	<bean name="ATRAIL_CTMS_ST_REPORT_VISIT" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="CTMS_ST_REPORT_VISIT"/>
+	            <entry key="TABLE_PK" value="VISIT_SN,MILESTONE_SN,TASK_SN,REPORT_TYPE"/>
+	            <entry key="COLUMN_NM" value="REPORT_SN,MILESTONE_SN,TASK_SN,VISIT_SN,REPORT_TYPE,NM,ROLE_NM,PSITN,FROM_VISIT_DE,TO_VISIT_DE,ITEM_SE,USE_AT"/>
+	            <entry key="LABEL_NM" value="보고서 순번,Milestone 순번,과제 순번,방문 순번,계획/방문 구분(P : 계획/V : 방문),성명,역할 명,소속,방문일 From,방문일 To,항목 구분(참석자/사내참석자),사용여부"/>
+	            <entry key="MODULE" value="CTMS"/>
+			</map>
+		</property>
+	</bean>
+	
+
+</beans>	

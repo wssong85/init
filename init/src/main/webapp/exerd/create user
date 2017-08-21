@@ -1,0 +1,6 @@
+create database realtime;
+create user 'realtime'@'%' identified by '1234';
+grant all privileges on realtime.* to realtime@'%' identified by '1234';
+flush privileges; 
+
+

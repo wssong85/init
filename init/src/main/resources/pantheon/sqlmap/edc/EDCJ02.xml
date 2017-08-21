@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCJ02DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+	
+	<select id="selectAtrailList" parameterClass="hashMap" resultClass="egovMap" >
+		SELECT	CIF.INSTT_FORM_SN,
+		        CS.SUBJECT_NO,
+		        CV.VISIT_SN,
+		        CG.VISIT_GROUP_SN,
+		        CVR.SET_VRIABL_SN,
+		        CCA.CM_MSSAGE,
+		        TO_CHAR(CCA.FRST_CREDE,
+		        'yyyy-mm-dd') AS FRST_CREDE,
+		        CASE WHEN SN = 1 THEN (SELECT VISIT_LBL FROM EDC_CR_VISIT_SCHDUL CVS WHERE VISIT_SN = CV.VISIT_SN AND CVS.TASK_SN = #TASK_SN# AND CVS.EDC_VER= #EDC_VERSION#)
+      				 WHEN SN != 1 THEN (SELECT VISIT_LBL FROM EDC_CR_VISIT_SCHDUL CVS WHERE VISIT_SN = CV.VISIT_SN AND CVS.TASK_SN = #TASK_SN# AND CVS.EDC_VER= #EDC_VERSION#)||SN END AS VISIT_LBL,
+		        CGR.GROUP_LBL,
+		        CI.KUNNR,
+		        SBI.NAME1,
+		        CU.USER_NM             
+	    FROM
+	        EDC_CR_INSTT_FORM CIF        
+	    JOIN
+	        EDC_CF_SUBJECT CS        
+	            ON  CIF.INSTT_FORM_SN = CS.INSTT_FORM_SN        
+	    JOIN
+	        EDC_CF_VISIT CV        
+	            ON  CS.SUBJECT_NO = CV.SUBJECT_NO        
+	    JOIN
+	        EDC_CF_GROUP CG                 
+	            ON   CV.SUBJECT_NO = CG.SUBJECT_NO                 
+	            AND   CV.VISIT_SN = CG.VISIT_SN              
+	    RIGHT OUTER JOIN
+	        EDC_CF_VRIABL CVR                 
+	            ON  CG.SUBJECT_NO = CVR.SUBJECT_NO                 
+	            AND   CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN                 
+	            AND   CG.VISIT_SN = CVR.VISIT_SN                 
+	            AND   CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN              
+	    RIGHT OUTER JOIN
+	        EDC_CF_CM_ATRAIL CCA                 
+	            ON    CVR.SUBJECT_NO = CCA.SUBJECT_NO                 
+	            AND   CVR.SET_SN = CCA.SET_SN                 
+	            AND   CVR.SET_VRIABL_SN = CCA.SET_VRIABL_SN                 
+	            AND   CVR.SET_ROW_SN = CCA.SET_ROW_SN      
+	    LEFT OUTER JOIN
+	        EDC_CR_GROUP CGR                 
+	            ON    CG.VISIT_GROUP_SN = CGR.GROUP_SN               
+	    JOIN
+	        CM_INSTT CI                  
+	            ON   CIF.INSTT_CODE = CI.INSTT_CODE               
+	    JOIN
+	        SAP_BCNC_INFO SBI                  
+	            ON   CI.KUNNR = SBI.KUNNR               
+	    JOIN
+	        CM_USER CU         
+	            ON   CCA.FRST_CRTR = CU.USER_ID
+	        WHERE	CS.SUBJECT_NO LIKE '%' || #subjectNo# || '%'
+	        AND		SBI.NAME1 LIKE '%' || #name# || '%'
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMB01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<select id="COMB01DAO.selectCmRoleForComboBox" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT ROLE_ID
+		     , ROLE_NM
+		     , TASK_AT
+		  FROM CM_ROLE
+		 WHERE ROLE_ID NOT IN ('IS_AUTHENTICATED_ANONYMOUSLY', 'IS_AUTHENTICATED_REMEMBERED', 'IS_AUTHENTICATED_FULLY', 'ROLE_USER', 'ROLE_EXTENDS')
+		   AND USE_YN = 'Y'
+		]]>
+	</select>
+	
+	<select id="COMB01DAO.selectCmUserRoleCountByUserId" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_USER_ROLE
+		 WHERE USER_ID = #USER_ID#
+		   AND USE_YN = 'Y'
+		]]>
+	</select>
+	
+	<insert id="COMB01DAO.insertCmUserRoleByUserId" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_USER_ROLE
+		     ( USER_ID
+		     , ROLE_ID
+		     , USE_YN
+		     , FRST_CREDE
+		     , REGIST_ID
+		     , LAST_UPDDE
+		     , UPDATE_ID
+		     , FIXING_AT
+		     )
+		VALUES
+		     ( #USER_ID#
+		     , #ROLE_ID#
+		     , NVL(USE_YN, 'Y')
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     , NVL(#FIXING_AT#, 'N')
+		     )
+		]]>	  
+	</insert>
+	
+	<update id="COMB01DAO.updateCmUserRoleByUserId" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_USER_ROLE
+		   SET ROLE_ID = #ROLE_ID# 
+	         , LAST_UPDDE = SYSDATE
+	         , UPDATE_ID = #UPDATE_ID#
+	     WHERE USER_ID = #USER_ID#
+		]]>
+	</update>
+	
+	<update id="COMB01DAO.updateCmRoleByRoleId" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_ROLE
+		   SET ROLE_NM = #ROLE_NM#
+		     , RM = #RM#
+		     , USE_YN = #USE_YN#
+		     , LAST_UPDDE = SYSDATE
+	         , UPDATE_ID = #UPDATE_ID#
+	         , TASK_AT = #TASK_AT#
+	         , FIXING_AT = #FIXING_AT#
+		 WHERE ROLE_ID = #ROLE_ID#
+		]]>
+	</update>
+	
+	<insert id="COMB01DAO.insertCmRole" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_ROLE
+		     ( ROLE_ID
+			 , ROLE_NM
+			 , RM
+			 , USE_YN
+			 , FRST_CREDE
+			 , REGIST_ID
+			 , LAST_UPDDE
+			 , UPDATE_ID
+			 , TASK_AT
+		     )
+		VALUES
+			 ( #ROLE_ID#
+			 , #ROLE_NM#
+			 , #RM#
+			 , 'Y'
+			 , SYSDATE
+			 , #UPDATE_ID#
+			 , SYSDATE
+			 , #UPDATE_ID#
+			 , NVL(#TASK_AT#, 'N')
+			 )
+		]]>
+	</insert>
+	
+	<select id="COMB01DAO.selectCmRole" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+    SELECT A.ROLE_ID
+         , A.ROLE_NM
+         , A.RM     
+         , A.USE_YN     
+         , A.FRST_CREDE     
+         , A.REGIST_ID     
+         , A.LAST_UPDDE     
+         , A.UPDATE_ID
+         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM   
+         , A.TASK_AT  
+         , A.FIXING_AT
+      FROM CM_ROLE A   
+     WHERE A.ROLE_ID NOT IN ('ROLE_ADMIN', 'ROLE_EXTENDS', 'IS_AUTHENTICATED_ANONYMOUSLY', 'IS_AUTHENTICATED_REMEMBERED', 'IS_AUTHENTICATED_FULLY', 'ROLE_USER')
+     ORDER BY A.LAST_UPDDE DESC		
+	]]>
+	</select>
+	
+	<select id="COMB01DAO.selectComtnrolesHierarchy" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT PARNTS_ROLE
+	         , CHLDRN_ROLE
+	      FROM COMTNROLES_HIERARCHY
+      ]]>
+	</select>
+	
+	<delete id="COMB01DAO.deleteComtnrolesHierarchy" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM COMTNROLES_HIERARCHY
+		]]>
+	</delete>
+	
+	<insert id="COMB01DAO.insertComtnrolesHierarchy" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO COMTNROLES_HIERARCHY
+		     ( PARNTS_ROLE
+		     , CHLDRN_ROLE
+		     )
+		VALUES
+		     ( #PARNTS_ROLE#
+		     , #CHLDRN_ROLE#
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMB01DAO.selectCmRoleForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_ROLE
+		 WHERE ROLE_ID = #ROLE_ID#
+		]]>
+	</select>
+	
+	<update id="COMB01DAO.updateCmRoleForDelete" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_ROLE
+		   SET USE_YN = 'N'
+		     , LAST_UPDDE = SYSDATE
+	         , UPDATE_ID = #UPDATE_ID#
+	     WHERE ROLE_ID = #ROLE_ID#
+		]]>
+	</update>
+	
+	<insert id="COMB01DAO.insertComtnrolesHierarchyForExtends" parameterClass="hashMap">
+		<![CDATA[
+			INSERT 
+			  INTO COMTNROLES_HIERARCHY
+			     ( PARNTS_ROLE
+			     , CHLDRN_ROLE
+			     )
+			VALUES
+			     ( 'ROLE_EXTENDS'
+			     , #ROLE_ID#
+			     )
+		]]>
+	</insert>
+		
+	<insert id="COMB01DAO.insertComtnrolesHierarchyForAdmin" parameterClass="hashMap">
+		<![CDATA[
+			INSERT 
+			  INTO COMTNROLES_HIERARCHY
+			     ( PARNTS_ROLE
+			     , CHLDRN_ROLE
+			     )
+			VALUES
+			     ( #ROLE_ID#
+			     , 'ROLE_ADMIN'
+			     )
+		]]>
+	</insert>	
+	
+	<delete id="COMB01DAO.deleteComtnrolesHierarchyForExtends" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM COMTNROLES_HIERARCHY WHERE PARNTS_ROLE = 'ROLE_EXTENDS' AND CHLDRN_ROLE = #ROLE_ID#
+		]]>
+	</delete>
+	
+	<delete id="COMB01DAO.deleteComtnrolesHierarchyForAdmin" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM COMTNROLES_HIERARCHY WHERE PARNTS_ROLE = #ROLE_ID# AND CHLDRN_ROLE = 'ROLE_ADMIN'
+		]]> 	
+	</delete>
+	
+	<select id="COMB01DAO.selectComtnrolesHierarchyForDupCheckByAdmin" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*) FROM COMTNROLES_HIERARCHY WHERE PARNTS_ROLE = #ROLE_ID# AND CHLDRN_ROLE = 'ROLE_ADMIN'
+		]]>
+	</select>
+	
+	<select id="COMB01DAO.selectComtnrolesHierarchyForDupCheckByExtends" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*) FROM COMTNROLES_HIERARCHY WHERE PARNTS_ROLE = 'ROLE_EXTENDS' AND CHLDRN_ROLE = #ROLE_ID#
+		]]>
+	</select>
+	
+	<select id="COMB01DAO.selectCmRoleAuthorForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_ROLE_AUTHOR
+		 WHERE ROLE_ID = #ROLE_ID#
+		]]>
+	</select>
+	
+	<select id="COMB01DAO.selectCtmsDmcTaskRoleForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CTMS_DMC_TASK_ROLE
+		 WHERE ROLE_ID = #ROLE_ID#
+		]]>
+	</select>
+</sqlMap> 

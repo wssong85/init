@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMD01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+
+	<select id="COMD01DAO.selectCmClCodeListByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.CMMN_CLCODE
+	         , A.CMMN_CLCODE_NM
+	         , A.CMMN_CLCODE_DC
+	         , A.CMMN_CLCODE_ENGNM
+	         , A.CMMN_CLCODE_JAPAN_NM
+             , A.CMMN_CLCODE_CHINA1_NM
+             , A.CMMN_CLCODE_CHINA2_NM
+	         , A.USE_AT
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , A.REGIST_ID
+	         , A.UPDATE_ID
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+	      FROM CM_CLCODE A
+	     WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="CMN_CLCODE_NM" prepend="AND">
+	     <![CDATA[ 
+	     	   A.CMN_CLCODE_NM = #CMN_CLCODE_NM# 
+	     ]]>
+	     </isNotEmpty>
+	     <isNotEmpty property="CMMN_CLCODE" prepend="AND">
+	     <![CDATA[ 
+	     	   A.CMMN_CLCODE = #CMMN_CLCODE# 
+		 ]]> 
+	     </isNotEmpty>
+	     <![CDATA[
+	     ORDER BY A.LAST_UPDDE DESC
+	     ]]>
+	</select>
+	
+	<update id="COMD01DAO.updateCmClCodeListByPk" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_CLCODE
+		   SET CMMN_CLCODE = #CMMN_CLCODE#
+		]]>
+		<isNotEmpty property="CMMN_CLCODE_ENGNM" prepend=",">
+		<![CDATA[
+			   CMMN_CLCODE_ENGNM = #CMMN_CLCODE_ENGNM# 
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="CMMN_CLCODE_JAPAN_NM" prepend=",">
+		<![CDATA[
+			   CMMN_CLCODE_JAPAN_NM = #CMMN_CLCODE_JAPAN_NM# 
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="CMMN_CLCODE_CHINA1_NM" prepend=",">
+		<![CDATA[
+			   CMMN_CLCODE_CHINA1_NM = #CMMN_CLCODE_CHINA1_NM# 
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="CMMN_CLCODE_CHINA2_NM" prepend=",">
+		<![CDATA[
+			   CMMN_CLCODE_CHINA2_NM = #CMMN_CLCODE_CHINA2_NM# 
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="CMMN_CLCODE_NM" prepend=",">
+	    <![CDATA[ 
+	    	   CMMN_CLCODE_NM = #CMMN_CLCODE_NM# 
+	    ]]>
+	    </isNotEmpty>
+		<isNotEmpty property="USE_AT" prepend=",">
+	    <![CDATA[ 
+	    	   USE_AT = #USE_AT# 
+	    ]]>
+	    </isNotEmpty>
+		<isNotEmpty property="UPDATE_ID" prepend=",">
+	    <![CDATA[ 
+	    	   LAST_UPDDE = SYSDATE 
+	    ]]>
+	    </isNotEmpty>
+		<isNotEmpty property="UPDATE_ID" prepend=",">
+	    <![CDATA[ 
+	    	   UPDATE_ID = #UPDATE_ID# 
+	    ]]>
+	    </isNotEmpty>
+	    <![CDATA[
+	   	 WHERE CMMN_CLCODE = #CMMN_CLCODE#
+	   	]]> 
+	</update>
+	
+	<insert id="COMD01DAO.insertCmClCode" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_CLCODE
+		  	 (  CMMN_CLCODE
+	          , CMMN_CLCODE_NM
+	          , CMMN_CLCODE_ENGNM
+			  , CMMN_CLCODE_JAPAN_NM
+              , CMMN_CLCODE_CHINA1_NM
+              , CMMN_CLCODE_CHINA2_NM
+	          , CMMN_CLCODE_DC
+	          , USE_AT
+	          , FRST_CREDE
+	          , REGIST_ID
+	          , LAST_UPDDE
+	          , UPDATE_ID
+		  	 )
+		VALUES
+		     ( #CMMN_CLCODE#
+	         , #CMMN_CLCODE_NM#
+	         , NVL(#CMMN_CLCODE_ENGNM#, #CMMN_CLCODE_NM#) 
+             , NVL(#CMMN_CODE_JAPAN_NM#, #CMMN_CLCODE_NM#)
+             , NVL(#CMMN_CODE_CHINA1_NM#, #CMMN_CLCODE_NM#)
+             , NVL(#CMMN_CODE_CHINA2_NM#, #CMMN_CLCODE_NM#)
+	         , #CMMN_CLCODE_DC#
+	         , NVL(#USE_AT#, 'Y')
+	         , sysdate
+	         , #UPDATE_ID#
+	         , sysdate
+	         , #UPDATE_ID#
+		     )
+		]]>
+	</insert>
+	
+	<delete id="COMD01DAO.deleteCmClCodeByPk" parameterClass="hashMap">
+	<![CDATA[
+		DELETE FROM CM_CLCODE WHERE CMMN_CLCODE = #CMMN_CLCODE#
+	]]>
+	</delete>
+	
+	<select id="COMD01DAO.selectCmCmmnCodeListByPk" parameterClass="hashMap" resultClass="hashMap"> 
+		<![CDATA[
+		SELECT A.CMMN_CODE
+             , A.CMMN_CODE_NM
+             , A.CMMN_CODE_ENGNM
+             , A.CMMN_CODE_JAPAN_NM
+             , A.CMMN_CODE_CHINA1_NM
+             , A.CMMN_CODE_CHINA2_NM
+             , A.CMMN_CODE_DC
+             , A.SORT_ORDR
+             , A.CMMN_CLCODE
+             , A.UPPER_CMMNCODE
+             , A.USE_AT
+             , A.REGIST_ID
+             , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+             , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE 
+             , A.UPDATE_ID
+             , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM 
+          FROM CM_CMMNCODE A
+         WHERE A.CMMN_CLCODE = #CMMN_CLCODE#
+         ORDER BY A.SORT_ORDR, A.LAST_UPDDE DESC
+		]]>
+	</select>
+	
+	<update id="COMD01DAO.updateCmCmmnCodeByPk" parameterClass="hashMap">
+		<![CDATA[
+	   	UPDATE CM_CMMNCODE
+	   	   SET CMMN_CODE = #CMMN_CODE#
+		]]>
+		<isNotEmpty property="UPPER_CMMNCODE" prepend=",">
+		<![CDATA[
+			   UPPER_CMMNCODE = #UPPER_CMMNCODE#
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="CMMN_CODE_ENGNM" prepend=",">
+		<![CDATA[
+			   CMMN_CODE_ENGNM = #CMMN_CODE_ENGNM#
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="CMMN_CODE_JAPAN_NM" prepend=",">
+		<![CDATA[
+			   CMMN_CODE_JAPAN_NM = #CMMN_CODE_JAPAN_NM#
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="CMMN_CODE_CHINA1_NM" prepend=",">
+		<![CDATA[
+			   CMMN_CODE_CHINA1_NM = #CMMN_CODE_CHINA1_NM#
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="CMMN_CODE_CHINA2_NM" prepend=",">
+		<![CDATA[
+			   CMMN_CODE_CHINA2_NM = #CMMN_CODE_CHINA2_NM#
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="SORT_ORDR" prepend=",">
+		<![CDATA[
+			   SORT_ORDR = #SORT_ORDR#
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="CMMN_CODE_NM" prepend=",">
+	    <![CDATA[ 
+	    	   CMMN_CODE_NM = #CMMN_CODE_NM# 
+	    ]]>
+	    </isNotEmpty>
+		<isNotEmpty property="USE_AT" prepend=",">
+	    <![CDATA[ 
+	    	   USE_AT = #USE_AT# 
+	    ]]>
+	    </isNotEmpty>
+		<isNotEmpty property="UPDATE_ID" prepend=",">
+	    <![CDATA[ 
+	    	   LAST_UPDDE = SYSDATE 
+	    ]]>
+	    </isNotEmpty>
+		<isNotEmpty property="UPDATE_ID" prepend=",">
+	    <![CDATA[ 
+	    	   UPDATE_ID = #UPDATE_ID# 
+	    ]]>
+	    </isNotEmpty>
+	    <![CDATA[
+	     WHERE CMMN_CODE = #CMMN_CODE#
+	       AND CMMN_CLCODE = #CMMN_CLCODE#
+		]]>
+	</update>
+	
+	<insert id="COMD01DAO.insertCmCmmnCode" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_CMMNCODE
+		  	 (  CMMN_CODE
+		  	  , CMMN_CODE_NM
+		  	  , CMMN_CODE_JAPAN_NM
+              , CMMN_CODE_CHINA1_NM
+              , CMMN_CODE_CHINA2_NM
+	          , CMMN_CODE_ENGNM
+	          , CMMN_CODE_DC
+	          , SORT_ORDR
+	          , CMMN_CLCODE
+	          , UPPER_CMMNCODE
+	          , USE_AT
+	          , FRST_CREDE
+	          , REGIST_ID
+	          , LAST_UPDDE
+	          , UPDATE_ID
+		  	 )
+		VALUES
+		     ( #CMMN_CODE#
+		     , #CMMN_CODE_NM#
+             , NVL(#CMMN_CODE_JAPAN_NM#, #CMMN_CODE_NM#)
+             , NVL(#CMMN_CODE_CHINA1_NM#, #CMMN_CODE_NM#)
+             , NVL(#CMMN_CODE_CHINA2_NM#, #CMMN_CODE_NM#)
+	         , NVL(#CMMN_CODE_ENGNM#, #CMMN_CODE_NM#)
+	         , #CMMN_CODE_DC#
+	         , #SORT_ORDR#
+	         , #CMMN_CLCODE#
+	         , #UPPER_CMMNCODE#
+	         , NVL(#USE_AT#, 'Y')
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+		     )
+		]]>
+	</insert>
+	
+	<update id="COMD01DAO.updateCmClCodeForDelete" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_CLCODE
+		   SET USE_AT = 'N'
+		     , UPDATE_ID = #UPDATE_ID#
+		     , LAST_UPDDE = SYSDATE
+		 WHERE CMMN_CLCODE = #CMMN_CLCODE#
+		]]>
+	</update>
+	
+	<update id="COMD01DAO.updateCmCmmnCodeForDelete" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_CMMNCODE
+		   SET USE_AT = 'N'
+		     , UPDATE_ID = #UPDATE_ID#
+			 , LAST_UPDDE = SYSDATE
+		 WHERE CMMN_CLCODE = #CMMN_CLCODE#
+		   AND CMMN_CODE = #CMMN_CODE#
+		]]>
+	</update>
+	
+	<select id="COMD01DAO.selectCmClCodeForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_CLCODE
+		 WHERE CMMN_CLCODE = #CMMN_CLCODE#
+		]]> 
+	</select>
+	
+	<select id="COMD01DAO.selectCmCmmnCodeForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*) 
+		  FROM CM_CMMNCODE
+	     WHERE CMMN_CLCODE = #CMMN_CLCODE#
+		   AND CMMN_CODE = #CMMN_CODE#
+		]]>
+	</select>
+	
+	<select id="COMD01DAO.selectCmCmmnCodeForDelete" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_CMMNCODE
+		 WHERE CMMN_CLCODE = #CMMN_CLCODE#
+		   AND USE_AT = 'Y'
+		]]>
+	</select>
+		
+	<delete id="COMD01DAO.deleteCmCmmnCodeByPk" parameterClass="hashMap">
+	<![CDATA[
+		DELETE FROM CM_CMMNCODE WHERE CMMN_CLCODE = #CMMN_CLCODE# AND CMMN_CODE = #CMMN_CODE#
+	]]>
+	</delete>
+	
+	<delete id="COMD01DAO.deleteCmCmmnCodeByCmmnClCode" parameterClass="hashMap">
+	<![CDATA[
+		DELETE FROM CM_CMMNCODE WHERE CMMN_CLCODE = #CMMN_CLCODE#
+	]]>
+	</delete>
+</sqlMap>

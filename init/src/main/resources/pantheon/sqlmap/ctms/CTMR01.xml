@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMR01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+    
+<select id="CTMR01DAO.selectProtocolList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT   PRO.SN 																			AS SN
+		,TA.TASK_SN                                                                         AS TASK_SN
+		,TA.TASK_NO 																		AS TASK_NO
+		,PRO.VER 																			AS VER
+   		,TO_CHAR(TA.REJDGE_BEGIN,'YYYY-MM-DD')|| '~' ||TO_CHAR(TA.REJDGE_END,'YYYY-MM-DD')	AS REJDGE
+		,TO_CHAR(PRO.CONFMDE,'YYYYMMDDHH24MISS') 											AS CONFMDE 
+		,TO_CHAR(PRO.FRMLA_OFFIC_PRESENTNDE,'YYYYMMDDHH24MISS') 							AS FRMLA_OFFIC_PRESENTNDE
+		,PRO.CHGHY 																			AS CHGHY
+		,PRO.RM 																			AS RM
+		,TA.TASK_TY_CODE																	AS TASK_TY_CODE
+FROM  	 CTMS_ST_PROTOCOL PRO
+      	,EDC_CR_TASK TA
+WHERE 	 TA.TASK_SN = #TASK_SN#
+AND   	 PRO.TASK_SN = TA.TASK_SN
+AND      PRO.USE_AT = 'Y'
+ORDER BY PRO.VER DESC, PRO.FRST_CREDE DESC
+]]>	
+</select>
+
+<!--  Protocol 정보 저장-->
+<insert id="CTMR01DAO.insertProtocolList" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CTMS_ST_PROTOCOL(
+	 SN
+	,TASK_SN
+	,VER	
+]]>
+	<isNotEmpty property="CONFMDE">
+	,CONFMDE
+	</isNotEmpty>
+	<isNotEmpty property="CONFMDE">
+	,FRMLA_OFFIC_PRESENTNDE
+	</isNotEmpty>
+<![CDATA[
+	,CHGHY
+	,RM
+	,EXPRSE
+	,USE_AT
+	,FRST_CREDE
+	,FRST_CRTR
+	,LAST_UPDDE
+	,LAST_UPDUSR
+)VALUES(
+	 #SN#
+	,#TASK_SN#
+	,#VER#	
+]]>
+	<isNotEmpty property="CONFMDE">
+	,TO_DATE(REPLACE(REPLACE(#CONFMDE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+	<isNotEmpty property="FRMLA_OFFIC_PRESENTNDE">
+	,TO_DATE(REPLACE(REPLACE(#FRMLA_OFFIC_PRESENTNDE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+<![CDATA[
+	,#CHGHY#
+	,#RM#
+	,#EXPRSE#
+	,#USE_AT#
+	,SYSDATE
+	,#FRST_CRTR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>
+</insert>
+
+<!--  Protocol  업데이트-->
+<update id="CTMR01DAO.updateProtocolList" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_ST_PROTOCOL
+SET	 
+]]>	
+	<isNotEmpty property="CONFMDE">
+	CONFMDE = TO_DATE(REPLACE(REPLACE(#CONFMDE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+	<isNotEmpty property="FRMLA_OFFIC_PRESENTNDE">
+	,FRMLA_OFFIC_PRESENTNDE = TO_DATE(REPLACE(REPLACE(#FRMLA_OFFIC_PRESENTNDE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+<![CDATA[
+	,CHGHY = #CHGHY#
+	,RM = #RM#
+	,LAST_UPDDE = SYSDATE
+	,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE TASK_SN = #TASK_SN#
+  AND SN = #SN#
+]]>		
+</update>
+
+<update id="CTMR01DAO.deleteProtocolList" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_ST_PROTOCOL 
+SET	 USE_AT = 'N'
+	,LAST_UPDDE = SYSDATE
+	,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE TASK_SN = #TASK_SN#
+  AND SN = #SN#
+]]>		
+</update>
+</sqlMap>

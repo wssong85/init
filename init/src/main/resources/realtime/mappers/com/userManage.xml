@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="realtime.com.user.mapper.UserManageMapper">
+	
+	<select id="selectTbUserList" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT 
+			A.USER_ID
+			,USER_NAME
+			,PASSWORD
+			,USE_YN
+			,BIRTH_DT
+			,AGE
+			,PHONE
+			,ADDR
+			,EMAIL
+			,EMAIL_YN
+			,FILE_ID
+			,DATE_FORMAT(B.IN_DT, '%Y-%m-%d %H:%i:%s') AS IN_DT
+			,DATE_FORMAT(B.UP_DT, '%Y-%m-%d %H:%i:%s') AS UP_DT
+			,B.WRITE_ID
+		FROM TB_USERS A
+		JOIN TB_USER_DETAIL B
+		ON A.USER_ID = B.USER_ID
+	]]>
+	</select>
+	
+	<insert id="insertTbUser" parameterType="map">
+	<![CDATA[
+		INSERT
+		INTO
+		TB_USERS
+		(
+			USER_ID
+			,USER_NAME
+			,PASSWORD
+			,USE_YN
+			,IN_DT
+			,WRITE_ID
+		)
+		VALUES
+		(
+			#{USER_ID, jdbcType=VARCHAR}
+			,#{USER_NAME, jdbcType=VARCHAR}
+			,#{PASSWORD, jdbcType=VARCHAR}
+			,#{USE_YN, jdbcType=VARCHAR}
+			,NOW()
+			,#{WRITE_ID, jdbcType=VARCHAR}
+		)
+	]]>
+	</insert>
+	
+	<insert id="insertTbUserDetail" parameterType="map">
+	<![CDATA[
+		INSERT
+		INTO
+		TB_USER_DETAIL
+		(
+			USER_ID
+			,BIRTH_DT
+			,AGE
+			,PHONE
+			,ADDR
+			,EMAIL
+			,EMAIL_YN
+			,FILE_ID
+			,IN_DT
+			,UP_DT
+			,WRITE_ID
+		)
+		VALUES
+		(
+			#{USER_ID, jdbcType=VARCHAR}
+			,#{BIRTH_DT, jdbcType=VARCHAR}
+			,#{AGE, jdbcType=NUMERIC}
+			,#{PHONE, jdbcType=VARCHAR}
+			,#{ADDR, jdbcType=VARCHAR}
+			,#{EMAIL, jdbcType=VARCHAR}
+			,#{EMAIL_YN, jdbcType=VARCHAR}
+			,#{FILE_ID, jdbcType=VARCHAR}
+			,NOW()
+			,NOW()
+			,#{WRITE_ID, jdbcType=VARCHAR}
+		)
+	]]>
+	</insert>
+	
+	<update id="updateTbUsers" parameterType="map">
+	<![CDATA[
+		UPDATE TB_USERS
+		SET
+		,USER_NAME = #{USER_NAME, jdbcType=VARCHAR}
+		,PASSWORD = #{PASSWORD, jdbcType=NUMERIC}
+		,USE_YN = #{USE_YN, jdbcType=VARCHAR}
+		WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<update id="updateTbUserDetail" parameterType="map">
+	<![CDATA[
+		UPDATE TB_USER_DETAIL
+		SET
+		BIRTH_DT = #{BIRTH_DT, jdbcType=VARCHAR}
+		,AGE = #{AGE, jdbcType=NUMERIC}
+		,PHONE = #{PHONE, jdbcType=VARCHAR}
+		,ADDR = #{ADDR, jdbcType=VARCHAR}
+		,EMAIL = #{EMAIL, jdbcType=VARCHAR}
+		,EMAIL_YN = #{EMAIL_YN, jdbcType=VARCHAR}
+		,UP_DT = NOW()
+		,WRITE_ID = #{WRITE_ID, jdbcType=VARCHAR}
+		WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<delete id="deleteTbUser" parameterType="map">
+	<![CDATA[
+		DELETE FROM TB_USERS WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
+	]]> 
+	</delete>
+	
+	<delete id="deleteTbUserDetail" parameterType="map">
+	<![CDATA[
+		DELETE FROM TB_USER_DETAIL WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
+	]]> 
+	</delete>
+	
+</mapper>

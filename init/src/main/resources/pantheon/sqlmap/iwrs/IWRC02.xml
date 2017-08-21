@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="IWRC02">
+	<typeAlias  alias="hashMap" type="java.util.HashMap"/>
+	
+	<select id="IWRC02DAO.selectRequestInfo" parameterClass="java.util.HashMap" resultClass="hashMap">
+		SELECT A.TASK_CODE
+	          ,A.INSTT_CODE
+	          ,B.NAME1 INSTT_NAME
+	          ,A.DLVYREQUSTMANAGE_CODE
+	          ,A.DLVY_RQESTER_ID
+	          ,FN_GET_USER_NAME(A.DLVY_RQESTER_ID) DLVY_RQESTER_NM
+	          ,TO_CHAR(A.DLVY_RQESTDE, 'YYYYMMDDHH24MISS') DLVY_RQESTDE
+	          ,A.DLVY_REQUST_COMMENT
+	          ,CASE WHEN A.DLVY_REQUST_CNFIRM_AT = 'Y' THEN 'Y'
+	                ELSE 'N'
+	                END DLVY_REQUST_CNFIRM_AT
+	          ,A.USE_AT
+	      FROM IWRS_DL_DLVYREQUSTMANAGE A
+   	INNER JOIN (SELECT A.TASK_SN
+		              ,C.INSTT_CODE
+		              ,D.NAME1
+		          FROM EDC_CR_INSTT_FORM A
+		    INNER JOIN CM_RSRCHUSER B
+		            ON A.INSTT_CODE = B.INSTT_CODE
+		    INNER JOIN CM_INSTT C
+		            ON B.INSTT_CODE = C.INSTT_CODE
+		    INNER JOIN SAP_BCNC_INFO D
+		            ON C.KUNNR = D.KUNNR
+		         WHERE TASK_SN = #task_code#
+		      GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1) B
+	        ON A.INSTT_CODE = B.INSTT_CODE
+	     WHERE A.TASK_CODE = #task_code#
+		<isNotEmpty property="instt_code">
+	       AND A.INSTT_CODE = #instt_code#
+	    </isNotEmpty>
+	</select>
+	
+	<update id="IWRC02DAO.updateRequestInfo" parameterClass="hashMap">
+		UPDATE IWRS_DL_DLVYREQUSTMANAGE
+		   SET DLVY_REQUST_CNFIRM_AT = #DLVY_REQUST_CNFIRM_AT#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,UPDATE_ID = #USER_ID#
+		 WHERE DLVYREQUSTMANAGE_CODE = #DLVYREQUSTMANAGE_CODE#
+		   AND INSTT_CODE = #INSTT_CODE#
+		   AND TASK_CODE = #TASK_CODE#
+	</update>
+</sqlMap>

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMB02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<select id="COMB02DAO.selectCmRoleAuthorByRoleId" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+	   	SELECT A.PROGRM_ID
+             , A.PROGRM_ID UNIQUE_ID
+             , A.USE_YN
+             , A.FRST_CREDE
+             , A.REGIST_ID
+             , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+             , A.UPDATE_ID
+             , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+             , A.PROGRM_URL
+             , A.PROGRM_ORDR
+             , A.MENU_ID
+             , C.UPPER_MENU_ID
+             , C.MODULE_CODE
+             , C.MENU_NM
+	         , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = C.UPPER_MENU_ID) UPPER_MENU_NM
+             , A.PROGRM_NM
+	         , 'Y' WRITE_AT 
+	         , 'Y' REDNG_AT
+          FROM CM_PROGRM A
+             , (SELECT PROGRM_ID
+   				  FROM
+                  (SELECT A.PROGRM_ID
+                     FROM CM_PROGRM A
+                    WHERE A.USE_YN = 'Y'
+                   MINUS    
+                   SELECT A.PROGRM_ID              
+                     FROM CM_PROGRM A
+                        , CM_ROLE_LMTT B
+                    WHERE A.PROGRM_ID = B.PROGRM_ID
+                      AND A.USE_YN = 'Y'
+                      AND B.USE_YN = 'Y')
+               GROUP BY PROGRM_ID) B
+             , CM_MENU C
+             , CM_ROLE_AUTHOR E    
+         WHERE A.PROGRM_ID = B.PROGRM_ID
+           AND E.ROLE_ID = #ROLE_ID#
+           AND A.PROGRM_ID = E.PROGRM_ID
+           AND A.MENU_ID = C.MENU_ID
+           AND A.USE_YN = 'Y'
+           AND C.USE_YN = 'Y'
+      	 ORDER BY MODULE_CODE, PROGRM_ID
+		]]>
+	</select>
+	
+	<select id="COMB02DAO.selectCmRoleAuthorByRoleIdForFixingAt" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+        SELECT A.ROLE_ID          
+             , A.PROGRM_ID
+             , A.PROGRM_ID UNIQUE_ID
+             , A.USE_YN           
+             , A.REGIST_ID 
+             , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE       
+             , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE       
+             , A.UPDATE_ID        
+             , C.MENU_NM          
+             , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = C.UPPER_MENU_ID) UPPER_MENU_NM
+             , C.MODULE_CODE
+             , B.PROGRM_NM
+             , C.MENU_ID
+             , A.REDNG_AT
+			 , A.WRITE_AT
+         FROM CM_ROLE_AUTHOR A
+            , CM_PROGRM B
+            , CM_MENU C
+            , (SELECT X.PROGRM_ID 
+                 FROM CM_ROLE_LMTT X
+                WHERE X.ROLE_ID = #ROLE_ID#
+                  AND X.USE_YN = 'Y') E
+        WHERE A.PROGRM_ID = B.PROGRM_ID
+          AND A.PROGRM_ID = E.PROGRM_ID
+          AND B.MENU_ID = C.MENU_ID
+          AND A.ROLE_ID =  #ROLE_ID#
+          AND A.USE_YN = 'Y'
+          AND B.USE_YN = 'Y' 
+          AND C.USE_YN = 'Y'
+       	ORDER BY A.PROGRM_ID     
+		]]>
+	</select>
+	
+	<select id="COMB02DAO.selectCmMenuForDefaultGrid" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+	   	SELECT A.PROGRM_ID
+             , A.PROGRM_ID UNIQUE_ID
+             , A.PROGRM_DC
+             , A.USE_YN
+             , A.FRST_CREDE
+             , A.REGIST_ID
+             , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+             , A.UPDATE_ID
+             , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+             , A.PROGRM_URL
+             , A.PROGRM_ORDR
+             , A.MENU_ID
+             , C.UPPER_MENU_ID
+             , C.MODULE_CODE
+             , C.MENU_NM
+	         , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = C.UPPER_MENU_ID) UPPER_MENU_NM
+             , A.PROGRM_NM
+	         , 'Y' WRITE_AT 
+	         , 'Y' REDNG_AT
+          FROM CM_PROGRM A
+             , (SELECT PROGRM_ID
+   				  FROM
+                  (SELECT A.PROGRM_ID
+                     FROM CM_PROGRM A
+                    WHERE A.USE_YN = 'Y'
+                   MINUS    
+                   SELECT A.PROGRM_ID              
+                     FROM CM_PROGRM A
+                        , CM_ROLE_LMTT B
+                    WHERE A.PROGRM_ID = B.PROGRM_ID
+                      AND A.USE_YN = 'Y'
+                      AND B.USE_YN = 'Y')
+               GROUP BY PROGRM_ID) B
+             , CM_MENU C
+         WHERE A.PROGRM_ID = B.PROGRM_ID
+           AND A.MENU_ID = C.MENU_ID
+           AND A.USE_YN = 'Y'
+           AND C.USE_YN = 'Y'
+      	 ORDER BY MODULE_CODE, PROGRM_ID
+		]]>
+	</select>
+	
+	<select id="COMB02DAO.selectCmMenuForDefaultGridForFixingAt" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+	   	SELECT A.PROGRM_ID
+             , A.PROGRM_ID UNIQUE_ID
+             , A.PROGRM_DC
+             , A.USE_YN
+             , A.FRST_CREDE
+             , A.REGIST_ID
+             , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+             , A.UPDATE_ID
+             , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+             , A.PROGRM_URL
+             , A.PROGRM_ORDR
+             , A.MENU_ID
+             , B.UPPER_MENU_ID
+             , B.MODULE_CODE
+             , B.MENU_NM
+	         , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = B.UPPER_MENU_ID) UPPER_MENU_NM
+             , A.PROGRM_NM
+	         , 'Y' WRITE_AT 
+	         , 'Y' REDNG_AT
+          FROM CM_PROGRM A 
+             , CM_MENU B
+             , (SELECT X.PROGRM_ID 
+                 FROM CM_ROLE_LMTT X
+                WHERE X.ROLE_ID = #ROLE_ID#
+                  AND X.USE_YN = 'Y') D
+         WHERE A.MENU_ID = B.MENU_ID
+           AND A.PROGRM_ID = D.PROGRM_ID
+           AND A.USE_YN = 'Y'
+           AND B.USE_YN = 'Y'
+         ORDER BY MODULE_CODE, PROGRM_ID
+		]]>
+	</select>
+	
+	<select id="COMB02DAO.selectCmRoleAuthorListByRoleIdAndFixingAtN" parameterClass="string" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.PROGRM_ID
+		     , A.ROLE_ID
+  		  FROM CM_ROLE_AUTHOR A
+		 WHERE A.ROLE_ID = #ROLE_ID#
+  		   AND A.USE_YN = 'Y'
+		MINUS
+    	SELECT A.PROGRM_ID
+    	     , A.ROLE_ID
+		  FROM CM_ROLE_AUTHOR A
+             , CM_ROLE_LMTT B
+		 WHERE A.PROGRM_ID = B.PROGRM_ID
+           AND A.ROLE_ID = B.ROLE_ID
+           AND A.ROLE_ID = #ROLE_ID#
+		   AND A.USE_YN = 'Y'
+		   AND B.USE_YN = 'Y'		
+		]]>
+	</select>
+	
+	<select id="COMB02DAO.selectCmRoleAuthorListByRoleIdAndFixingAtY" parameterClass="string" resultClass="hashMap">
+		<![CDATA[
+    	SELECT A.PROGRM_ID
+    	     , A.ROLE_ID
+		  FROM CM_ROLE_AUTHOR A
+            ,  CM_ROLE_LMTT B
+		 WHERE A.PROGRM_ID = B.PROGRM_ID
+           AND A.ROLE_ID = B.ROLE_ID
+           AND A.ROLE_ID = #ROLE_ID#
+		   AND A.USE_YN = 'Y'
+		]]> 
+	</select>
+		
+	<insert id="COMB02DAO.insertCmRoleAuthorByRoleId" parameterClass="hashMap">
+		<![CDATA[
+		MERGE INTO CM_ROLE_AUTHOR 
+        USING DUAL ON( ROLE_ID = #ROLE_ID# AND PROGRM_ID = #PROGRM_ID#)
+	    WHEN MATCHED THEN
+		UPDATE SET USE_YN = USE_YN
+		WHEN NOT MATCHED THEN
+		INSERT 
+		     ( ROLE_ID
+	         , PROGRM_ID
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	         , REDNG_AT
+             , WRITE_AT
+		     )
+		VALUES
+		     ( #ROLE_ID#
+	         , #PROGRM_ID#
+	         , #USE_YN#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , NVL(#REDNG_AT#, 'Y')
+             , NVL(#WRITE_AT#, 'Y')
+		     )
+		]]>
+	</insert>
+	
+	<delete id="COMB02DAO.deleteCmRoleAuthorByRoleId" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM CM_ROLE_AUTHOR WHERE ROLE_ID = #ROLE_ID# AND PROGRM_ID = #PROGRM_ID#
+		]]>
+	</delete>
+	
+	<select id="COMB02DAO.selectCmProgrmForCmRoleAuthorRegist" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT PROGRM_ID 
+		  FROM CM_PROGRM
+		 WHERE MENU_ID = #MENU_ID#
+		]]>
+	</select>
+	
+	<select id="COMB02DAO.selectCmProgrmForDupCheckHome" parameterClass="string" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.PROGRM_ID
+	         , B.MENU_ID
+	      FROM CM_PROGRM A
+	         , CM_MENU B
+	         ,(SELECT DISTINCT(C.MODULE_CODE) MODULE_CODE
+	             FROM CM_ROLE_AUTHOR A
+	                , CM_PROGRM B
+	                , CM_MENU C
+	            WHERE A.PROGRM_ID = B.PROGRM_ID
+	              AND B.MENU_ID = C.MENU_ID
+	              AND A.ROLE_ID = #str#) C
+	     WHERE C.MODULE_CODE = B.MODULE_CODE
+	       AND B.MENU_ID = A.MENU_ID
+	       AND A.ESSNTL_AT IN ('A', 'Y')
+		]]>
+	</select>
+	
+	<select id="COMB02DAO.selectCmRoleForFixingAt" parameterClass="hashMap" resultClass="string">
+		<![CDATA[
+		SELECT X.FIXING_AT
+		  FROM CM_ROLE X 
+		 WHERE ROLE_ID = #ROLE_ID#
+		   AND USE_YN = 'Y'
+		]]> 
+	</select>
+	
+	<select id="COMB02DAO.selectCmRoleByFixingAtNForComboBox" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT ROLE_ID
+		     , ROLE_NM
+		     , TASK_AT
+		  FROM CM_ROLE
+		 WHERE ROLE_ID NOT IN ('IS_AUTHENTICATED_ANONYMOUSLY', 'IS_AUTHENTICATED_REMEMBERED', 'IS_AUTHENTICATED_FULLY', 'ROLE_USER', 'ROLE_EXTENDS')
+		   AND USE_YN = 'Y'
+		]]>
+<!-- 		   AND FIXING_AT = 'N' -->
+	</select>
+	
+	<select id="COMB02DAO.selectCmRoleByFixingAtYForComboBox" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT ROLE_ID
+		     , ROLE_NM
+		     , TASK_AT
+		  FROM CM_ROLE
+		 WHERE ROLE_ID NOT IN ('IS_AUTHENTICATED_ANONYMOUSLY', 'IS_AUTHENTICATED_REMEMBERED', 'IS_AUTHENTICATED_FULLY', 'ROLE_USER', 'ROLE_EXTENDS')
+		   AND USE_YN = 'Y'
+		   AND FIXING_AT = 'Y'
+		]]>
+	</select>
+	
+</sqlMap>

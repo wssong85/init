@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	
+<!-- 	<bean id="panteonStats2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> -->
+<!-- 		<property name="targetObject" ref="COME02Service" /> -->
+<!-- 		<property name="targetMethod" value="test" /> -->
+<!-- 		<property name="concurrent" value="false" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="pantheonStatsTrigger2" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean"> -->
+<!-- 		<property name="jobDetail" ref="panteonStats2" /> -->
+<!-- 		<property name="startDelay" value="60000" /> -->
+<!-- 		<property name="repeatInterval" value="10000" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="panteonStats" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> -->
+<!-- 		<property name="targetObject" ref="COME01Service" /> -->
+<!-- 		<property name="targetMethod" value="batch" /> -->
+<!-- 		<property name="concurrent" value="false" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="pantheonStatsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean"> -->
+<!-- 		<property name="jobDetail" ref="panteonStats" /> -->
+<!-- 		<property name="startDelay" value="60000" /> -->
+<!-- 		<property name="repeatInterval" value="10000" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="pantheonScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> -->
+<!-- 		<property name="triggers"> -->
+<!-- 			<list> -->
+<!-- 				<ref bean="pantheonStatsTrigger" /> -->
+<!-- 				<ref bean="pantheonStatsTrigger2" /> -->
+<!-- 			</list> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+	
+</beans>

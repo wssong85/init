@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PantheonCommonDAO">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+
+	<!-- 중복제거한 모듈코드를 가져온다. -->
+	<select id="PantheonCommonDAO.selectCmMenuForModuleCodeByComboBox" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT DISTINCT(MODULE_CODE) FROM CM_MENU WHERE USE_YN = 'Y'
+		]]>
+	</select>
+
+	<!-- 모듈코드로 상위메뉴를 가져온다. -->
+	<select id="PantheonCommonDAO.selectCmMenuByModuleCode" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT CASE WHEN #LOCALE# = 'kr'   THEN MENU_NM
+                    WHEN #LOCALE# = 'en'   THEN MENU_ENG_NM
+                    WHEN #LOCALE# = 'jp'   THEN MENU_JAPAN_NM
+                    WHEN #LOCALE# = 'ch_1' THEN MENU_CHINA1_NM
+                    WHEN #LOCALE# = 'ch_2' THEN MENU_CHINA2_NM
+               ELSE MENU_NM
+               END MENU_NM
+		     , MENU_ID
+		  FROM CM_MENU 
+		 WHERE MODULE_CODE = #MODULE_CODE# 
+		   AND UPPER_MENU_ID IS NULL 
+		   AND MODULE_CODE != MENU_ID
+		   AND USE_YN = 'Y'
+		]]>
+	</select>
+
+	<!-- 상위메뉴로 하위메뉴를 가져온다. -->
+	<select id="PantheonCommonDAO.selectCmMenuByUpperMenuId" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT CASE WHEN #LOCALE# = 'kr'   THEN MENU_NM
+                    WHEN #LOCALE# = 'en'   THEN MENU_ENG_NM
+                    WHEN #LOCALE# = 'jp'   THEN MENU_JAPAN_NM
+                    WHEN #LOCALE# = 'ch_1' THEN MENU_CHINA1_NM
+                    WHEN #LOCALE# = 'ch_2' THEN MENU_CHINA2_NM
+               ELSE MENU_NM
+               END MENU_NM
+		     , MENU_ID
+		  FROM CM_MENU 
+		 WHERE UPPER_MENU_ID = #UPPER_MENU_ID#
+		   AND USE_YN = 'Y'
+		]]>
+	</select>
+
+	<select id="PantheonCommonDAO.selectCmMenuByMenuId" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT CASE WHEN #LOCALE# = 'kr'   THEN MENU_NM
+                    WHEN #LOCALE# = 'en'   THEN MENU_ENG_NM
+                    WHEN #LOCALE# = 'jp'   THEN MENU_JAPAN_NM
+                    WHEN #LOCALE# = 'ch_1' THEN MENU_CHINA1_NM
+                    WHEN #LOCALE# = 'ch_2' THEN MENU_CHINA2_NM
+               ELSE MENU_NM
+               END MENU_NM
+		  FROM CM_MENU
+		 WHERE MENU_ID = #MENU_ID#
+		   AND USE_YN = 'Y'
+		]]>
+	</select>
+
+	<select id="PantheonCommonDAO.selectEDCCodeList" parameterClass="hashMap" resultClass="hashMap">
+		<isEqual property="FLAG" compareValue="ELEMENT_CODE">
+			SELECT
+			TE_SN CODE
+			, TE_CODE VALUE
+			FROM EDC_CR_TE
+			WHERE TASK_SN = #TASK_SN#
+			AND EDC_VER = #EDC_VER#
+			AND USE_AT = 'Y'
+		</isEqual>
+		<isEqual property="FLAG" compareValue="ELEMENT_LABEL">
+			SELECT
+			TE_SN CODE
+			, TE_LBL VALUE
+			FROM EDC_CR_TE
+			WHERE TASK_SN = #TASK_SN#
+			AND EDC_VER = #EDC_VER#
+			AND USE_AT = 'Y'
+		</isEqual>
+		<isEqual property="FLAG" compareValue="ARM_CODE">
+			SELECT
+			TA_SN CODE
+			, TA_CODE VALUE
+			FROM EDC_CR_TA
+			WHERE TASK_SN = #TASK_SN#
+			AND EDC_VER = #EDC_VER#
+			AND USE_AT = 'Y'
+		</isEqual>
+		<isEqual property="FLAG" compareValue="ARM_LABEL">
+			SELECT
+			TA_SN CODE
+			, TA_LBL VALUE
+			FROM EDC_CR_TA
+			WHERE TASK_SN = #TASK_SN#
+			AND EDC_VER = #EDC_VER#
+			AND USE_AT = 'Y'
+		</isEqual>
+		<isEqual property="FLAG" compareValue="COMMON">
+			SELECT CMMN_CODE CODE
+			, CASE WHEN #LOCALE# = 'kr' THEN CMMN_CODE_NM
+			WHEN #LOCALE# = 'jp' THEN CMMN_CODE_JAPAN_NM
+			WHEN #LOCALE# = 'ch_1' THEN CMMN_CODE_CHINA1_NM
+			WHEN #LOCALE# = 'ch_2' THEN CMMN_CODE_CHINA2_NM
+			WHEN #LOCALE# = 'en' THEN CMMN_CODE_ENGNM
+			ELSE CMMN_CODE_NM
+			END VALUE
+			FROM CM_CMMNCODE
+			WHERE CMMN_CLCODE = #CODE#
+			AND USE_AT = 'Y'
+			<isEqual property="CODE" compareValue="EDC016">
+				<isEqual property="BLIND_CODE" compareValue="03" prepend="AND">
+					CMMN_CODE != '07'
+				</isEqual>
+			</isEqual>
+			<isEqual property="CODE" compareValue="EDC034">
+				<isEqual property="BLIND_CODE" compareValue="03" prepend="AND">
+					CMMN_CODE != '07'
+				</isEqual>
+			</isEqual>
+			ORDER BY SORT_ORDR
+		</isEqual>
+		<isEqual property="FLAG" compareValue="VISIT">
+			SELECT VISIT_SN CODE
+			, VISIT_LBL VALUE
+			FROM EDC_CR_VISIT_SCHDUL
+			WHERE TASK_SN = #TASK_SN#
+			AND EDC_VER = #EDC_VER#
+			AND USE_AT = 'Y'
+			ORDER BY VISIT_ORDR
+		</isEqual>
+		<isEqual property="FLAG" compareValue="GROUP">
+			SELECT
+			GROUP_SN CODE
+			, GROUP_LBL VALUE
+			FROM EDC_CR_GROUP
+			WHERE TASK_SN = #TASK_SN#
+			AND EDC_VER = #EDC_VER#
+			AND USE_AT = 'Y'
+			ORDER BY GROUP_ORDR
+		</isEqual>
+		<isEqual property="FLAG" compareValue="VISIT_GROUP">
+			SELECT
+			VG.VISIT_GROUP_SN CODE
+			, G.GROUP_LBL VALUE
+			FROM EDC_CR_VISIT_GROUP VG
+			INNER JOIN EDC_CR_GROUP G ON G.GROUP_SN = VG.GROUP_SN AND G.TASK_SN = VG.TASK_SN AND G.EDC_VER = VG.EDC_VER AND G.USE_AT ='Y'
+			INNER JOIN EDC_CR_VISIT_SCHDUL VS ON VS.VISIT_SN = VG.VISIT_SN AND VG.TASK_SN = VS.TASK_SN AND VG.EDC_VER = VS.EDC_VER AND VS.USE_AT ='Y'
+			WHERE VG.USE_AT = 'Y'
+			AND VG.TASK_SN = #TASK_SN#
+			AND VG.EDC_VER = #EDC_VER#
+			AND VG.VISIT_SN = #VISIT_SN#
+			ORDER BY VG.GROUP_ORDR
+		</isEqual>
+		<isEqual property="FLAG" compareValue="DOMAIN">
+			SELECT *
+			FROM (
+			SELECT CD.CDISC_DOMN_SN CODE
+			, CD.DOMN_NM VALUE
+			FROM EDC_CR_TASK CT
+			INNER JOIN CDISC_RULE CR ON CT.CDISC_RULE_SN = CR.CDISC_RULE_SN
+			INNER JOIN CDISC_DOMN CD ON CR.CDISC_RULE_SN = CD.CDISC_RULE_SN
+			WHERE CT.TASK_SN = #TASK_SN#
+			AND CD.USE_AT = 'Y'
+			UNION ALL
+			SELECT UD.CDISC_DOMN_SN CODE
+			, UD.DOMN_NM VALUE
+			FROM EDC_USER_DOMN UD
+			WHERE UD.TASK_SN = #TASK_SN#
+			AND UD.USE_AT = 'Y'
+			)
+			ORDER BY VALUE
+		</isEqual>
+		<isEqual property="FLAG" compareValue="USER_DOMAIN">
+			SELECT UD.CDISC_DOMN_SN CODE
+			, UD.DOMN_NM VALUE
+			FROM EDC_USER_DOMN UD
+			WHERE UD.TASK_SN = #TASK_SN#
+			<isNotEmpty property="SUPP_DOMN" prepend="AND">
+				UD.SUPP_DOMN = #SUPP_DOMN#
+			</isNotEmpty>
+			AND UD.USE_AT = 'Y'
+			ORDER BY UD.DOMN_NM
+		</isEqual>
+
+		<isEqual property="FLAG" compareValue="CODELIST">
+			SELECT
+			CC.CL_CODE_SN CODE ,
+			CC.CDISC_SUBMIT_VALUE VALUE
+			FROM CDISC_CL_CODE CC
+			INNER JOIN CDISC_DOMN_VRIABL DV ON DV.CDISC_UPPER_CODE = CC.CDISC_UPPER_CODE AND CC.CDISC_UPPER_CODE != CC.CDISC_CODE
+			INNER JOIN EDC_CR_TASK CT ON CT.CDISC_RULE_SN = CC.CDISC_RULE_SN AND CT.TASK_SN = #TASK_SN#
+			WHERE DV.DOMN_VRIABL_SN = #DOMN_VRIABL_SN#
+			AND CC.USE_AT = 'Y'
+			ORDER BY CC.CDISC_SUBMIT_VALUE
+		</isEqual>
+	</select>
+
+	<select id="PantheonCommonDAO.selectCmMenuForTreeGrid" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+	    SELECT MENU_ID
+	         , DECODE(UPPER_MENU_ID, NULL, DECODE(MENU_ID, MODULE_CODE, '', MODULE_CODE), UPPER_MENU_ID)  UPPER_MENU_ID
+	         , ROWNUM RN
+	         , (SELECT X.MENU_NM FROM CM_MENU  X WHERE X.MENU_ID = DECODE(A.UPPER_MENU_ID, NULL, DECODE(A.MENU_ID, A.MODULE_CODE, '', A.MODULE_CODE), A.UPPER_MENU_ID)) UPPER_MENU_NM
+	         , MODULE_CODE
+	         , MENU_NM
+	      FROM CM_MENU	A
+	      ORDER BY DECODE(MENU_ID, 'CTMS', 'CTM', 'IWRS', 'IWR', MENU_ID)
+		]]>
+	</select>
+
+	<select id="PantheonCommonDAO.selectCmDtaAtrailDistinctByModules" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT DISTINCT(MODULE) FROM CM_DTA_ATRAIL ORDER BY MODULE
+		]]>
+	</select>
+
+	<select id="PantheonCommonDAO.selectCmCmmCodeByCmmnClcode" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT CASE 
+		       WHEN #LOCALE# = 'kr'   THEN CMMN_CODE_NM
+               WHEN #LOCALE# = 'en'   THEN CMMN_CODE_ENGNM
+               WHEN #LOCALE# = 'jp'   THEN CMMN_CODE_JAPAN_NM
+               WHEN #LOCALE# = 'ch_1' THEN CMMN_CODE_CHINA1_NM
+               WHEN #LOCALE# = 'ch_2' THEN CMMN_CODE_CHINA2_NM
+               ELSE CMMN_CODE_NM 
+               END CMMN_CODE_NM
+		     , CMMN_CODE 
+          FROM CM_CMMNCODE 
+         WHERE CMMN_CLCODE = #CMMN_CLCODE#
+           AND USE_AT = 'Y'
+		]]>
+		<isEqual property="TYPE" compareValue="BLIND" prepend="AND">
+			CMMN_CODE != '01'
+		</isEqual>
+		ORDER BY SORT_ORDR
+	</select>
+
+	<select id="PantheonCommonDAO.selectCmProgrmForPostConstruct" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.PROGRM_ID
+		     , CASE WHEN #LOCALE# = 'kr'   THEN A.PROGRM_NM
+	                WHEN #LOCALE# = 'en'   THEN A.PROGRM_ENG_NM
+	                WHEN #LOCALE# = 'jp'   THEN A.PROGRM_JAPAN_NM
+	                WHEN #LOCALE# = 'ch_1' THEN A.PROGRM_CHINA1_NM
+	                WHEN #LOCALE# = 'ch_2' THEN A.PROGRM_CHINA2_NM
+	                ELSE A.PROGRM_NM
+	            END PROGRM_NM
+		     , A.PROGRM_URL
+		     , A.MENU_ID
+		     , A.TASK_AT
+		 FROM CM_PROGRM A
+		WHERE A.USE_YN = 'Y'
+		]]>
+	</select>
+
+	<select id="PantheonCommonDAO.selectCmMenuForMenuNm" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT CASE WHEN #LOCALE# = 'kr'   THEN CM.MENU_NM
+	                WHEN #LOCALE# = 'en'   THEN CM.MENU_ENG_NM
+	                WHEN #LOCALE# = 'jp'   THEN CM.MENU_JAPAN_NM
+	                WHEN #LOCALE# = 'ch_1' THEN CM.MENU_CHINA1_NM
+	                WHEN #LOCALE# = 'ch_2' THEN CM.MENU_CHINA2_NM
+	                ELSE CM.MENU_NM
+	            END MENU_NM
+	         , CASE WHEN #LOCALE# = 'kr'   THEN (SELECT X.MENU_NM        FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+	                WHEN #LOCALE# = 'en'   THEN (SELECT X.MENU_ENG_NM    FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+	                WHEN #LOCALE# = 'jp'   THEN (SELECT X.MENU_JAPAN_NM  FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+	                WHEN #LOCALE# = 'ch_1' THEN (SELECT X.MENU_CHINA1_NM FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+	                WHEN #LOCALE# = 'ch_2' THEN (SELECT X.MENU_CHINA2_NM FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID)
+	                ELSE CM.MENU_NM
+	            END UPPER_MENU_NM
+	       FROM CM_MENU CM
+	      WHERE MENU_ID = #MENU_ID#
+	        AND USE_YN = 'Y'
+		]]>
+	</select>
+
+	<!-- damo test -->
+	<select id="PantheonCommonDAO.selectDamoTest" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT AFTUPD_VALUE
+	      FROM CM_DTA_ATRAIL  
+         WHERE TABLE_PK = 'IP_TRGET_NO,DLVYMANAGE_CODE,IP_CODE,CREAT_CODE,IP_TYPE,SN'
+           AND PK_NM = '1,wefYJuMPkcfBEfpxZatl,IP0050,sadkf1423ds,IP,2'
+           AND COLUMN_NM = 'IP_STTUS_CODE'
+		]]>
+	</select>
+
+	<select id="PantheonCommonDAO.selectCmRoleByTaskAt" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT ROLE_ID
+			 , ROLE_NM
+	      FROM CM_ROLE
+	     WHERE ROLE_ID NOT IN ('IS_AUTHENTICATED_ANONYMOUSLY', 'IS_AUTHENTICATED_REMEMBERED', 'IS_AUTHENTICATED_FULLY', 'ROLE_USER', 'ROLE_EXTENDS')
+		   AND USE_YN = 'Y'
+		   AND TASK_AT = 'N'
+		]]>
+	</select>
+</sqlMap>

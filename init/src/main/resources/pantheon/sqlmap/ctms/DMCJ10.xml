@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMF01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="DMCJ10DAO.selectCommonCodeListByIRB_AT" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT CMMN_CODE    AS CODE
+     , CMMN_CODE_NM AS NAME
+ FROM CM_CMMNCODE
+ WHERE CMMN_CLCODE = 'CTMS001'
+ ORDER BY SORT_ORDR
+]]>
+</select>
+
+<select id="DMCJ10DAO.selectCommonCodeListByCNTRCT_SE" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT CMMN_CODE    AS CODE
+     , CMMN_CODE_NM AS NAME
+ FROM CM_CMMNCODE
+ WHERE CMMN_CLCODE = 'CTMS018'
+ ORDER BY SORT_ORDR
+]]>
+</select>
+    
+<select id="DMCJ10DAO.selectCommonCodeListBySTTUS" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT  CMMN_CODE    AS CODE
+        ,CMMN_CODE_NM AS NAME
+FROM 	CM_CMMNCODE
+WHERE   CMMN_CLCODE = 'CTMS020'
+OR 		CMMN_CLCODE = 'CTMS019'
+ORDER BY CODE ASC
+]]>
+</select> 
+    
+<select id="DMCJ10DAO.selectContractList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	TA.TASK_NO      					AS TASK_NO
+		,RS.INSTT_CODE						AS INSTT_CODE
+		,RS.HSPTL_NM				 		AS HSPTL_NM
+		,US.USER_NM	 						AS USER_NM
+		,US.USER_ID	 						AS USER_ID
+		,US.EMAIL	 						AS EMAIL	
+		,US.TELNO	 						AS TELNO	
+		,CN.GOAL_NO	 						AS GOAL_NO
+		,CN.IRB_AT	 						AS IRB_AT
+		,CN.CNTRCT_SE						AS CNTRCT_SE
+		,CN.STTUS	 						AS STTUS	
+		,CN.STTUS_DTE						AS STTUS_DTE
+		,CN.STTUS || ' / ' ||STTUS_DTE      AS STTUS_SUM
+		,CN.ATCH_FILE	 					AS ATCH_FILE
+		,(SELECT COUNT(1) 
+		FROM DM_FILE_DETAIL 
+		WHERE FILE_MASTR_SN = CN.ATCH_FILE)	AS FILE_CNT
+FROM 
+		EDC_CR_TASK TA
+		JOIN CTMS_CO_CNTRCT_MANAGE CN
+		ON TA.TASK_SN = CN.TASK_SN
+		JOIN CM_RSRCHUSER RS
+		ON CN.USER_ID = RS.USER_ID
+		JOIN CM_USER US
+		ON RS.USER_ID = US.USER_ID
+WHERE 	1=1
+AND 	TA.TASK_NO LIKE '%'||#TASK_NO#||'%'	   
+AND 	CN.USE_AT = 'Y'
+]]>	
+</select>
+
+
+
+</sqlMap>

@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTML01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="CTML01DAO.selectComCodeList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT CMMN_CODE    AS CODE
+	     , CMMN_CODE_NM AS NAME
+	  FROM CM_CMMNCODE
+	 WHERE CMMN_CLCODE = #CMMN_CLCODE#
+	 ORDER BY SORT_ORDR
+]]>
+</select>
+
+<select id="CTML01DAO.selectCRAList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT CU.USER_ID
+	     , CU.USER_NM
+	  FROM CM_USER_ROLE UR
+	     , CM_USER CU
+	 WHERE UR.USER_ID = CU.USER_ID
+	   AND UR.ROLE_ID = 'ROLE_CRA'
+	 ORDER BY CU.USER_NM
+]]>
+</select>
+
+<select id="CTML01DAO.selectInsttList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT DISTINCT SAP.NAME1 AS INSTT_NAME
+	     , CI.INSTT_CODE
+	     , SAP.PSTLZ
+	     , SAP.J_1KFREPRE
+	     , SAP.TELF1
+	     , SAP.TELFX
+	  FROM EDC_CR_TASK CT
+	     , CM_USERTASK UT
+	     , CM_RSRCHUSER CR
+	     , CM_INSTT CI
+	     , SAP_BCNC_INFO SAP
+	 WHERE CT.TASK_SN    = UT.TASK_SN
+	   AND UT.USER_ID    = CR.USER_ID
+	   AND CR.INSTT_CODE = CI.INSTT_CODE
+	   AND CI.KUNNR      = SAP.KUNNR
+	   AND CT.USE_AT     = 'Y'
+]]>
+
+    <isNotEmpty property="TASK_SN" prepend="AND">
+	<![CDATA[ 
+	CT.TASK_SN    = #TASK_SN#
+	]]>
+	</isNotEmpty>
+	<isNotEmpty property="TASK_NO" prepend="AND">
+	<![CDATA[ 
+	CT.TASK_NO    = #TASK_NO#
+	]]>
+	</isNotEmpty>
+</select>
+
+<select id="CTML01DAO.selectMileStonePlanList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           MM.SN
+         , MM.TASK_SN
+         , MM.INSTT_CODE
+         , SAP.NAME1
+         , MM.PLAN_SE
+         , ( SELECT CASE WHEN CT.TASK_TY_CODE = '01' THEN (
+                                                            SELECT CMM.CMMN_CODE_NM
+                                                              FROM CM_CMMNCODE CMM
+                                                             WHERE CMM.CMMN_CLCODE = 'CTM004'
+                                                             AND CMM.CMMN_CODE = MM.PLAN_SE
+                                                          )
+                         ELSE (
+                                SELECT CMM.CMMN_CODE_NM
+                                      FROM CM_CMMNCODE CMM
+                                     WHERE CMM.CMMN_CLCODE = 'CTM004'
+                                     AND CMM.CMMN_CODE = MM.PLAN_SE
+                              )
+                     END
+               FROM DUAL
+           ) AS PLAN_NM
+         , TO_CHAR(MM.PLAN_BEGIN  , 'YYYYMMDD') AS PLAN_BEGIN
+         , TO_CHAR(MM.PLAN_END    , 'YYYYMMDD') AS PLAN_END
+         , TO_CHAR(MM.EXECUT_BEGIN, 'YYYYMMDD') AS EXECUT_BEGIN
+         , TO_CHAR(MM.EXECUT_END  , 'YYYYMMDD') AS EXECUT_END
+         , MM.PLAN_DETAIL
+         , MM.CHARGER_ID
+         , CU.USER_NM
+      FROM CTMS_ST_MILESTONE MM
+         , CM_INSTT CI
+         , CM_USER CU
+         , SAP_BCNC_INFO SAP
+         , EDC_CR_TASK   CT
+     WHERE MM.INSTT_CODE = CI.INSTT_CODE
+       AND MM.CHARGER_ID = CU.USER_ID
+       AND CI.KUNNR      = SAP.KUNNR
+       AND MM.USE_AT     = 'Y'
+       AND MM.TASK_SN    = CT.TASK_SN
+       AND MM.TASK_SN    = #TASK_SN#
+]]>
+	<isNotEmpty property="INSTT_NM" prepend="AND">
+	<![CDATA[ 
+	SAP.NAME1 LIKE #INSTT_NM# || '%' 
+	]]>
+	</isNotEmpty>
+
+	 ORDER BY MM.PLAN_SE
+</select>
+
+	<insert id="CTML01DAO.insertMileStonePlanInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO CTMS_ST_MILESTONE(
+		      SN
+		    , TASK_SN
+		    , INSTT_CODE
+		    , PLAN_SE
+		    , PLAN_DETAIL
+		    , PLAN_BEGIN
+		    , PLAN_END
+		    , CHARGER_ID
+		    , USE_AT
+		    , FRST_CREDE
+		    , FRST_CRTR
+		    , LAST_UPDDE
+		    , LAST_UPDUSR
+		) VALUES (
+		      #SN#
+		    , #TASK_SN#
+		    , #INSTT_CODE#
+		    , #PLAN_SE#
+		    , #PLAN_DETAIL#
+		    , TO_DATE(REPLACE(#PLAN_BEGIN#, '/', ''), 'YYYYMMDDHH24MISS')
+		    , TO_DATE(REPLACE(#PLAN_END#  , '/', ''), 'YYYYMMDDHH24MISS')
+		    , #CHARGER_ID#
+		    , #USE_AT#
+		    , SYSDATE
+		    , #UPDATE_ID#
+		    , SYSDATE
+		    , #UPDATE_ID#
+		)
+		]]>
+	</insert>
+
+	<update id="CTML01DAO.updateMileStonePlanInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_ST_MILESTONE SET
+		      INSTT_CODE  = #INSTT_CODE#
+		    , PLAN_SE     = #PLAN_SE#
+		    , PLAN_DETAIL = #PLAN_DETAIL#
+		    , PLAN_BEGIN  = TO_DATE(REPLACE(#PLAN_BEGIN#, '/', ''), 'YYYYMMDDHH24MISS')
+		    , PLAN_END    = TO_DATE(REPLACE(#PLAN_END#  , '/', ''), 'YYYYMMDDHH24MISS')
+		    , CHARGER_ID  = #CHARGER_ID#
+		    , LAST_UPDDE  = SYSDATE
+		    , LAST_UPDUSR = #UPDATE_ID#
+        WHERE SN          = #SN#
+		  AND TASK_SN     = #TASK_SN#
+		]]>
+	</update>
+	
+	<update id="CTML01DAO.deleteMileStonePlanInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_ST_MILESTONE SET
+		       USE_AT       = 'N'
+		     , LAST_UPDDE   = SYSDATE
+		     , LAST_UPDUSR  = #ADMIN#
+        WHERE SN           = #SN#
+		  AND TASK_SN      = #TASK_SN#
+		]]>
+	</update>
+	
+	<select id="CTML01DAO.selectTaskInfo" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+        SELECT
+               TASK_SN
+             , TASK_NO
+             , TASK_TY_CODE
+             , PROGRS_CODE
+             , TASK_DC
+             , PHASE_CODE
+             , PHASE_ETC_NM
+             , IWRS_USE_AT
+             , TASK_NM
+             , TASK_END_AT
+             , TRGTER_CO
+             , RSRCH_PURPS
+             , RRCS_CO
+             , CTRTC_FILE_SN
+             , EXPRRSPNBER
+             , PRMISN_DE
+             , REJDGE_BEGIN
+             , REJDGE_END
+             , STUDY_NM
+             , TRGET_DISS
+             , HSPTL_INSTT_CODE
+             , BLIND_CODE
+             , RSRCH_BEGIN
+             , RSRCH_END
+             , PRODUCT_NM
+             , DOMN_URL
+             , CDISC_RULE_SN
+             , SANCLINE_SN
+             , REQUST_NO
+             , FREEZING_STTUS_CODE
+             , CTRTC_PDF_FILE_SN
+          FROM EDC_CR_TASK CT
+         WHERE CT.TASK_SN = #TASK_SN#
+	]]>
+	</select>
+
+<select id="CTML01DAO.selectMilestoneColWidthInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT ROUND(90 / COUNT(MONTHS), 2) AS COL_WIDTH
+      FROM (
+            SELECT M.MONTHS
+              FROM (
+                    SELECT TO_CHAR( TO_DATE( PM.MIN_PLAN, 'YYYYMMDD' ) + LEVEL-1, 'YYMM' ) AS MONTHS
+                      FROM DUAL
+                         , (
+                            SELECT TO_CHAR(MIN(LEAST(MM.PLAN_BEGIN, MM.PLAN_END, MM.EXECUT_BEGIN, MM.EXECUT_END)), 'YYYYMMDD')    AS MIN_PLAN
+                                 , TO_CHAR(MAX(GREATEST(MM.PLAN_BEGIN, MM.PLAN_END, MM.EXECUT_BEGIN, MM.EXECUT_END)), 'YYYYMMDD') AS MAX_PLAN
+                              FROM CTMS_ST_MILESTONE MM
+                                 , EDC_CR_TASK   CT
+                             WHERE MM.TASK_SN     = CT.TASK_SN
+                               AND CT.PROGRS_CODE = '02'
+                               AND CT.TASK_SN     = #TASK_SN#
+                           ) PM
+                    CONNECT BY LEVEL <=( TO_DATE( PM.MAX_PLAN, 'YYYYMMDD' ) - TO_DATE( PM.MIN_PLAN, 'YYYYMMDD' ) +1 )
+                   ) M
+             GROUP BY M.MONTHS
+             ORDER BY M.MONTHS
+           )
+]]>
+</select>
+
+<select id="CTML01DAO.selectMilestoneYearInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT M.MONTHS
+      FROM (
+            SELECT TO_CHAR( TO_DATE( PM.MIN_PLAN, 'YYYYMMDD' ) + LEVEL-1, 'YY"년 "MM"월"' ) AS MONTHS
+              FROM DUAL
+                 , (
+                    SELECT TO_CHAR(MIN(LEAST(MM.PLAN_BEGIN, MM.PLAN_END, MM.EXECUT_BEGIN, MM.EXECUT_END)), 'YYYYMMDD')    AS MIN_PLAN
+                         , TO_CHAR(MAX(GREATEST(MM.PLAN_BEGIN, MM.PLAN_END, MM.EXECUT_BEGIN, MM.EXECUT_END)), 'YYYYMMDD') AS MAX_PLAN
+                      FROM CTMS_ST_MILESTONE MM
+                         , EDC_CR_TASK   CT
+                     WHERE MM.TASK_SN     = CT.TASK_SN
+                       AND CT.PROGRS_CODE = '02'
+                       AND CT.TASK_SN     = #TASK_SN#
+                   ) PM
+            CONNECT BY LEVEL <=( TO_DATE( PM.MAX_PLAN, 'YYYYMMDD' ) - TO_DATE( PM.MIN_PLAN, 'YYYYMMDD' ) +1 )
+           ) M
+     GROUP BY M.MONTHS
+     ORDER BY M.MONTHS
+]]>
+</select>
+
+<select id="CTML01DAO.selectMilestonerPlanBarList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT M.SN
+         , M.ORD
+         , M.INSTT_CODE
+         , M.PLAN_SE
+         , CASE WHEN M.PROGRS_CODE = '02' THEN (
+                                                SELECT CMMN_CODE_NM
+                                                  FROM CM_CMMNCODE
+                                                 WHERE CMMN_CLCODE = 'CTM004'
+                                                   AND CMMN_CODE   = M.PLAN_SE
+                                               )
+                ELSE (
+                      SELECT CMMN_CODE_NM
+                        FROM CM_CMMNCODE
+                       WHERE CMMN_CLCODE = 'CTM003'
+                         AND CMMN_CODE   = M.PLAN_SE
+                     )
+            END PLAN_NM
+         , M.P_BEGIN
+         , M.P_END
+         , TO_CHAR(M.P_BEGIN, 'MMDD') AS S_DATE
+         , TO_CHAR(M.P_END  , 'MMDD') AS E_DATE
+         , CASE WHEN M.P_BEGIN IS NOT NULL AND M.P_END IS NOT NULL THEN TO_CHAR(M.P_BEGIN, 'MM"월"DD"일"') ||' ~ '|| TO_CHAR(M.P_END  , 'MM"월"DD"일"')
+                ELSE ''
+            END FROM_TO
+         , M.MIN_PLAN
+         , M.MAX_PLAN
+         , S.T_DAYS
+         , CASE WHEN M.P_BEGIN = M.MIN_PLAN THEN ROUND((1 / S.T_DAYS) * 100, 3)
+                ELSE NVL(ROUND(((M.P_BEGIN - M.MIN_PLAN) / S.T_DAYS) * 100, 3), 0.01)
+            END START_PLAN
+         , CASE WHEN M.P_END = M.P_BEGIN THEN ROUND((1 / S.T_DAYS) * 100, 3)
+                ELSE NVL(ROUND(((M.P_END - M.P_BEGIN) / S.T_DAYS) * 100, 3)   , 0.01)
+            END END_PLAN
+      FROM (
+              SELECT MM.SN
+                   , '1' AS ORD
+                   , MM.INSTT_CODE
+                   , MM.PLAN_SE
+                   , MM.PLAN_BEGIN AS P_BEGIN
+                   , MM.PLAN_END   AS P_END
+                   , CT.PROGRS_CODE
+                FROM CTMS_ST_MILESTONE MM
+                   , EDC_CR_TASK   CT
+               WHERE MM.TASK_SN     = CT.TASK_SN
+                 AND CT.PROGRS_CODE = '02'
+                 AND CT.TASK_SN     = #TASK_SN#
+            UNION ALL
+              SELECT MM.SN
+                   , '2' AS ORD
+                   , MM.INSTT_CODE
+                   , MM.PLAN_SE
+                   , MM.EXECUT_BEGIN AS P_BEGIN
+                   , MM.EXECUT_END   AS P_END
+                   , CT.PROGRS_CODE
+                FROM CTMS_ST_MILESTONE MM
+                   , EDC_CR_TASK   CT
+               WHERE MM.TASK_SN     = CT.TASK_SN
+                 AND CT.PROGRS_CODE = '02'
+                 AND CT.TASK_SN     = #TASK_SN#
+           ) M
+         , (
+            SELECT MIN(LEAST(MM.PLAN_BEGIN, MM.PLAN_END, MM.EXECUT_BEGIN, MM.EXECUT_END))    AS MIN_PLAN
+                 , MAX(GREATEST(MM.PLAN_BEGIN, MM.PLAN_END, MM.EXECUT_BEGIN, MM.EXECUT_END)) AS MAX_PLAN
+              FROM CTMS_ST_MILESTONE MM
+                 , EDC_CR_TASK   CT
+             WHERE MM.TASK_SN     = CT.TASK_SN
+               AND CT.PROGRS_CODE = '02'
+               AND CT.TASK_SN     = #TASK_SN#
+           ) M
+         , (
+            SELECT SUM(COUNT(M.MONTHS)) AS T_DAYS
+              FROM (
+                    SELECT TO_CHAR( TO_DATE( PM.MIN_PLAN, 'YYYYMMDD' ) + LEVEL-1, 'YY-MM' ) AS MONTHS
+                      FROM DUAL
+                         , (
+                            SELECT TO_CHAR(MIN(LEAST(MM.PLAN_BEGIN, MM.PLAN_END, MM.EXECUT_BEGIN, MM.EXECUT_END)), 'YYYYMMDD')    AS MIN_PLAN
+                                 , TO_CHAR(MAX(GREATEST(MM.PLAN_BEGIN, MM.PLAN_END, MM.EXECUT_BEGIN, MM.EXECUT_END)), 'YYYYMMDD') AS MAX_PLAN
+                              FROM CTMS_ST_MILESTONE MM
+                                 , EDC_CR_TASK   CT
+                             WHERE MM.TASK_SN     = CT.TASK_SN
+                               AND CT.PROGRS_CODE = '02'
+                               AND CT.TASK_SN     = #TASK_SN#
+                           ) PM
+                    CONNECT BY LEVEL <=( TO_DATE( PM.MAX_PLAN, 'YYYYMMDD' ) - TO_DATE( PM.MIN_PLAN, 'YYYYMMDD' ) +1 )
+                   ) M
+             GROUP BY M.MONTHS
+           ) S
+     ORDER BY M.SN
+         , M.INSTT_CODE
+         , M.PLAN_SE
+         , M.ORD
+]]>
+</select>
+
+<!-- ******************************************************************** -->    
+
+</sqlMap>

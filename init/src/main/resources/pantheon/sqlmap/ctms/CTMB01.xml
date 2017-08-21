@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMB01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+<select id="CTMB01DAO.selectClinicalAssignmentList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT  	 TA.TASK_SN
+			,TA.TASK_NO
+FROM 
+			 EDC_CR_TASK TA
+			,CM_USERTASK US
+WHERE 1=1 
+AND 		TA.TASK_SN = US.TASK_SN
+AND 		TA.TASK_NO LIKE '%'||#TASK_NO#||'%'
+AND 		TA.TASK_TY_CODE = '01'
+AND 		TA.USE_AT = 'Y'
+AND 		US.USE_YN = 'Y'
+AND         TA.TASK_END_AT = #TASK_END_AT#
+AND 		US.USER_ID = #USER_ID#
+
+]]>	
+</select> 
+
+<select id="CTMB01DAO.selectclinicalbyGrid" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT   TASK_SN
+		,TASK_NO
+		,TASK_TY_CODE
+		,PROGRS_CODE
+		,TASK_DC
+		,PHASE_CODE
+		,PHASE_ETC_NM
+		,IWRS_USE_AT		
+		,TASK_NM
+		,TASK_END_AT
+		,DECODE(TRGTER_CO, '', 'N/A') AS TRGTER_CO
+		,RSRCH_PURPS
+		,RRCS_CO
+		,CTRTC_FILE_SN
+		,EXPRRSPNBER
+		,TO_CHAR(PRMISN_DE,'YYYY-MM-DD') AS PRMISN_DE
+		,TO_CHAR(REJDGE_BEGIN,'YYYY-MM-DD') AS REJDGE_BEGIN
+		,TO_CHAR(REJDGE_END,'YYYY-MM-DD') AS REJDGE_END
+		,STUDY_NM
+		,TRGET_DISS
+		,HSPTL_INSTT_CODE
+		,BLIND_CODE
+		,TO_CHAR(RSRCH_BEGIN,'YYYY-MM-DD') AS RSRCH_BEGIN
+		,TO_CHAR(RSRCH_END,'YYYY-MM-DD') AS RSRCH_END
+		,USE_AT
+		,TO_CHAR(FRST_CREDE,'YYYY-MM-DD') AS FRST_CREDE
+		,FRST_CRTR
+		,TO_CHAR(LAST_UPDDE,'YYYY-MM-DD') AS LAST_UPDDE
+		,LAST_UPDUSR
+FROM EDC_CR_TASK
+WHERE TASK_NO = #TASK_NO#
+AND USE_AT = 'Y'
+ORDER BY TASK_NO DESC
+]]>	
+</select> 
+
+</sqlMap>

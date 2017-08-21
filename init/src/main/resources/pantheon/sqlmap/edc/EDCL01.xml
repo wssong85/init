@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCL01DAO">
+
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+   	<typeAlias alias="String" type="java.lang.String"/>
+	
+	<select id="selectCdiscList" parameterClass="hashMap" resultClass="hashMap" >
+	SELECT *
+		FROM
+		(SELECT A.*,
+		ROWNUM AS RNUM,
+		FLOOR(( ROWNUM - 1 ) / #COUNT# + 1 ) AS PAGE
+		FROM
+		(
+		SELECT	CFCDISC_SN,
+				IMPRT_NM,
+      			TASK_NO,
+      			CDISC_SE_CODE,
+      			TO_CHAR(FRST_CREDE,'yyyy-mm-dd') AS FRST_CREDE, 
+      			FRST_CRTR
+      	FROM	EDC_CF_CDISC
+      	<isNotEmpty property="imprtNm" prepend="WHERE">
+      		IMPRT_NM LIKE '%' || #imprtNm# || '%'
+      	</isNotEmpty>
+      	
+      	) A
+		)
+		WHERE PAGE = #PAGE#
+	</select>
+	
+	<select id="selectCdiscListCount" parameterClass="hashMap" resultClass="string" >
+		SELECT COUNT(*) AS COUNT
+      	FROM	EDC_CF_CDISC
+      	<isNotEmpty property="imprtNm" prepend="WHERE">
+      		WHERE	IMPRT_NM LIKE '%' || #imprtNm# || '%'
+      	</isNotEmpty>
+	</select>
+	
+	<insert id="insertCdisc" parameterClass="hashMap">
+		INSERT INTO EDC_CF_CDISC(
+		TASK_NO,
+		IMPRT_NM,
+		CFCDISC_SN,
+		CDISC_SE_CODE,
+		RULE_NM,
+		RULE_DC,
+		CDISC_FILE_SN,
+		FRST_CREDE,
+		FRST_CRTR
+		)
+		VALUES (
+		#taskNo#,
+		#imprtNm#,
+		#cfcdiscSn#,
+		#cdiscSeCode#,
+		#ruleNm#,
+		#ruleDc#,
+		#cdiscFileSn#,
+		SYSDATE,
+		'ADMIN'
+		)
+		
+	</insert>
+	
+	<insert id="insertCdiscDomn" parameterClass="hashMap">
+		INSERT INTO EDC_CF_CDISCDOMN(
+		CFCDISC_DOMN_SN,
+		CFCDISC_SN,
+		DOMN_ORDR,
+		DOMN_NM,
+		DOMN_DC,
+		DOMN_CLASS,
+		DOMN_STRCT,
+		DOMN_PURPS,
+		DOMN_KEYS, 
+		DOMN_LOCATION,
+		DOMN_DOC,
+		FRST_CREDE,
+		FRST_CRTR
+		)
+		VALUES (
+		#cfcdiscDomnSn#,
+		#cfcdiscSn#,
+		#domnOrdr#,
+		#dataset# ,
+		#description# ,
+		#class# ,
+		#structure# ,
+		#purpose# ,
+		#keys# ,
+		#location# ,
+		#documentation# ,
+		SYSDATE,
+		'ADMIN'
+		)
+	</insert>
+	
+	<insert id="insertCdiscVriabl" parameterClass="hashMap">
+		INSERT INTO EDC_CF_CDISCVRIABL(
+		CFCDISC_VRIABL_SN ,
+		CFCDISC_DOMN_SN,
+		LBL_ORDR,
+		VRIABL_NM,
+		VRIABL_LBL,
+		VRIABL_TY,
+		CTRL_FOM, 
+		VRIABL_DC,
+		VRIABL_KEY,
+		VRIABL_LT,
+		VRIABL_ORIGIN,
+		CDISC_SUBMIT_VALUE,
+		VRIABL_OID_NM,
+		FRST_CREDE,
+		FRST_CRTR
+		)
+		VALUES (
+		#cfcdiscVriablSn#,
+		#cfcdiscDomnSn# ,
+		#lblOrdr# ,
+		#variable# ,
+		#label# ,
+		#type# ,
+		#ctFormat# ,
+		#vriablDc# ,
+		#key# ,
+		#length# ,
+		#origin# ,
+		#cdiscSubmitValue# ,
+		#vriablOidNm#,
+		SYSDATE,
+		'ADMIN'
+		)
+	</insert>
+	
+	<insert id="insertCdiscCode" parameterClass="hashMap">
+		INSERT INTO EDC_CF_CDISCCODE(
+		CDISC_CODE_SN ,
+		CFCDISC_SN,
+		CFCDISC_CODE,
+		CFCDISC_UPPER_CODE,
+		CDISC_SUBMIT_VALUE,
+		CDISC_SYNONM,
+		FRST_CREDE,
+		FRST_CRTR
+		)
+		VALUES (
+		#cdiscCodeSn#,
+		#cfcdiscSn# ,
+		#cfcdiscCode# ,
+		#cfcdiscUpperCode# ,
+		#cdiscSubmitValue# ,
+		#cdiscSynonm# ,
+		SYSDATE,
+		'ADMIN'
+		)
+	</insert>
+	
+	<select id="selectCdiscDomainList" parameterClass="String" resultClass="hashMap">
+		<![CDATA[
+		SELECT	DOMN_NM, 
+				CFCDISC_DOMN_SN 
+		FROM	EDC_CF_CDISCDOMN 
+   		WHERE	CFCDISC_SN = #cfcdiscSn# 
+   		ORDER BY CFCDISC_DOMN_SN 
+   
+		]]>
+	</select>
+	
+	<select id="selectCdiscVriablList" parameterClass="String" resultClass="hashMap">
+		<![CDATA[
+		SELECT	VRIABL_NM, 
+				VRIABL_OID_NM 
+		FROM	EDC_CF_CDISCVRIABL
+		WHERE	CFCDISC_DOMN_SN = #cfcdiscDomnSn#
+   
+		]]>
+	</select>
+	
+	<insert id="insertCdiscValue" parameterClass="hashMap">
+		INSERT INTO EDC_CF_VALUE(
+		EDC_CF_VALUE_SN ,
+		CFCDISC_DOMN_SN,
+		ROW_ORDR,
+		LBL_ORDR,
+		VRIABL_VALUE,
+		VRIABL_OID_NM,
+		FRST_CREDE,
+		FRST_CRTR
+		)
+		VALUES (
+		#edcCfValueSn#,
+		#cfcdiscDomnSn# ,
+		#rowOrdr# ,
+		#lblOrdr# ,
+		#vriablValue# ,
+		#itemOid#,
+		SYSDATE,
+		'ADMIN'
+		)
+	</insert>
+	
+	<select id="selectCdiscVariablValueList" parameterClass="hashMap" resultClass="hashMap" remapResults="true" >
+		SELECT   
+				<iterate property="sqlList" >
+				$sqlList[]$
+				</iterate>
+    	FROM ( 
+    			SELECT	B.ROW_ORDR, A.VRIABL_NM, A.LBL_ORDR, B.VRIABL_VALUE
+    			FROM	EDC_CF_CDISCVRIABL A, EDC_CF_VALUE B
+    			WHERE	A.CFCDISC_DOMN_SN = B.CFCDISC_DOMN_SN(+) 
+    			AND 	A.VRIABL_OID_NM = B.VRIABL_OID_NM(+)
+    			AND		A.CFCDISC_DOMN_SN=#cfcdiscDomnSn#
+    			)
+		GROUP BY ROW_ORDR
+		ORDER BY ROW_ORDR
+	</select>
+	
+	
+	
+	
+</sqlMap>

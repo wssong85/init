@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="SDBF04">
+	<typeAlias  alias="hashMap" type="java.util.HashMap"/>
+   	
+   	<insert id="SDBF04.insertSopInfo" parameterClass="hashMap">
+    	INSERT INTO SDB_SM_BBS_INFO
+	               	(SN
+	                ,SJ
+	                ,CN
+	                ,EFECT_OCCRRNC_AT
+	                ,EFECT_OCCRRNCDE
+	                ,FILE_MASTR_SN
+	                ,SE_CODE
+	                ,USE_AT
+	                ,FRST_CREDE
+	                ,REGIST_ID
+	                ,LAST_UPDDE
+	                ,UPDATE_ID
+	                )
+	         VALUES (SDB_BBS_SEQ.nextval
+	                ,#SJ#
+	                ,#CN#
+	                ,#EFECT_OCCRRNC_AT#
+	                ,TO_DATE(#EFECT_OCCRRNCDE# || '000000', 'YYYYMMDDHH24MISS')
+	                ,#FILE_MASTR_SN#
+	                ,#SE_CODE#
+	                ,#USE_AT#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                )
+   	</insert>
+   	
+   	<update id="SDBF04.updateSopInfo" parameterClass="hashMap">
+   		UPDATE SDB_SM_BBS_INFO
+   		   SET SJ = #SJ#
+   		   	 , CN = #CN#
+   		   	 , EFECT_OCCRRNC_AT = #EFECT_OCCRRNC_AT#
+   		 <isNotEmpty property="EFECT_OCCRRNCDE">
+   		   	 , EFECT_OCCRRNCDE = TO_DATE(#EFECT_OCCRRNCDE# || '000000', 'YYYYMMDDHH24MISS')
+	   	 </isNotEmpty>
+	   	 <isEmpty property="EFECT_OCCRRNCDE">
+   		   	 , EFECT_OCCRRNCDE = null
+	   	 </isEmpty>
+   		   	 , FILE_MASTR_SN = #FILE_MASTR_SN#
+   		   	 , LAST_UPDDE = SYSDATE
+   		   	 , UPDATE_ID = #USER_ID#
+   		 WHERE SN = #SN#
+   	</update>
+   	
+   	<select id="SDBF04.selectSopInfo" parameterClass="hashMap" resultClass="hashMap">
+   		SELECT SN
+   			  ,SJ
+   			  ,CN
+   			  ,EFECT_OCCRRNC_AT
+   			  ,CASE WHEN EFECT_OCCRRNC_AT = 'Y' THEN 'Y'
+   			  		ELSE 'N'
+   			  		END EFECT_OCCRRNC_AT_VALUE
+   			  ,CASE WHEN EFECT_OCCRRNC_AT = 'Y' THEN 'YES'
+   			  		ELSE 'NO'
+   			  		END EFECT_OCCRRNC_AT_VALUE_RADIO
+   			  ,TO_CHAR(EFECT_OCCRRNCDE, 'YYYYMMDDHH24MISS') EFECT_OCCRRNCDE
+   			  ,FILE_MASTR_SN
+   			  ,NVL(TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS'), ' ') FRST_CREDE
+   		  FROM SDB_SM_BBS_INFO
+   		 WHERE SE_CODE = #SE_CODE#
+   		   AND USE_AT = 'Y'
+   		<isNotEmpty property="SN">
+   		   AND SN = #SN#
+   		</isNotEmpty> 
+   	</select>
+   	
+   	<delete id="SDBF04.deleteFileInfo" parameterClass="hashMap">
+   		DELETE FROM DM_FILE_DETAIL
+   			  WHERE FILE_MASTR_SN = #FILE_MASTR_SN#
+   			    AND DETAIL_SN = #DETAIL_SN#
+   	</delete>
+   	
+   	<update id="SDBF04.deleteSopInfo" parameterClass="hashMap">
+   		UPDATE SDB_SM_BBS_INFO
+   		   SET USE_AT = 'N'
+   		 WHERE SN = #SN#
+   	</update>
+</sqlMap>

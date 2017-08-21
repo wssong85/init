@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jeus-web-dd xmlns="http://www.tmaxsoft.com/xml/ns/jeus">
+	<!-- class path -->
+	<context-path>/</context-path>
+	
+	<!-- 운영모드 -->
+	<auto-reload>
+		<enable-reload>false</enable-reload>
+		<check-on-demand>false</check-on-demand>
+	</auto-reload>
+
+ 	<!--  jeus jndi datasource  -->
+	<res-ref>
+		<jndi-info>
+			<ref-name>cjpandb</ref-name>
+			<export-name>cjpandb</export-name>
+		</jndi-info>
+	</res-ref>
+</jeus-web-dd>

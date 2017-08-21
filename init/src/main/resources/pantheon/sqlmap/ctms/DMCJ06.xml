@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMR01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+    
+<select id="DMCJ06DAO.selectRsrchManage" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT
+         DISTINCT
+           M.USER_ID
+         , M.TASK_SN
+         , M.INSTT_CD
+         , M.INSTT_NM
+         , M.REGIO
+         , M.ORT01
+         , M.TASK_NO
+         , M.USER_NM
+         , M.ROLE_ID
+         , M.ROLE_NM
+         , M.EMAIL
+         , M.TELNO
+         , M.CNTRCT_STTUS
+         , M.CONFM_SE
+         , M.STRAS
+         , M.PSTLZ
+         , M.USER_ENGNM
+         , M.STD_TIME_SN       
+         , M.CNTRCT_SE
+         , M.HSPTL_NM
+         , M.GOAL_NO
+         , M.IRB_AT
+         , M.STTUS
+         , M.ADDRONE 
+         , M.ADDRTWO
+         , M.FRST_CREDE
+         , TO_CHAR(M.STTUS_DTE, 'YYYYMMDDHH24MISS') AS STTUS_DTE
+      FROM (
+            SELECT ROW_NUMBER() OVER(ORDER BY CU.USER_ID DESC) RN
+                 , CU.USER_ID
+                 , UT.TASK_SN
+                 , SI.KUNNR  AS INSTT_CD
+                 , SI.NAME1  AS INSTT_NM
+                 , SI.REGIO
+                 , SI.ORT01
+                 , DAMO_DEC(SI.STRAS) AS STRAS
+                 , SI.PSTLZ
+                 , CT.TASK_NO
+                 , CU.USER_NM
+                 , CU.USER_ENGNM
+                 , CM.ROLE_ID
+                 , CM.ROLE_NM
+                 , DAMO_DEC(CU.EMAIL) AS EMAIL
+                 , DAMO_DEC(CU.TELNO) AS TELNO
+                 , CU.STD_TIME_SN
+                 , CR.CNTRCT_STTUS
+                 , CR.HSPTL_NM
+                 , UT.CONFM_SE
+                 , DECODE(MA.GOAL_NO, '', 'N/A', MA.GOAL_NO) AS GOAL_NO
+                 , MA.IRB_AT
+                 , MA.STTUS
+                 , MA.STTUS_DTE
+                 , DAMO_DEC(CR.ADDRONE) AS ADDRONE
+                 , DAMO_DEC(CR.ADDRTWO) AS ADDRTWO
+                 , UT.FRST_CREDE
+                 ,DECODE(MA.CNTRCT_SE, '', '03', DECODE(MA.CNTRCT_SE, '01', '01', '02')) AS CNTRCT_SE
+              FROM CM_USER       CU
+                 , CM_RSRCHUSER  CR
+                 , CM_INSTT      CI
+                 , SAP_BCNC_INFO SI
+                 , CM_USER_ROLE  UR
+                 , CM_ROLE       CM
+                 , CM_USERTASK   UT
+                 , EDC_CR_TASK   CT
+                 , CM_TASK_USER_ROLE TR
+                 , CTMS_CO_CNTRCT_MANAGE MA
+             WHERE CU.USER_ID    = CR.USER_ID
+               AND CR.INSTT_CODE = CI.INSTT_CODE
+               AND CI.KUNNR      = SI.KUNNR
+               AND CU.USER_ID    = UR.USER_ID
+               AND UR.ROLE_ID    = CM.ROLE_ID
+               AND CU.USER_ID    = UT.USER_ID
+               AND UT.TASK_SN    = CT.TASK_SN
+               AND UT.TASK_SN    = MA.TASK_SN(+)
+               AND UT.USER_ID    = MA.USER_ID(+)  
+               AND UT.USER_ID    = TR.USER_ID
+               AND UT.USE_YN     = 'Y'
+               AND UT.CONFM_SE   <> '01'    
+               AND TR.ROLE_ID IN ('ROLE_PI' ,'ROLE_CRC', 'ROLE_SUB_I')         
+               ) M
+               ORDER BY M.FRST_CREDE DESC
+               
+ 
+]]>	
+</select>
+
+
+<select id="DMCJ06DAO.selectRsrUserInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 RS.INSTT_CODE
+		,RS.HSPTL_NM
+		,US.USER_NM
+		,RS.USER_ID
+		,US.EMAIL
+  FROM 	 
+		 CM_RSRCHUSER RS
+		,CM_USER US
+WHERE RS.USER_ID = US.USER_ID
+  AND US.USER_NM LIKE '%'||#USER_NM#||'%'
+  AND RS.HSPTL_NM LIKE '%'||#HSPTL_NM#||'%'
+  AND RS.CONFM_SE = 'N'
+]]>	
+</select>
+
+<update id="DMCJ06DAO.updateRsrchManage" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE   CM_USERTASK 
+	   SET   
+	]]>
+	
+	<isEqual prepend="" property="APPROVAL" compareValue="03">
+	<![CDATA[
+	   		 CONFM_SE = '03'
+	]]>
+	</isEqual>
+	<isEqual prepend="" property="APPROVAL" compareValue="04"> 
+	<![CDATA[
+	   		 CONFM_SE = '04'
+	]]>
+	</isEqual>
+	
+	<![CDATA[
+			,LAST_UPDDE = SYSDATE
+			,UPDATE_ID = #LAST_UPDUSR#
+	WHERE USER_ID = #USER_ID#
+	  AND TASK_SN = #TASK_SN#
+	]]>		
+</update>
+
+
+<!-- <update id="DMCJ06DAO.deleteRsrchUser" parameterClass="hashMap"> -->
+<!-- UPDATE  CM_RSRCHUSER -->
+<!--     SET USE_YN = 'N' -->
+<!--        ,LAST_UPDDE = SYSDATE -->
+<!--        ,UPDATE_ID = #LAST_UPDUSR# -->
+<!-- WHERE	USER_ID = #USER_ID# -->
+<!-- </update> -->
+
+<!-- <update id="DMCJ06DAO.deleteUser" parameterClass="hashMap"> -->
+<!-- UPDATE  CM_USER -->
+<!--    SET  USE_YN = 'N' -->
+<!--        ,LAST_UPDDE = SYSDATE -->
+<!--        ,UPDATE_ID = #LAST_UPDUSR# -->
+<!-- WHERE   USER_ID = #USER_ID# -->
+<!-- </update> -->
+
+<update id="DMCJ06DAO.deleteUserTask" parameterClass="hashMap">
+UPDATE  CM_USERTASK
+   SET  USE_YN = 'N'
+       ,LAST_UPDDE = SYSDATE
+       ,UPDATE_ID = #LAST_UPDUSR#
+WHERE   USER_ID = #USER_ID#
+  AND	TASK_SN = #TASK_SN#
+</update>
+
+</sqlMap>

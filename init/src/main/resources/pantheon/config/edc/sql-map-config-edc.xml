@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<settings useStatementNamespaces="true" />
+
+	<sqlMap resource="pantheon/sqlmap/edc/EDCA01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCK01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCK02.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCK03.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCK04.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCK05.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCI01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCJ01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCJ02.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCJ03.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCL01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCC01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCB01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCD01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCE01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCF01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCG01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCH01.xml" />
+	<sqlMap resource="pantheon/sqlmap/edc/EDCH02.xml" />
+</sqlMapConfig>

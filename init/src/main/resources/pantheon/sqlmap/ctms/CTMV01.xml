@@ -1,0 +1,773 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMV01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="CTMV01DAO.selectIRBBasicInfoList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT IB.IRB_BSIS_SN
+	     , IB.TASK_SN
+	     , CT.TASK_NO
+	     , IB.INSTT_CODE
+	     , SAP.NAME1 AS INSTT_NM
+	     , IB.AREA
+	     , IB.ADRES_A
+	     , IB.ADRES_B
+	     , IB.ADRES_C
+	     , IB.ADRES_D
+	     , IB.RPRSNTV_NM
+	     , IB.CHRG_CRA
+	     , CU.USER_NM AS CHRG_NM 
+         , IB.EIRB_AT
+         , IB.EXPR_APPN_AT
+         , IB.FDRM_JDGMN
+         , IB.RPD_JDGMN
+         , IB.EXMNT_REQUST
+         , IB.HSPTLHED_NM
+	  FROM CTMS_CO_IRB_BSIS IB
+	     , CM_INSTT CI
+	     , SAP_BCNC_INFO SAP
+	     , EDC_CR_TASK CT
+	     , CM_USER CU
+	 WHERE IB.INSTT_CODE = CI.INSTT_CODE
+	   AND IB.USE_AT     = 'Y'
+	   AND CI.KUNNR      = SAP.KUNNR
+	   AND IB.TASK_SN    = CT.TASK_SN
+	   AND IB.CHRG_CRA   = CU.USER_ID
+]]>
+
+    <isNotEmpty property="TASK_SN" prepend="AND">
+	<![CDATA[ 
+	IB.TASK_SN    = #TASK_SN#
+	]]>
+	</isNotEmpty>
+
+    <isNotEmpty property="INSTT_NM" prepend="AND">
+	<![CDATA[ 
+	SAP.NAME1 LIKE #INSTT_NM#||'%'
+	]]>
+	</isNotEmpty>
+	 ORDER BY SAP.NAME1
+</select>
+
+
+<select id="CTMV01DAO.selectIRBCttpcList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           IC.IRB_BSIS_SN
+         , IC.TASK_SN
+         , IC.CTTPC_SN
+         , IC.SE
+         , CC.CMMN_CODE_NM AS SE_NM
+         , IC.NM
+         , IC.OFFM
+         , IC.CELL_PHONE
+         , IC.EMAIL
+         , IC.FAX
+      FROM CTMS_CO_IRB_CTTPC IC
+         , CM_CMMNCODE CC
+     WHERE IRB_BSIS_SN       = #IRB_BSIS_SN#
+       AND IC.TASK_SN        = #TASK_SN#
+       AND IC.USE_AT         = 'Y'
+       AND IC.SE             = CC.CMMN_CODE(+)
+       AND CC.CMMN_CLCODE(+) = 'CTMS017'
+     ORDER BY NM
+]]>
+</select>
+
+<select id="CTMV01DAO.selectIRBDlbrtctList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           ID.IRB_BSIS_SN
+         , ID.TASK_SN
+         , ID.DLBRTCT_SN
+         , ID.BSNM_REGIST_NO
+         , ID.SE
+         , ID.DLBRT_SE
+         , ID.AMOUNT
+         , ID.VAT_AT
+         , ID.BANK_NM
+         , ID.ACNUT_NO
+         , ID.BILL_SE
+         , ID.BILL_PBLICTE
+         , ID.RM
+         , C1.CMMN_CODE_NM AS SE_NM
+         , C2.CMMN_CODE_NM AS DLBRT_NM
+         , C3.CMMN_CODE_NM AS BILL_NM
+      FROM CTMS_CO_IRB_DLBRTCT ID
+         , CM_CMMNCODE C1
+         , CM_CMMNCODE C2
+         , CM_CMMNCODE C3
+     WHERE ID.IRB_BSIS_SN    = #IRB_BSIS_SN#
+       AND ID.TASK_SN        = #TASK_SN#
+       AND ID.USE_AT         = 'Y'
+       AND ID.SE             = C1.CMMN_CODE
+       AND C1.CMMN_CLCODE    = 'CTMS008'
+       AND ID.DLBRT_SE       = C2.CMMN_CODE
+       AND C2.CMMN_CLCODE    = 'CTMS009'
+       AND ID.BILL_SE        = C3.CMMN_CODE(+)
+       AND C3.CMMN_CLCODE(+) = 'CTMS010'
+     ORDER BY ID.BANK_NM
+]]>
+</select>
+
+<select id="CTMV01DAO.selectIRBRsrcctList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           IR.RSRCCT_SN
+         , IR.IRB_BSIS_SN
+         , IR.TASK_SN
+         , IR.BSNM_REGIST_NO
+         , IR.BANK_NM
+         , IR.ACNUT_NO
+         , IR.BILL_KND
+         , NVL(IR.DIRECT_RATE, 0) AS DIRECT_RATE
+         , NVL(IR.INDRT_RATE , 0) AS INDRT_RATE
+         , NVL(IR.MEDIC_RATE , 0) AS MEDIC_RATE
+         , NVL(IR.HSPTL_RATE , 0) AS HSPTL_RATE
+         , NVL(IR.MXMM_RATE  , 0) AS MXMM_RATE
+         , IR.ETC
+         , IR.VAT_AT
+         , IR.RM
+         , C1.CMMN_CODE_NM AS BILL_NM
+      FROM CTMS_CO_IRB_RSRCCT IR
+         , CM_CMMNCODE C1
+     WHERE IR.IRB_BSIS_SN    = #IRB_BSIS_SN#
+       AND IR.TASK_SN        = #TASK_SN#
+       AND IR.USE_AT         = 'Y'
+       AND IR.BILL_KND       = C1.CMMN_CODE(+)
+       AND C1.CMMN_CLCODE(+) = 'CTMS010'
+     ORDER BY IR.BANK_NM
+]]>
+</select>
+
+<select id="CTMV01DAO.selectIRBDlbrtList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           CI.DLBRT_SN
+         , CI.IRB_BSIS_SN
+         , CI.TASK_SN
+         , CI.SE
+         , CI.DLBRT_SE
+         , CI.PRESENTN_NBFPS
+         , CI.PRESENTN_CYCLE
+         , CI.POSES_PAPERS
+         , CI.RM
+         , CI.ATCH_FILE_SN
+         , (SELECT COUNT(1) FROM DM_FILE_DETAIL WHERE FILE_MASTR_SN = CI.ATCH_FILE_SN) AS FILE_CNT
+         , C1.CMMN_CODE_NM AS SE_NM
+         , C2.CMMN_CODE_NM AS DLBRT_NM
+      FROM CTMS_CO_IRB_DLBRT CI
+         , CM_CMMNCODE C1
+         , CM_CMMNCODE C2
+     WHERE CI.IRB_BSIS_SN    = #IRB_BSIS_SN#
+       AND CI.TASK_SN        = #TASK_SN#
+       AND CI.USE_AT         = 'Y'
+       AND CI.SE             = C1.CMMN_CODE(+)
+       AND C1.CMMN_CLCODE(+) = 'CTMS026'
+       AND CI.DLBRT_SE       = C2.CMMN_CODE(+)
+       AND C2.CMMN_CLCODE(+) = 'CTMS016'
+       AND CI.USE_AT         = 'Y'
+     ORDER BY CI.DLBRT_SE
+]]>
+</select>
+
+<select id="CTMV01DAO.selectIRBInfoList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           IR.E_IRB_SN
+         , IR.IRB_BSIS_SN
+         , IR.TASK_SN
+         , IR.E_IRB_ADRES
+         , IR.JOIN_CRA
+         , CU.USER_NM AS JOIN_NM
+         , IR.ID
+         , IR.PW
+         , IR.PROGRS_TASK
+         , IR.RM
+      FROM CTMS_CO_IRB_e_IRB_INFO IR
+         , CM_USER CU
+     WHERE IR.IRB_BSIS_SN = #IRB_BSIS_SN#
+       AND IR.TASK_SN     = #TASK_SN#
+       AND IR.USE_AT      = 'Y'
+       AND IR.JOIN_CRA    = CU.USER_ID
+     ORDER BY E_IRB_ADRES
+]]>
+</select>
+
+<select id="CTMV01DAO.selectIRBSaeList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           SAE_SN
+         , IRB_BSIS_SN
+         , TASK_SN
+         , FORM_AT
+         , SAE_REPORT_AT
+         , SAE_REPORT_MTH
+         , RM
+      FROM CTMS_CO_IRB_SAE
+     WHERE IRB_BSIS_SN = #IRB_BSIS_SN#
+       AND TASK_SN     = #TASK_SN#
+       AND USE_AT      = 'Y'
+     ORDER BY FRST_CREAT_DE DESC
+]]>
+</select>
+
+	<insert id="CTMV01DAO.insertIRBBasicInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO CTMS_CO_IRB_BSIS(
+		       IRB_BSIS_SN
+		     , TASK_SN
+		     , INSTT_CODE
+		     , AREA
+		     , ADRES_A
+		     , ADRES_B
+		     , ADRES_C
+		     , ADRES_D
+		     , RPRSNTV_NM
+		     , CHRG_CRA
+		     , EIRB_AT
+		     , EXPR_APPN_AT
+		     , FDRM_JDGMN
+		     , RPD_JDGMN
+		     , EXMNT_REQUST
+             , HSPTLHED_NM
+		     , USE_AT
+		     , FRST_CREAT_DE
+		     , FRST_CRTR
+		     , LAST_UPDT_DE
+		     , LAST_UPDUSR
+		)
+		VALUES(
+		       #IRB_BSIS_SN#
+		     , #TASK_SN#
+		     , #INSTT_CODE#
+		     , #AREA#
+		     , #ADRES_A#
+		     , #ADRES_B#
+		     , #ADRES_C#
+		     , #ADRES_D#
+		     , #RPRSNTV_NM#
+		     , #CHRG_CRA#
+		     , #EIRB_AT#
+		     , #EXPR_APPN_AT#
+		     , #FDRM_JDGMN#
+		     , #RPD_JDGMN#
+		     , #EXMNT_REQUST#
+             , #HSPTLHED_NM#
+		     , #USE_AT#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		)
+		]]>
+	</insert>
+
+	<update id="CTMV01DAO.updateIRBBasicInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_CO_IRB_BSIS SET
+		       AREA         = #AREA#
+		     , ADRES_A      = #ADRES_A#
+		     , ADRES_B      = #ADRES_B#
+		     , ADRES_C      = #ADRES_C#
+		     , ADRES_D      = #ADRES_D#
+		     , RPRSNTV_NM   = #RPRSNTV_NM#
+		     , CHRG_CRA     = #CHRG_CRA#
+		     , EIRB_AT      = #EIRB_AT#
+		     , EXPR_APPN_AT = #EXPR_APPN_AT#
+		     , FDRM_JDGMN   = #FDRM_JDGMN#
+		     , RPD_JDGMN    = #RPD_JDGMN#
+		     , EXMNT_REQUST = #EXMNT_REQUST#
+             , HSPTLHED_NM  = #HSPTLHED_NM#
+		     , LAST_UPDT_DE = SYSDATE
+		     , LAST_UPDUSR  = #UPDATE_ID#
+		 WHERE IRB_BSIS_SN  = #IRB_BSIS_SN#
+		   AND TASK_SN      = #TASK_SN#
+		]]>
+	</update>
+	
+	<update id="CTMV01DAO.deleteIRBBasicInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE USE_AT      = 'N'
+		     , LAST_UPDT_DE  = SYSDATE
+		     , LAST_UPDUSR = #UPDATE_ID#
+		 WHERE IRB_BSIS_SN = #IRB_BSIS_SN#
+		   AND TASK_SN     = #TASK_SN#
+		]]>
+	</update>
+
+	<insert id="CTMV01DAO.insertIRBCttpcInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO CTMS_CO_IRB_CTTPC(
+		       IRB_BSIS_SN
+		     , TASK_SN
+		     , CTTPC_SN
+		     , SE
+		     , NM
+		     , OFFM
+		     , CELL_PHONE
+		     , EMAIL
+		     , FAX
+		     , USE_AT
+		     , FRST_CREAT_DE
+		     , FRST_CRTR
+		     , LAST_UPDT_DE
+		     , LAST_UPDUSR
+		)
+		VALUES(
+		       #IRB_BSIS_SN#
+		     , #TASK_SN#
+		     , #CTTPC_SN#
+		     , #SE#
+		     , #NM#
+		     , #OFFM#
+		     , #CELL_PHONE#
+		     , #EMAIL#
+		     , #FAX#
+		     , #USE_AT#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		)
+		]]>
+	</insert>
+
+	<update id="CTMV01DAO.updateIRBCttpcInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_CO_IRB_CTTPC SET
+		       SE           = #SE#
+		     , NM           = #NM#
+		     , OFFM         = #OFFM#
+		     , CELL_PHONE   = #CELL_PHONE#
+		     , EMAIL        = #EMAIL#
+		     , FAX          = #FAX#
+		     , LAST_UPDT_DE = SYSDATE
+		     , LAST_UPDUSR  = #UPDATE_ID#
+		 WHERE IRB_BSIS_SN  = #IRB_BSIS_SN#
+		   AND CTTPC_SN     = #CTTPC_SN#
+		]]>
+	</update>
+
+	<update id="CTMV01DAO.deleteIRBCttpcInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_CO_IRB_CTTPC SET
+		       USE_AT      = 'N'
+		     , LAST_UPDT_DE  = SYSDATE
+		     , LAST_UPDUSR = #UPDATE_ID#
+		 WHERE IRB_BSIS_SN = #IRB_BSIS_SN#
+		   AND CTTPC_SN    = #CTTPC_SN#
+		]]>
+	</update>
+	
+	<insert id="CTMV01DAO.insertIRBDlbrtctInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO CTMS_CO_IRB_DLBRTCT(
+		       IRB_BSIS_SN
+		     , TASK_SN
+		     , DLBRTCT_SN
+		     , BSNM_REGIST_NO
+		     , SE
+		     , DLBRT_SE
+		     , AMOUNT
+		     , VAT_AT
+		     , BANK_NM
+		     , ACNUT_NO
+		     , BILL_SE
+		     , RM
+		     , BILL_PBLICTE
+		     , USE_AT
+		     , FRST_CREAT_DE
+		     , FRST_CRTR
+		     , LAST_UPDT_DE
+		     , LAST_UPDUSR
+		)
+		VALUES(
+		       #IRB_BSIS_SN#
+		     , #TASK_SN#
+		     , #DLBRTCT_SN#
+		     , #BSNM_REGIST_NO#
+		     , #SE#
+		     , #DLBRT_SE#
+		     , #AMOUNT#
+		     , #VAT_AT#
+		     , #BANK_NM#
+		     , #ACNUT_NO#
+		     , #BILL_SE#
+		     , #RM#
+		     , #BILL_PBLICTE#
+		     , #USE_AT#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		)
+		]]>
+	</insert>
+
+	<update id="CTMV01DAO.updateIRBDlbrtctInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_DLBRTCT SET
+               BSNM_REGIST_NO = #BSNM_REGIST_NO#
+             , SE             = #SE#
+             , DLBRT_SE       = #DLBRT_SE#
+             , AMOUNT         = #AMOUNT#
+             , VAT_AT         = #VAT_AT#
+             , BANK_NM        = #BANK_NM#
+             , ACNUT_NO       = #ACNUT_NO#
+             , BILL_SE        = #BILL_SE#
+             , RM             = #RM#
+             , LAST_UPDT_DE   = SYSDATE
+             , LAST_UPDUSR    = #UPDATE_ID#
+         WHERE IRB_BSIS_SN    = #IRB_BSIS_SN#
+           AND DLBRTCT_SN     = #DLBRTCT_SN#
+		]]>
+	</update>
+	
+	<update id="CTMV01DAO.deleteIRBDlbrtctInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE USE_AT      = 'N'
+             , LAST_UPDT_DE  = SYSDATE
+             , LAST_UPDUSR = #UPDATE_ID#
+         WHERE IRB_BSIS_SN = #IRB_BSIS_SN#
+           AND DLBRTCT_SN  = #DLBRTCT_SN#
+		]]>
+	</update>
+	
+	<insert id="CTMV01DAO.insertIRBRsrcctInfo" parameterClass="hashMap">
+		<![CDATA[
+        INSERT INTO CTMS_CO_IRB_RSRCCT(
+               IRB_BSIS_SN
+             , TASK_SN
+             , RSRCCT_SN
+             , BSNM_REGIST_NO
+             , BANK_NM
+             , ACNUT_NO
+             , BILL_KND
+             , DIRECT_RATE
+             , INDRT_RATE
+             , MEDIC_RATE
+             , HSPTL_RATE
+             , MXMM_RATE
+             , ETC
+             , VAT_AT
+             , RM
+             , USE_AT
+             , FRST_CREAT_DE
+             , FRST_CRTR
+             , LAST_UPDT_DE
+             , LAST_UPDUSR
+        )
+        VALUES(
+               #IRB_BSIS_SN#
+             , #TASK_SN#
+             , #RSRCCT_SN#
+             , #BSNM_REGIST_NO#
+             , #BANK_NM#
+             , #ACNUT_NO#
+             , #BILL_KND#
+             , #DIRECT_RATE#
+             , #INDRT_RATE#
+             , #MEDIC_RATE#
+             , #HSPTL_RATE#
+             , #MXMM_RATE#
+             , #ETC#
+             , #VAT_AT#
+             , #RM#
+             , #USE_AT#
+             , SYSDATE
+             , #UPDATE_ID#
+             , SYSDATE
+             , #UPDATE_ID#
+        )
+		]]>
+	</insert>
+
+	<update id="CTMV01DAO.updateIRBRsrcctInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_RSRCCT SET
+               BSNM_REGIST_NO = #BSNM_REGIST_NO#
+             , BANK_NM        = #BANK_NM#
+             , ACNUT_NO       = #ACNUT_NO#
+             , BILL_KND       = #BILL_KND#
+             , DIRECT_RATE    = #DIRECT_RATE#
+             , INDRT_RATE     = #INDRT_RATE#
+             , MEDIC_RATE     = #MEDIC_RATE#
+             , HSPTL_RATE     = #HSPTL_RATE#
+             , MXMM_RATE      = #MXMM_RATE#
+             , VAT_AT         = #VAT_AT#
+             , ETC            = #ETC#
+             , RM             = #RM#
+             , LAST_UPDT_DE   = SYSDATE
+             , LAST_UPDUSR    = #UPDATE_ID#
+         WHERE IRB_BSIS_SN    = #IRB_BSIS_SN#
+           AND RSRCCT_SN      = #RSRCCT_SN#
+		]]>
+	</update>
+	
+	<update id="CTMV01DAO.deleteIRBRsrcctInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_RSRCCT SET
+               USE_AT       = 'N'
+             , LAST_UPDT_DE   = SYSDATE
+             , LAST_UPDUSR  = #UPDATE_ID#
+         WHERE IRB_BSIS_SN  = #IRB_BSIS_SN#
+           AND RSRCCT_SN    = #RSRCCT_SN#
+		]]>
+	</update>
+	
+	<insert id="CTMV01DAO.insertIRBDlbrtInfo" parameterClass="hashMap">
+		<![CDATA[
+        INSERT INTO CTMS_CO_IRB_DLBRT(
+               IRB_BSIS_SN
+             , TASK_SN
+             , DLBRT_SN
+             , SE
+             , DLBRT_SE
+             , PRESENTN_NBFPS
+             , PRESENTN_CYCLE
+             , POSES_PAPERS
+             , RM
+             , ATCH_FILE_SN
+             , USE_AT
+             , FRST_CREAT_DE
+             , FRST_CRTR
+             , LAST_UPDT_DE
+             , LAST_UPDUSR
+        )
+        VALUES(
+               #IRB_BSIS_SN#
+             , #TASK_SN#
+             , #DLBRT_SN#
+             , #SE#
+             , #DLBRT_SE#
+             , #PRESENTN_NBFPS#
+             , #PRESENTN_CYCLE#
+             , #POSES_PAPERS#
+             , #RM#
+             , #ATCH_FILE_SN#
+             , #USE_AT#
+             , SYSDATE
+             , #UPDATE_ID#
+             , SYSDATE
+             , #UPDATE_ID#
+        )
+		]]>
+	</insert>
+
+	<update id="CTMV01DAO.updateIRBDlbrtInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_DLBRT SET
+               SE             = #SE#
+             , DLBRT_SE       = #DLBRT_SE#
+             , PRESENTN_NBFPS = #PRESENTN_NBFPS#
+             , PRESENTN_CYCLE = #PRESENTN_CYCLE#
+             , POSES_PAPERS   = #POSES_PAPERS#
+             , RM             = #RM#
+             , ATCH_FILE_SN   = #ATCH_FILE_SN#
+             , LAST_UPDT_DE   = SYSDATE
+             , LAST_UPDUSR    = #UPDATE_ID#
+         WHERE IRB_BSIS_SN    = #IRB_BSIS_SN#
+           AND DLBRT_SN       = #DLBRT_SN#
+		]]>
+	</update>
+	
+	<update id="CTMV01DAO.deleteIRBDlbrtInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_DLBRT SET
+               USE_AT       = 'N'
+             , LAST_UPDT_DE   = #LAST_UPDT_DE#
+             , LAST_UPDUSR  = #UPDATE_ID#
+         WHERE IRB_BSIS_SN  = #IRB_BSIS_SN#
+           AND DLBRT_SN     = #DLBRT_SN#
+		]]>
+	</update>
+
+	<insert id="CTMV01DAO.insertIRBInfoInfo" parameterClass="hashMap">
+		<![CDATA[
+        INSERT INTO CTMS_CO_IRB_e_IRB_INFO(
+               E_IRB_SN
+             , IRB_BSIS_SN
+             , TASK_SN
+             , E_IRB_ADRES
+             , JOIN_CRA
+             , ID
+             , PW
+             , PROGRS_TASK
+             , RM
+             , USE_AT
+             , FRST_CREAT_DE
+             , FRST_CRTR
+             , LAST_UPDT_DE
+             , LAST_UPDUSR
+        )
+        VALUES(
+               #E_IRB_SN#
+             , #IRB_BSIS_SN#
+             , #TASK_SN#
+             , #E_IRB_ADRES#
+             , #JOIN_CRA#
+             , #ID#
+             , #PW#
+             , #PROGRS_TASK#
+             , #RM#
+             , #USE_AT#
+             , SYSDATE
+             , #UPDATE_ID#
+             , SYSDATE
+             , #UPDATE_ID#
+        )
+		]]>
+	</insert>
+
+	<update id="CTMV01DAO.updateIRBInfoInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_e_IRB_INFO SET
+               E_IRB_ADRES  = #E_IRB_ADRES#
+             , JOIN_CRA     = #JOIN_CRA#
+             , ID           = #ID#
+             , PW           = #PW#
+             , PROGRS_TASK  = #PROGRS_TASK#
+             , RM           = #RM#
+             , LAST_UPDT_DE = SYSDATE
+             , LAST_UPDUSR  = #UPDATE_ID#
+         WHERE IRB_BSIS_SN  = #IRB_BSIS_SN#
+           AND E_IRB_SN     = #E_IRB_SN#
+		]]>
+	</update>
+
+	<update id="CTMV01DAO.deleteIRBInfoInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_e_IRB_INFO SET
+               USE_AT      = 'N'
+             , LAST_UPDT_DE  = SYSDATE
+             , LAST_UPDUSR = #UPDATE_ID#
+         WHERE IRB_BSIS_SN = #IRB_BSIS_SN#
+           AND E_IRB_SN    = #E_IRB_SN#
+		]]>
+	</update>
+
+	<insert id="CTMV01DAO.insertIRBSaeInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO CTMS_CO_IRB_SAE(
+		       SAE_SN
+		     , IRB_BSIS_SN
+		     , TASK_SN
+		     , FORM_AT
+		     , SAE_REPORT_AT
+		     , SAE_REPORT_MTH
+		     , RM
+		     , USE_AT
+		     , FRST_CREAT_DE
+		     , FRST_CRTR
+		     , LAST_UPDT_DE
+		     , LAST_UPDUSR
+		)
+		VALUES(
+		       #SAE_SN#
+		     , #IRB_BSIS_SN#
+		     , #TASK_SN#
+		     , #FORM_AT#
+		     , #SAE_REPORT_AT#
+		     , #SAE_REPORT_MTH#
+		     , #RM#
+		     , #USE_AT#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		)
+		]]>
+	</insert>
+
+	<update id="CTMV01DAO.updateIRBSaeInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_CO_IRB_SAE SET
+		       FORM_AT        = #FORM_AT#
+		     , SAE_REPORT_AT  = #SAE_REPORT_AT#
+		     , SAE_REPORT_MTH = #SAE_REPORT_MTH#
+		     , RM             = #RM#
+		     , LAST_UPDT_DE   = SYSDATE
+		     , LAST_UPDUSR    = #UPDATE_ID#
+		 WHERE IRB_BSIS_SN    = #IRB_BSIS_SN#
+           AND SAE_SN         = #SAE_SN#
+		]]>
+	</update>
+	
+	<update id="CTMV01DAO.deleteIRBSaeInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE USE_AT         = 'N'
+		     , LAST_UPDT_DE   = SYSDATE
+		     , LAST_UPDUSR    = #UPDATE_ID#
+		 WHERE IRB_BSIS_SN    = #IRB_BSIS_SN#
+           AND SAE_SN         = #SAE_SN#
+		]]>
+	</update>
+
+	<update id="CTMV01DAO.deleteMasterIRBCttpcInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_CO_IRB_CTTPC SET
+		       USE_AT      = 'N'
+		     , LAST_UPDT_DE  = SYSDATE
+		     , LAST_UPDUSR = #UPDATE_ID#
+		 WHERE IRB_BSIS_SN = #IRB_BSIS_SN#
+		]]>
+	</update>
+
+	<update id="CTMV01DAO.deleteMasterIRBDlbrtctInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE USE_AT      = 'N'
+             , LAST_UPDT_DE  = SYSDATE
+             , LAST_UPDUSR = #UPDATE_ID#
+         WHERE IRB_BSIS_SN = #IRB_BSIS_SN#
+		]]>
+	</update>
+
+	<update id="CTMV01DAO.deleteMasterIRBRsrcctInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_RSRCCT SET
+               USE_AT       = 'N'
+             , LAST_UPDT_DE   = SYSDATE
+             , LAST_UPDUSR  = #UPDATE_ID#
+         WHERE IRB_BSIS_SN  = #IRB_BSIS_SN#
+		]]>
+	</update>
+
+	<update id="CTMV01DAO.deleteMasterIRBDlbrtInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_DLBRT SET
+               USE_AT       = 'N'
+             , LAST_UPDT_DE   = #LAST_UPDT_DE#
+             , LAST_UPDUSR  = #UPDATE_ID#
+         WHERE IRB_BSIS_SN  = #IRB_BSIS_SN#
+		]]>
+	</update>
+    
+	<update id="CTMV01DAO.deleteMasterIRBInfoInfo" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_CO_IRB_e_IRB_INFO SET
+               USE_AT      = 'N'
+             , LAST_UPDT_DE  = SYSDATE
+             , LAST_UPDUSR = #UPDATE_ID#
+         WHERE IRB_BSIS_SN = #IRB_BSIS_SN#
+		]]>
+	</update>
+
+	<update id="CTMV01DAO.deleteMasterIRBSaeInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_CO_IRB_SAE SET
+		       USE_AT       = 'N'
+		     , LAST_UPDT_DE = SYSDATE
+		     , LAST_UPDUSR  = #UPDATE_ID#
+         WHERE IRB_BSIS_SN = #IRB_BSIS_SN#
+		]]>
+	</update>
+	
+<!-- ******************************************************************** -->    
+
+</sqlMap>

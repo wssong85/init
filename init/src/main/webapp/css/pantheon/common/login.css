@@ -1,0 +1,101 @@
+html, body {width:100%; height:100%; overflow:hidden;} body {}
+#wrap {width: 100%; height: 100%; overflow:hidden;}
+@media (max-width:970px), (max-height:600px) { html, body {overflow:visible;} #wrap {overflow:visible;} }
+
+/*슬라이드 이미지*/
+#Slider {width:100%; height:100%; position: absolute; top:0; z-index: 0;}
+.visualImg {width:100%; height:100%; overflow:hidden;}
+.visualImg01 {background: url(../../../images/pantheon/common/introBg01.png) center center;}
+.visualImg02 {background: url(../../../images/pantheon/common/introBg02.png) center center;}
+.visualImg03 {background: url(../../../images/pantheon/common/introBg03.png) center center;}
+
+/*로긴전체*/
+#loginWrap {width:963px; height:600px; display:block; position:absolute; /*left:50%; top:50%; transform:translate(-50%, -50%);*/}
+.loginBox {width:963px; height:449px; margin-top:6px; display:block; background:#fff; position:absolute; /*left:50%; top:50%; transform:translate(-50%, -50%);*/}
+.loginCon {width:481.5px; height:100%; display: inline-block; float:left; position: relative;}
+.loginNtcCon {width:481.5px; height:100%; display: inline-block; float:left; background: #627be4; position: relative; padding: 78px 36px 0 36px; box-sizing: border-box;}
+.loginLogo {display: inline-block;}
+#loginFooter {width:963px; position: absolute; bottom: 45px;} 
+#loginFooter .copyright {display: inline-block; color:#fff; font-size: 12px; text-transform: uppercase;}
+#loginFooter .loginFnb {display: inline-block; color:#fff; float:right;}
+.loginFnb a:first-of-type {margin-right:5px;}
+.loginFnb a:last-of-type {margin-left:5px;}
+.loginFnb a {color:#fff; font-size: 13px; transition-duration:0.3s;}
+.loginFnb a:hover {color:#92a7ff; font-size: 13px; transition-duration:0.3s;}
+
+
+/*로긴셀렉터*/
+.loginLagSel {width:136px; height:33px; display: inline-block; border:1px #fff solid; box-sizing: border-box; border-radius: 50px;  color:#fff; line-height: 28px; text-indent: 15px; position: absolute; right:0; top:20px; background: rgba(255,255,255,0); transition-duration:0.3s; cursor: pointer;}
+.loginLagSel:hover {background:#6e85e9; border: 1px solid #6e85e9; transition-duration:0.3s;}
+.loginLagSel {display: block;}
+.loginLagSelSub {display: none; width:120px; height:140px; background: rgba(255,255,255,1); border:1px solid #e3e3e3; line-height: 28px; position: absolute; top:46px; right:5px; z-index: 9999;}
+.loginLagSelSubLst {display: block; width: 120px; color:#666 !important; text-indent: 10px; font-family:'NotoSansKR-Thin-Hestia'; }
+.loginLagSelSubLst:hover {color:#666 !important; background: #efefef;}
+
+.arrow01 {width: 0; height: 0; border-style: solid; border-width: 0 9px 9px 9px; border-color: transparent transparent #fff transparent; position: absolute; top:-7px; right:5px;}
+
+/*로긴-컨텐츠-타이틀*/
+.loginConDesc {width:481.5px; height:100%; text-align: center; margin-top:60px;}
+.loginConDesc dt {font-size: 35px; font-family:'NotoSansKR-Regular-Hestia'; font-weight: bold; text-transform: uppercase; color:#424242;}
+.loginConDesc dd {font-size: 15px; font-family:'NotoSansKR-Regular-Hestia'; color:#7f7f7f; margin-top:15px;}
+
+/*로긴-컨텐츠-로긴폼*/
+#loginFrm {width:481.5px; height:100%; position: absolute; top:179px;}
+.loginFs {width:481.5px; height:100%; position: relative;}
+.longinInput {width:387px; height:45px !important; display: block; left:0; margin-left: auto; right:0; margin-right:auto; background: #eaeef3; border-radius: 0 !important; box-sizing: border-box; border: 1px solid #eaeef3 !important; margin-bottom:16px; /*text-indent: 46px !important;*/ padding-left:46px; line-height: 45px; font-size: 13px !important; font-family:'NotoSansKR-Thin-Hestia' !important;}
+.longinInput:focus {border:1px solid #627be4 !important; box-sizing: border-box;}
+
+.loginId {/*background: url(../../../images/pantheon/common/loginIdIco.png) no-repeat 17px center;*/background:#ffffff; padding-left:50px !important;}
+.loginId:focus {/*background: url(../../../images/pantheon/common/loginIdIco_on.png) no-repeat 17px center;*/background:#ffffff;}
+.loginPassword {/*background: url(../../../images/pantheon/common/loginPassIco.png) no-repeat 17px center;*/background:#ffffff; padding-left:50px !important;}
+.loginPassword:focus {/*background: url(../../../images/pantheon/common/loginPassIco_on.png) no-repeat 17px center;*/background:#ffffff;}
+
+.id_img{ position:absolute; top:0px; left:48px; width:45px; height:45px; background: url(../../../images/pantheon/common/loginIdIco.png) no-repeat 17px center;}
+.pwd_img{position:absolute; top:61px; left:50px; width:45px; height:45px; background: url(../../../images/pantheon/common/loginPassIco.png) no-repeat 17px center;}
+
+
+/*
+.loginId:-webkit-autofill{
+-webkit-text-fill-color: #000000 !important;
+-webkit-box-shadow:0 0 0 1000px white inset;
+}
+
+.loginPassword:-webkit-autofill{
+-webkit-text-fill-color: #000000 !important;
+-webkit-box-shadow:0 0 0 1000px white inset;
+}
+*/
+
+
+#loginBtn {width:387px; height:45px; display: block; left:0; margin-left: auto; right:0; margin-right:auto; border-radius: 0 !important; font-size: 17px; text-transform: uppercase; margin-bottom:16px; cursor: pointer;}
+.loginAddBtn {width:387px; height:45px; display: block; left:0; margin-left: auto; right:0; margin-right:auto; font-family:'NotoSansKR-Regular-Hestia'; font-weight: 100; color:#999;}
+.loginAddBtn a {color:#999;}
+.loginfind {float:right;}
+.loginfind a:first-of-type {margin-right:5px;}
+.loginfind a:last-of-type {margin-left:5px;}
+.loginfind a {color:#999; transition-duration:0.3s;}
+.loginfind a:hover {color:#6e85e9; transition-duration:0.3s;}
+
+/*체크박스-로그인 텍스트*/
+.loginChkBoxLab {position: relative; top:2px;}
+.loginChkBoxLab span {position: relative; left:5px; bottom:2px;}
+
+
+/*공지-컨텐츠*/
+.loginNtcCon > * {margin-top: -6px;}
+.loginNtcDesc {color:#fff; display: inline-block;}
+.loginNtcDesc dt {display: inline-block; font-size: 35px; font-family:'NotoSansKR-Regular-Hestia'; text-transform: uppercase; line-height: 1em !important;}
+.loginNtcDesc dd {display: inline-block; font-size: 14px; padding-left: 10px;}
+.loginNtcHr {color: #fff; opacity:0.8; width:423px; position: relative; top:11px; margin-left:-7px; /*position: absolute; left:50%; top:30.8%; transform:translate(-50%, -30.8%);*/}
+.loginNtcUl {margin-top:26px;}
+.loginNtcUl li {color:#eff1f7; cursor: pointer;  }
+.loginNtcUl li:hover {color:#fff; cursor: pointer;}
+.loginTitle{  width:320px; display:inline-block; height:30px; overflow: hidden; line-height: 33px; }
+.loginNtcLstDate {float:right;  display:inline-block; height:30px; overflow: hidden; line-height: 33px; }
+.moreBtn02 {margin-top: 11px;}
+
+
+
+
+
+

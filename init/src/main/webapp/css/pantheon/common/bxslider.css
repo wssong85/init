@@ -1,0 +1,54 @@
+/* NEXT / PREV 컨트롤 */
+#slider .bx-wrapper .bx-prev {left:10px; display:block; background:rgba(65,65,65,0.4); border-radius:50%;}
+#slider .bx-wrapper .bx-next {right:10px; display:block; background:rgba(65,65,65,0.4); border-radius:50%;}
+#slider .bx-wrapper .bx-next:after {content: '〉';}
+#slider .bx-wrapper .bx-prev:after {content: '〈';}
+#slider .bx-wrapper .bx-prev:hover {background-position:0 0;}
+#slider .bx-wrapper .bx-next:hover {background-position:0 0;}
+#slider .bx-wrapper:hover .bx-controls-direction a {opacity:1; transition-duration:0.5s;}
+#slider .bx-wrapper .bx-controls-direction a {position:absolute; top:50%; margin-top:-25px; text-align: center; line-height:60px; width:60px; height:60px; font-size:20px; color:rgba(255,255,255,0.7); z-index:9999; opacity:0; transition-duration:0.5s;}
+#slider .bx-wrapper .bx-controls-direction a.disabled {display:none;}
+#slider .bx-wrapper:hover .bx-controls-direction a {opacity:1; transition-duration:0.5s;}
+
+/* NEXT / PREV 컨트롤_외부 */
+#slider .controlsBtn {width:60px; height:60px; border: solid 1px rgba(255,255,255,0.5);  border-radius:50%; text-align: center; line-height:60px; font-size:20px; color:rgba(255,255,255,0.7); z-index:9999; opacity:0; transition-duration:0.5s;}
+#main_visual:hover .controlsBtn {opacity:1; transition-duration:0.5s;}
+#main_visual .controlsBtn:hover  {background:rgba(255,255,255,0.1); transition-duration:0.5s;}
+.prevBtn {position:absolute; top:50%; left:30px;}
+.nextBtn {position:absolute; top:50%; right:30px;}
+.prevBtn:after {content: '〈';}
+.nextBtn:after {content: '〉';}
+
+@media (max-width:1400px) {
+#slider .controlsBtn {display:none;}
+}
+
+/* PAGER */
+#slider .bx-wrapper .bx-pager {position:absolute; top:370px; text-align: center; z-index:9999;}
+#slider .bx-wrapper .bx-pager.bx-default-pager a {background: rgba(166,184,248,0.7); font-size:0px; display: block; width: 33px; height: 6px; margin: 0 3px;}
+#slider .bx-wrapper .bx-pager.bx-default-pager a:hover,
+#slider .bx-wrapper .bx-pager.bx-default-pager a.active,
+#slider .bx-wrapper .bx-pager.bx-default-pager a:focus {background: rgba(255,255,255,0.9);}
+#slider .bx-wrapper .bx-pager-item,
+#slider .bx-wrapper .bx-controls-auto .bx-controls-auto-item {display: inline-block; *zoom: 1; *display: inline;}
+#slider .bx-wrapper .bx-pager-item {font-size: 0; line-height: 0;}
+
+/** RESET AND LAYOUT
+===================================*/
+#slider .bx-wrapper {position:relative; margin:0 auto; padding:0; *zoom:1;}
+#slider .bx-wrapper img {display:block;}
+
+/** THEME
+===================================*/
+#slider .bx-wrapper .bx-viewport {margin:0 auto; transform:translatez(0); -webkit-transform:translatez(0); -o-transform:translatez(0); -moz-transform:translatez(0); -ms-transform:translatez(0);}
+#slider .bx-wrapper .bx-pager,
+#slider .bx-wrapper .bx-controls-auto {position:absolute; bottom:-30px; width:100%;}
+
+
+/*비주얼 설정*/
+#slider {width:100%; height:100%; margin:0 auto; display:block;}
+#slider .visualSlider {width:100%; height:100%; margin:0 auto; display:block;}
+#slider .visualSlider > li:nth-of-type(1) {width:100%; height:100%; display:block; position:absolute; /*background:rgba(255,255,255,0.1);*/ behavior: url(js/ie-css3.htc);}
+#slider .visualSlider > li:nth-of-type(2) {width:100%; height:100%; display:block; position:relative; /*background:rgba(255,255,255,0.1);*/ behavior: url(js/ie-css3.htc);}
+#slider .visualSlider > li:nth-of-type(3) {width:100%; height:100%; display:block; position:relative; /*background:rgba(255,255,255,0.1);*/ behavior: url(js/ie-css3.htc);}
+

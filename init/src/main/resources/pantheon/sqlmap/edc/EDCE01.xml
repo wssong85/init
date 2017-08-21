@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCE01DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	
+   	<!-- eSign Visit 목록 -->
+   	<select id="selectESignVisitList" parameterClass="hashMap" resultClass="hashMap" >
+   		SELECT	CS.SUBJECT_NO,
+   				CV.VMODE_SN,
+				CS.INSTT_FORM_SN,
+       			(SELECT CMMN_CODE_NM FROM CM_CMMNCODE WHERE CMMN_CLCODE = 'EDC045' AND CMMN_CODE =  CV.ELTSGN_STTUS_CODE) AS ELTSGN_STTUS_CODE,
+	       		SBI.NAME1, 
+              	CASE WHEN SN = 1 THEN (SELECT VISIT_LBL FROM EDC_CR_VISIT_SCHDUL CVS WHERE VISIT_SN = CV.VISIT_SN AND CVS.TASK_SN = #TASK_SN# AND CVS.EDC_VER= #EDC_VERSION#)
+      				 WHEN SN != 1 THEN (SELECT VISIT_LBL FROM EDC_CR_VISIT_SCHDUL CVS WHERE VISIT_SN = CV.VISIT_SN  AND CVS.TASK_SN = #TASK_SN# AND CVS.EDC_VER= #EDC_VERSION#)||SN END AS VISIT_LBL,
+              	(SELECT	CMMN_CODE_NM 
+			     FROM CM_CMMNCODE 
+			     WHERE CMMN_CLCODE = 'EDC052' 
+			     AND CMMN_CODE = (	SELECT	CASE WHEN A.VAR2 = 0 THEN '01'
+							            		WHEN A.VAR2 > 0 THEN '02'
+                              					WHEN A.VAR1 = A.VAR2 AND A.VAR3 = 0 THEN '03'
+							              	END AS SAVE_STATUS
+							        FROM (	
+							        		SELECT COUNT(ECG.GROUP_SN) VAR1,
+                              				COUNT(CG.VISIT_GROUP_SN) VAR2,
+                              				COUNT(CQ.QUERY_SN) VAR3
+                              				FROM EDC_CR_VISIT_GROUP CVG
+                              				JOIN EDC_CR_GROUP ECG
+                              				ON CVG.GROUP_SN = ECG.GROUP_SN
+                              				LEFT JOIN EDC_CF_GROUP CG
+                              				ON CVG.VISIT_GROUP_SN = CG.VISIT_GROUP_SN
+							                LEFT JOIN EDC_CF_VRIABL CVR
+							                ON 		CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+							                AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+							                AND 	CG.VISIT_SN = CVR.VISIT_SN
+							                AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+							                LEFT JOIN (
+							                			SELECT	CQ.QUERY_SN,
+							                            		CQ.VISIT_GROUP_SN,
+									                            CQ.SUBJECT_NO,
+									                            CQ.SET_VRIABL_SN,
+									                            CQ.INSTT_FORM_SN,
+									                            CQ.SET_ROW_SN,
+									                            QM.QUERY_STTUS_CODE
+							                          	FROM	EDC_CF_QUERY CQ
+							                          	JOIN CM_QUERY QM
+							                          	ON CQ.QUERY_SN = QM.QUERY_SN) CQ
+							                ON 		CVR.SUBJECT_NO = CQ.SUBJECT_NO
+							                AND 	CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+							                AND 	CVR.SET_ROW_SN = CQ.SET_ROW_SN
+							                AND  	CQ.QUERY_STTUS_CODE = '01'
+									       	WHERE CVG.TASK_SN = #TASK_SN#
+									        AND CVG.EDC_VER = #EDC_VERSION#
+				                         ) A 
+				                   ) 
+				) AS SAVE_STATUS,
+				(SELECT	CASE WHEN A.VAR2 = 0 THEN '01'
+	            			 WHEN A.VAR2 > 0 THEN '02'
+                         	 WHEN A.VAR1 = A.VAR2 AND A.VAR3 = 0 THEN '03'
+		              	END AS SAVE_STATUS
+		        FROM (	
+		        		SELECT 	COUNT(ECG.GROUP_SN) VAR1,
+                   				COUNT(CG.VISIT_GROUP_SN) VAR2,
+                   				COUNT(CQ.QUERY_SN) VAR3
+           				FROM EDC_CR_VISIT_GROUP CVG
+           				JOIN EDC_CR_GROUP ECG
+           				ON CVG.GROUP_SN = ECG.GROUP_SN
+           				LEFT JOIN EDC_CF_GROUP CG
+           				ON CVG.VISIT_GROUP_SN = CG.VISIT_GROUP_SN
+		                LEFT JOIN EDC_CF_VRIABL CVR
+		                ON 		CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+		                AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+		                AND 	CG.VISIT_SN = CVR.VISIT_SN
+		                AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+		                LEFT JOIN (
+		                			SELECT	CQ.QUERY_SN,
+		                            		CQ.VISIT_GROUP_SN,
+				                            CQ.SUBJECT_NO,
+				                            CQ.SET_VRIABL_SN,
+				                            CQ.INSTT_FORM_SN,
+				                            CQ.SET_ROW_SN,
+				                            QM.QUERY_STTUS_CODE
+		                          	FROM	EDC_CF_QUERY CQ
+		                          	JOIN CM_QUERY QM
+		                          	ON CQ.QUERY_SN = QM.QUERY_SN) CQ
+		                ON 		CVR.SUBJECT_NO = CQ.SUBJECT_NO
+		                AND 	CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+		                AND 	CVR.SET_ROW_SN = CQ.SET_ROW_SN
+		                AND  	CQ.QUERY_STTUS_CODE = '01'
+				       	WHERE CVG.TASK_SN = '1'
+				        AND CVG.EDC_VER = '2.1.0' ) A ) AS SAVE_CODE ,
+              	(SELECT	COUNT(CQ.QUERY_SN)
+              	FROM	EDC_CF_SUBJECT CS
+			   	LEFT JOIN EDC_CF_VISIT CVS
+			    ON		CS.INSTT_FORM_SN = CVS.INSTT_FORM_SN
+			    AND 	CS.SUBJECT_NO = CVS.SUBJECT_NO
+                LEFT JOIN EDC_CF_GROUP CG
+                ON 		CVS.INSTT_FORM_SN = CG.INSTT_FORM_SN
+                AND 	CVS.SUBJECT_NO = CG.SUBJECT_NO
+                AND 	CVS.VISIT_SN = CG.VISIT_SN
+                LEFT JOIN EDC_CF_VRIABL CVR
+                ON 		CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+                AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+                AND 	CG.VISIT_SN = CVR.VISIT_SN
+                AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+                LEFT JOIN (
+                			SELECT 	CQ.QUERY_SN,
+	                              	CQ.VISIT_GROUP_SN,
+	                              	CQ.SUBJECT_NO,
+	                              	CQ.SET_VRIABL_SN,
+	                              	CQ.INSTT_FORM_SN,
+	                              	CQ.SET_ROW_SN,
+	                              	QM.QUERY_STTUS_CODE
+                          	FROM EDC_CF_QUERY CQ
+                          	JOIN CM_QUERY QM
+                          	ON CQ.QUERY_SN = QM.QUERY_SN
+                          	) CQ
+                ON 		CVR.SUBJECT_NO = CQ.SUBJECT_NO
+                AND 	CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+                AND 	CVR.SET_ROW_SN = CQ.SET_ROW_SN
+                WHERE 	CQ.QUERY_STTUS_CODE = '01'
+                AND 	CVS.VISIT_SN = CV.VISIT_SN
+                AND 	CVS.SUBJECT_NO = CV.SUBJECT_NO
+                AND 	CVS.SN = CV.SN 
+                ) AS OPEN_QUERY
+		FROM	EDC_CF_VISIT CV
+      	LEFT JOIN EDC_CF_SUBJECT CS
+      	ON    	CV.INSTT_FORM_SN = CS.INSTT_FORM_SN
+      	AND   	CV.SUBJECT_NO = CS.SUBJECT_NO
+	    LEFT JOIN EDC_CR_INSTT_FORM CIF
+	    ON		CS.INSTT_FORM_SN = CIF.INSTT_FORM_SN
+		LEFT JOIN CM_INSTT CI
+	    ON		CIF.INSTT_CODE = CI.INSTT_CODE
+	    LEFT JOIN	SAP_BCNC_INFO SBI
+	    ON		CI.KUNNR = SBI.KUNNR
+	    WHERE 1=1
+	    <isNotEmpty property="INSTT_NM" prepend="AND">
+			SBI.NAME1 LIKE '%' || #INSTT_NM# || '%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			CS.SUBJECT_NO LIKE '%' || #SUBJECT_NO# || '%'
+		</isNotEmpty>
+   	</select>
+   	
+   	<!-- eSign Subject 목록 -->
+   	<select id="selectESignSubjectList" parameterClass="hashMap" resultClass="hashMap" >
+   		SELECT	CS.SUBJECT_NO,
+				CS.INSTT_FORM_SN,
+       			(SELECT CMMN_CODE_NM FROM CM_CMMNCODE WHERE CMMN_CLCODE = 'EDC045' AND CMMN_CODE =  CS.ELTSGN_STTUS_CODE) AS ELTSGN_STTUS_CODE,
+	       		SBI.NAME1, 
+              	(SELECT	CMMN_CODE_NM 
+			     FROM	CM_CMMNCODE 
+			     WHERE	CMMN_CLCODE = 'EDC049' 
+			     AND	CMMN_CODE =	(SELECT CASE WHEN A.VAR1 = 0 AND A.VAR2 = 0 THEN '03'
+							               		 WHEN A.VAR2 > 0 AND A.VAR3 > 0 THEN '02'
+                              					 ELSE '01'
+							                END AS SDV_STTUS_CODE
+							         FROM (
+							                SELECT SUM(DECODE(ELTSGN_STTUS_CODE, '01', 1,0)) VAR1,
+							                SUM(DECODE(ELTSGN_STTUS_CODE, '02', 1,0)) VAR2,
+							                SUM(DECODE(ELTSGN_STTUS_CODE, '03', 1,0)) VAR3
+							                FROM EDC_CF_VISIT CV )  A 
+                              		)) AS VISIT_STTUS,
+              (SELECT	CMMN_CODE_NM 
+			     FROM 	CM_CMMNCODE 
+			     WHERE 	CMMN_CLCODE = 'EDC052' 
+			     AND 	CMMN_CODE = (	SELECT	CASE WHEN A.VAR2 = 0 THEN '01'
+							            		WHEN A.VAR2 > 0 THEN '02'
+                              					WHEN A.VAR1 = A.VAR2 AND A.VAR3 = 0 THEN '03'
+							              		END AS SAVE_STATUS
+							        	FROM (	
+							        			SELECT 	COUNT(ECG.GROUP_SN) VAR1,
+			                              				COUNT(CG.VISIT_GROUP_SN) VAR2,
+			                              				COUNT(CQ.QUERY_SN) VAR3
+	                              				FROM EDC_CR_VISIT_GROUP CVG
+	                              				JOIN EDC_CR_GROUP ECG
+	                              				ON CVG.GROUP_SN = ECG.GROUP_SN
+	                              				LEFT JOIN EDC_CF_GROUP CG
+	                              				ON CVG.VISIT_GROUP_SN = CG.VISIT_GROUP_SN
+								                LEFT JOIN EDC_CF_VRIABL CVR
+								                ON 		CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+								                AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+								                AND 	CG.VISIT_SN = CVR.VISIT_SN
+								                AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+								                LEFT JOIN (
+								                			SELECT	CQ.QUERY_SN,
+								                            		CQ.VISIT_GROUP_SN,
+										                            CQ.SUBJECT_NO,
+										                            CQ.SET_VRIABL_SN,
+										                            CQ.INSTT_FORM_SN,
+										                            CQ.SET_ROW_SN,
+										                            QM.QUERY_STTUS_CODE
+								                          	FROM	EDC_CF_QUERY CQ
+								                          	JOIN CM_QUERY QM
+								                          	ON CQ.QUERY_SN = QM.QUERY_SN) CQ
+								                ON 		CVR.SUBJECT_NO = CQ.SUBJECT_NO
+								                AND 	CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+								                AND 	CVR.SET_ROW_SN = CQ.SET_ROW_SN
+								                AND  	CQ.QUERY_STTUS_CODE = '01'
+										       	WHERE CVG.TASK_SN = #TASK_SN#
+										        AND CVG.EDC_VER = #EDC_VERSION#
+				                         ) A 
+				                   ) 
+				) AS SAVE_STATUS,
+				(SELECT	CASE	WHEN A.VAR2 = 0 THEN '01'
+			            		WHEN A.VAR2 > 0 THEN '02'
+			                    WHEN A.VAR1 = A.VAR2 AND A.VAR3 = 0 THEN '03'
+		            	END AS SAVE_STATUS
+	        	FROM (	
+	        			SELECT 	COUNT(ECG.GROUP_SN) VAR1,
+                   				COUNT(CG.VISIT_GROUP_SN) VAR2,
+                   				COUNT(CQ.QUERY_SN) VAR3
+           				FROM 	EDC_CR_VISIT_GROUP CVG
+           				JOIN 	EDC_CR_GROUP ECG
+           				ON 		CVG.GROUP_SN = ECG.GROUP_SN
+           				LEFT JOIN EDC_CF_GROUP CG
+           				ON 		CVG.VISIT_GROUP_SN = CG.VISIT_GROUP_SN
+		                LEFT JOIN EDC_CF_VRIABL CVR
+		                ON 		CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+		                AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+		                AND 	CG.VISIT_SN = CVR.VISIT_SN
+		                AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+		                LEFT JOIN (
+		                			SELECT	CQ.QUERY_SN,
+		                            		CQ.VISIT_GROUP_SN,
+				                            CQ.SUBJECT_NO,
+				                            CQ.SET_VRIABL_SN,
+				                            CQ.INSTT_FORM_SN,
+				                            CQ.SET_ROW_SN,
+				                            QM.QUERY_STTUS_CODE
+		                          	FROM	EDC_CF_QUERY CQ
+		                          	JOIN CM_QUERY QM
+		                          	ON CQ.QUERY_SN = QM.QUERY_SN) CQ
+		                ON 		CVR.SUBJECT_NO = CQ.SUBJECT_NO
+		                AND 	CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+		                AND 	CVR.SET_ROW_SN = CQ.SET_ROW_SN
+		                AND  	CQ.QUERY_STTUS_CODE = '01'
+				       	WHERE CVG.TASK_SN = #TASK_SN#
+				        AND CVG.EDC_VER = #EDC_VERSION#	) A )AS SAVE_CODE,
+              (SELECT	COUNT(CQ.QUERY_SN)
+               FROM	EDC_CF_SUBJECT SCS
+			   LEFT JOIN EDC_CF_VISIT CV
+			   ON 	SCS.INSTT_FORM_SN = CV.INSTT_FORM_SN
+			   AND  SCS.SUBJECT_NO = CV.SUBJECT_NO
+               LEFT JOIN EDC_CF_GROUP CG
+               ON	CV.INSTT_FORM_SN = CG.INSTT_FORM_SN
+               AND 	CV.SUBJECT_NO = CG.SUBJECT_NO
+               AND 	CV.VISIT_SN = CG.VISIT_SN
+               LEFT JOIN EDC_CF_VRIABL CVR
+               ON	CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+               AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+               AND 	CG.VISIT_SN = CVR.VISIT_SN
+               AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+               LEFT JOIN (SELECT CQ.QUERY_SN,
+                              	 CQ.VISIT_GROUP_SN,
+                              	 CQ.SUBJECT_NO,
+                              	 CQ.SET_VRIABL_SN,
+                              	 CQ.INSTT_FORM_SN,
+                              	 CQ.SET_ROW_SN,
+                              	 QM.QUERY_STTUS_CODE
+                          FROM EDC_CF_QUERY CQ
+                          JOIN CM_QUERY QM
+                          ON CQ.QUERY_SN = QM.QUERY_SN) CQ
+                ON 		CVR.SUBJECT_NO = CQ.SUBJECT_NO
+                AND 	CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+                AND 	CVR.SET_ROW_SN = CQ.SET_ROW_SN
+                WHERE 	CQ.QUERY_STTUS_CODE = '01'
+                AND 	SCS.SUBJECT_NO = CS.SUBJECT_NO ) AS OPEN_QUERY
+		FROM	EDC_CF_SUBJECT CS
+	    LEFT JOIN EDC_CR_INSTT_FORM CIF
+	    ON		CS.INSTT_FORM_SN = CIF.INSTT_FORM_SN
+		LEFT JOIN CM_INSTT CI
+	    ON		CIF.INSTT_CODE = CI.INSTT_CODE
+	    LEFT JOIN	SAP_BCNC_INFO SBI
+	    ON		CI.KUNNR = SBI.KUNNR
+	  	WHERE 1=1
+        <isNotEmpty property="INSTT_NM" prepend="AND">
+			SBI.NAME1 LIKE '%' || #INSTT_NM# || '%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			CS.SUBJECT_NO LIKE '%' || #SUBJECT_NO# || '%'
+		</isNotEmpty>
+   	</select>
+   	
+   	<update id="updateESignVisit" parameterClass="hashMap">
+   		UPDATE 	EDC_CF_VISIT
+   		SET		ELTSGN_STTUS_CODE = #ELTSGN_STTUS_CODE#
+   		WHERE	VMODE_SN = #UPDATE_SN#
+   	</update>
+   	
+   	<update id="updateESignSubject" parameterClass="hashMap">
+   		UPDATE 	EDC_CF_SUBJECT
+   		SET		ELTSGN_STTUS_CODE = #ELTSGN_STTUS_CODE#
+   		WHERE	SUBJECT_NO = #UPDATE_SN#
+   	</update>
+	
+</sqlMap>

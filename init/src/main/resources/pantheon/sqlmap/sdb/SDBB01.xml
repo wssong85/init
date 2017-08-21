@@ -1,0 +1,765 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SDBB01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	<select id="SDBB01DAO.selectOrganCodeListByPk" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+		 SELECT DELNGLN_NM AS CMMN_CODE_NM
+			  , DELNGLN_CODE AS CMMN_CODE
+			  , DMSTC_SE
+			  , DELNGLN_SE
+		    FROM SDB_IM_DELNGLN_MANAGE
+		   WHERE USE_AT ='Y'
+		   ORDER BY DELNGLN_CODE
+	]]>
+	</select>
+	<select id="SDBB01DAO.selectProductList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		   SELECT PRDUCT_CODE
+			  , FN_GET_MULLANG(PRDUCTNM_CODE) AS PRDUCTNM_CODE
+			  , PRDUCTNM
+			  , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') AS LAST_UPDDE
+			  , FN_GET_MULLANG(GNRL_NM_CODE3)AS GNRL_NM_CODE3
+			  , FN_GET_MULLANG(GNRL_NM_CODE2)AS GNRL_NM_CODE2
+			  , FN_GET_MULLANG(GNRL_NM_CODE1)AS GNRL_NM_CODE1
+			  , FRST_MFBIZ_CODE
+			  , TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') AS FRST_CREDE
+			  , TO_CHAR(CONFM_DTE, 'YYYYMMDDHH24MISS')  AS CONFM_DTE
+			  , FN_GET_MULLANG(CONFM_BFE_IP_NM_MULLANG_CODE3)AS CONFM_BFE_IP_NM_MULLANG_CODE3
+			  , FN_GET_MULLANG(CONFM_BFE_IP_NM_MULLANG_CODE2)AS CONFM_BFE_IP_NM_MULLANG_CODE2
+			  , FN_GET_MULLANG(CONFM_BFE_IP_NM_MULLANG_CODE1)AS CONFM_BFE_IP_NM_MULLANG_CODE1
+			  , COMAVA_AT
+			   , 'Inactive' as ISACTIVE
+			FROM SDB_IM_PRDUCT_INFO_MANAGE
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+	     <![CDATA[	     	    
+	     	   PRDUCT_CODE =#PRDUCT_CODE# 
+	     ]]>
+	     </isNotEmpty>	 
+	     ORDER BY USE_AT DESC, FRST_CREDE DESC 
+	</select>
+	
+	<insert id="SDBB01DAO.insertProductList" parameterClass="hashMap">
+	<![CDATA[
+	INSERT INTO SDB_IM_PRDUCT_INFO_MANAGE (  
+			     PRDUCT_CODE
+			   , PRDUCTNM_CODE				   
+			   , GNRL_NM_CODE3
+			   , GNRL_NM_CODE2
+			   , GNRL_NM_CODE1
+			   , FRST_MFBIZ_CODE
+			   , CONFM_DTE
+			   , CONFM_BFE_IP_NM_MULLANG_CODE3
+			   , CONFM_BFE_IP_NM_MULLANG_CODE2
+			   , CONFM_BFE_IP_NM_MULLANG_CODE1
+			   , COMAVA_AT
+			   , USE_AT
+			   , FRST_CREDE
+			   , REGIST_ID
+			   , LAST_UPDDE
+			   , UPDATE_ID			   
+			   ) 
+		VALUES ( 
+				  #PRDUCT_CODE# 
+				, #PRDUCTNM_CODE#					
+				, #GNRL_NM_CODE3#
+				, #GNRL_NM_CODE2#
+				, #GNRL_NM_CODE1#
+				, #FRST_MFBIZ_CODE#					
+				, #CONFM_DTE#
+				, #CONFM_BFE_IP_NM_MULLANG_CODE3#
+				, #CONFM_BFE_IP_NM_MULLANG_CODE2#
+				, #CONFM_BFE_IP_NM_MULLANG_CODE1#
+				, #COMAVA_AT# 
+				, NVL(#USE_AT#, 'Y')
+		        , sysdate
+		        , #UPDATE_ID#
+		        , sysdate
+		        , #UPDATE_ID#
+				)
+		]]>
+	</insert>
+		
+	<update id="SDBB01DAO.updateProductList" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_IM_PRDUCT_INFO_MANAGE
+	   SET PRDUCTNM_CODE = #PRDUCTNM_CODE#
+	]]>	
+	<isNotEmpty property="GNRL_NM_CODE1" prepend=",">
+    <![CDATA[ 
+    	   GNRL_NM_CODE1 = #GNRL_NM_CODE1# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="GNRL_NM_CODE2" prepend=",">
+    <![CDATA[ 
+    	   GNRL_NM_CODE2 = #GNRL_NM_CODE2# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="GNRL_NM_CODE3" prepend=",">
+    <![CDATA[ 
+    	   GNRL_NM_CODE3 = #GNRL_NM_CODE3# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CONFM_BFE_IP_NM_MULLANG_CODE1" prepend=",">
+    <![CDATA[ 
+    	   CONFM_BFE_IP_NM_MULLANG_CODE1 = #CONFM_BFE_IP_NM_MULLANG_CODE1# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CONFM_BFE_IP_NM_MULLANG_CODE2" prepend=",">
+    <![CDATA[ 
+    	   CONFM_BFE_IP_NM_MULLANG_CODE2 = #CONFM_BFE_IP_NM_MULLANG_CODE2# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CONFM_BFE_IP_NM_MULLANG_CODE3" prepend=",">
+    <![CDATA[ 
+    	   CONFM_BFE_IP_NM_MULLANG_CODE3 = #CONFM_BFE_IP_NM_MULLANG_CODE3# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="FRST_MFBIZ_CODE" prepend=",">
+    <![CDATA[ 
+    	   FRST_MFBIZ_CODE = #FRST_MFBIZ_CODE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CONFM_DTE" prepend=",">
+    <![CDATA[ 
+    	   CONFM_DTE = #CONFM_DTE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="COMAVA_AT" prepend=",">
+    <![CDATA[ 
+    	   COMAVA_AT = #COMAVA_AT# 
+    ]]>    		
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   LAST_UPDDE = SYSDATE 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE PRDUCT_CODE = #PRDUCT_CODE#
+   	]]> 
+	</update>
+	
+	
+	<update id="SDBB01DAO.deleteProductListByPk" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE  SDB_IM_PRDUCT_INFO_MANAGE
+		   SET USE_AT ='N'		
+		WHERE PRDUCT_CODE = #PRDUCT_CODE#
+	]]>
+	</update>
+			
+	<insert id="SDBB01DAO.insertProductReport" parameterClass="hashMap">
+	<![CDATA[
+		INSERT INTO SDB_AM_REPORT_ESTBS (		
+				REPORT_SN
+				, TY
+				, STDDE_TY				
+				, REPORT_INSTT_NM
+				, REPORTDE_CO		
+				, PRDUCT_CODE		
+				, INITIAL_AT		
+				, USE_AT
+			    , FRST_CREDE
+			    , REGIST_ID
+			    , LAST_UPDDE
+			    , UPDATE_ID		
+				) 
+		VALUES ( 
+				 #REPORT_SN#
+				 ,#TY#
+				 ,#STDDE_TY#				 
+				 ,#REPORT_INSTT_NM#
+				 ,#REPORTDE_CO#				 
+				 ,#PRDUCT_CODE#
+				 ,#INITIAL_AT#		 
+				 ,NVL(#USE_AT#, 'Y')
+			  	 ,sysdate
+				 ,#UPDATE_ID#
+				 ,sysdate
+				 ,#UPDATE_ID#
+		 )
+	]]>
+	</insert>
+	
+	<update id="SDBB01DAO.updateProductReport" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_AM_REPORT_ESTBS
+	   SET REPORT_INSTT_NM = #REPORT_INSTT_NM#
+	]]>
+	<isNotEmpty property="TY" prepend=",">
+	<![CDATA[
+		   TY = #TY# 
+	]]>
+	</isNotEmpty>
+	<isNotEmpty property="STDDE_TY" prepend=",">
+    <![CDATA[ 
+    	   STDDE_TY = #STDDE_TY# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="REPORTDE_CO" prepend=",">
+    <![CDATA[ 
+    	   REPORTDE_CO = #REPORTDE_CO# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="INITIAL_AT" prepend=",">
+    <![CDATA[ 
+    	   INITIAL_AT = #INITIAL_AT# 
+    ]]>
+    </isNotEmpty>   
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   LAST_UPDDE = SYSDATE 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE PRDUCT_CODE = #PRDUCT_CODE#
+   	]]> 
+	</update>
+	
+	<delete id="SDBB01DAO.deleteProductReport" parameterClass="hashMap">
+	<![CDATA[
+		DELETE FROM SDB_AM_REPORT_ESTBS 
+		 WHERE PRDUCT_CODE = #PRDUCT_CODE#	
+	]]>
+	
+	</delete>
+	
+	<delete id="SDBB01DAO.deleteProductReportByPk" parameterClass="hashMap">
+	<![CDATA[
+		DELETE FROM SDB_AM_REPORT_ESTBS 
+		      WHERE PRDUCT_CODE = #PRDUCT_CODE#
+		        AND REPORT_SN = #REPORT_SN#		      
+	]]>
+	</delete>
+			
+	<select id="SDBB01DAO.selectProductListInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		  SELECT PRDUCT_CODE			   			   
+			   , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') AS LAST_UPDDE
+			   , FRST_MFBIZ_CODE
+			   , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE
+			   , TO_CHAR(CONFM_DTE,'YYYYMMDDHH24MISS') AS CONFM_DTE
+			   , PRDUCTNM_CODE
+			   , GNRL_NM_CODE1
+			   , GNRL_NM_CODE2
+			   , GNRL_NM_CODE3
+			   , CONFM_BFE_IP_NM_MULLANG_CODE1
+			   , CONFM_BFE_IP_NM_MULLANG_CODE2
+			   , CONFM_BFE_IP_NM_MULLANG_CODE3
+			   , FN_GET_MULLANG_SELECT(PRDUCTNM_CODE, 'K')AS PRDUCTNM_CODE_KOR
+			   , FN_GET_MULLANG_SELECT(PRDUCTNM_CODE, 'E')AS PRDUCTNM_CODE_ENG
+			   , FN_GET_MULLANG_SELECT(GNRL_NM_CODE1, 'K')AS GNRL_NM_CODE1_KOR
+			   , FN_GET_MULLANG_SELECT(GNRL_NM_CODE1, 'E')AS GNRL_NM_CODE1_ENG
+			   , FN_GET_MULLANG_SELECT(GNRL_NM_CODE2, 'K')AS GNRL_NM_CODE2_KOR
+			   , FN_GET_MULLANG_SELECT(GNRL_NM_CODE2, 'E')AS GNRL_NM_CODE2_ENG
+			   , FN_GET_MULLANG_SELECT(GNRL_NM_CODE3, 'K')AS GNRL_NM_CODE3_KOR	   
+			   , FN_GET_MULLANG_SELECT(GNRL_NM_CODE3, 'E')AS GNRL_NM_CODE3_ENG
+			   , FN_GET_MULLANG_SELECT(CONFM_BFE_IP_NM_MULLANG_CODE1, 'K')AS CONFM_BFE_IP_NM_CODE1_KOR
+			   , FN_GET_MULLANG_SELECT(CONFM_BFE_IP_NM_MULLANG_CODE1, 'E')AS CONFM_BFE_IP_NM_CODE1_ENG
+			   , FN_GET_MULLANG_SELECT(CONFM_BFE_IP_NM_MULLANG_CODE2, 'K')AS CONFM_BFE_IP_NM_CODE2_KOR
+			   , FN_GET_MULLANG_SELECT(CONFM_BFE_IP_NM_MULLANG_CODE2, 'E')AS CONFM_BFE_IP_NM_CODE2_ENG
+			   , FN_GET_MULLANG_SELECT(CONFM_BFE_IP_NM_MULLANG_CODE3, 'K')AS CONFM_BFE_IP_NM_CODE3_KOR
+			   , FN_GET_MULLANG_SELECT(CONFM_BFE_IP_NM_MULLANG_CODE3, 'E')AS CONFM_BFE_IP_NM_CODE3_ENG
+			   , COMAVA_AT
+			   , NCLINC_FILECODE
+			FROM SDB_IM_PRDUCT_INFO_MANAGE
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   PRDUCT_CODE = #PRDUCT_CODE# 
+	     	   
+	     ]]>
+	     </isNotEmpty>	  
+	</select>
+	
+	<select id="SDBB01DAO.selectProductReportInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		   SELECT TY             
+			    , STDDE_TY       			    
+			    , REPORT_INSTT_NM
+			    , REPORTDE_CO	   
+			    , INITIAL_AT
+			    , REPORT_SN	   
+			FROM SDB_AM_REPORT_ESTBS
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   PRDUCT_CODE = #PRDUCT_CODE# 	     	   
+	     ]]>
+	     </isNotEmpty>
+	     ORDER BY REPORT_SN
+	</select>
+	
+	<select id="SDBB01DAO.selectLabelList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[			
+			SELECT 
+                 LBL_CODE
+               , B.ORGINL_FILE_NM AS FILE_NAME
+               , B.ORGINL_EXTSN_NM AS FILE_EXT
+               , FILE_ID AS FILE_MASTR_SN
+               , DETAIL_SN
+               , TO_CHAR(EFECT_OCCRRNCDE,'YYYYMMDDHH24MISS') AS EFECT_OCCRRNCDE               
+               , FN_GET_COMMONCODE('SDB001', LBL_TP_CODE, #LOCALE#) AS LBL_TP_CODE
+               , FN_GET_MULLANG(ETC_APPN)AS ETC_APPN
+               , FN_GET_MULLANG(MAIN_CHANGE_ISESTATN)AS MAIN_CHANGE_ISESTATN
+               , FN_GET_MULLANG(SEND_NATION)AS SEND_NATION
+               , FN_GET_MULLANG(SEND_PERSON)AS SEND_PERSON
+               , FN_GET_MULLANG(SEND_PERSON_ETC_INFO)AS SEND_PERSON_ETC_INFO
+           FROM  SDB_IM_PRDUCT_LBL_MANAGE A
+           LEFT JOIN DM_FILE_DETAIL B
+           ON A.FILE_ID = B.FILE_MASTR_SN
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   A.PRDUCT_CODE =#PRDUCT_CODE# 
+	     ]]>
+	     </isNotEmpty>	  
+	</select>
+	
+	<insert id="SDBB01DAO.insertDmFileMastr" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO DM_FILE_MASTR
+		  	 (  FILE_MASTR_SN      
+	          , MODULE_KND         
+	          , UPLOAD_PHYSIC_COURS
+	          , DWLD_PHYSIC_COURS  
+	          , DRM_RELIS_AT       
+	          , USE_AT             
+	          , FRST_CREDE         
+	          , REGIST_ID          
+	          , LAST_UPDDE         
+	          , UPDATE_ID          
+		  	 )
+		VALUES
+		     ( #FILE_MASTR_SN#      
+	         , #MODULE_KND#         
+	         , #UPLOAD_PHYSIC_COURS#
+	         , #DWLD_PHYSIC_COURS#  
+	         , NVL(#DRM_RELIS_AT#, 'N')       
+	         , NVL(#USE_AT#, 'Y')             
+	         , SYSDATE         
+	         , #UPDATE_ID#          
+	         , SYSDATE         
+	         , #UPDATE_ID#          
+		     )
+		]]>
+	</insert>
+	
+	<insert id="SDBB01DAO.insertDmFileDetail" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO DM_FILE_DETAIL
+		  	 (  DETAIL_SN       
+	          , FILE_MASTR_SN   
+	          , ORGINL_FILE_NM  
+	          , ORGINL_EXTSN_NM 
+	          , ORGINL_SIZE     
+	          , UPLOAD_FILE_NM  
+	          , USE_AT          
+	          , FRST_CREDE      
+	          , REGIST_ID       
+	          , LAST_UPDDE      
+	          , UPDATE_ID       
+		  	 )
+		VALUES
+		     ( #DETAIL_SN#      
+	         , #FILE_MASTR_SN#  
+	         , #ORGINL_FILE_NM# 
+	         , #ORGINL_EXTSN_NM#
+	         , #ORGINL_SIZE#    
+	         , #UPLOAD_FILE_NM# 
+	         , NVL(#USE_AT#, 'Y')         
+	         , SYSDATE     
+	         , #UPDATE_ID#      
+	         , SYSDATE     
+	         , #UPDATE_ID#      
+		     )
+		]]>
+	</insert>
+	
+	<insert id="SDBB01DAO.insertLabelList" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO SDB_IM_PRDUCT_LBL_MANAGE (
+		   LBL_CODE
+		   , PRDUCT_CODE
+		   , FILE_ID
+		   , EFECT_OCCRRNCDE
+		   , LBL_TP_CODE
+		   , ETC_APPN
+		   , MAIN_CHANGE_ISESTATN
+		   , SEND_NATION
+		   , SEND_PERSON
+		   , SEND_PERSON_ETC_INFO
+		   , USE_AT
+		   , FRST_CREDE
+		   , REGIST_ID
+		   , LAST_UPDDE
+		   , UPDATE_ID
+		   ) 
+		VALUES ( 
+		 #LBL_CODE#
+		 ,#PRDUCT_CODE#
+		 ,#FILE_ID#
+		 ,#EFECT_OCCRRNCDE#
+		 ,#LBL_TP_CODE#
+		 ,#ETC_APPN#
+		 ,#MAIN_CHANGE_ISESTATN#
+		 ,#SEND_NATION#
+		 ,#SEND_PERSON#
+		 ,#SEND_PERSON_ETC_INFO#
+		 ,'Y'
+		 ,sysdate
+		 ,#UPDATE_ID#
+		 ,sysdate
+		 ,#UPDATE_ID#
+		 )
+		]]>
+	</insert>
+	
+	<update id="SDBB01DAO.updateLabelList" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_IM_PRDUCT_LBL_MANAGE
+	   SET FILE_ID = #FILE_ID#
+	]]>
+	<isNotEmpty property="EFECT_OCCRRNCDE" prepend=",">
+	<![CDATA[
+		   EFECT_OCCRRNCDE = #EFECT_OCCRRNCDE# 
+	]]>
+	</isNotEmpty>
+	<isNotEmpty property="LBL_TP_CODE" prepend=",">
+    <![CDATA[ 
+    	   LBL_TP_CODE = #LBL_TP_CODE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ETC_APPN" prepend=",">
+    <![CDATA[ 
+    	   ETC_APPN = #ETC_APPN# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="MAIN_CHANGE_ISESTATN" prepend=",">
+    <![CDATA[ 
+    	   MAIN_CHANGE_ISESTATN = #MAIN_CHANGE_ISESTATN# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="SEND_NATION" prepend=",">
+    <![CDATA[ 
+    	   SEND_NATION = #SEND_NATION# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="SEND_PERSON" prepend=",">
+    <![CDATA[ 
+    	   SEND_PERSON = #SEND_PERSON# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="SEND_PERSON_ETC_INFO" prepend=",">
+    <![CDATA[ 
+    	   SEND_PERSON_ETC_INFO = #SEND_PERSON_ETC_INFO# 
+    ]]>    
+    </isNotEmpty>   
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   LAST_UPDDE = SYSDATE 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE LBL_CODE = #LBL_CODE#
+   	]]>
+   	 
+	</update>
+	
+	<delete id="SDBB01DAO.deleteLabelListByPk" parameterClass="hashMap">
+	<![CDATA[
+		DELETE FROM SDB_IM_PRDUCT_LBL_MANAGE 
+		      WHERE LBL_CODE = #LBL_CODE#		       
+	]]>
+	</delete>
+	
+	<select id="SDBB01DAO.selectLabelListInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		   SELECT 
+                 LBL_CODE
+               , B.ORGINL_FILE_NM AS FILE_NAME
+               , B.ORGINL_EXTSN_NM AS FILE_EXT
+               , FILE_ID AS FILE_MASTR_SN
+               , DETAIL_SN
+               , TO_CHAR(EFECT_OCCRRNCDE,'YYYYMMDDHH24MISS') AS EFECT_OCCRRNCDE               
+               , LBL_TP_CODE
+               , ETC_APPN
+               , MAIN_CHANGE_ISESTATN
+               , SEND_NATION
+               , SEND_PERSON
+               , SEND_PERSON_ETC_INFO
+			   , FN_GET_MULLANG_SELECT(LBL_TP_CODE,'K') AS LBL_TP_CODE_KOR
+               , FN_GET_MULLANG_SELECT(ETC_APPN,'K') AS ETC_APPN_KOR
+               , FN_GET_MULLANG_SELECT(MAIN_CHANGE_ISESTATN,'K') AS MAIN_CHANGE_ISESTATN_KOR
+               , FN_GET_MULLANG_SELECT(SEND_NATION,'K') AS SEND_NATION_KOR
+               , FN_GET_MULLANG_SELECT(SEND_PERSON,'K') AS SEND_PERSON_KOR
+               , FN_GET_MULLANG_SELECT(SEND_PERSON_ETC_INFO,'K') AS SEND_PERSON_ETC_INFO_KOR
+               , FN_GET_MULLANG_SELECT(LBL_TP_CODE,'E') AS LBL_TP_CODE_ENG
+               , FN_GET_MULLANG_SELECT(ETC_APPN,'E') AS ETC_APPN_ENG
+               , FN_GET_MULLANG_SELECT(MAIN_CHANGE_ISESTATN,'E') AS MAIN_CHANGE_ISESTATN_ENG
+               , FN_GET_MULLANG_SELECT(SEND_NATION,'E') AS SEND_NATION_ENG
+               , FN_GET_MULLANG_SELECT(SEND_PERSON,'E') AS SEND_PERSON_ENG
+               , FN_GET_MULLANG_SELECT(SEND_PERSON_ETC_INFO,'E') AS SEND_PERSON_ETC_INFO_ENG
+               
+           FROM  SDB_IM_PRDUCT_LBL_MANAGE A
+           LEFT JOIN DM_FILE_DETAIL B
+           ON A.FILE_ID = B.FILE_MASTR_SN
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="LBL_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   A.LBL_CODE = #LBL_CODE# 
+	     	   
+	     ]]>
+	     </isNotEmpty>	  
+	</select>
+	
+	<select id="SDBB01DAO.selectDmFileDetailListByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT DETAIL_SN
+			 , FILE_MASTR_SN
+			 , ORGINL_FILE_NM
+			 , ORGINL_EXTSN_NM
+			 , ORGINL_SIZE
+			 , UPLOAD_FILE_NM
+			 , USE_AT
+			 , TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+			 , REGIST_ID
+			 , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+			 , UPDATE_ID
+			 , ORGINL_FILE_NM
+			 , ORGINL_FILE_NM || NVL2(ORGINL_EXTSN_NM, '.' || ORGINL_EXTSN_NM, ORGINL_EXTSN_NM) FILE_NAME
+		  FROM DM_FILE_DETAIL
+		 WHERE FILE_MASTR_SN = #FILE_MASTR_SN#
+		   AND USE_AT = 'Y'
+		]]>
+	</select>	
+	
+	<select id="SDBB01DAO.selectDmFileDetailByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+        SELECT B.DWLD_PHYSIC_COURS
+             , A.UPLOAD_FILE_NM
+		     , A.ORGINL_FILE_NM
+		     , A.ORGINL_EXTSN_NM
+		     , A.ORGINL_FILE_NM || NVL2(A.ORGINL_EXTSN_NM, '.' || A.ORGINL_EXTSN_NM, A.ORGINL_EXTSN_NM) FILE_NAME		       
+		  FROM DM_FILE_DETAIL A, 
+		       DM_FILE_MASTR B
+		 WHERE A.FILE_MASTR_SN = B.FILE_MASTR_SN
+		   AND A.FILE_MASTR_SN = #FILE_MASTR_SN#
+		   AND A.DETAIL_SN = #DETAIL_SN#
+		   AND A.USE_AT = 'Y'
+	    ]]>	   
+	</select>
+	
+	<select id="SDBB01DAO.selectPSURList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+			SELECT 
+			    PSUR_CODE
+			    , PRDUCT_CODE
+			    , B.ORGINL_FILE_NM AS FILE_NAME
+			    , B.ORGINL_EXTSN_NM AS FILE_EXT
+			    , FILE_ID AS FILE_MASTR_SN
+			    , DETAIL_SN
+			    , FILE_ID
+			    , PSUR_NO
+			    , TO_CHAR(PSUR_BGNDE, 'YYYYMMDDHH24MISS') PSUR_BGNDE  
+			    , TO_CHAR(PSUR_ENDDE, 'YYYYMMDDHH24MISS') PSUR_ENDDE
+			    , FN_GET_COMMONCODE('SDB071', RSI_SE, #LOCALE#) AS RSI_SE
+			FROM SDB_IM_PRDUCT_PSUR_MANAGE A
+			LEFT JOIN DM_FILE_DETAIL B
+			ON A.FILE_ID = B.FILE_MASTR_SN
+	       WHERE 1=1
+	       ]]>
+	       <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   A.PRDUCT_CODE =#PRDUCT_CODE# 
+		     ]]>
+		     </isNotEmpty>
+	       ORDER BY PSUR_CODE DESC
+	     
+	      
+	</select>
+	
+	<select id="SDBB01DAO.selectPSURListInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+			SELECT 
+			    PSUR_CODE
+			    , PRDUCT_CODE
+			    , B.ORGINL_FILE_NM AS FILE_NAME
+			    , B.ORGINL_EXTSN_NM AS FILE_EXT
+			    , FILE_ID AS FILE_MASTR_SN
+			    , DETAIL_SN
+			    , FILE_ID
+			    , PSUR_NO
+			    , TO_CHAR(PSUR_BGNDE, 'YYYYMMDDHH24MISS') PSUR_BGNDE  
+			    , TO_CHAR(PSUR_ENDDE, 'YYYYMMDDHH24MISS') PSUR_ENDDE
+			    , FN_GET_COMMONCODE('SDB071', RSI_SE, #LOCALE#) AS RSI_SE   
+			FROM SDB_IM_PRDUCT_PSUR_MANAGE A
+			LEFT JOIN DM_FILE_DETAIL B
+			ON A.FILE_ID = B.FILE_MASTR_SN
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PSUR_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   A.PSUR_CODE = #PSUR_CODE# 
+	     	   
+	     ]]>
+	     </isNotEmpty>	  
+	</select>
+	
+	<insert id="SDBB01DAO.insertPSURList" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO SDB_IM_PRDUCT_PSUR_MANAGE (
+		   PSUR_CODE
+		   , PRDUCT_CODE
+		   , FILE_ID
+		   , PSUR_NO
+		   , PSUR_BGNDE
+		   , PSUR_ENDDE
+		   , RSI_SE
+		   , USE_AT
+		   , FRST_CREDE
+		   , REGIST_ID
+		   , LAST_UPDDE
+		   , UPDATE_ID) 
+		VALUES ( 
+		 'PSUR_'||lpad(SDB_PSUR_SEQ.nextval,4,0)
+		 ,#PRDUCT_CODE#
+		 ,#FILE_ID#
+		 ,#PSUR_NO#
+		 ,#PSUR_BGNDE#
+		 ,#PSUR_ENDDE#
+		 ,#RSI_SE#
+		 ,'Y'
+		 ,sysdate
+		 ,#UPDATE_ID#
+		 ,sysdate
+		 ,#UPDATE_ID#
+		 )
+		]]>
+	</insert>
+	
+	<update id="SDBB01DAO.updatePSURList" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_IM_PRDUCT_PSUR_MANAGE
+	   SET FILE_ID = #FILE_ID#
+	]]>
+	<isNotEmpty property="EFECT_OCCRRNCDE" prepend=",">
+	<![CDATA[
+		   PSUR_NO = #PSUR_NO# 
+	]]>
+	</isNotEmpty>
+	<isNotEmpty property="PSUR_BGNDE" prepend=",">
+    <![CDATA[ 
+    	   PSUR_BGNDE = #PSUR_BGNDE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="PSUR_ENDDE" prepend=",">
+    <![CDATA[ 
+    	   PSUR_ENDDE = #PSUR_ENDDE# 
+    ]]>
+    </isNotEmpty>	
+     <isNotEmpty property="RSI_SE" prepend=",">
+    <![CDATA[ 
+    	   RSI_SE = #RSI_SE# 
+    ]]>
+    </isNotEmpty>     
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   LAST_UPDDE = SYSDATE 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE PSUR_CODE = #PSUR_CODE#
+   	]]>
+   	 
+	</update>
+	
+	<delete id="SDBB01DAO.deletePSURListByPk" parameterClass="hashMap">
+	<![CDATA[
+		DELETE FROM SDB_IM_PRDUCT_PSUR_MANAGE 
+		      WHERE PSUR_CODE = #PSUR_CODE#		       
+	]]>
+	</delete>
+	
+	
+	<select id="SDBB01DAO.selectNonCList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+			SELECT 
+			      DETAIL_SN
+			    , FILE_MASTR_SN
+			    , ORGINL_FILE_NM
+			    , ORGINL_EXTSN_NM
+			    , ORGINL_FILE_NM ||'.'|| ORGINL_EXTSN_NM AS FILE_NAME
+			    , ORGINL_SIZE
+			    , UPLOAD_FILE_NM  
+			    , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE
+			FROM DM_FILE_DETAIL
+		   WHERE FILE_MASTR_SN = #FILE_MASTR_SN#
+		   	]]>
+	      
+	</select>
+	
+	<select id="SDBB01DAO.selectNonCListInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+			SELECT 
+			      DETAIL_SN
+			    , FILE_MASTR_SN
+			    , ORGINL_FILE_NM
+			    , ORGINL_EXTSN_NM
+			    , ORGINL_FILE_NM ||'.'|| ORGINL_EXTSN_NM AS FILE_NAME
+			    , ORGINL_SIZE
+			    , UPLOAD_FILE_NM   
+			FROM DM_FILE_DETAIL
+		   WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="DETAIL_SN" prepend="AND">
+	     <![CDATA[ 
+	     	   DETAIL_SN = #DETAIL_SN# 	     	   
+	     ]]>
+	     </isNotEmpty>	  
+	</select>	
+	
+	<update id="SDBB01DAO.updateNonCList" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_IM_PRDUCT_INFO_MANAGE
+	   SET NCLINC_FILECODE = #NCLINC_FILECODE#	
+   	 WHERE PRDUCT_CODE = #PRDUCT_CODE#
+   	]]>
+   	 
+	</update>	
+	
+	
+</sqlMap>

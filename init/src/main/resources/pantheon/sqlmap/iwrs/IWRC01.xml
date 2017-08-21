@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="IWRC01">
+	<typeAlias  alias="hashMap" type="java.util.HashMap"/>
+   	
+   	<select id="IWRC01DAO.selectDeliveryInfo" parameterClass="java.util.HashMap" resultClass="hashMap">
+   	    SELECT A.INSTT_CODE
+   	    	  ,MAX(B.NAME1) INSTT_NAME
+	          ,NVL(TO_CHAR(MAX(A.DLVY_RQESTDE), 'YYYYMMDDHH24MISS'), '') DLVY_RQESTDE
+	          ,NVL(TO_CHAR(A.DLVY_HOPEDE, 'YYYYMMDDHH24MISS'), '') DLVY_HOPEDE
+	          ,NVL(TO_CHAR(A.DLVY_BGNDE, 'YYYYMMDDHH24MISS'), '') DLVY_BGNDE
+	          ,NVL(TO_CHAR(A.DLVY_COMPTDE, 'YYYYMMDDHH24MISS'), '') DLVY_COMPTDE
+	          ,NVL(TO_CHAR(MAX(A.DLVY_CNCDE), 'YYYYMMDDHH24MISS'), '') DLVY_CNCDE
+	          ,A.DLVY_REQUST_COMMENT
+	          ,A.DLVY_REQUST_OCCRRNC_CODE
+	          ,FN_GET_COMMONCODE('IWRS003', A.DLVY_REQUST_OCCRRNC_CODE, #LOCALE#) DLVY_REQUST_OCCRRNC_NM
+	          ,A.DLVY_STTUS_CODE
+	          ,FN_GET_COMMONCODE('IWRS004', A.DLVY_STTUS_CODE, #LOCALE#) DLVY_STTUS_NM
+	          ,'(' || LISTAGG(A.DLVY_REQUST_QTT, '/') WITHIN GROUP(ORDER BY A.IP_TYPE) || ')' IP_CNT
+	          ,A.DLVYMANAGE_CODE
+	      FROM IWRS_DL_DLVYMANAGE A
+    INNER JOIN (SELECT A.TASK_SN
+		              ,C.INSTT_CODE
+		              ,D.NAME1
+		          FROM EDC_CR_INSTT_FORM A
+		    INNER JOIN CM_RSRCHUSER B
+		            ON A.INSTT_CODE = B.INSTT_CODE
+		    INNER JOIN CM_INSTT C
+		            ON B.INSTT_CODE = C.INSTT_CODE
+		    INNER JOIN SAP_BCNC_INFO D
+		            ON C.KUNNR = D.KUNNR
+		         WHERE TASK_SN = #task_code#
+		      GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1) B
+		    ON A.INSTT_CODE = B.INSTT_CODE
+	     WHERE A.TASK_CODE = #task_code#
+	<isNotEmpty property="INSTT_CODE">
+	       AND A.INSTT_CODE = #INSTT_CODE#
+	</isNotEmpty>
+	  GROUP BY A.TASK_CODE, A.INSTT_CODE, A.DLVY_STTUS_CODE, A.DLVY_REQUST_OCCRRNC_CODE, A.DLVY_HOPEDE, A.DLVY_BGNDE, A.DLVY_COMPTDE, A.DLVY_REQUST_COMMENT, A.DLVYMANAGE_CODE
+	  ORDER BY MAX(A.DLVY_RQESTDE) DESC
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectRequstManageCode" parameterClass="hashMap" resultClass="String">
+   		SELECT DBMS_RANDOM.STRING('A', 20) DLVYREQUSTMANAGE_CODE
+   		  FROM DUAL
+   	</select>
+   	
+   	<insert id="IWRC01DAO.insertDeliveryRequestInfo" parameterClass="java.util.HashMap">
+	    INSERT INTO IWRS_DL_DLVYREQUSTMANAGE
+	                (INSTT_CODE
+	                ,TASK_CODE
+	                ,DLVYREQUSTMANAGE_CODE
+	                ,DLVY_RQESTER_ID
+	                ,DLVY_RQESTDE
+	                ,DLVY_REQUST_COMMENT
+	                ,DLVY_REQUST_CNFIRM_AT
+	                ,USE_AT
+	                ,FRST_CREDE
+	                ,REGIST_ID
+	                ,LAST_UPDDE
+	                ,UPDATE_ID
+	                )
+	         VALUES (#INSTT_CODE#
+	                ,#TASK_CODE#
+	                ,#DLVYREQUSTMANAGE_CODE#
+	                ,#DLVY_RQESTER_ID#
+	                ,SYSDATE	                
+	                ,#DLVY_REQUST_COMMENT#
+	                ,#DLVY_REQUST_CNFIRM_AT#
+	                ,#USE_AT#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                )
+   	</insert>
+   	
+   	<select id="IWRC01DAO.selectDlvyManageCode" parameterClass="java.util.HashMap" resultClass="String">
+   		SELECT DBMS_RANDOM.STRING('A', 32) DLVYMANAGE_CODE
+   		  FROM DUAL
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectDlvyManageSn" parameterClass="java.util.HashMap" resultClass="int">
+   		SELECT NVL(MAX(SN), 0) + 1 SN
+   		  FROM IWRS_DL_DLVYMANAGE
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   		<isNotEmpty property="IP_TYPE">
+   		   AND IP_TYPE = #IP_TYPE#
+	   	</isNotEmpty>
+   	</select>
+   	
+   	<insert id="IWRC01DAO.insertDeliveryInfo" parameterClass="java.util.HashMap">
+   		INSERT INTO IWRS_DL_DLVYMANAGE
+                   (DLVYMANAGE_CODE
+                   ,SN
+                   ,INSTT_CODE
+                   ,TASK_CODE
+                   ,DLVY_REQUST_OCCRRNC_CODE
+                   ,DLVY_REQUST_QTT
+                   ,IP_TYPE
+                   ,DLVY_STTUS_CODE
+                   ,DLVY_HOPEDE
+                   ,DLVY_REQUST_COMMENT
+                   ,DLVY_RQESTER_ID
+                   ,DLVY_RQESTDE
+                   ,USE_AT
+                   ,FRST_CREDE
+                   ,REGIST_ID
+                   ,LAST_UPDDE
+                   ,UPDATE_ID)
+            VALUES (#DLVYMANAGE_CODE#
+            	   ,#SN#
+                   ,#INSTT_CODE#
+                   ,#TASK_CODE#
+                   ,#DLVY_REQUST_OCCRRNC_CODE#
+                   ,#DLVY_REQUST_QTT#
+                   ,#IP_TYPE#
+                   ,#DLVY_STTUS_CODE#
+                   ,TO_DATE(#DLVY_HOPEDE# || '000000', 'YYYYMMDDHH24MISS')
+                   ,#DLVY_REQUST_COMMENT#
+                   ,#DLVY_RQESTER_ID#
+                   ,SYSDATE
+                   ,#USE_AT#
+                   ,SYSDATE
+                   ,#USER_ID#
+                   ,SYSDATE
+                   ,#USER_ID#)
+   	</insert>
+   	
+   	<update id="IWRC01DAO.updateDeliveryInfo" parameterClass="java.util.HashMap">
+   		UPDATE IWRS_DL_DLVYMANAGE
+   		   SET DLVY_REQUST_QTT = #DLVY_REQUST_QTT#
+   		   	  ,DLVY_HOPEDE = TO_DATE(#DLVY_HOPEDE# || '000000', 'YYYYMMDDHH24MISS')
+   		   	  ,DLVY_STTUS_CODE = #DLVY_STTUS_CODE#
+   		   	  ,DLVY_REQUST_COMMENT = #DLVY_REQUST_COMMENT#
+   		   	  ,DLVY_RQESTDE = SYSDATE
+   		   	  ,LAST_UPDDE = SYSDATE
+   		   	  ,UPDATE_ID = #USER_ID#
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   		   AND IP_TYPE = #IP_TYPE#
+   		   AND TASK_CODE = #TASK_CODE#
+   		   AND INSTT_CODE = #INSTT_CODE#
+   		   AND SN = #SN#
+   	</update>
+   	   	
+   	<select id="IWRC01DAO.selectGroupInfo" parameterClass="java.util.HashMap" resultClass="hashMap">
+   		SELECT A.IP_TYPE
+		<isEmpty property="type">
+   			 , A.MDLRTGR_CODE
+	    </isEmpty>
+   		  FROM IWRS_IP_IP_CODE A
+   	INNER JOIN IWRS_IP_CREATMASTR B
+   			ON A.CREAT_CODE = B.CREAT_CODE
+   		   AND B.TASK_CODE = #TASK_CODE#
+   	  GROUP BY A.IP_TYPE
+   	    <isEmpty property="type">
+   	  		 , A.MDLRTGR_CODE
+	    </isEmpty>
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectDeliveryIpInfo" parameterClass="java.util.HashMap" resultClass="hashMap">
+   		<![CDATA[
+   		SELECT A.CREAT_CODE
+   			 , A.IP_TYPE
+   			 , A.IP_CODE
+   		  FROM IWRS_IP_IP_CODE A
+   	INNER JOIN IWRS_IP_CREATMASTR B
+   			ON A.CREAT_CODE = B.CREAT_CODE
+   		   AND B.TASK_CODE = #TASK_CODE#
+   		 WHERE A.IP_TYPE = #IP_TYPE#
+   		   AND A.MDLRTGR_CODE = #MDLRTGR_CODE#
+   		   AND A.IP_STTUS_CODE = '01'
+   		   AND ROWNUM <= #DLVY_REQUST_QTT#
+   		]]>
+   	</select>
+   	
+   	<insert id="IWRC01DAO.insertDeliveryIpInfo" parameterClass="java.util.HashMap">
+   		INSERT INTO IWRS_DL_DLVY_IP_INFO
+   					(IP_TRGET_NO
+   					,DLVYMANAGE_CODE
+   					,SN
+   					,IP_CODE
+   					,CREAT_CODE
+   					,IP_TYPE
+   					,IP_STTUS_CODE
+   					,USE_AT
+   					,FRST_CREDE
+   					,REGIST_ID
+   					,LAST_UPDDE
+   					,UPDATE_ID)
+   			 VALUES (#IP_TRGET_NO#
+   			 		,#DLVYMANAGE_CODE#
+   			 		,#SN#
+   			 		,#IP_CODE#
+   			 		,#CREAT_CODE#
+   			 		,#IP_TYPE#
+   			 		,#IP_STTUS_CODE#
+   			 		,#USE_AT#
+   			 		,SYSDATE
+   			 		,#USER_ID#
+   			 		,SYSDATE
+   			 		,#USER_ID#) 
+   	</insert>
+   	
+   	<update id="IWRC01DAO.updateIpStatusInfo" parameterClass="java.util.HashMap">
+   		UPDATE IWRS_IP_IP_CODE
+   		   SET IP_STTUS_CODE = #IP_STTUS_CODE#
+   		   	  ,LAST_UPDDE = SYSDATE
+   		   	  ,UPDATE_ID = #USER_ID#
+   		 WHERE IP_CODE = #IP_CODE#
+   		   AND CREAT_CODE = #CREAT_CODE#
+   		   AND IP_TYPE = #IP_TYPE#
+   		<isNotEmpty property="MDLRTGR_CODE">
+	       AND MDLRTGR_CODE = #MDLRTGR_CODE#
+	    </isNotEmpty>
+   	</update>
+   	
+   	<select id="IWRC01DAO.selectIpTargetNo" parameterClass="java.util.HashMap" resultClass="int">
+   		SELECT nvl(MAX(IP_TRGET_NO), 0) + 1 IP_TRGET_NO
+   		  FROM IWRS_DL_DLVY_IP_INFO
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   		   AND IP_CODE = #IP_CODE#
+   		   AND CREAT_CODE = #CREAT_CODE#
+   		   AND IP_TYPE = #IP_TYPE#
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectDeliveryIpDetailInfo" parameterClass="java.util.HashMap" resultClass="hashMap">
+	<![CDATA[
+   	    SELECT A.IP_TYPE, 
+	           LISTAGG(A.IP_CODE, ', ') WITHIN GROUP(ORDER BY A.IP_TYPE) IP_CODE,
+	           COUNT(A.IP_CODE) IP_CNT,
+	           MAX(IP_ERROR_COMMENT) IP_ERROR_COMMENT 
+	      FROM IWRS_DL_DLVY_IP_INFO A
+	INNER JOIN IWRS_IP_IP_CODE B
+			ON A.CREAT_CODE = B.CREAT_CODE
+		   AND A.IP_TYPE = B.IP_TYPE
+		   AND A.IP_CODE = B.IP_CODE
+	     WHERE A.DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND A.USE_AT = 'Y'
+	  GROUP BY A.DLVYMANAGE_CODE, A.IP_TYPE
+	]]>
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectDeliveryIpDetailForCancel" parameterClass="java.util.HashMap" resultClass="hashMap">
+   	    SELECT IP_CODE
+	          ,CREAT_CODE
+	          ,IP_TYPE
+	          ,IP_TRGET_NO
+	          ,DLVYMANAGE_CODE
+			  ,SN
+	      FROM IWRS_DL_DLVY_IP_INFO
+	     WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND USE_AT = 'Y'
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectDeliveryRequestInfo" parameterClass="java.util.HashMap" resultClass="hashMap">
+	    SELECT A.DLVYMANAGE_CODE
+	          ,A.INSTT_CODE
+	          ,MAX(B.NAME1) INSTT_NAME
+	          ,A.TASK_CODE
+	          ,TO_CHAR(MAX(A.DLVY_HOPEDE), 'YYYY-MM-DD') DLVY_HOPEDE
+	          ,LISTAGG(A.DLVY_REQUST_QTT, '/') WITHIN GROUP(ORDER BY A.IP_TYPE) DLVY_REQUST_QTT
+	          ,LISTAGG(A.IP_TYPE, '/') WITHIN GROUP(ORDER BY A.IP_TYPE) IP_TYPE
+	          ,MAX(A.DLVY_REQUST_COMMENT) DLVY_REQUST_COMMENT
+	          ,TO_CHAR(MAX(A.DLVY_BGNDE), 'YYYY-MM-DD') DLVY_BGNDE
+	          ,TO_CHAR(MAX(A.DLVY_COMPTDE), 'YYYY-MM-DD') DLVY_COMPTDE
+	          ,MAX(A.DLVY_CNFIRM_COMMENT) DLVY_CNFIRM_COMMENT
+	          ,MAX(A.UNDTAKECNFIRM_COMMENT) UNDTAKECNFIRM_COMMENT
+	          ,MAX(A.DLVY_REQUST_OCCRRNC_CODE) DLVY_REQUST_OCCRRNC_CODE
+	          ,TO_CHAR(MAX(A.DLVY_RQESTDE), 'YYYYMMDDHH24MISS') DLVY_RQESTDE
+	      FROM IWRS_DL_DLVYMANAGE A
+    INNER JOIN (SELECT A.TASK_SN
+		              ,C.INSTT_CODE
+		              ,D.NAME1
+		          FROM EDC_CR_INSTT_FORM A
+		    INNER JOIN CM_RSRCHUSER B
+		            ON A.INSTT_CODE = B.INSTT_CODE
+		    INNER JOIN CM_INSTT C
+		            ON B.INSTT_CODE = C.INSTT_CODE
+		    INNER JOIN SAP_BCNC_INFO D
+		            ON C.KUNNR = D.KUNNR
+		         WHERE TASK_SN = #task_code#
+		      GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1) B
+	      	ON A.INSTT_CODE = B.INSTT_CODE
+	     WHERE A.DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	  GROUP BY A.DLVYMANAGE_CODE, A.INSTT_CODE, A.TASK_CODE
+   	</select>
+   	
+   	<update id="IWRC01DAO.updateDeliveryIpStatusInfo" parameterClass="java.util.HashMap">
+   		UPDATE IWRS_DL_DLVY_IP_INFO
+   		   SET USE_AT = #USE_AT#
+   		<isNotEmpty property="IP_STTUS_CODE">
+   			  ,IP_STTUS_CODE = #IP_STTUS_CODE#
+   		</isNotEmpty>
+   		   	  ,LAST_UPDDE = SYSDATE
+   		   	  ,UPDATE_ID = #USER_ID#
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   		   AND IP_TRGET_NO = #IP_TRGET_NO#
+   		   AND IP_CODE = #IP_CODE#
+   		   AND CREAT_CODE = #CREAT_CODE#
+   		   AND IP_TYPE = #IP_TYPE#
+   		   AND SN = #SN#
+   		   AND USE_AT = 'Y'
+   		   
+   	</update>
+   	
+   	<update id="IWRC01DAO.updateDeliveryConfirmInfo" parameterClass="java.util.HashMap">
+   		UPDATE IWRS_DL_DLVYMANAGE
+   		   SET DLVY_CNFRMR_ID = #DLVY_CNFRMR_ID#
+   		   	  ,DLVY_BGNDE = TO_DATE(#DLVY_BGNDE# || '000000', 'YYYYMMDDHH24MISS')
+   		   	  ,DLVY_CNFIRM_COMMENT = #DLVY_CNFIRM_COMMENT#
+   		   	  ,DLVY_STTUS_CODE = #DLVY_STTUS_CODE#
+   		   	  ,LAST_UPDDE = SYSDATE
+   		   	  ,UPDATE_ID = #USER_ID#
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   		   AND SN = #SN#
+   	</update>
+   	
+   	<update id="IWRC01DAO.updateDeliveryCancelInfo" parameterClass="java.util.HashMap">
+   	    UPDATE IWRS_DL_DLVYMANAGE
+	       SET DLVY_CNCDE = SYSDATE
+	    <isEqual property="type" compareValue="02">
+	          ,DLVY_REQUST_CNCLR_ID = #DLVY_REQUST_CNCLR_ID#
+	          ,DLVY_REQUST_CANCL_COMMENT = #DLVY_REQUST_CANCL_COMMENT#
+        </isEqual>
+        <isEqual property="type" compareValue="04">
+        	  ,DLVY_CNCLR_ID = #DLVY_CNCLR_ID#
+          	  ,DLVY_CANCL_COMMENT = #DLVY_CANCL_COMMENT#
+        </isEqual>
+	          ,DLVY_STTUS_CODE = #DLVY_STTUS_CODE#
+	          ,LAST_UPDDE = SYSDATE
+	          ,UPDATE_ID = #USER_ID#
+	     WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND SN = #SN#
+   	</update>
+   	
+   	<select id="IWRC01DAO.selectCancelInfo" parameterClass="java.util.HashMap" resultClass="hashMap">
+   	<![CDATA[
+	    SELECT DLVYMANAGE_CODE
+	          ,FN_GET_USER_NAME(MAX(DLVY_RQESTER_ID)) DLVY_RQESTER_ID
+	          ,CASE WHEN NVL(MAX(DLVY_REQUST_CNCLR_ID), ' ') <> ' ' THEN '배송요청취소'
+	                ELSE '배송취소'
+	                END CANCEL_TYPE
+	          ,CASE WHEN NVL(MAX(DLVY_REQUST_CNCLR_ID), ' ') <> ' ' THEN MAX(DLVY_REQUST_CANCL_COMMENT)
+	                ELSE MAX(DLVY_CANCL_COMMENT)
+	                END CANCEL_COMMENT
+	          ,CASE WHEN NVL(MAX(DLVY_REQUST_CNCLR_ID), ' ') <> ' ' THEN FN_GET_USER_NAME(MAX(DLVY_REQUST_CNCLR_ID))
+	                ELSE FN_GET_USER_NAME(MAX(DLVY_CNCLR_ID))
+	                END CANCEL_ID
+	          ,TO_CHAR(MAX(DLVY_CNCDE), 'YYYYMMDDHH24MISS') DLVY_CNCDE
+	   	  FROM IWRS_DL_DLVYMANAGE
+	     WHERE DLVY_STTUS_CODE = '05'
+	       AND DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	  GROUP BY DLVYMANAGE_CODE
+   	]]>
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectIpErrorInfo" parameterClass="java.util.HashMap" resultClass="hashMap">
+   	    SELECT A.IP_CODE
+	          ,A.CREAT_CODE
+	          ,A.IP_TYPE
+	          ,CASE WHEN A.IP_STTUS_CODE = '06' AND B.IP_ERROR_CODE = '04' THEN 'Y'
+	                ELSE 'N'
+	                END OMISSION
+	          ,CASE WHEN A.IP_STTUS_CODE = '06' AND B.IP_ERROR_CODE = '05' THEN 'Y'
+	                ELSE 'N'
+	                END LOSS
+	          ,CASE WHEN A.IP_STTUS_CODE = '06' AND B.IP_ERROR_CODE = '06' THEN 'Y'
+	                ELSE 'N'
+	                END DAMAGE
+	          ,A.IP_TRGET_NO
+	          ,A.SN
+	      FROM IWRS_DL_DLVY_IP_INFO A
+	INNER JOIN IWRS_IP_IP_CODE B
+	        ON A.IP_CODE = B.IP_CODE
+	       AND A.CREAT_CODE = B.CREAT_CODE
+	       AND A.IP_TYPE = B.IP_TYPE
+	     WHERE A.DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND A.USE_AT = 'Y'
+   	</select>
+   	
+   	<update id="IWRC01DAO.updateDeliInsuInfo" parameterClass="java.util.HashMap">
+   		UPDATE IWRS_DL_DLVYMANAGE
+   		   SET DLVY_COMPTDE = TO_DATE(#DLVY_COMPTDE# || '000000', 'YYYYMMDDHH24MISS')
+   		   	  ,UNDTAKE_CNFRMR_ID = #UNDTAKE_CNFRMR_ID#
+   		   	  ,UNDTAKECNFIRM_COMMENT = #UNDTAKECNFIRM_COMMENT#
+   		   	  ,LAST_UPDDE = SYSDATE
+   		   	  ,UPDATE_ID = #USER_ID#
+   		   	  ,DLVY_STTUS_CODE = '06'
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   		   AND SN = #SN#
+   	</update>
+   	
+   	<select id="IWRC01DAO.selectDlvyManagerInfo" parameterClass="hashMap" resultClass="hashMap">
+   		SELECT SN
+   		  FROM IWRS_DL_DLVYMANAGE
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   	</select>
+   	
+   	<update id="IWRC01DAO.updateDeliInsuIpInfo" parameterClass="java.util.HashMap">
+   	    UPDATE IWRS_DL_DLVY_IP_INFO
+	       SET IP_STTUS_CODE = #IP_STTUS_CODE#
+	     WHERE IP_CODE = #IP_CODE#
+	       AND CREAT_CODE = #CREAT_CODE#
+	       AND IP_TYPE = #IP_TYPE#
+	       AND DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   	</update>
+   	
+   	<update id="IWRC01DAO.updateIpErrorInfo" parameterClass="java.util.HashMap">
+   	    UPDATE IWRS_IP_IP_CODE
+	       SET IP_STTUS_CODE = #IP_STTUS_CODE#
+	          ,IP_ERROR_CODE = #IP_ERROR_CODE#
+	          ,IP_ERROR_COMMENT = #IP_ERROR_COMMENT#
+	          ,IP_ERROR_REGISTER_ID = #IP_ERROR_REGISTER_ID#
+	     WHERE IP_CODE = #IP_CODE#
+	       AND CREAT_CODE = #CREAT_CODE#
+	       AND IP_TYPE = #IP_TYPE#
+   	</update>
+   	
+   	<select id="IWRC01DAO.selectIpType" parameterClass="hashMap" resultClass="hashMap">
+   		SELECT B.IP_TYPE || '_INV' INV
+	          ,B.IP_TYPE || '_MAX' MAX
+	          ,B.IP_TYPE
+	          ,MAX(C.SN) SN
+	      FROM IWRS_IP_CREATMASTR A
+	INNER JOIN IWRS_IP_IP_CODE B
+	        ON A.CREAT_CODE = B.CREAT_CODE
+	 LEFT JOIN IWRS_DL_DLVYMANAGE C
+	        ON A.TASK_CODE = C.TASK_CODE
+	       AND B.IP_TYPE = C.IP_TYPE
+	       AND C.DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	     WHERE A.TASK_CODE = #task_code#
+	  GROUP BY B.IP_TYPE
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectInstt" parameterClass="hashMap" resultClass="hashMap">
+   		SELECT A.TASK_SN
+              ,C.INSTT_CODE
+              ,D.NAME1
+          FROM EDC_CR_INSTT_FORM A
+    INNER JOIN CM_RSRCHUSER B
+            ON A.INSTT_CODE = B.INSTT_CODE
+    INNER JOIN CM_INSTT C
+            ON B.INSTT_CODE = C.INSTT_CODE
+    INNER JOIN SAP_BCNC_INFO D
+            ON C.KUNNR = D.KUNNR
+         WHERE TASK_SN = #task_code#
+    	<isNotEmpty property="INSTT_CODE">
+    	   AND A.INSTT_CODE = #INSTT_CODE#
+    	</isNotEmpty>
+      GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1
+   	</select>
+   	
+   	<insert id="IWRC01DAO.insertDrugStockDetailInfo" parameterClass="hashMap">
+   		INSERT INTO IWRS_DS_INVNTRYMANAGE_DETAIL
+   					(
+   						INVNTRYMANAGE_CODE
+   					   ,DLVYMANAGE_CODE
+   					   ,SN
+   					   ,IP_TYPE
+   					   ,CREAT_CODE
+   					   ,TASK_CODE
+   					   ,INSTT_CODE
+   					   ,PARMACY_INVNTRY_QTT
+   					   ,USEFUL_INVNTRY_QTT
+   					   ,USE_AT
+   					   ,FRST_CREDE
+   					   ,REGIST_ID
+   					   ,LAST_UPDDE
+   					   ,UPDATE_ID
+   					)
+   			 VALUES (
+   			 			#INVNTRYMANAGE_CODE#
+		 			   ,#DLVYMANAGE_CODE#
+		 			   ,#SN#
+   			 		   ,#IP_TYPE#
+   					   ,#CREAT_CODE#
+   					   ,#TASK_CODE#
+   					   ,#INSTT_CODE#
+   			 		   ,#PARMACY_INVNTRY_QTT#
+   			 		   ,#USEFUL_INVNTRY_QTT#
+   			 		   ,#USE_AT#
+   			 		   ,SYSDATE
+   			 		   ,#USER_ID#
+   			 		   ,SYSDATE
+   			 		   ,#USER_ID#
+   			 		)
+   	</insert>
+   	
+   	<update id="IWRC01DAO.updateDrugStockDetailInfo" parameterClass="hashMap">
+   		UPDATE IWRS_DS_INVNTRYMANAGE_DETAIL
+   		   SET PARMACY_INVNTRY_QTT = #PARMACY_INVNTRY_QTT#
+   		   	  ,USEFUL_INVNTRY_QTT = #USEFUL_INVNTRY_QTT#
+   		   	  ,USE_AT = #USE_AT#
+   		   	  ,LAST_UPDDE = SYSDATE
+   		   	  ,UPDATE_ID = #USER_ID#
+   		 WHERE INVNTRYMANAGE_CODE = #INVNTRYMANAGE_CODE#
+   		   AND IP_TYPE = #IP_TYPE#
+   		   AND DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+		   AND SN = #SN#
+   	</update>
+   	
+   	<insert id="IWRC01DAO.insertDrugStockIpInfo" parameterClass="hashMap">
+   		INSERT INTO IWRS_DS_INVNTRYMANAGE_IP_INFO
+   					(
+   						INVNTRYMANAGE_CODE
+   					   ,IP_CODE
+		 			   ,DLVYMANAGE_CODE
+		 			   ,SN
+   					   ,CREAT_CODE
+   					   ,IP_TYPE
+   					   ,WRHOUSNGDE
+   					   ,IP_STTUS_CODE
+   					   ,IP_ERROR_CODE
+   					   ,MNFCTURNO
+   					   ,VALIDPD
+   					   ,USEFUL_INVNTRY_AT
+   					   ,USE_AT
+   					   ,FRST_CREDE
+   					   ,REGIST_ID
+   					   ,LAST_UPDDE
+   					   ,UPDATE_ID
+   						
+   					)
+   			 VALUES (
+   			 			#INVNTRYMANAGE_CODE#
+   					   ,#IP_CODE#
+		 			   ,#DLVYMANAGE_CODE#
+		 			   ,#SN#
+   					   ,#CREAT_CODE#
+   					   ,#IP_TYPE#
+   					   ,TO_DATE(#WRHOUSNGDE# || '000000', 'YYYYMMDDHH24MISS')
+   					   ,#IP_STTUS_CODE#
+   					   ,#IP_ERROR_CODE#
+   					   ,#MNFCTURNO#
+   					   ,#VALIDPD#
+   					   ,#USEFUL_INVNTRY_AT#
+   					   ,#USE_AT#
+   					   ,SYSDATE
+   					   ,#USER_ID#
+   					   ,SYSDATE
+   					   ,#USER_ID#
+   			 		)
+   	</insert>
+   	
+   	<update id="IWRC01DAO.updateDrugStockIpInfo" parameterClass="hashMap">
+   		UPDATE IWRS_DS_INVNTRYMANAGE_IP_INFO
+   		   SET IP_STTUS_CODE = #IP_STTUS_CODE#
+   		   	  ,IP_ERROR_CODE = #IP_ERROR_CODE#
+   		   	  ,USEFUL_INVNTRY_AT = #USEFUL_INVNTRY_AT#
+   		 WHERE INVNTRYMANAGE_CODE = #INVNTRYMANAGE_CODE#
+   		   AND IP_CODE = #IP_CODE#
+   		   AND DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+		   AND SN = #SN#
+   	</update>
+   	
+   	<select id="IWRC01DAO.selectDrugStockDetailInfoCnt" parameterClass="hashMap" resultClass="hashMap">
+   		SELECT DLVYMANAGE_CODE
+   			  ,SN
+   			  ,INVNTRYMANAGE_CODE
+   		  FROM IWRS_DS_INVNTRYMANAGE_DETAIL
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectDrugStockIpInfoCnt" parameterClass="hashMap" resultClass="hashMap">
+   		SELECT DLVYMANAGE_CODE
+   			  ,SN
+   			  ,INVNTRYMANAGE_CODE
+   			  ,IP_CODE
+   		  FROM IWRS_DS_INVNTRYMANAGE_IP_INFO
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   		   AND SN = #SN#
+   		   AND IP_TYPE = #IP_TYPE#
+   		   AND IP_CODE = #IP_CODE#
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectInvntryManageCode" resultClass="String">
+   		SELECT DBMS_RANDOM.STRING('A', 32) INVNTRYMANAGE_CODE
+   		  FROM DUAL
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectInvntryManageInfo" parameterClass="hashMap" resultClass="hashMap">
+        SELECT A.DLVYMANAGE_CODE
+	          ,A.SN
+	          ,B.IP_TYPE
+	          ,B.CREAT_CODE
+	          ,A.TASK_CODE
+	          ,A.INSTT_CODE
+	          ,COUNT(DLVY_REQUST_QTT) DLVY_REQUST_QTT
+	      FROM IWRS_DL_DLVYMANAGE A
+	INNER JOIN IWRS_DL_DLVY_IP_INFO B
+	        ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+	       AND A.SN = B.SN
+	     WHERE A.DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND A.SN = #SN#
+	  GROUP BY A.DLVYMANAGE_CODE, A.SN, B.IP_TYPE, B.CREAT_CODE, A.TASK_CODE, A.INSTT_CODE   
+   	</select>
+   	
+   	<update id="IWRC01DAO.updateInventoryCount" parameterClass="hashMap">
+   		UPDATE IWRS_DS_INVNTRYMANAGE_DETAIL
+   		   SET PARMACY_INVNTRY_QTT = #PARMACY_INVNTRY_QTT#
+   		   	  ,USEFUL_INVNTRY_QTT = #USEFUL_INVNTRY_QTT#
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   		   AND SN = #SN#
+   		   AND INVNTRYMANAGE_CODE = #INVNTRYMANAGE_CODE#
+   	</update>
+   	
+   	<select id="IWRC01DAO.selectDeliveryIpCode" parameterClass="hashMap" resultClass="hashMap">
+   		SELECT IP_TYPE, 
+	           IP_CODE
+	      FROM IWRS_DL_DLVY_IP_INFO
+	     WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND IP_TYPE = #IP_TYPE#
+	       AND USE_AT = 'Y'
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectInvntryManageDetailInfo" parameterClass="hashMap" resultClass="hashMap">
+   		SELECT TO_CHAR(PARMACY_INVNTRY_QTT) PARMACY_INVNTRY_QTT
+   			  ,TO_CHAR(USEFUL_INVNTRY_QTT) USEFUL_INVNTRY_QTT
+   		  FROM IWRS_DS_INVNTRYMANAGE_DETAIL
+   		 WHERE DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+   		   AND SN = #SN#
+   		   AND INVNTRYMANAGE_CODE = #INVNTRYMANAGE_CODE#
+   	</select>
+   	
+   	<select id="IWRC01DAO.selectUserInsttCode" parameterClass="hashMap" resultClass="String">
+   		SELECT INSTT_CODE
+   		  FROM CM_RSRCHUSER
+   		 WHERE USER_ID = #USER_ID# 
+   	</select>
+</sqlMap>

@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMC01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<insert id="COMC01DAO.insertCdiscRuleByExcelSheet" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CDISC_RULE
+		     ( CDISC_RULE_SN
+	         , RULE_NM
+	         , RULE_DC
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , CDISC_VER
+	         , CDISC_SE_CODE
+		     )
+		VALUES
+		     ( #CDISC_RULE_SN#
+	         , #RULE_NM#
+	         , #RULE_DC#
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+	         , #CDISC_VER#
+	         , #CDISC_SE_CODE#
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COMC01DAO.insertCdiscDomnByExcelSheet" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CDISC_DOMN
+		     ( CDISC_DOMN_SN
+	         , DOMN_NM
+	         , DOMN_DC
+	         , DOMN_CLASS
+	         , DOMN_STRCT
+	         , DOMN_PURPS
+	         , DOMN_KEYS
+	         , DOMN_LOCATION
+	         , CDISC_RULE_SN
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+		     )
+		VALUES
+		     ( #CDISC_DOMN_SN#
+	         , #DOMN_NM#
+	         , #DOMN_DC#
+	         , #DOMN_CLASS#
+	         , #DOMN_STRCT#
+	         , #DOMN_PURPS#
+	         , #DOMN_KEYS#
+	         , #DOMN_LOCATION#
+	         , #CDISC_RULE_SN#
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#	     
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COMC01DAO.insertCdiscDomnVariablByExcelSheet" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CDISC_DOMN_VRIABL
+		     ( DOMN_VRIABL_SN
+	         , VRIABL_NM
+	         , VRIABL_LBL
+	         , VRIABL_ROLE
+	         , VRIABL_DC
+	         , CDISC_DOMN_SN
+	         , LBL_ORDR
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , VRIABL_TY_CODE
+	         , CRF_LBL_ONE
+	         , CRF_LBL_TWO
+	         , CTRL_FOM
+	         , CORE_CODE
+	         , CDISC_UPPER_CODE
+		     )
+		VALUES
+		     ( #DOMN_VRIABL_SN#
+	         , #VRIABL_NM#
+	         , #VRIABL_LBL#
+	         , #VRIABL_ROLE#
+	         , #VRIABL_DC#
+	         , #CDISC_DOMN_SN#
+	         , #LBL_ORDR#
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+	         , #VRIABL_TY_CODE#
+	         , #CRF_LBL_ONE#
+	         , #CRF_LBL_TWO#
+	         , #CTRL_FOM#
+	         , #CORE_CODE#
+	         , #CDISC_UPPER_CODE#
+		     )
+		]]>
+	</insert>
+
+	<insert id="COMC01DAO.insertCdiscClCodeByExcelSheet" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CDISC_CL_CODE
+		     (CL_CODE_SN
+	         , CDISC_RULE_SN
+	         , CDISC_UPPER_CODE
+	         , CDISC_CODE
+	         , CODE_NM
+	         , ESTN_POSBL_AT
+	         , CDISC_SUBMIT_VALUE
+	         , CDISC_SYNONM
+	         , CDISC_DFN
+	         , NCI_NM
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+		     )
+		VALUES
+		     ( #CL_CODE_SN#
+	         , #CDISC_RULE_SN#
+	         , #CDISC_UPPER_CODE#
+	         , #CDISC_CODE#
+	         , #CODE_NM#
+	         , #ESTN_POSBL_AT#
+	         , #CDISC_SUBMIT_VALUE#
+	         , #CDISC_SYNONM#
+	         , #CDISC_DFN#
+	         , #NCI_NM#
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMC01DAO.selectCdiscRuleList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT CDISC_RULE_SN
+	         , RULE_NM
+	         , RULE_DC
+	         , USE_AT
+	         , FRST_CRTR
+	         , LAST_UPDUSR
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = LAST_UPDUSR) LAST_UPDUSR_NM 
+	         , TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , CDISC_VER
+	         , CDISC_SE_CODE
+		  FROM CDISC_RULE
+		 WHERE USE_AT = 'Y'
+		ORDER BY CDISC_RULE_SN
+		]]>
+	</select>
+	
+	<select id="COMC01DAO.selectCdiscDomnListByCdiscRuleSn" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT RN
+		     , CDISC_DOMN_SN
+	         , DOMN_NM
+	         , DOMN_DC
+	         , DOMN_CLASS
+	         , DOMN_STRCT
+	         , DOMN_PURPS
+	         , DOMN_KEYS
+	         , DOMN_LOCATION
+	         , CDISC_RULE_SN
+	         , USE_AT
+	         , FRST_CRTR
+	         , LAST_UPDUSR
+	         , FRST_CREDE
+	         , LAST_UPDDE
+		  FROM
+		(
+		SELECT ROW_NUMBER() OVER(ORDER BY CDISC_DOMN_SN) RN
+		     , CDISC_DOMN_SN
+	         , DOMN_NM
+	         , DOMN_DC
+	         , DOMN_CLASS
+	         , DOMN_STRCT
+	         , DOMN_PURPS
+	         , DOMN_KEYS
+	         , DOMN_LOCATION
+	         , CDISC_RULE_SN
+	         , USE_AT
+	         , FRST_CRTR
+	         , LAST_UPDUSR
+	         , TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	      FROM CDISC_DOMN
+	     WHERE CDISC_RULE_SN = #CDISC_RULE_SN#
+	       AND USE_AT = 'Y'
+        )
+	    ]]>
+		<isNotEmpty property="page">
+		<isNotEmpty property="count">
+		<![CDATA[
+		WHERE RN > ($page$ - 1) * $count$
+		  AND RN <= ($page$ * $count$)
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>
+	
+	<select id="COMC01DAO.selectCdiscDomnListCountByCdiscRuleSn" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CDISC_DOMN
+		 WHERE CDISC_RULE_SN = #CDISC_RULE_SN#
+		   AND USE_AT = 'Y'
+		]]>
+	</select>
+	
+	<select id="COMC01DAO.selectCdiscDomnVriablListByCdiscDomnSn" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT RN
+			 , DOMN_VRIABL_SN
+	         , VRIABL_NM
+	         , VRIABL_LBL
+	         , VRIABL_ROLE
+	         , VRIABL_DC
+	         , CDISC_DOMN_SN
+	         , DOMN_NM
+	         , LBL_ORDR
+	         , USE_AT
+	         , FRST_CRTR
+	         , LAST_UPDUSR
+	         , FRST_CREDE
+	         , LAST_UPDDE
+	         , VRIABL_TY_CODE
+	         , CRF_LBL_ONE
+	         , CRF_LBL_TWO
+	         , CTRL_FOM
+	         , CORE_CODE
+	         , CDISC_UPPER_CODE
+		  FROM
+		(	         
+		SELECT ROW_NUMBER() OVER(ORDER BY DOMN_VRIABL_SN) RN
+		     , DOMN_VRIABL_SN
+	         , VRIABL_NM
+	         , VRIABL_LBL
+	         , VRIABL_ROLE
+	         , VRIABL_DC
+	         , CDISC_DOMN_SN
+	         , (SELECT X.DOMN_NM FROM CDISC_DOMN X WHERE X.CDISC_DOMN_SN = A.CDISC_DOMN_SN) DOMN_NM
+	         , LBL_ORDR
+	         , USE_AT
+	         , FRST_CRTR
+	         , LAST_UPDUSR
+	         , TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , VRIABL_TY_CODE
+	         , CRF_LBL_ONE
+	         , CRF_LBL_TWO
+	         , CTRL_FOM
+	         , CORE_CODE
+	         , CDISC_UPPER_CODE
+	      FROM CDISC_DOMN_VRIABL A
+	     WHERE CDISC_DOMN_SN = #CDISC_DOMN_SN#
+	       AND USE_AT = 'Y'
+		)
+		]]>
+		<isNotEmpty property="page">
+		<isNotEmpty property="count">
+		<![CDATA[
+		WHERE RN > ($page$ - 1) * $count$
+		  AND RN <= ($page$ * $count$)
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>
+	
+	<select id="COMC01DAO.selectCdiscDomnVriablListCountByCdiscDomnSn" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CDISC_DOMN_VRIABL A
+		 WHERE CDISC_DOMN_SN = #CDISC_DOMN_SN#
+		   AND USE_AT = 'Y'
+		]]>
+	</select>
+	
+	<select id="COMC01DAO.selectCdiscClCodeByCdiscRuleSn" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT RN
+		     , CL_CODE_SN
+	         , CDISC_RULE_SN
+	         , CDISC_UPPER_CODE
+	         , CDISC_CODE
+	         , CODE_NM
+	         , ESTN_POSBL_AT
+	         , CDISC_SUBMIT_VALUE
+	         , CDISC_SYNONM
+	         , CDISC_DFN
+	         , NCI_NM
+	         , USE_AT
+	         , FRST_CRTR
+	         , LAST_UPDUSR
+	         , FRST_CREDE
+	         , LAST_UPDDE
+	      FROM
+	    (
+		SELECT ROW_NUMBER() OVER(ORDER BY CL_CODE_SN) RN
+		     , CL_CODE_SN
+	         , CDISC_RULE_SN
+	         , CDISC_UPPER_CODE
+	         , CDISC_CODE
+	         , CODE_NM
+	         , ESTN_POSBL_AT
+	         , CDISC_SUBMIT_VALUE
+	         , CDISC_SYNONM
+	         , CDISC_DFN
+	         , NCI_NM
+	         , USE_AT
+	         , FRST_CRTR
+	         , LAST_UPDUSR
+	         , TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+		  FROM CDISC_CL_CODE
+		 WHERE CDISC_RULE_SN = #CDISC_RULE_SN#
+		   AND USE_AT = 'Y'
+		)
+		]]>
+		<isNotEmpty property="page">
+		<isNotEmpty property="count">
+		<![CDATA[
+		WHERE RN > ($page$ - 1) * $count$
+		  AND RN <= ($page$ * $count$)
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>
+	
+	<select id="COMC01DAO.selectCdiscClCodeCountByCdiscRuleSn" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CDISC_CL_CODE
+		 WHERE CDISC_RULE_SN = #CDISC_RULE_SN#
+		   AND USE_AT = 'Y'
+		]]>
+	</select>
+</sqlMap>

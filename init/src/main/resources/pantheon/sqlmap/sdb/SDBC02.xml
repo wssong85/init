@@ -1,0 +1,3921 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SDBC02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<resultMap id="clobMap" class="java.util.HashMap">
+    	<result property="KOREAN" column="KOREAN" jdbcType="CLOB" javaType="java.lang.String"/>
+    	<result property="ENG" column="ENG" jdbcType="CLOB" javaType="java.lang.String"/>    	
+	</resultMap>
+	
+	<insert id="SDBC02DAO.insertMul" parameterClass="hashMap">
+	<![CDATA[
+		INSERT 
+		INTO SDB_IM_MULLANG_INFO
+	    (
+	        MULLANG_CODE
+	      , KOREAN
+	      , ENG
+	    )
+	    VALUES
+	    (
+	        #MULLANG_CODE#
+	      , #KOREAN#
+	      , #ENG#
+	    )
+	    ]]>
+	</insert>
+	
+	<update id="SDBC02DAO.updateMul" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE SDB_IM_MULLANG_INFO
+		   SET KOREAN = #KOREAN#
+		       , ENG = #ENG#
+		 WHERE MULLANG_CODE = #MULLANG_CODE#
+	]]>	
+	</update>
+	
+	<insert id="SDBC02DAO.insertReason" parameterClass="hashMap">
+	<![CDATA[
+		INSERT 
+		INTO SDB_AM_CHANGE_RESN
+	    (
+	        SN
+	      , TRGET_CODE
+	      , CN
+	      , CN_CODE
+	      , TRGETNM
+	      , TRGET_MODE
+	      , USE_AT
+	      , FRST_CREDE
+	      , REGIST_ID
+	      , LAST_UPDDE
+	      , UPDATE_ID
+	    )
+	    VALUES
+	    (
+	        #SN#
+	      , #TRGET_CODE#
+	      , #CN#
+	      , #CN_CODE#
+	      , #TRGETNM#
+	      , #TRGET_MODE#
+	      ,'Y'
+	      ,sysdate
+	      ,#UPDATE_ID#
+	      ,sysdate
+	      ,#UPDATE_ID#
+	    )
+	]]>
+	</insert>
+	
+	<insert id="SDBC02DAO.insertNarrativeInfo" parameterClass="hashMap">
+	<![CDATA[
+		INSERT
+		INTO SDB_AM_HRMFLNS_CASE_DC
+		    (
+		        HRMFLNS_CASE_CODE
+		      , FOLLOW_NO
+		      , CASE_DC_SN
+		      , PRDUCT_CODE
+		      , HRMFLNS_CASE_DC
+		      , REPORTR_OPINION
+		      , APLCNT_OPINION
+		      , DIFR_INFO
+		      , RSRCH_NM
+		      , SPON_RSRCH_NO
+		      , RESPNS_OBSERV_RSRCH_TY
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (
+		       #HRMFLNS_CASE_CODE#
+		      ,#CASE_DC_SN#
+		      ,#CASE_DC_SN#
+		      ,#PRDUCT_CODE#
+		      ,#HRMFLNS_CASE_DC#
+		      ,#REPORTR_OPINION#
+		      ,#APLCNT_OPINION#
+		      ,#DIFR_INFO#
+		      ,#RSRCH_NM#
+		      ,#SPON_RSRCH_NO#
+		      ,#RESPNS_OBSERV_RSRCH_TY#
+		      ,'Y'
+		      ,sysdate
+		      ,#UPDATE_ID#
+		      ,sysdate
+		      ,#UPDATE_ID#
+		    )
+	    ]]>
+	</insert>
+	
+	<update id="SDBC02DAO.updateNarrativeInfo" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_AM_HRMFLNS_CASE_DC
+	   SET LAST_UPDDE = SYSDATE 
+	]]>
+	<isNotEmpty property="REPORTR_OPINION" prepend=",">
+    <![CDATA[ 
+    	   REPORTR_OPINION = #REPORTR_OPINION# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="APLCNT_OPINION" prepend=",">
+    <![CDATA[ 
+    	   APLCNT_OPINION = #APLCNT_OPINION# 
+    ]]>
+    </isNotEmpty>    
+    <isNotEmpty property="DIFR_INFO" prepend=",">
+    <![CDATA[ 
+    	   DIFR_INFO = #DIFR_INFO# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="RSRCH_NM" prepend=",">
+    <![CDATA[ 
+    	   RSRCH_NM = #RSRCH_NM# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="SPON_RSRCH_NO" prepend=",">
+    <![CDATA[ 
+    	   SPON_RSRCH_NO = #SPON_RSRCH_NO# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="RESPNS_OBSERV_RSRCH_TY" prepend=",">
+    <![CDATA[ 
+    	   RESPNS_OBSERV_RSRCH_TY = #RESPNS_OBSERV_RSRCH_TY# 
+    ]]>
+    </isNotEmpty>  
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE CASE_DC_SN = #CASE_DC_SN#
+   	]]> 
+	</update>
+	
+	<update id="SDBC02DAO.deleteNarrativeInfo" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE SDB_AM_HRMFLNS_CASE_DC
+		   SET USE_AT ='N'
+		 WHERE CASE_DC_SN = #CASE_DC_SN#
+	 ]]>
+	</update>
+	
+	<select id="SDBC02DAO.selectNarrativeInfo" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+		SELECT HRMFLNS_CASE_CODE
+			  , CASE_DC_SN
+			  , PRDUCT_CODE
+			  , FOLLOW_NO
+			  , HRMFLNS_CASE_DC
+			  , REPORTR_OPINION
+			  , APLCNT_OPINION
+			  , DIFR_INFO
+			  , RSRCH_NM
+			  , SPON_RSRCH_NO
+			  , RESPNS_OBSERV_RSRCH_TY
+			  , FN_GET_MULLANG_SELECT(HRMFLNS_CASE_DC,'K') AS HRMFLNS_CASE_DC_KOR
+			  , FN_GET_MULLANG_SELECT(HRMFLNS_CASE_DC,'E') AS HRMFLNS_CASE_DC_ENG
+			  , FN_GET_MULLANG_SELECT(REPORTR_OPINION,'K') AS REPORTR_OPINION_KOR
+			  , FN_GET_MULLANG_SELECT(REPORTR_OPINION,'E') AS REPORTR_OPINION_ENG
+			  , FN_GET_MULLANG_SELECT(APLCNT_OPINION,'K') AS APLCNT_OPINION_KOR
+			  , FN_GET_MULLANG_SELECT(APLCNT_OPINION,'E') AS APLCNT_OPINION_ENG
+			  , FN_GET_MULLANG_SELECT(DIFR_INFO,'K') AS DIFR_INFO_KOR
+			  , FN_GET_MULLANG_SELECT(DIFR_INFO,'E') AS DIFR_INFO_ENG
+			  , FN_GET_MULLANG_SELECT(RSRCH_NM,'K') AS RSRCH_NM_KOR
+			  , FN_GET_MULLANG_SELECT(RSRCH_NM,'E') AS RSRCH_NM_ENG
+			FROM SDB_AM_HRMFLNS_CASE_DC
+			WHERE 1=1
+			]]>
+			 <isNotEmpty property = "HRMFLNS_CASE_CODE" prepend="AND">
+			 	<![CDATA[
+			 		HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+			 	]]>		 
+			 </isNotEmpty>
+			 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+			 	<![CDATA[
+			 		PRDUCT_CODE = #PRDUCT_CODE#
+			 	]]>		 
+			 </isNotEmpty>
+			 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+			 	<![CDATA[
+			 		FOLLOW_NO = #FOLLOW_NO#
+			 	]]>
+			 </isNotEmpty>
+			
+	</select>
+	
+	<select id="SDBC02DAO.slSource_Study"   parameterClass="hashMap" resultClass="hashMap">
+		SELECT PRTCL_NO AS SOURCE_CODE		      
+    	 FROM SDB_AM_TRIAL_INFO
+    	 WHERE 1=1
+    	 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   PRDUCT_CODE=#PRDUCT_CODE#
+		     ]]>
+		 </isNotEmpty>  
+	</select>
+	
+	<select id="SDBC02DAO.slSource_Spontaneous"   parameterClass="hashMap" resultClass="hashMap">
+		SELECT SOURC_NO AS SOURCE_CODE
+  		 FROM SDB_AM_SPNTN_REPORT_INFO  
+		WHERE 1=1
+    	 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   PRDUCT_CODE=#PRDUCT_CODE#
+		     ]]>
+		 </isNotEmpty>  
+	</select>
+	
+	<select id="SDBC02DAO.slSource_Literature"   parameterClass="hashMap" resultClass="hashMap">
+	   SELECT LTRTRE_NO AS SOURCE_CODE
+  		FROM SDB_AM_LTRTRE_INFO 
+		WHERE 1=1
+    	 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   PRDUCT_CODE=#PRDUCT_CODE#
+		     ]]>
+		 </isNotEmpty>  
+	</select>
+	
+	<select id="SDBC02DAO.slSource_Etc"   parameterClass="hashMap" resultClass="hashMap">
+	   SELECT ETC_INFO_NO AS SOURCE_CODE
+         FROM SDB_AM_ETC_INFO
+		WHERE 1=1
+    	 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   PRDUCT_CODE=#PRDUCT_CODE#
+		     ]]>
+		 </isNotEmpty>  
+	</select>
+	
+	<select id="SDBC02DAO.slSource_ICSR"   parameterClass="hashMap" resultClass="hashMap">
+	   SELECT SAFE_REPRT_NO AS SOURCE_CODE
+  		 FROM SDB_AM_INDVDLZ_CASE_SAFE_REPRT
+		WHERE 1=1
+    	 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   PRDUCT_CODE=#PRDUCT_CODE#
+		     ]]>
+		 </isNotEmpty>  
+	</select>
+	
+	<select  id="SDBC02DAO.selectSiteSubject"   parameterClass="hashMap" resultClass="hashMap">
+		SELECT DISTINCT(INSTT_NO||'-'||TESTEE_NO) AS SITE_SUBJECT_CODE,
+			   INSTT_NO||' '||TESTEE_NO AS SITE_SUBJECT_NO		      
+		  FROM SDB_AM_HRMFLNS_CASE_INFO
+		 WHERE PRDUCT_CODE= #PRDUCT_CODE#
+		   <isNotEmpty property="PRTCL_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   PRTCL_NO=#PRTCL_NO#
+		     ]]>
+		 </isNotEmpty>
+		 <isNotEmpty property="SOURC_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   SOURC_NO=#SOURC_NO#
+		     ]]>
+		 </isNotEmpty>
+		 <isNotEmpty property="LTRTRE_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   LTRTRE_NO=#LTRTRE_NO#
+		     ]]>
+		 </isNotEmpty>
+		 <isNotEmpty property="ETC_INFO_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   ETC_INFO_NO=#ETC_INFO_NO#
+		     ]]>
+		 </isNotEmpty>   
+	</select>
+	
+	<select id="SDBC02DAO.selectDemographics" parameterClass="hashMap" resultClass="hashMap">
+	 <![CDATA[ 
+		SELECT A.HRMFLNS_CASE_CODE
+		     , A.PRDUCT_CODE
+		    , A.FOLLOW_NO
+		    , A.MAFU_NO
+		    , A.INSTT_NO
+		    , A.TESTEE_NO
+		    , A.CLIENT_MANAGE_NO
+		    , A.ETC_MANAGE_NO 
+		    , A.INITIAL_FLAG
+		    , A.SEXDSTN
+		    , A.PREGNAN_AT
+		    , A.PREGNAN_PD_SE
+		    , A.PREGNAN_PD
+		    , A.LAST_PYSICLG_DTES
+		    , A.HEIGHT
+		    , A.BDWGH
+		    , A.AGRE_DTES
+		    , A.REGIST_DTES
+		    , A.IN_OUT_SE
+		    , A.IN_OUT_ETC_MEMO
+		    , FN_GET_MULLANG_SELECT(A.IN_OUT_ETC_MEMO,'K') AS IN_OUT_ETC_MEMO_KOR
+		    , FN_GET_MULLANG_SELECT(A.IN_OUT_ETC_MEMO,'E') AS IN_OUT_ETC_MEMO_ENG
+		    , A.LIFYEAMD
+		    , A.AGE
+		    , A.AGE_GRUP
+		    , A.DIFR_AGE_INFO_CODE
+		    , A.DIFR_AGE_INFO
+		    , A.PREGNAN_WEEKCO
+		    , A.FILE_ID
+		    , A.TEST_RCORD_CMMN_MEMO
+		    , FN_GET_MULLANG_SELECT(A.TEST_RCORD_CMMN_MEMO,'K') AS TEST_RCORD_CMMN_MEMO_KOR
+		    , FN_GET_MULLANG_SELECT(A.TEST_RCORD_CMMN_MEMO,'E') AS TEST_RCORD_CMMN_MEMO_ENG
+		    , B.RPT_NO
+		    , B.IDNTFC_NATION_CODE
+            , B.OCCRRNC_NATION_CODE
+            , B.REPRT_TY
+            , B.ADI_DOC_AT
+            , B.DOC_LIST
+            , B.RPD_STDR_SUFFCN_AT
+            , B.REGL_NATION_CASE_REPRT_NO
+            , B.DIFR_TRNSMISMAN_REPRT_NO
+            , B.BEFORE_REPORT_MANAGENO_SJ
+            , FN_GET_MULLANG_SELECT(B.BEFORE_REPORT_MANAGENO_SJ, 'K') BEFORE_REPORT_MANAGENO_SJ_KOR
+            , FN_GET_MULLANG_SELECT(B.BEFORE_REPORT_MANAGENO_SJ, 'E') BEFORE_REPORT_MANAGENO_SJ_ENG
+            , B.TRACEREPORT_RESN
+            , B.TRACEREPORT_RESN_ETC_OPINION
+            , FN_GET_MULLANG_SELECT(B.TRACEREPORT_RESN_ETC_OPINION, 'K') TRACEREPORT_ETC_OPINION_KOR
+            , FN_GET_MULLANG_SELECT(B.TRACEREPORT_RESN_ETC_OPINION, 'E') TRACEREPORT_ETC_OPINION_ENG
+            , B.REFERREPORT_MANAGENO_SJ
+            , B.MDCNEPRFS_CNFIRMCASE_AT
+            , B.REPORT_CANCL_AT
+            , B.REPORT_CANCL_RESN
+            , FN_GET_MULLANG_SELECT(B.REPORT_CANCL_RESN, 'K') REPORT_CANCL_RESN_KOR
+            , FN_GET_MULLANG_SELECT(B.REPORT_CANCL_RESN, 'E') REPORT_CANCL_RESN_ENG
+            , B.SAMENSSCASE_REPORT_INSTT
+            , B.SAMENSSCASE_ETC_OPINION
+            , FN_GET_MULLANG_SELECT(B.SAMENSSCASE_ETC_OPINION, 'K') SAMENSSCASE_ETC_OPINION_KOR
+            , FN_GET_MULLANG_SELECT(B.SAMENSSCASE_ETC_OPINION, 'E') SAMENSSCASE_ETC_OPINION_ENG
+		    , C.PARNTS_NO
+		    , C.PARNTS_NM 
+		    , FN_GET_MULLANG_SELECT(C.PARNTS_NM,'K') AS PARNTS_NM_KOR
+		    , FN_GET_MULLANG_SELECT(C.PARNTS_NM,'E') AS PARNTS_NM_ENG
+		    , C.PREGNAN_WEEKCO
+		    , C.PARNTS_AGE
+		    , C.PARNTS_SEXDSTN
+		    , D.REPORTER_NO
+		    , D.INSTT_NM
+		    , FN_GET_MULLANG_SELECT(D.INSTT_NM,'K') AS INSTT_NM_KOR
+		    , FN_GET_MULLANG_SELECT(D.INSTT_NM,'E') AS INSTT_NM_ENG
+		    , D.INSTT_CODE
+		    , D.NATION_CODE
+		    , damo_dec(D.ADRES) AS ADRES 
+		    , D.ADRES_DSTNC
+		    , FN_GET_MULLANG_SELECT(D.ADRES_DSTNC,'K') AS ADRES_DSTNC_KOR
+		    , FN_GET_MULLANG_SELECT(D.ADRES_DSTNC,'E') AS ADRES_DSTNC_ENG
+		    , D.ADRES_CTY
+		    , FN_GET_MULLANG_SELECT(D.ADRES_CTY,'K') AS ADRES_CTY_KOR
+		    , FN_GET_MULLANG_SELECT(D.ADRES_CTY,'E') AS ADRES_CTY_ENG
+		    , D.ADRES_LCLTY
+		    , FN_GET_MULLANG_SELECT(D.ADRES_LCLTY,'K') AS ADRES_LCLTY_KOR
+		    , FN_GET_MULLANG_SELECT(D.ADRES_LCLTY,'E') AS ADRES_LCLTY_ENG 
+		    , D.ADRES_ZIP
+		    , D.REPORTR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR,'K') AS REPORTR_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR,'E') AS REPORTR_ENG
+		    , D.REPORTR_APPN_NM
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_APPN_NM,'K') AS REPORTR_APPN_NM_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_APPN_NM,'E') AS REPORTR_APPN_NM_ENG
+		    , D.REPORTR_MIDDLE_NM
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_MIDDLE_NM,'K') AS REPORTR_MIDDLE_NM_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_MIDDLE_NM,'E') AS REPORTR_MIDDLE_NM_ENG
+		    , D.REPORTR_FAMILY_NM
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_FAMILY_NM,'K') AS REPORTR_FAMILY_NME_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_FAMILY_NM,'E') AS REPORTR_FAMILY_NM_ENG
+		    , D.REPORTR_DEPT
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_DEPT,'K') AS REPORTR_DEPT_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_DEPT,'E') AS REPORTR_DEPT_ENG
+		    , D.QUALF
+		    , D.REPRT_TY
+		    , D.REPRT_TY_DETAIL
+		    , FN_GET_MULLANG_SELECT(D.REPRT_TY_DETAIL,'K') AS REPRT_TY_DETAIL_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPRT_TY_DETAIL,'E') AS REPRT_TY_DETAIL_ENG
+		    , D.CLASS
+		    , FN_GET_MULLANG_SELECT(D.CLASS,'K') AS CLASS_KOR
+		    , FN_GET_MULLANG_SELECT(D.CLASS,'E') AS CLASS_ENG
+		    , D.MAJOR
+		    , FN_GET_MULLANG_SELECT(D.MAJOR,'K') AS MAJOR_KOR
+		    , FN_GET_MULLANG_SELECT(D.MAJOR,'E') AS MAJOR_ENG
+		    , damo_dec(D.EMAIL) AS EMAIL
+		    , damo_dec(D.TELNO) AS TELNO
+		    , D.FAX
+		    , E.ORGINL_FILE_NM AS FILE_NAME
+            , E.ORGINL_EXTSN_NM AS FILE_EXT
+            , FILE_ID AS FILE_MASTR_SN
+            , E.DETAIL_SN            
+			, B.REPRT_TY_ETC_OPINION
+			, FN_GET_MULLANG_SELECT(B.REPRT_TY_ETC_OPINION, 'K') AS REPRT_TY_ETC_OPINION_KOR
+			, FN_GET_MULLANG_SELECT(B.REPRT_TY_ETC_OPINION, 'E') AS REPRT_TY_ETC_OPINION_ENG
+			, D.QUALF_ETC_OPINION
+			, FN_GET_MULLANG_SELECT(D.QUALF_ETC_OPINION, 'K') AS QUALF_ETC_OPINION_KOR
+			, FN_GET_MULLANG_SELECT(D.QUALF_ETC_OPINION, 'E') AS QUALF_ETC_OPINION_ENG			            
+		  FROM SDB_AM_HRMFLNS_CASE_INFO A
+		 LEFT OUTER JOIN SDB_AM_DMSTC_RPT_INFO B
+		    ON A.HRMFLNS_CASE_CODE = B.HRMFLNS_CASE_CODE
+		   AND A.PRDUCT_CODE = B.PRDUCT_CODE
+		   AND A.FOLLOW_NO = B.FOLLOW_NO
+		 LEFT OUTER JOIN SDB_AM_PARNTS_INFO C
+		   ON A.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+		   AND A.PRDUCT_CODE = C.PRDUCT_CODE
+		   AND A.FOLLOW_NO = C.FOLLOW_NO
+		 LEFT OUTER JOIN SDB_AM_REPORTER_INFO D
+		   ON A.HRMFLNS_CASE_CODE = D.HRMFLNS_CASE_CODE
+		   AND A.PRDUCT_CODE = D.PRDUCT_CODE
+		   AND A.FOLLOW_NO = D.FOLLOW_NO
+         LEFT JOIN DM_FILE_DETAIL E
+           ON A.FILE_ID = E.FILE_MASTR_SN
+  		 WHERE 1=1
+  		 ]]>
+  		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   A.PRDUCT_CODE=#PRDUCT_CODE#
+		     ]]>
+		 </isNotEmpty>
+		 <isNotEmpty property="PRTCL_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   A.PRTCL_NO=#PRTCL_NO#
+		     ]]>
+		 </isNotEmpty>
+		 <isNotEmpty property="SOURC_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   A.SOURC_NO=#SOURC_NO#
+		     ]]>
+		 </isNotEmpty>
+		 <isNotEmpty property="LTRTRE_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   A.LTRTRE_NO=#LTRTRE_NO#
+		     ]]>
+		 </isNotEmpty>
+		 <isNotEmpty property="ETC_INFO_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   A.ETC_INFO_NO=#ETC_INFO_NO#
+		     ]]>
+		 </isNotEmpty>
+		  <isNotEmpty property="INSTT_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   INSTT_NO=#INSTT_NO#
+		     ]]>
+		 </isNotEmpty>
+		 <isNotEmpty property="TESTEE_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   TESTEE_NO=#TESTEE_NO#
+		     ]]>
+		 </isNotEmpty>
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   A.FOLLOW_NO=#FOLLOW_NO#
+		     ]]>
+		 </isNotEmpty>		 
+  		 
+	</select>
+	
+		<select id="SDBC02DAO.selectDemographics_Case" parameterClass="hashMap" resultClass="hashMap">
+	 <![CDATA[ 
+		SELECT A.HRMFLNS_CASE_CODE
+		    , A.PRDUCT_CODE
+		    , A.FOLLOW_NO
+		    , A.MAFU_NO
+		    , A.INSTT_NO
+		    , A.TESTEE_NO
+		    , A.CLIENT_MANAGE_NO
+		    , A.ETC_MANAGE_NO 
+		    , A.INITIAL_FLAG
+		    , A.SEXDSTN
+		    , A.PREGNAN_AT
+		    , A.PREGNAN_PD_SE
+		    , A.PREGNAN_PD
+		    , A.HEIGHT
+		    , A.BDWGH
+		    , A.AGRE_DTES
+		    , A.REGIST_DTES
+		    , A.IN_OUT_SE
+		    , A.IN_OUT_ETC_MEMO
+		    , FN_GET_MULLANG_SELECT(A.IN_OUT_ETC_MEMO,'K') AS IN_OUT_ETC_MEMO_KOR
+		    , FN_GET_MULLANG_SELECT(A.IN_OUT_ETC_MEMO,'E') AS IN_OUT_ETC_MEMO_ENG
+		    , A.LIFYEAMD
+		    , A.AGE
+		    , A.AGE_GRUP
+		    , A.DIFR_AGE_INFO_CODE
+		    , A.DIFR_AGE_INFO
+		    , A.PREGNAN_WEEKCO
+		    , A.FILE_ID
+		    , A.TEST_RCORD_CMMN_MEMO
+		    , FN_GET_MULLANG_SELECT(A.TEST_RCORD_CMMN_MEMO,'K') AS TEST_RCORD_CMMN_MEMO_KOR
+		    , FN_GET_MULLANG_SELECT(A.TEST_RCORD_CMMN_MEMO,'E') AS TEST_RCORD_CMMN_MEMO_ENG
+		    , B.SOURC_NO
+		    , B.APLCNT_SAFE_REPRT_IDNTFR
+		    , B.MAIN_NATION_IDNTFC
+		    , B.RESPNS_OCCRRNC_NATION_IDNTFC
+		    , B.REPRT_KND
+		    , B.ADIT_PAPERS_AT
+		    , B.APLCNT_HOLD_DOC_LIST
+		    , FN_GET_MULLANG_SELECT(B.APLCNT_HOLD_DOC_LIST,'K') AS APLCNT_HOLD_DOC_LIST_KOR
+		    , FN_GET_MULLANG_SELECT(B.APLCNT_HOLD_DOC_LIST,'E') AS APLCNT_HOLD_DOC_LIST_ENG
+		    , B.RPD_REPRT_AT
+		    , B.REGL_INSTT_REPRT_NO
+		    , FN_GET_MULLANG_SELECT(B.REGL_INSTT_REPRT_NO,'K') AS REGL_INSTT_REPRT_NO_KOR
+		    , FN_GET_MULLANG_SELECT(B.REGL_INSTT_REPRT_NO,'E') AS REGL_INSTT_REPRT_NO_ENG
+		    , B.ETC_REPRT_NO
+		    , FN_GET_MULLANG_SELECT(B.ETC_REPRT_NO,'K') AS ETC_REPRT_NO_KOR
+		    , FN_GET_MULLANG_SELECT(B.ETC_REPRT_NO,'E') AS ETC_REPRT_NO_ENG
+		    , B.REFER_LTRTRE
+		    , FN_GET_MULLANG_SELECT(B.REFER_LTRTRE,'K') AS REFER_LTRTRE_KOR
+		    , FN_GET_MULLANG_SELECT(B.REFER_LTRTRE,'E') AS REFER_LTRTRE_ENG
+		    , C.PARNTS_NO
+		    , C.PARNTS_NM 
+		    , FN_GET_MULLANG_SELECT(C.PARNTS_NM,'K') AS PARNTS_NM_KOR
+		    , FN_GET_MULLANG_SELECT(C.PARNTS_NM,'E') AS PARNTS_NM_ENG
+		    , C.PREGNAN_WEEKCO
+		    , C.PARNTS_AGE
+		    , C.PARNTS_SEXDSTN
+		    , D.REPORTER_NO
+		    , D.INSTT_NM
+		    , FN_GET_MULLANG_SELECT(D.INSTT_NM,'K') AS INSTT_NM_KOR
+		    , FN_GET_MULLANG_SELECT(D.INSTT_NM,'E') AS INSTT_NM_ENG
+		    , D.INSTT_CODE
+		    , D.NATION_CODE
+		    , damo_dec(D.ADRES) AS ADRES 
+		    , D.ADRES_DSTNC
+		    , FN_GET_MULLANG_SELECT(D.ADRES_DSTNC,'K') AS ADRES_DSTNC_KOR
+		    , FN_GET_MULLANG_SELECT(D.ADRES_DSTNC,'E') AS ADRES_DSTNC_ENG
+		    , D.ADRES_CTY
+		    , FN_GET_MULLANG_SELECT(D.ADRES_CTY,'K') AS ADRES_CTY_KOR
+		    , FN_GET_MULLANG_SELECT(D.ADRES_CTY,'E') AS ADRES_CTY_ENG
+		    , D.ADRES_LCLTY
+		    , FN_GET_MULLANG_SELECT(D.ADRES_LCLTY,'K') AS ADRES_LCLTY_KOR
+		    , FN_GET_MULLANG_SELECT(D.ADRES_LCLTY,'E') AS ADRES_LCLTY_ENG 
+		    , D.ADRES_ZIP
+		    , D.REPORTR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR,'K') AS REPORTR_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR,'E') AS REPORTR_ENG
+		    , D.REPORTR_APPN_NM
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_APPN_NM,'K') AS REPORTR_APPN_NM_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_APPN_NM,'E') AS REPORTR_APPN_NM_ENG
+		    , D.REPORTR_MIDDLE_NM
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_MIDDLE_NM,'K') AS REPORTR_MIDDLE_NM_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_MIDDLE_NM,'E') AS REPORTR_MIDDLE_NM_ENG
+		    , D.REPORTR_FAMILY_NM
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_FAMILY_NM,'K') AS REPORTR_FAMILY_NME_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_FAMILY_NM,'E') AS REPORTR_FAMILY_NM_ENG
+		    , D.REPORTR_DEPT
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_DEPT,'K') AS REPORTR_DEPT_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPORTR_DEPT,'E') AS REPORTR_DEPT_ENG
+		    , D.QUALF
+		    , D.REPRT_TY
+		    , D.REPRT_TY_DETAIL
+		    , FN_GET_MULLANG_SELECT(D.REPRT_TY_DETAIL,'K') AS REPRT_TY_DETAIL_KOR
+		    , FN_GET_MULLANG_SELECT(D.REPRT_TY_DETAIL,'E') AS REPRT_TY_DETAIL_ENG
+		    , D.CLASS
+		    , FN_GET_MULLANG_SELECT(D.CLASS,'K') AS CLASS_KOR
+		    , FN_GET_MULLANG_SELECT(D.CLASS,'E') AS CLASS_ENG
+		    , D.MAJOR
+		    , FN_GET_MULLANG_SELECT(D.MAJOR,'K') AS MAJOR_KOR
+		    , FN_GET_MULLANG_SELECT(D.MAJOR,'E') AS MAJOR_ENG
+		    , damo_dec(D.EMAIL) AS EMAIL
+		    , damo_dec(D.TELNO) AS TELNO
+		    , D.FAX
+		    , E.ORGINL_FILE_NM AS FILE_NAME
+            , E.ORGINL_EXTSN_NM AS FILE_EXT
+            , FILE_ID AS FILE_MASTR_SN
+            , E.DETAIL_SN
+		  FROM SDB_AM_HRMFLNS_CASE_INFO A
+		 LEFT OUTER JOIN SDB_AM_SPNTN_REPORT_INFO B
+		    ON A.SOURC_NO = B.SOURC_NO
+		   AND A.PRDUCT_CODE = B.PRDUCT_CODE
+		 LEFT OUTER JOIN SDB_AM_PARNTS_INFO C
+		   ON A.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+		   AND A.PRDUCT_CODE = C.PRDUCT_CODE
+		   AND A.FOLLOW_NO = C.FOLLOW_NO
+		 LEFT OUTER JOIN SDB_AM_REPORTER_INFO D
+		   ON A.HRMFLNS_CASE_CODE = D.HRMFLNS_CASE_CODE
+		   AND A.PRDUCT_CODE = D.PRDUCT_CODE
+		   AND A.FOLLOW_NO = D.FOLLOW_NO
+         LEFT JOIN DM_FILE_DETAIL E
+           ON A.FILE_ID = E.FILE_MASTR_SN
+  		 WHERE 1=1
+  		   AND A.MAFU_NO = #MAFU_NO#
+           AND A.INSTT_NO= #INSTT_NO#
+           AND A.TESTEE_NO= #TESTEE_NO#
+		   ]]>
+  		 
+	</select>
+	
+	<insert id="SDBC02DAO.insertDemographics" parameterClass="hashMap">
+	<![CDATA[
+		INSERT
+			INTO SDB_AM_HRMFLNS_CASE_INFO
+			    (
+			        HRMFLNS_CASE_CODE
+			      , FOLLOW_NO
+			      , PRDUCT_CODE
+			      , MAFU_NO
+			      , PRTCL_NO
+			      , SAFE_REPRT_NO
+			      , LTRTRE_NO
+			      , ETC_INFO_NO
+			      , SOURC_NO
+			      , INSTT_NO
+			      , TESTEE_NO
+			      , CLIENT_MANAGE_NO
+			      , ETC_MANAGE_NO
+			      , INITIAL_FLAG
+			      , SEXDSTN
+			      , PREGNAN_AT
+			      , PREGNAN_PD_SE
+			      , PREGNAN_PD
+			      , LAST_PYSICLG_DTES
+			      , HEIGHT
+			      , BDWGH
+			      , AGRE_DTES
+			      , REGIST_DTES
+			      , IN_OUT_SE
+			      , IN_OUT_ETC_MEMO
+			      , LIFYEAMD
+			      , AGE
+			      , AGE_GRUP
+			      , DIFR_AGE_INFO_CODE
+			      , DIFR_AGE_INFO
+			      , PREGNAN_WEEKCO
+			      , FILE_ID			      
+			      , USE_AT
+			      , FRST_CREDE
+			      , REGIST_ID
+			      , LAST_UPDDE
+			      , UPDATE_ID
+			    )
+			    VALUES
+			    (
+			        #HRMFLNS_CASE_CODE#
+			      , NVL(#FOLLOW_NO#,0)
+			      , #PRDUCT_CODE#
+			      , #MAFU_NO#
+			      , #PRTCL_NO#
+			      , #SAFE_REPRT_NO#
+			      , #LTRTRE_NO#
+			      , #ETC_INFO_NO#
+			      , #SOURC_NO#
+			      , #INSTT_NO#
+			      , #TESTEE_NO#
+			      , #CLIENT_MANAGE_NO#
+			      , #ETC_MANAGE_NO#
+			      , #INITIAL_FLAG#
+			      , #SEXDSTN#
+			      , #PREGNAN_AT#
+			      , #PREGNAN_PD_SE#
+			      , #PREGNAN_PD#
+			      , #LAST_PYSICLG_DTES#
+			      , #HEIGHT#
+			      , #BDWGH#
+			      , #AGRE_DTES#
+			      , #REGIST_DTES#
+			      , #IN_OUT_SE#
+			      , #IN_OUT_ETC_MEMO#
+			      , #LIFYEAMD#
+			      , #AGE#
+			      , #AGE_GRUP#
+			      , #DIFR_AGE_INFO_CODE#
+			      , #DIFR_AGE_INFO#
+			      , #PREGNAN_WEEKCO#
+			      , #FILE_ID#
+			      ,'Y'
+			      ,sysdate
+			      ,#UPDATE_ID#
+			      ,sysdate
+			      ,#UPDATE_ID#
+			    )
+			    ]]>
+	</insert>
+	
+	<insert id="SDBC02DAO.insertManufactorer" parameterClass="hashMap">
+	<![CDATA[
+		INSERT
+		INTO SDB_AM_DMSTC_RPT_INFO
+		    (
+		        RPT_NO
+		      , HRMFLNS_CASE_CODE
+		      , FOLLOW_NO
+		      , PRDUCT_CODE
+		      , IDNTFC_NATION_CODE
+		      , OCCRRNC_NATION_CODE
+		      , REPRT_TY
+		      , ADI_DOC_AT
+		      , DOC_LIST
+		      , RPD_STDR_SUFFCN_AT
+		      , REGL_NATION_CASE_REPRT_NO
+		      , DIFR_TRNSMISMAN_REPRT_NO
+		      , BEFORE_REPORT_MANAGENO_SJ
+		      , TRACEREPORT_RESN
+		      , TRACEREPORT_RESN_ETC_OPINION
+		      , REFERREPORT_MANAGENO_SJ
+		      , MDCNEPRFS_CNFIRMCASE_AT
+		      , REPORT_CANCL_AT
+		      , REPORT_CANCL_RESN
+		      , SAMENSSCASE_REPORT_INSTT
+		      , SAMENSSCASE_ETC_OPINION
+		      , REPRT_TY_ETC_OPINION
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (
+		        #RPT_NO#
+		      , #HRMFLNS_CASE_CODE#
+		      , #FOLLOW_NO#
+		      , #PRDUCT_CODE#
+		      , #IDNTFC_NATION_CODE#
+		      , #OCCRRNC_NATION_CODE#
+		      , #REPRT_TY#
+		      , #ADI_DOC_AT#
+		      , #DOC_LIST#
+		      , #RPD_STDR_SUFFCN_AT#
+		      , #REGL_NATION_CASE_REPRT_NO#
+		      , #DIFR_TRNSMISMAN_REPRT_NO#
+		      , #BEFORE_REPORT_MANAGENO_SJ#
+		      , #TRACEREPORT_RESN#
+		      , #TRACEREPORT_RESN_ETC_OPINION#
+		      , #REFERREPORT_MANAGENO_SJ#
+		      , #MDCNEPRFS_CNFIRMCASE_AT#
+		      , #REPORT_CANCL_AT#
+		      , #REPORT_CANCL_RESN#
+		      , #SAMENSSCASE_REPORT_INSTT#
+		      , #SAMENSSCASE_ETC_OPINION#
+		      , #REPRT_TY_ETC_OPINION#
+		      , 'Y'
+		      , sysdate
+		      , #UPDATE_ID#
+		      , sysdate
+		      , #UPDATE_ID#
+		    )
+	]]>		    
+	</insert>
+	
+	<insert id="SDBC02DAO.insertReporter" parameterClass="hashMap">
+		<![CDATA[
+			INSERT
+			INTO SDB_AM_REPORTER_INFO
+			    (
+			        REPORTER_NO
+			      , PRDUCT_CODE
+			      , HRMFLNS_CASE_CODE
+			      , FOLLOW_NO
+			      , INSTT_NM
+			      , INSTT_CODE
+			      , NATION_CODE
+			      , ADRES
+			      , ADRES_DSTNC
+			      , ADRES_CTY
+			      , ADRES_LCLTY
+			      , ADRES_ZIP
+			      , REPORTR
+			      , REPORTR_APPN_NM
+			      , REPORTR_MIDDLE_NM
+			      , REPORTR_FAMILY_NM
+			      , REPORTR_DEPT
+			      , QUALF
+			      , REPRT_TY
+			      , REPRT_TY_DETAIL
+			      , CLASS
+			      , MAJOR
+			      , REPRT_SJ
+			      , SPCLTYREALM
+			      , EMAIL
+			      , TELNO
+			      , FAX
+			      , QUALF_ETC_OPINION
+			      , REPRT_TY_ETC_OPINION				  
+			      , USE_AT
+			      , FRST_CREDE
+			      , REGIST_ID
+			      , LAST_UPDDE
+			      , UPDATE_ID
+			    )
+			    VALUES
+			    (
+			        #REPORTER_NO#
+			      , #PRDUCT_CODE#
+			      , #HRMFLNS_CASE_CODE#
+			      , #FOLLOW_NO#
+			      , #INSTT_NM#
+			      , #INSTT_CODE#
+			      , #NATION_CODE#
+			      , damo_enc(#ADRES#)
+			      , #ADRES_DSTNC#
+			      , #ADRES_CTY#
+			      , #ADRES_LCLTY#
+			      , #ADRES_ZIP#
+			      , #REPORTR#
+			      , #REPORTR_APPN_NM#
+			      , #REPORTR_MIDDLE_NM#
+			      , #REPORTR_FAMILY_NM#
+			      , #REPORTR_DEPT#
+			      , #QUALF#
+			      , #REPRT_TY#
+			      , #REPRT_TY_DETAIL#
+			      , #CLASS#
+			      , #MAJOR#
+			      , #REPRT_SJ#
+			      , #SPCLTYREALM#
+			      , damo_enc(#EMAIL#)
+			      , damo_enc(#TELNO#)
+			      , #FAX#
+			      , #QUALF_ETC_OPINION#
+			      , #REPRT_TY_ETC_OPINION#
+			      , 'Y'
+			      , sysdate
+			      , #UPDATE_ID#
+			      , sysdate
+			      , #UPDATE_ID#
+			    )
+		]]>
+	</insert>
+	
+	<update id="SDBC02DAO.updateDemographics" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_HRMFLNS_CASE_INFO
+		   SET LAST_UPDDE = SYSDATE 
+		]]>
+		<isNotEmpty property="INSTT_NO" prepend=",">
+	    <![CDATA[ 
+	    	   INSTT_NO = #INSTT_NO# 
+	    ]]>
+	    </isNotEmpty>
+		<isNotEmpty property="TESTEE_NO" prepend=",">
+	    <![CDATA[ 
+	    	   TESTEE_NO = #TESTEE_NO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="CLIENT_MANAGE_NO" prepend=",">
+	    <![CDATA[ 
+	    	   CLIENT_MANAGE_NO = #CLIENT_MANAGE_NO# 
+	    ]]>
+	    </isNotEmpty>    
+	    <isNotEmpty property="ETC_MANAGE_NO" prepend=",">
+	    <![CDATA[ 
+	    	   ETC_MANAGE_NO = #ETC_MANAGE_NO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="INITIAL_FLAG" prepend=",">
+	    <![CDATA[ 
+	    	   INITIAL_FLAG = #INITIAL_FLAG# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SEXDSTN" prepend=",">
+	    <![CDATA[ 
+	    	   SEXDSTN = #SEXDSTN# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="PREGNAN_AT" prepend=",">
+	    <![CDATA[ 
+	    	   PREGNAN_AT = #PREGNAN_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="PREGNAN_PD_SE" prepend=",">
+	    <![CDATA[ 
+	    	   PREGNAN_PD_SE = #PREGNAN_PD_SE# 
+	    ]]>
+	    </isNotEmpty> 
+	    <isNotEmpty property="PREGNAN_PD" prepend=",">
+	    <![CDATA[ 
+	    	   PREGNAN_PD = #PREGNAN_PD# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="HEIGHT" prepend=",">
+	    <![CDATA[ 
+	    	   HEIGHT = #HEIGHT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="BDWGH" prepend=",">
+	    <![CDATA[ 
+	    	   BDWGH = #BDWGH# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="AGRE_DTES" prepend=",">
+	    <![CDATA[ 
+	    	   AGRE_DTES = #AGRE_DTES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REGIST_DTES" prepend=",">
+	    <![CDATA[ 
+	    	  REGIST_DTES = #REGIST_DTES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="IN_OUT_SE" prepend=",">
+	    <![CDATA[ 
+	    	   IN_OUT_SE = #IN_OUT_SE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="IN_OUT_ETC_MEMO" prepend=",">
+	    <![CDATA[ 
+	    	   IN_OUT_ETC_MEMO = #IN_OUT_ETC_MEMO# 
+	    ]]>
+	    </isNotEmpty> 
+	    <isNotEmpty property="LIFYEAMD" prepend=",">
+	    <![CDATA[ 
+	    	   LIFYEAMD = #LIFYEAMD# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="AGE" prepend=",">
+	    <![CDATA[ 
+	    	   AGE = #AGE# 
+	    ]]>
+	    </isNotEmpty> 
+	    <isNotEmpty property="AGE_GRUP" prepend=",">
+	    <![CDATA[ 
+	    	   AGE_GRUP = #AGE_GRUP# 
+	    ]]>
+	    </isNotEmpty> 
+	    <isNotEmpty property="DIFR_AGE_INFO_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   DIFR_AGE_INFO_CODE = #DIFR_AGE_INFO_CODE# 
+	    ]]>
+	    </isNotEmpty> 
+	    <isNotEmpty property="DIFR_AGE_INFO" prepend=",">
+	    <![CDATA[ 
+	    	   DIFR_AGE_INFO = #DIFR_AGE_INFO# 
+	    ]]>
+	    </isNotEmpty> 
+	    <isNotEmpty property="PREGNAN_WEEKCO" prepend=",">
+	    <![CDATA[ 
+	    	   PREGNAN_WEEKCO = #PREGNAN_WEEKCO# 
+	    ]]>
+	    </isNotEmpty> 
+	    <isNotEmpty property="FILE_ID" prepend=",">
+	    <![CDATA[ 
+	    	   FILE_ID = #FILE_ID# 
+	    ]]>
+	    </isNotEmpty>	    
+		<isNotEmpty property="UPDATE_ID" prepend=",">
+	    <![CDATA[ 
+	    	   UPDATE_ID = #UPDATE_ID# 
+	    ]]>
+	    </isNotEmpty>
+	    <![CDATA[
+	   	 WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+	   	   AND FOLLOW_NO = #FOLLOW_NO# 
+	   	]]>	   	 
+	</update>
+	
+	<update id="SDBC02DAO.deleteDemographics" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_HRMFLNS_CASE_INFO
+		   SET USE_AT = 'N'
+	   	 WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+	   	   AND FOLLOW_NO = #FOLLOW_NO# 
+	   	]]> 
+	</update>
+	
+	<update id="SDBC02DAO.updateManufactorer" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_DMSTC_RPT_INFO
+		   SET LAST_UPDDE = SYSDATE 
+		]]>
+		<isNotEmpty property="IDNTFC_NATION_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   IDNTFC_NATION_CODE = #IDNTFC_NATION_CODE# 
+	    ]]>
+	    </isNotEmpty>	    
+	    <isNotEmpty property="OCCRRNC_NATION_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   OCCRRNC_NATION_CODE = #OCCRRNC_NATION_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPRT_TY" prepend=",">
+	    <![CDATA[ 
+	    	   REPRT_TY = #REPRT_TY# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ADI_DOC_AT" prepend=",">
+	    <![CDATA[ 
+	    	   ADI_DOC_AT = #ADI_DOC_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DOC_LIST" prepend=",">
+	    <![CDATA[ 
+	    	   DOC_LIST = #DOC_LIST# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="RPD_STDR_SUFFCN_AT" prepend=",">
+	    <![CDATA[ 
+	    	   RPD_STDR_SUFFCN_AT = #RPD_STDR_SUFFCN_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REGL_NATION_CASE_REPRT_NO" prepend=",">
+	    <![CDATA[ 
+	    	   REGL_NATION_CASE_REPRT_NO = #REGL_NATION_CASE_REPRT_NO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DIFR_TRNSMISMAN_REPRT_NO" prepend=",">
+	    <![CDATA[ 
+	    	   DIFR_TRNSMISMAN_REPRT_NO = #DIFR_TRNSMISMAN_REPRT_NO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="BEFORE_REPORT_MANAGENO_SJ" prepend=",">
+	    <![CDATA[ 
+	    	   BEFORE_REPORT_MANAGENO_SJ = #BEFORE_REPORT_MANAGENO_SJ# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="TRACEREPORT_RESN" prepend=",">
+	    <![CDATA[ 
+	    	   TRACEREPORT_RESN = #TRACEREPORT_RESN# 
+	    ]]>
+	    </isNotEmpty> 
+	    <isNotEmpty property="TRACEREPORT_RESN_ETC_OPINION" prepend=",">
+	    <![CDATA[ 
+	    	   TRACEREPORT_RESN_ETC_OPINION = #TRACEREPORT_RESN_ETC_OPINION# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REFERREPORT_MANAGENO_SJ" prepend=",">
+	    <![CDATA[ 
+	    	   REFERREPORT_MANAGENO_SJ = #REFERREPORT_MANAGENO_SJ# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MDCNEPRFS_CNFIRMCASE_AT" prepend=",">
+	    <![CDATA[ 
+	    	   MDCNEPRFS_CNFIRMCASE_AT = #MDCNEPRFS_CNFIRMCASE_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORT_CANCL_AT" prepend=",">
+	    <![CDATA[ 
+	    	   REPORT_CANCL_AT = #REPORT_CANCL_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORT_CANCL_RESN" prepend=",">
+	    <![CDATA[ 
+	    	   REPORT_CANCL_RESN = #REPORT_CANCL_RESN# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SAMENSSCASE_REPORT_INSTT" prepend=",">
+	    <![CDATA[ 
+	    	   SAMENSSCASE_REPORT_INSTT = #SAMENSSCASE_REPORT_INSTT# 
+	    ]]>
+	    </isNotEmpty>	  
+	    <isNotEmpty property="REPRT_TY_ETC_OPINION" prepend=",">
+	    <![CDATA[ 
+	    	   REPRT_TY_ETC_OPINION = #REPRT_TY_ETC_OPINION# 
+	    ]]>
+	    </isNotEmpty>
+	    <![CDATA[
+	   	 WHERE RPT_NO = #RPT_NO#
+	   	]]> 
+	</update>
+	
+	<update id="SDBC02DAO.updateReporter" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_REPORTER_INFO
+		   SET LAST_UPDDE = SYSDATE 
+		]]>
+		<isNotEmpty property="INSTT_NM" prepend=",">
+	    <![CDATA[ 
+	    	   INSTT_NM = #INSTT_NM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="INSTT_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   INSTT_CODE = #INSTT_CODE# 
+	    ]]>
+	    </isNotEmpty>
+		<isNotEmpty property="NATION_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   NATION_CODE = #NATION_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ADRES" prepend=",">
+	    <![CDATA[ 
+	    	   ADRES = damo_enc(#ADRES#) 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ADRES_DSTNC" prepend=",">
+	    <![CDATA[ 
+	    	   ADRES_DSTNC = #ADRES_DSTNC# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ADRES_CTY" prepend=",">
+	    <![CDATA[ 
+	    	   ADRES_CTY = #ADRES_CTY# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ADRES_LCLTY" prepend=",">
+	    <![CDATA[ 
+	    	   ADRES_LCLTY = #ADRES_LCLTY# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ADRES_ZIP" prepend=",">
+	    <![CDATA[ 
+	    	   ADRES_ZIP = #ADRES_ZIP# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR = #REPORTR# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR_APPN_NM" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_APPN_NM = #REPORTR_APPN_NM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR_MIDDLE_NM" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_MIDDLE_NM = #REPORTR_MIDDLE_NM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR_FAMILY_NM" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_FAMILY_NM = #REPORTR_FAMILY_NM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR_DEPT" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_DEPT = #REPORTR_DEPT# 
+	    ]]>
+	    </isNotEmpty> 
+	    <isNotEmpty property="QUALF" prepend=",">
+	    <![CDATA[ 
+	    	   QUALF = #QUALF# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPRT_TY" prepend=",">
+	    <![CDATA[ 
+	    	   REPRT_TY = #REPRT_TY# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPRT_TY_DETAIL" prepend=",">
+	    <![CDATA[ 
+	    	  REPRT_TY_DETAIL = #REPRT_TY_DETAIL# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="CLASS" prepend=",">
+	    <![CDATA[ 
+	    	   CLASS = #CLASS# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MAJOR" prepend=",">
+	    <![CDATA[   
+	    	   MAJOR = #MAJOR# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="EMAIL" prepend=",">
+	    <![CDATA[ 
+	    	   EMAIL = damo_enc(#EMAIL#) 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="TELNO" prepend=",">
+	    <![CDATA[ 
+	    	   TELNO = damo_enc(#TELNO#) 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="FAX" prepend=",">
+	    <![CDATA[ 
+	    	   FAX = #FAX# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="QUALF_ETC_OPINION" prepend=",">
+	    <![CDATA[ 
+	    	   QUALF_ETC_OPINION = #QUALF_ETC_OPINION# 
+	    ]]>
+	    </isNotEmpty>	   
+	    <![CDATA[
+	   	 WHERE REPORTER_NO = #REPORTER_NO#
+	   	]]> 
+	</update>
+	
+	<insert id="SDBC02DAO.insertParent" parameterClass="hashMap">
+	<![CDATA[
+		INSERT
+		INTO SDB_AM_PARNTS_INFO
+		    (
+		        PARNTS_NO
+		      , HRMFLNS_CASE_CODE
+		      , PRDUCT_CODE
+		      , FOLLOW_NO
+		      , PARNTS_NM
+		      , PARNTS_AGE
+		      , PARNTS_SEXDSTN
+		      , PREGNAN_WEEKCO
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (
+		        #PARNTS_NO#
+		      , #HRMFLNS_CASE_CODE#
+		      , #PRDUCT_CODE#
+		      , #FOLLOW_NO#
+		      , #PARNTS_NM#
+		      , #PARNTS_AGE#
+		      , #PARNTS_SEXDSTN#
+		      , #PREGNAN_WEEKCO#
+		      , 'Y'		      
+		      , sysdate		      
+		      , #UPDATE_ID#
+		      , sysdate
+		      , #UPDATE_ID#
+		    )
+	]]>
+	</insert>
+	
+	<update id="SDBC02DAO.updateParent" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE SDB_AM_PARNTS_INFO
+		   SET LAST_UPDDE = SYSDATE 
+		]]>
+		<isNotEmpty property="PARNTS_NM" prepend=",">
+	    <![CDATA[ 
+	    	   PARNTS_NM = #PARNTS_NM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="PARNTS_AGE" prepend=",">
+	    <![CDATA[ 
+	    	   PARNTS_AGE = #PARNTS_AGE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="PARNTS_SEXDSTN" prepend=",">
+	    <![CDATA[ 
+	    	   PARNTS_SEXDSTN = #PARNTS_SEXDSTN# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="PREGNAN_WEEKCO" prepend=",">
+	    <![CDATA[ 
+	    	   PREGNAN_WEEKCO = #PREGNAN_WEEKCO# 
+	    ]]>
+	    </isNotEmpty>	   
+	    <![CDATA[
+	   	 WHERE PARNTS_NO = #PARNTS_NO#
+	   	]]> 
+	</update>
+	
+	<select id="SDBC02DAO.selectFollow"   parameterClass="hashMap" resultClass="hashMap">
+		SELECT DISTINCT (TXT_FOLLOW) AS TXT_FOLLOW, FOLLOW_NO
+		FROM (  
+		   SELECT 
+		   		DECODE(TO_CHAR(FOLLOW_NO), '0', 'INITIAL', TO_CHAR(FOLLOW_NO)) AS TXT_FOLLOW
+		   		,FOLLOW_NO
+	  		 FROM SDB_AM_HRMFLNS_CASE_INFO
+			WHERE 1=1
+	    	 <isNotEmpty property="HRMFLNS_CASE_CODE" prepend="AND">
+			     <![CDATA[ 
+			     	   HRMFLNS_CASE_CODE=#HRMFLNS_CASE_CODE#
+			     ]]>
+			 </isNotEmpty>  
+			 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+			     <![CDATA[ 
+			     	   PRDUCT_CODE=#PRDUCT_CODE#
+			     ]]>
+			 </isNotEmpty>
+			 <isNotEmpty property="PRTCL_NO" prepend="AND">
+			     <![CDATA[ 
+			     	   PRTCL_NO=#PRTCL_NO#
+			     ]]>
+			 </isNotEmpty>
+			 <isNotEmpty property="SOURC_NO" prepend="AND">
+			     <![CDATA[ 
+			     	   SOURC_NO=#SOURC_NO#
+			     ]]>
+			 </isNotEmpty>
+			 <isNotEmpty property="LTRTRE_NO" prepend="AND">
+			     <![CDATA[ 
+			     	   LTRTRE_NO=#LTRTRE_NO#
+			     ]]>
+			 </isNotEmpty>
+			 <isNotEmpty property="ETC_INFO_NO" prepend="AND">
+			     <![CDATA[ 
+			     	   ETC_INFO_NO=#ETC_INFO_NO#
+			     ]]>
+			 </isNotEmpty>
+			 <isNotEmpty property="INSTT_NO" prepend="AND">
+			     <![CDATA[ 
+			     	   INSTT_NO=#INSTT_NO#
+			     ]]>
+			 </isNotEmpty>
+			 <isNotEmpty property="TESTEE_NO" prepend="AND">
+			     <![CDATA[ 
+			     	   TESTEE_NO=#TESTEE_NO#
+			     ]]>
+			 </isNotEmpty>
+		)		
+		ORDER BY FOLLOW_NO   	 
+	</select>
+	
+	<select id="SDBC02DAO.selectLabList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT HRMFLNS_CASE_CODE
+				,PRDUCT_CODE
+				,FOLLOW_NO
+				,TEST_NO
+				,TEST_DTES
+				,FN_GET_MULLANG(TEST) AS TEST
+				,FN_GET_MULLANG(UNIT) AS UNIT 
+				,LOW_SCOPE
+				,FN_GET_MULLANG(RESULT) AS RESULT
+				,FN_GET_MULLANG(MEMO) AS MEMO
+				, CASE USE_AT
+		            WHEN 'Y'
+		            THEN 'Actual'
+		            ELSE 'Deleted'
+		        END            AS USE_AT
+		  FROM SDB_AM_TEST_INFO
+		 WHERE 1=1
+		 <isNotEmpty property = "HRMFLNS_CASE_CODE" prepend="AND">
+		 	<![CDATA[
+		 		HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		 	<![CDATA[
+		 		PRDUCT_CODE = #PRDUCT_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		 	<![CDATA[
+		 		FOLLOW_NO = #FOLLOW_NO#
+		 	]]>
+		 </isNotEmpty>
+	</select>
+	
+	<insert id="SDBC02DAO.insertLabInfo" parameterClass="hashMap">
+	<![CDATA[
+		INSERT
+		INTO SDB_AM_TEST_INFO
+		    (
+		        TEST_NO
+		      , HRMFLNS_CASE_CODE
+		      , PRDUCT_CODE
+		      , FOLLOW_NO
+		      , TEST_DTES
+		      , TEST
+		      , UNIT
+		      , LOW_SCOPE      
+		      , RESULT
+		      , MEMO
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (
+		        #TEST_NO#
+		      , #HRMFLNS_CASE_CODE#
+		      , #PRDUCT_CODE#
+		      , #FOLLOW_NO#
+		      , #TEST_DTES#
+		      , #TEST#
+		      , #UNIT#
+		      , #LOW_SCOPE#      
+		      , #RESULT#
+		      , #MEMO#
+		      ,'Y'
+		      ,sysdate
+		      ,#UPDATE_ID#
+		      ,sysdate
+		      ,#UPDATE_ID#
+		    )
+		    
+		    ]]>
+	</insert>
+	
+	<update id="SDBC02DAO.updateLabInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_TEST_INFO
+		   SET LAST_UPDDE = SYSDATE 
+		]]>
+		<isNotEmpty property="TEST_DTES" prepend=",">
+	    <![CDATA[ 
+	    	   TEST_DTES = #TEST_DTES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="TEST" prepend=",">
+	    <![CDATA[ 
+	    	   TEST = #TEST# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="UNIT" prepend=",">
+	    <![CDATA[ 
+	    	   UNIT = #UNIT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="LOW_SCOPE" prepend=",">
+	    <![CDATA[ 
+	    	   LOW_SCOPE = #LOW_SCOPE# 
+	    ]]>
+	    </isNotEmpty>	   
+	    <isNotEmpty property="RESULT" prepend=",">
+	    <![CDATA[ 
+	    	   RESULT = #RESULT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEMO" prepend=",">
+	    <![CDATA[ 
+	    	   MEMO = #MEMO# 
+	    ]]>
+	    </isNotEmpty>
+	    <![CDATA[
+	   	 WHERE TEST_NO = #TEST_NO#
+	   	]]> 
+	</update>
+	
+	<update id="SDBC02DAO.deleteLabInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_TEST_INFO
+		   SET USE_AT = 'N' 
+	   	 WHERE TEST_NO = #TEST_NO#
+	   	]]> 
+	</update>
+	
+	<update id="SDBC02DAO.updateDemographicsLab" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_HRMFLNS_CASE_INFO
+		   SET TEST_RCORD_CMMN_MEMO = #TEST_RCORD_CMMN_MEMO# 
+		]]>		
+	    <![CDATA[
+	   	 WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+	   	   AND FOLLOW_NO = #FOLLOW_NO#
+	   	   AND PRDUCT_CODE = #PRDUCT_CODE#
+	   	]]>
+	</update>
+	
+	<select id="SDBC02DAO.selectLabListInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT HRMFLNS_CASE_CODE
+				,PRDUCT_CODE
+				,FOLLOW_NO
+				,TEST_NO
+				,TEST_DTES
+				,TEST
+				,FN_GET_MULLANG_SELECT(TEST,'K') AS TEST_KOR
+			    ,FN_GET_MULLANG_SELECT(TEST,'E') AS TEST_ENG
+				,UNIT
+			    ,FN_GET_MULLANG_SELECT(UNIT,'K') AS UNIT_KOR
+			    ,FN_GET_MULLANG_SELECT(UNIT,'E') AS UNIT_ENG
+				,LOW_SCOPE
+				,RESULT
+				,FN_GET_MULLANG_SELECT(RESULT,'K') AS RESULT_KOR
+			    ,FN_GET_MULLANG_SELECT(RESULT,'E') AS RESULT_ENG
+				,MEMO	
+				,FN_GET_MULLANG_SELECT(MEMO,'K') AS MEMO_KOR
+			    ,FN_GET_MULLANG_SELECT(MEMO,'E') AS MEMO_ENG
+		  FROM SDB_AM_TEST_INFO
+		 WHERE 1=1
+		 <isNotEmpty property = "TEST_NO" prepend="AND">
+		 	<![CDATA[
+		 		TEST_NO = #TEST_NO#
+		 	]]>		 
+		 </isNotEmpty>	
+	</select>
+	
+	<select id="SDBC02DAO.selectDemographicsLab" parameterClass="hashMap" resultClass="hashMap">
+	 <![CDATA[ 
+		SELECT TEST_RCORD_CMMN_MEMO
+		    , FN_GET_MULLANG_SELECT(TEST_RCORD_CMMN_MEMO,'K') AS TEST_RCORD_CMMN_MEMO_KOR
+		    , FN_GET_MULLANG_SELECT(TEST_RCORD_CMMN_MEMO,'E') AS TEST_RCORD_CMMN_MEMO_ENG		    
+		  FROM SDB_AM_HRMFLNS_CASE_INFO 
+  		 WHERE 1=1
+  		 ]]>
+  		 <isNotEmpty property="HRMFLNS_CASE_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   HRMFLNS_CASE_CODE=#HRMFLNS_CASE_CODE#
+		     ]]>
+		 </isNotEmpty>
+  		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   PRDUCT_CODE=#PRDUCT_CODE#
+		     ]]>
+		 </isNotEmpty>		
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   FOLLOW_NO=#FOLLOW_NO#
+		     ]]>
+		 </isNotEmpty>		 
+  		 
+	</select>
+	
+
+	<select id="SDBC02DAO.selectDemographicsMedi" parameterClass="hashMap" resultClass="hashMap">
+	 <![CDATA[ 
+		SELECT MDLC_RCORD_CMMN_MEMO
+		    , FN_GET_MULLANG_SELECT(MDLC_RCORD_CMMN_MEMO,'K') AS MDLC_RCORD_CMMN_MEMO_KOR
+		    , FN_GET_MULLANG_SELECT(MDLC_RCORD_CMMN_MEMO,'E') AS MDLC_RCORD_CMMN_MEMO_ENG		    
+		  FROM SDB_AM_HRMFLNS_CASE_INFO 
+  		 WHERE 1=1
+  		 ]]>
+  		 <isNotEmpty property="HRMFLNS_CASE_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   HRMFLNS_CASE_CODE=#HRMFLNS_CASE_CODE#
+		     ]]>
+		 </isNotEmpty>
+  		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   PRDUCT_CODE=#PRDUCT_CODE#
+		     ]]>
+		 </isNotEmpty>		
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   FOLLOW_NO=#FOLLOW_NO#
+		     ]]>
+		 </isNotEmpty>		
+  		 
+	</select>
+	
+	<select id="SDBC02DAO.selectMedicalList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT HRMFLNS_CASE_CODE
+				,PRDUCT_CODE
+				,FOLLOW_NO
+				,MDLC_RCORD_NO
+				,FN_GET_MULLANG(MDLC_RCORD_NM) AS MDLC_RCORD_NM
+				,KCD_VER
+				,KCD_CODE 
+				,MEDDRA_VER
+				,MEDDRA_LTT_CODE
+				,BEGIN_DTES
+				,CNTNC_AT
+				,END_DTES
+				,FN_GET_MULLANG(RCORD_MEMO) AS RCORD_MEMO
+				, CASE USE_AT
+		            WHEN 'Y'
+		            THEN 'Actual'
+		            ELSE 'Deleted'
+		        END            AS USE_AT
+		  FROM SDB_AM_MDLC_RCORD_INFO
+		 WHERE 1=1
+		 <isNotEmpty property = "HRMFLNS_CASE_CODE" prepend="AND">
+		 	<![CDATA[
+		 		HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		 	<![CDATA[
+		 		PRDUCT_CODE = #PRDUCT_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		 	<![CDATA[
+		 		FOLLOW_NO = #FOLLOW_NO#
+		 	]]>
+		 </isNotEmpty>
+		 ORDER BY USE_AT DESC, FRST_CREDE ASC
+	</select>
+	
+	<select id="SDBC02DAO.selectMedicalHistoryInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT   MDLC_RCORD_NO
+				,HRMFLNS_CASE_CODE
+				,PRDUCT_CODE
+				,FOLLOW_NO
+				,MDLC_RCORD_NO
+				,MDLC_RCORD_NM
+				,FN_GET_MULLANG_SELECT(MDLC_RCORD_NM,'K') AS MDLC_RCORD_NM_KOR
+			    ,FN_GET_MULLANG_SELECT(MDLC_RCORD_NM,'E') AS MDLC_RCORD_NM_ENG
+				,KCD_VER
+				,KCD_CODE 
+				,MEDDRA_VER
+				,MEDDRA_LTT_CODE
+				,BEGIN_DTES
+				,CNTNC_AT
+				,END_DTES
+				,RCORD_MEMO 	
+				,FN_GET_MULLANG_SELECT(RCORD_MEMO,'K') AS RCORD_MEMO_KOR
+			    ,FN_GET_MULLANG_SELECT(RCORD_MEMO,'E') AS RCORD_MEMO_ENG			
+		  FROM SDB_AM_MDLC_RCORD_INFO		 
+		 
+		 <![CDATA[
+		 WHERE	MDLC_RCORD_NO = #MDLC_RCORD_NO#
+		 ]]>		 
+		 
+	</select>
+	
+	
+	
+	<insert id="SDBC02DAO.insertMedicalHistory" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		INTO SDB_AM_MDLC_RCORD_INFO
+		    (
+		        MDLC_RCORD_NO
+		      , HRMFLNS_CASE_CODE
+		      , PRDUCT_CODE
+		      , FOLLOW_NO
+		      , MDLC_RCORD_NM
+		      , KCD_USE_AT
+		      , KCD_VER
+		      , KCD_CODE
+		      , MEDDRA_USE_AT
+		      , MEDDRA_VER
+		      , MEDDRA_LTT_CODE
+		      , BEGIN_DTES
+		      , CNTNC_AT
+		      , END_DTES
+		      , RCORD_MEMO
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (
+		        #MDLC_RCORD_NO#
+		      , #HRMFLNS_CASE_CODE#
+		      , #PRDUCT_CODE#
+		      , #FOLLOW_NO#
+		      , #MDLC_RCORD_NM#
+		      , #KCD_USE_AT#
+		      , #KCD_VER#
+		      , #KCD_CODE#
+		      , #MEDDRA_USE_AT#
+		      , #MEDDRA_VER#
+		      , #MEDDRA_LTT_CODE#
+		      , #BEGIN_DTES#
+		      , #CNTNC_AT#
+		      , #END_DTES#
+		      , #RCORD_MEMO#
+		      ,'Y'
+		      ,sysdate
+		      ,#UPDATE_ID#
+		      ,sysdate
+		      ,#UPDATE_ID#
+		    )
+		]]>
+	</insert>
+	
+	<update id="SDBC02DAO.updateMedicalHistory" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE SDB_AM_MDLC_RCORD_INFO
+		   SET LAST_UPDDE = SYSDATE 
+		]]>
+		<isNotEmpty property="MDLC_RCORD_NM" prepend=",">
+	    <![CDATA[ 
+	    	   MDLC_RCORD_NM = #MDLC_RCORD_NM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="KCD_VER" prepend=",">
+	    <![CDATA[ 
+	    	   KCD_VER = #KCD_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="KCD_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   KCD_CODE = #KCD_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_VER" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_VER = #MEDDRA_VER# 
+	    ]]>
+	    </isNotEmpty>	   
+	    <isNotEmpty property="MEDDRA_LTT_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_LTT_CODE = #MEDDRA_LTT_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="BEGIN_DTES" prepend=",">
+	    <![CDATA[ 
+	    	   BEGIN_DTES = #BEGIN_DTES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="CNTNC_AT" prepend=",">
+	    <![CDATA[ 
+	    	   CNTNC_AT = #CNTNC_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="END_DTES" prepend=",">
+	    <![CDATA[ 
+	    	   END_DTES = #END_DTES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="RCORD_MEMO" prepend=",">
+	    <![CDATA[ 
+	    	   RCORD_MEMO = #RCORD_MEMO# 
+	    ]]>
+	    </isNotEmpty>	    
+	    <![CDATA[
+	   	 WHERE MDLC_RCORD_NO = #MDLC_RCORD_NO#
+	   	]]> 
+	</update>
+	
+	<update id="SDBC02DAO.deleteMedicalHistory">
+	<![CDATA[
+		UPDATE SDB_AM_MDLC_RCORD_INFO
+		   SET USE_AT ='N'
+		 WHERE MDLC_RCORD_NO = #MDLC_RCORD_NO#
+	]]>
+	</update>
+	
+	<update id="SDBC02DAO.updateDemographicsMedi" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_HRMFLNS_CASE_INFO
+		   SET MDLC_RCORD_CMMN_MEMO = #MDLC_RCORD_CMMN_MEMO# 
+		]]>		
+	    <![CDATA[
+	   	 WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+	   	   AND FOLLOW_NO = #FOLLOW_NO#
+	   	   AND PRDUCT_CODE = #PRDUCT_CODE#
+	   	]]>
+	</update>
+	
+	<select id="SDBC02DAO.selectDrugHistory" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		 	 MEDCIN_RCORD_NO 
+		    ,FN_GET_MULLANG(MEDCIN_RECOED_NM) AS MEDCIN_RECOED_NM
+		    
+		    ,MEDCIN_RCORD_NM
+		    ,MFDS_BRAND_CODE
+		    ,MFDS_GNRL_CODE
+		    ,UNCONFM_MEDCINNM
+		    ,BEGIN_DTES
+			,END_DTES
+		    ,FN_GET_MULLANG(SGN_MEMO) AS SGN_MEMO
+		    ,FN_GET_MULLANG(RESPNS_MEMO) AS RESPNS_MEMO
+		    , CASE USE_AT
+	            WHEN 'Y'
+	            THEN 'Actual'
+	            ELSE 'Deleted'
+	        END USE_AT
+		  FROM SDB_AM_MEDCIN_RCORD_INFO	
+		 WHERE 1=1
+		 <isNotEmpty property = "HRMFLNS_CASE_CODE" prepend="AND">
+		 	<![CDATA[
+		 		HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		 	<![CDATA[
+		 		PRDUCT_CODE = #PRDUCT_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		 	<![CDATA[
+		 		FOLLOW_NO = #FOLLOW_NO#
+		 	]]>
+		 </isNotEmpty>
+		 ORDER BY USE_AT DESC, FRST_CREDE ASC
+	</select>
+	
+	<select id="SDBC02DAO.selectDrugHistoryInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT 
+		     MEDCIN_RCORD_NO
+		    ,MEDCIN_RECOED_NM
+		    ,FN_GET_MULLANG_SELECT(MEDCIN_RECOED_NM,'K') AS MEDCIN_RECOED_NM_KOR
+			,FN_GET_MULLANG_SELECT(MEDCIN_RECOED_NM,'E') AS MEDCIN_RECOED_NM_ENG
+			,MEDCIN_RCORD_NM
+			,FN_GET_MULLANG_SELECT(MEDCIN_RCORD_NM,'K') AS MEDCIN_RCORD_NM_KOR
+			,FN_GET_MULLANG_SELECT(MEDCIN_RCORD_NM,'E') AS MEDCIN_RCORD_NM_ENG
+			,MFDS_BRAND_CODE
+			,MFDS_GNRL_CODE
+			,UNCONFM_MEDCINNM
+			,FN_GET_MULLANG_SELECT(UNCONFM_MEDCINNM,'K') AS UNCONFM_MEDCINNM_KOR
+			,FN_GET_MULLANG_SELECT(UNCONFM_MEDCINNM,'E') AS UNCONFM_MEDCINNM_ENG
+			,BEGIN_DTES
+			,END_DTES
+			,SGN_MEMO
+			,FN_GET_MULLANG_SELECT(SGN_MEMO,'K') AS SGN_MEMO_KOR
+			,FN_GET_MULLANG_SELECT(SGN_MEMO,'E') AS SGN_MEMO_ENG
+			,RESPNS_MEMO
+			,FN_GET_MULLANG_SELECT(RESPNS_MEMO,'K') AS RESPNS_MEMO_KOR
+			,FN_GET_MULLANG_SELECT(RESPNS_MEMO,'E') AS RESPNS_MEMO_ENG
+			,ATC_AT
+			,ATC_VER
+			,ATC_CODE
+			,MEDDRA_AT
+			,MEDDRA_VER
+			,MEDDRA_LTT_CODE
+			,WHOART_AT
+			,WHOART_VER
+			,WHOART_ARRN_CODE
+			,MEDDRAONE_AT
+			,MEDDRAONE_VER
+			,MEDDRAONE_LLT_CODE
+			,DETAIL_CN
+			,FN_GET_MULLANG_SELECT(DETAIL_CN,'K') AS DETAIL_CN_KOR
+			,FN_GET_MULLANG_SELECT(DETAIL_CN,'E') AS DETAIL_CN_ENG
+		FROM SDB_AM_MEDCIN_RCORD_INFO	
+		<![CDATA[
+	   	 WHERE MEDCIN_RCORD_NO = #MEDCIN_RCORD_NO#
+	   	]]> 
+	</select>
+	
+	<insert id="SDBC02DAO.insertDrugHistory" parameterClass="hashMap" > 
+	<![CDATA[
+		INSERT
+		INTO SDB_AM_MEDCIN_RCORD_INFO
+		    (
+		        MEDCIN_RCORD_NO
+		      , HRMFLNS_CASE_CODE
+		      , PRDUCT_CODE
+		      , FOLLOW_NO
+		      , MEDCIN_RECOED_NM
+		      , MEDCIN_RCORD_NM
+		      , MFDS_BRAND_CODE
+		      , MFDS_GNRL_CODE
+		      , UNCONFM_MEDCINNM
+		      , BEGIN_DTES
+		      , END_DTES
+		      , SGN_MEMO
+		      , RESPNS_MEMO
+		      , ATC_AT
+		      , ATC_VER
+		      , ATC_CODE
+		      , MEDDRA_AT
+		      , MEDDRA_VER
+		      , MEDDRA_LTT_CODE
+		      , WHOART_AT
+		      , WHOART_VER
+		      , WHOART_ARRN_CODE
+		      , MEDDRAONE_AT
+		      , MEDDRAONE_VER
+		      , MEDDRAONE_LLT_CODE
+		      , DETAIL_CN
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (
+		        #MEDCIN_RCORD_NO#
+		      , #HRMFLNS_CASE_CODE#
+		      , #PRDUCT_CODE#
+		      , #FOLLOW_NO#
+		      , #MEDCIN_RECOED_NM#
+		      , #MEDCIN_RCORD_NM#
+		      , #MFDS_BRAND_CODE#
+		      , #MFDS_GNRL_CODE#
+		      , #UNCONFM_MEDCINNM#
+		      , #BEGIN_DTES#
+		      , #END_DTES#
+		      , #SGN_MEMO#
+		      , #RESPNS_MEMO#
+		      , #ATC_AT#
+		      , #ATC_VER#
+		      , #ATC_CODE#
+		      , #MEDDRA_AT#
+		      , #MEDDRA_VER#
+		      , #MEDDRA_LTT_CODE#
+		      , #WHOART_AT#
+		      , #WHOART_VER#
+		      , #WHOART_ARRN_CODE#
+		      , #MEDDRAONE_AT#
+		      , #MEDDRAONE_VER#
+		      , #MEDDRAONE_LLT_CODE#
+		      , #DETAIL_CN#
+		      ,'Y'
+		      ,sysdate
+		      ,#UPDATE_ID#
+		      ,sysdate
+		      ,#UPDATE_ID#
+		    )
+    ]]>
+	</insert>
+	
+	<update id="SDBC02DAO.updateDrugHistory" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE SDB_AM_MEDCIN_RCORD_INFO
+		   SET LAST_UPDDE = SYSDATE 
+		]]>
+		<isNotEmpty property="MEDCIN_RECOED_NM" prepend=",">
+	    <![CDATA[ 
+	    	   MEDCIN_RECOED_NM = #MEDCIN_RECOED_NM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDCIN_RCORD_NM" prepend=",">
+	    <![CDATA[ 
+	    	   MEDCIN_RCORD_NM = #MEDCIN_RCORD_NM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MFDS_BRAND_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   MFDS_BRAND_CODE = #MFDS_BRAND_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MFDS_GNRL_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   MFDS_GNRL_CODE = #MFDS_GNRL_CODE# 
+	    ]]>
+	    </isNotEmpty>	   
+	    <isNotEmpty property="UNCONFM_MEDCINNM" prepend=",">
+	    <![CDATA[ 
+	    	   UNCONFM_MEDCINNM = #UNCONFM_MEDCINNM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="BEGIN_DTES" prepend=",">
+	    <![CDATA[ 
+	    	   BEGIN_DTES = #BEGIN_DTES# 
+	    ]]>
+	    </isNotEmpty>	   
+	    <isNotEmpty property="END_DTES" prepend=",">
+	    <![CDATA[ 
+	    	   END_DTES = #END_DTES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SGN_MEMO" prepend=",">
+	    <![CDATA[ 
+	    	   SGN_MEMO = #SGN_MEMO# 
+	    ]]>
+	    </isNotEmpty>	    
+	    <isNotEmpty property="RESPNS_MEMO" prepend=",">
+	    <![CDATA[ 
+	    	   RESPNS_MEMO = #RESPNS_MEMO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ATC_AT" prepend=",">
+	    <![CDATA[ 
+	    	   ATC_AT = #ATC_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ATC_VER" prepend=",">
+	    <![CDATA[ 
+	    	   ATC_VER = #ATC_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ATC_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   ATC_CODE = #ATC_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_AT" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_AT = #MEDDRA_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_VER" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_VER = #MEDDRA_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_LTT_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_LTT_CODE = #MEDDRA_LTT_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="WHOART_AT" prepend=",">
+	    <![CDATA[ 
+	    	   WHOART_AT = #WHOART_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="WHOART_VER" prepend=",">
+	    <![CDATA[ 
+	    	   WHOART_VER = #WHOART_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="WHOART_ARRN_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   WHOART_ARRN_CODE = #WHOART_ARRN_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRAONE_AT" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRAONE_AT = #MEDDRAONE_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRAONE_VER" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRAONE_VER = #MEDDRAONE_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRAONE_LLT_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRAONE_LLT_CODE = #MEDDRAONE_LLT_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DETAIL_CN" prepend=",">
+	    <![CDATA[ 
+	    	   DETAIL_CN = #DETAIL_CN# 
+	    ]]>
+	    </isNotEmpty>
+	    <![CDATA[
+	   	 WHERE MEDCIN_RCORD_NO = #MEDCIN_RCORD_NO#
+	   	]]> 
+	</update>
+	
+	<update id="SDBC02DAO.deleteDrugHistory">
+	<![CDATA[
+		UPDATE SDB_AM_MEDCIN_RCORD_INFO
+		   SET USE_AT ='N'
+		 WHERE MEDCIN_RCORD_NO = #MEDCIN_RCORD_NO#
+	]]>
+	</update>
+	
+	<select id="SDBC02DAO.selectCasualityList" parameterClass="hashMap" resultClass="hashMap">
+			 SELECT AE_NO
+				  , HRMFLNS_CASE_CODE
+				  , PRDUCT_CODE
+				  , FOLLOW_NO
+				  , MEDCIN_INFO_NO
+				  , FN_GET_MULLANG(ADVERSE_EVENT)                            AS TXT_ADVERSE_EVENT
+				  , FN_GET_COMMONCODE('SDB073', DRFSTFROLE_SE, 'KOR')        AS DRFSTFROLE_SE
+				  , FN_GET_MULLANG(MEDCIN_RECOED_NM)                         AS MEDCIN_RECOED_NM
+				  , REPORTR_RELATION_ONE
+				  , REPORTR_RELATION_TWO
+				  , SPON_RELATION_ONE
+				  , SPON_RELATION_TWO  
+				FROM SDB_AM_RELATE
+			    WHERE 1                 =1	
+			    <isNotEmpty property = "HRMFLNS_CASE_CODE" prepend="AND">
+				 	<![CDATA[
+				 		HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+				 	]]>		 
+				 </isNotEmpty>
+				 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+				 	<![CDATA[
+				 		PRDUCT_CODE = #PRDUCT_CODE#
+				 	]]>		 
+				 </isNotEmpty>
+				 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+				 	<![CDATA[
+				 		FOLLOW_NO = #FOLLOW_NO#
+				 	]]>
+				 </isNotEmpty>
+			ORDER BY AE_NO ASC			  		  
+	</select>
+	
+	
+	<update id="SDBC02DAO.updateCasuality" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_RELATE
+		   SET LAST_UPDDE = SYSDATE  
+		]]>		
+		<isNotEmpty property="REPORTR_RELATION_ONE" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_RELATION_ONE = #REPORTR_RELATION_ONE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR_RELATION_TWO" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_RELATION_TWO = #REPORTR_RELATION_TWO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SPON_RELATION_ONE" prepend=",">
+	    <![CDATA[ 
+	    	   SPON_RELATION_ONE = #SPON_RELATION_ONE# 
+	    ]]>
+	    </isNotEmpty>	    
+	    <isNotEmpty property="SPON_RELATION_TWO" prepend=",">
+	    <![CDATA[ 
+	    	   SPON_RELATION_TWO = #SPON_RELATION_TWO# 
+	    ]]>
+	    </isNotEmpty>
+	    <![CDATA[
+	   	 WHERE AE_NO = #AE_NO#
+	   	   AND MEDCIN_INFO_NO = #MEDCIN_INFO_NO#
+	   	]]>
+	</update>
+	
+	<insert id="SDBC02DAO.insertDrug" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		INTO SDB_AM_MEDCIN_INFO
+		    (
+		        MEDCIN_INFO_NO
+		      , HRMFLNS_CASE_CODE
+		      , PRDUCT_CODE
+		      , FOLLOW_NO
+		      , DRFSTFROLE_SE
+		      , MEDCIN_RECOED_NM
+		      , MEDCIN_NM
+		      , MFDS_BRAND_CODE
+		      , MFDS_GNRL_CODE
+		      , UNCONFM_MEDCINNM
+		      , BEGIN_DTES
+		      , CNTNC_AT
+		      , END_DTES
+		      , MDCTN_PD
+		      , RSTRCT_FORM
+		      , COURS
+		      , BATCH_LT_NO
+		      , FDQNT
+		      , UNIT
+		      , NCOUNT
+		      , INTRVL
+		      , INTRVL_UNIT
+		      , DIFR_USAGE_USER_INFO
+		      , SGN_MEMO
+		      , ABOVE_RESPNS_SE
+		      , DRFSTF_WTHDRAW___CPCTY_DCRS_SE
+		      , RECR_SE
+		      , DIFR_INFO
+		      , ATC_AT
+		      , ATC_VER
+		      , ATC_CODE
+		      , KCD_AT
+		      , KCD_VER
+		      , KCD_CODE
+		      , MEDDRA_AT
+		      , MEDDRA_VER
+		      , MEDDRA_LTT_CODE
+		      , REPORTR_DC_AT
+		      , REPORTR_DC_SE
+		      , SPON_DC_AT
+		      , SPON_DC_SE
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID      
+		    )
+		    VALUES
+		    (
+		        #MEDCIN_INFO_NO#
+		      , #HRMFLNS_CASE_CODE#
+		      , #PRDUCT_CODE#
+		      , #FOLLOW_NO#
+		      , #DRFSTFROLE_SE#
+		      , #MEDCIN_RECOED_NM#
+		      , #MEDCIN_NM#
+		      , #MFDS_BRAND_CODE#
+		      , #MFDS_GNRL_CODE#
+		      , #UNCONFM_MEDCINNM#
+		      , #BEGIN_DTES#
+		      , #CNTNC_AT#
+		      , #END_DTES#
+		      , #MDCTN_PD#
+		      , #RSTRCT_FORM#
+		      , #COURS#
+		      , #BATCH_LT_NO#
+		      , #FDQNT#
+		      , #UNIT#
+		      , #NCOUNT#
+		      , #INTRVL#
+		      , #INTRVL_UNIT#
+		      , #DIFR_USAGE_USER_INFO#
+		      , #SGN_MEMO#
+		      , #ABOVE_RESPNS_SE#
+		      , #DRFSTF_WTHDRAW___CPCTY_DCRS_SE#
+		      , #RECR_SE#
+		      , #DIFR_INFO#
+		      , #ATC_AT#
+		      , #ATC_VER#
+		      , #ATC_CODE#
+		      , #KCD_AT#
+		      , #KCD_VER#
+		      , #KCD_CODE#
+		      , #MEDDRA_AT#
+		      , #MEDDRA_VER#
+		      , #MEDDRA_LTT_CODE#
+		      , #REPORTR_DC_AT#
+		      , #REPORTR_DC_SE#
+		      , #SPON_DC_AT#
+		      , #SPON_DC_SE#
+		      ,'Y'
+		      ,sysdate
+		      ,#UPDATE_ID#
+		      ,sysdate
+		      ,#UPDATE_ID#     
+		    )
+		]]>	
+	</insert>	
+	
+	<update id="SDBC02DAO.updateDrug" parameterClass="hashMap" >
+	 <![CDATA[
+		UPDATE SDB_AM_MEDCIN_INFO
+		   SET LAST_UPDDE = SYSDATE		   
+		]]>
+		<isNotEmpty property="DRFSTFROLE_SE" prepend=",">
+	    <![CDATA[ 
+	    	   DRFSTFROLE_SE = #DRFSTFROLE_SE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDCIN_RECOED_NM" prepend=",">
+	    <![CDATA[ 
+	    	   MEDCIN_RECOED_NM = #MEDCIN_RECOED_NM# 
+	    ]]>
+	    </isNotEmpty>	
+	    <isNotEmpty property="MEDCIN_NM" prepend=",">
+	    <![CDATA[ 
+	    	   MEDCIN_NM = #MEDCIN_NM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MFDS_BRAND_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   MFDS_BRAND_CODE = #MFDS_BRAND_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MFDS_GNRL_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   MFDS_GNRL_CODE = #MFDS_GNRL_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="UNCONFM_MEDCINNM" prepend=",">
+	    <![CDATA[ 
+	    	   UNCONFM_MEDCINNM = #UNCONFM_MEDCINNM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="BEGIN_DTES" prepend=",">
+	    <![CDATA[ 
+	    	   BEGIN_DTES = #BEGIN_DTES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="CNTNC_AT" prepend=",">
+	    <![CDATA[ 
+	    	   CNTNC_AT = #CNTNC_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="END_DTES" prepend=",">
+	    <![CDATA[ 
+	    	   END_DTES = #END_DTES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MDCTN_PD" prepend=",">
+	    <![CDATA[ 
+	    	   MDCTN_PD = #MDCTN_PD# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="RSTRCT_FORM" prepend=",">
+	    <![CDATA[ 
+	    	   RSTRCT_FORM = #RSTRCT_FORM# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="COURS" prepend=",">
+	    <![CDATA[ 
+	    	   COURS = #COURS# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="BATCH_LT_NO" prepend=",">
+	    <![CDATA[ 
+	    	   BATCH_LT_NO = #BATCH_LT_NO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="FDQNT" prepend=",">
+	    <![CDATA[ 
+	    	   FDQNT = #FDQNT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="UNIT" prepend=",">
+	    <![CDATA[ 
+	    	   UNIT = #UNIT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="NCOUNT" prepend=",">
+	    <![CDATA[ 
+	    	   NCOUNT = #NCOUNT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="INTRVL" prepend=",">
+	    <![CDATA[ 
+	    	   INTRVL = #INTRVL# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="INTRVL_UNIT" prepend=",">
+	    <![CDATA[ 
+	    	   INTRVL_UNIT = #INTRVL_UNIT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DIFR_USAGE_USER_INFO" prepend=",">
+	    <![CDATA[ 
+	    	   DIFR_USAGE_USER_INFO = #DIFR_USAGE_USER_INFO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SGN_MEMO" prepend=",">
+	    <![CDATA[ 
+	    	   SGN_MEMO = #SGN_MEMO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ABOVE_RESPNS_SE" prepend=",">
+	    <![CDATA[ 
+	    	   ABOVE_RESPNS_SE = #ABOVE_RESPNS_SE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DRFSTF_WTHDRAW___CPCTY_DCRS_SE" prepend=",">
+	    <![CDATA[ 
+	    	   DRFSTF_WTHDRAW___CPCTY_DCRS_SE = #DRFSTF_WTHDRAW___CPCTY_DCRS_SE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="RECR_SE" prepend=",">
+	    <![CDATA[ 
+	    	   RECR_SE = #RECR_SE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DIFR_INFO" prepend=",">
+	    <![CDATA[ 
+	    	   DIFR_INFO = #DIFR_INFO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ATC_AT" prepend=",">
+	    <![CDATA[ 
+	    	   ATC_AT = #ATC_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ATC_VER" prepend=",">
+	    <![CDATA[ 
+	    	   ATC_VER = #ATC_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ATC_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   ATC_CODE = #ATC_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="KCD_AT" prepend=",">
+	    <![CDATA[ 
+	    	   KCD_AT = #KCD_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="KCD_VER" prepend=",">
+	    <![CDATA[ 
+	    	   KCD_VER = #KCD_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="KCD_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   KCD_CODE = #KCD_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_AT" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_AT = #MEDDRA_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_VER" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_VER = #MEDDRA_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_LTT_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_LTT_CODE = #MEDDRA_LTT_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR_DC_AT" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_DC_AT = #REPORTR_DC_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR_DC_SE" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_DC_SE = #REPORTR_DC_SE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SPON_DC_AT" prepend=",">
+	    <![CDATA[ 
+	    	   SPON_DC_AT = #SPON_DC_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SPON_DC_SE" prepend=",">
+	    <![CDATA[ 
+	    	   SPON_DC_SE = #SPON_DC_SE# 
+	    ]]>
+	    </isNotEmpty>	    
+	    <![CDATA[
+	   	 WHERE MEDCIN_INFO_NO = #MEDCIN_INFO_NO#
+	   	]]> 
+	</update>
+	
+	<update id="SDBC02DAO.deleteDrug" parameterClass="hashMap">
+	 <![CDATA[
+		UPDATE SDB_AM_MEDCIN_INFO
+		   SET LAST_UPDDE = SYSDATE		   		   
+		]]>
+	
+	</update>
+	
+	<select id="SDBC02DAO.selectDrugList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT MEDCIN_INFO_NO
+			  , HRMFLNS_CASE_CODE
+			  , PRDUCT_CODE
+			  , FOLLOW_NO
+			  , FN_GET_COMMONCODE('SDB073', DRFSTFROLE_SE, 'KOR')                AS DRFSTFROLE_SE
+			  , FN_GET_MULLANG(MEDCIN_RECOED_NM) AS MEDCIN_RECOED_NM
+			  , FN_GET_MULLANG(MEDCIN_NM) AS MEDCIN_NM 
+			  , BEGIN_DTES
+			  , END_DTES
+			  , SGN_MEMO
+			  , FN_GET_COMMONCODE('SDB065', ABOVE_RESPNS_SE, 'KOR')        AS ABOVE_RESPNS_SE
+			  , FN_GET_COMMONCODE('SDB015', DRFSTF_WTHDRAW___CPCTY_DCRS_SE, 'KOR')        AS DRFSTF_WTHDRAW___CPCTY_DCRS_SE
+			  , FN_GET_COMMONCODE('SDB017', RECR_SE, 'KOR')        AS RECR_SE 
+			  , CASE USE_AT
+			        WHEN 'Y'
+			        THEN 'Actual'
+			        ELSE 'Deleted'
+			    END USE_AT
+			FROM SDB_AM_MEDCIN_INFO	
+		 WHERE 1=1
+		 <isNotEmpty property = "HRMFLNS_CASE_CODE" prepend="AND">
+		 	<![CDATA[
+		 		HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		 	<![CDATA[
+		 		PRDUCT_CODE = #PRDUCT_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		 	<![CDATA[
+		 		FOLLOW_NO = #FOLLOW_NO#
+		 	]]>
+		 </isNotEmpty>
+		 ORDER BY USE_AT DESC, FRST_CREDE ASC
+	</select>	
+	
+	
+	<select id="SDBC02DAO.selectDrugInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT 
+			MEDCIN_INFO_NO
+			,HRMFLNS_CASE_CODE
+			,PRDUCT_CODE
+			,FOLLOW_NO
+			,DRFSTFROLE_SE
+			,MEDCIN_RECOED_NM			
+			,FN_GET_MULLANG_SELECT(MEDCIN_RECOED_NM,'K') AS MEDCIN_RECOED_NM_KOR
+			,FN_GET_MULLANG_SELECT(MEDCIN_RECOED_NM,'E') AS MEDCIN_RECOED_NM_ENG
+			,MEDCIN_NM			
+			,FN_GET_MULLANG_SELECT(MEDCIN_NM,'K') AS MEDCIN_NM_KOR
+			,FN_GET_MULLANG_SELECT(MEDCIN_NM,'E') AS MEDCIN_NM_ENG
+			,MFDS_BRAND_CODE
+			,MFDS_GNRL_CODE
+			,UNCONFM_MEDCINNM
+			,BEGIN_DTES
+			,CNTNC_AT
+			,END_DTES
+			,MDCTN_PD
+			,RSTRCT_FORM
+			,FN_GET_MULLANG_SELECT(RSTRCT_FORM,'K') AS RSTRCT_FORM_KOR
+			,FN_GET_MULLANG_SELECT(RSTRCT_FORM,'E') AS RSTRCT_FORM_ENG
+			,COURS
+			,FN_GET_MULLANG_SELECT(COURS,'K') AS COURS_KOR
+			,FN_GET_MULLANG_SELECT(COURS,'E') AS COURS_ENG
+			,BATCH_LT_NO
+			,FDQNT
+			,FN_GET_MULLANG_SELECT(COURS,'K') AS FDQNT_KOR
+			,FN_GET_MULLANG_SELECT(COURS,'E') AS FDQNT_ENG
+			,UNIT
+			,FN_GET_MULLANG_SELECT(UNIT,'K') AS UNIT_KOR
+			,FN_GET_MULLANG_SELECT(UNIT,'E') AS UNIT_ENG
+			,NCOUNT
+			,INTRVL
+			,INTRVL_UNIT
+			,DIFR_USAGE_USER_INFO
+			,FN_GET_MULLANG_SELECT(DIFR_USAGE_USER_INFO,'K') AS DIFR_USAGE_USER_INFO_KOR
+			,FN_GET_MULLANG_SELECT(DIFR_USAGE_USER_INFO,'E') AS DIFR_USAGE_USER_INFO_ENG
+			,SGN_MEMO
+			,FN_GET_MULLANG_SELECT(SGN_MEMO,'K') AS SGN_MEMO_KOR
+			,FN_GET_MULLANG_SELECT(SGN_MEMO,'E') AS SGN_MEMO_ENG
+			,ABOVE_RESPNS_SE
+			,DRFSTF_WTHDRAW___CPCTY_DCRS_SE
+			,RECR_SE
+			,DIFR_INFO
+			,FN_GET_MULLANG_SELECT(DIFR_INFO,'K') AS DIFR_INFO_KOR
+			,FN_GET_MULLANG_SELECT(DIFR_INFO,'E') AS DIFR_INFO_ENG
+			,ATC_AT
+			,ATC_VER
+			,ATC_CODE
+			,KCD_AT
+			,KCD_VER
+			,KCD_CODE
+			,MEDDRA_AT
+			,MEDDRA_VER
+			,MEDDRA_LTT_CODE
+			,REPORTR_DC_AT
+			,REPORTR_DC_SE
+			,SPON_DC_AT
+			,SPON_DC_SE
+		FROM SDB_AM_MEDCIN_INFO
+	WHERE 1 =1 
+	<isNotEmpty property="MEDCIN_INFO_NO" prepend="AND">
+	 	<![CDATA[
+	 		MEDCIN_INFO_NO = #MEDCIN_INFO_NO#
+	 	]]>
+	 </isNotEmpty>
+	</select>
+	
+	
+	<select id="SDBC02DAO.selectAeList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT AE_NO 
+		  , FN_GET_MULLANG(ADVERSE_EVENT) AS ADVERSE_EVENT
+		  , FN_GET_COMMONCODE('SDB044', SERIUSFMNM_AT, 'KOR')        AS SERIUSFMNM_AT
+		  , FN_GET_COMMONCODE('SDB025', REPORTR_RELATION_ONE, 'KOR')        AS REPORTR_RELATION_ONE
+		  , FN_GET_COMMONCODE('SDB026', REPORTR_RELATION_TWO, 'KOR')        AS REPORTR_RELATION_TWO
+		  , FN_GET_COMMONCODE('SDB065', DRFSTF_RESPNS_SE, 'KOR')        AS DRFSTF_RESPNS_SE
+		  , FN_GET_COMMONCODE('SDB030', EXPECT_POSBL_SE, 'KOR')        AS EXPECT_POSBL_SE
+		   , CASE USE_AT
+		        WHEN 'Y'
+		        THEN 'Actual'
+		        ELSE 'Deleted'
+		    END USE_AT 
+		FROM SDB_AM_AE_INFO
+	    WHERE 1=1
+		 <isNotEmpty property = "HRMFLNS_CASE_CODE" prepend="AND">
+		 	<![CDATA[
+		 		HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		 	<![CDATA[
+		 		PRDUCT_CODE = #PRDUCT_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		 	<![CDATA[
+		 		FOLLOW_NO = #FOLLOW_NO#
+		 	]]>
+		 </isNotEmpty>
+		 ORDER BY USE_AT ASC, FRST_CREDE ASC
+	</select>
+	
+	<select id="SDBC02DAO.selectAeInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT 
+			AE_NO
+			,HRMFLNS_CASE_CODE
+			,PRDUCT_CODE
+			,FOLLOW_NO			
+			,ADVERSE_EVENT
+			,FN_GET_MULLANG_SELECT(ADVERSE_EVENT,'K') AS ADVERSE_EVENT_KOR
+			,FN_GET_MULLANG_SELECT(ADVERSE_EVENT,'E') AS ADVERSE_EVENT_ENG
+			,BEGIN_DTS
+			,BEGIN_DT_TIME
+			,RESULT_KND
+			,END_DTS
+			,END_DT_TIME 
+			,ABOVE_RESPNS_PED
+			,DOUBT_DRFSTF_MDCTN_INTRVL_DAIL
+			,DOUBT_DRFSTF_MDCTN_INTRVL_TIME
+			,DOUBT_DRFSTF_MDCTN_INTRVL_MNT
+			,LAST_MDCTN_RESPNS_INTRVL_DAIL
+			,LAST_MDCTN_RESPNS_INTRVL_TIME
+			,LAST_MDCTN_RESPNS_INTRVL_MNT
+			,SERIUSFMNM_AT
+			,SERIUSFMNM_DETAIL_CN
+			,SERIUSDO_SE
+			,STEP_SE
+			,DRFSTF_RESPNS_SE
+			,EXPECT_POSBL_SE
+			,WHOART_AT
+			,WHOART_VER
+			,WHOART_ARRN_CODE
+			,MEDDRA_AT
+			,MEDDRA_VER
+			,MEDDRA_LTT_CODE
+			,DIFR_INFO
+			,REPORTR_RELATION_ONE
+			,REPORTR_RELATION_TWO
+			,SPON_RELATION_ONE
+			,SPON_RELATION_TWO
+			,MAIN_AE_AT
+			,HIGHLT_AT
+			,DEATHDES
+			,DEATH_KCD_VER
+			,KCD_DEATH_CODE
+			,MEMO
+			,FN_GET_MULLANG_SELECT(MEMO,'K') AS MEMO_KOR
+			,FN_GET_MULLANG_SELECT(MEMO,'E') AS MEMO_ENG
+			,EMRPS_KCD_VER
+			,KCD_EMRPS_CODE
+			,EMRPS_RESN
+			,FN_GET_MULLANG_SELECT(EMRPS_RESN,'K') AS EMRPS_RESN_KOR
+			,FN_GET_MULLANG_SELECT(EMRPS_RESN,'E') AS EMRPS_RESN_ENG
+			,ETC
+			,FN_GET_MULLANG_SELECT(ETC,'K') AS ETC_KOR
+			,FN_GET_MULLANG_SELECT(ETC,'E') AS ETC_ENG
+			,EMRPS_AT
+			,AE_DETAIL_CN
+			,FN_GET_MULLANG_SELECT(AE_DETAIL_CN,'K') AS AE_DETAIL_CN_KOR
+			,FN_GET_MULLANG_SELECT(AE_DETAIL_CN,'E') AS AE_DETAIL_CN_ENG
+		FROM SDB_AM_AE_INFO
+		WHERE 1 =1 
+	<isNotEmpty property="AE_NO" prepend="AND">
+	 	<![CDATA[
+	 		AE_NO = #AE_NO#
+	 	]]>
+	 </isNotEmpty>
+	</select>
+	
+	<insert id="SDBC02DAO.insertAe" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		INTO SDB_AM_AE_INFO
+		    (
+		        AE_NO
+		      , HRMFLNS_CASE_CODE
+		      , PRDUCT_CODE
+		      , FOLLOW_NO		     
+		      , ADVERSE_EVENT
+		      , BEGIN_DTS
+		      , BEGIN_DT_TIME
+		      , RESULT_KND
+		      , END_DTS
+		      , END_DT_TIME
+		      , ABOVE_RESPNS_PED
+		      , DOUBT_DRFSTF_MDCTN_INTRVL_DAIL
+			  , DOUBT_DRFSTF_MDCTN_INTRVL_TIME
+			  , DOUBT_DRFSTF_MDCTN_INTRVL_MNT
+		      , LAST_MDCTN_RESPNS_INTRVL_DAIL
+			  , LAST_MDCTN_RESPNS_INTRVL_TIME
+			  , LAST_MDCTN_RESPNS_INTRVL_MNT
+		      , SERIUSFMNM_AT
+		      , SERIUSFMNM_DETAIL_CN
+		      , SERIUSDO_SE
+		      , STEP_SE
+		      , DRFSTF_RESPNS_SE
+		      , EXPECT_POSBL_SE
+		      , WHOART_AT
+		      , WHOART_VER
+		      , WHOART_ARRN_CODE
+		      , MEDDRA_AT
+		      , MEDDRA_VER
+		      , MEDDRA_LTT_CODE
+		      , DIFR_INFO      
+		      , REPORTR_RELATION_ONE
+		      , REPORTR_RELATION_TWO
+		      , SPON_RELATION_ONE
+		      , SPON_RELATION_TWO
+		      , MAIN_AE_AT
+		      , HIGHLT_AT
+		      , DEATHDES
+		      , DEATH_KCD_VER
+		      , KCD_DEATH_CODE
+		      , MEMO
+		      , EMRPS_KCD_VER
+		      , KCD_EMRPS_CODE
+		      , EMRPS_RESN
+		      , ETC
+		      , EMRPS_AT
+		      , AE_DETAIL_CN
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (
+		        #AE_NO#
+		      , #HRMFLNS_CASE_CODE#
+		      , #PRDUCT_CODE#
+		      , #FOLLOW_NO#		      
+		      , #ADVERSE_EVENT#
+		      , #BEGIN_DTS#
+		      , #BEGIN_DT_TIME#
+		      , #RESULT_KND#
+		      , #END_DTS#
+		      , #END_DT_TIME#
+		      , #ABOVE_RESPNS_PED#
+		      , #DOUBT_DRFSTF_MDCTN_INTRVL_DAIL#
+		      , #DOUBT_DRFSTF_MDCTN_INTRVL_TIME#
+		      , #DOUBT_DRFSTF_MDCTN_INTRVL_MNT#	      
+		      , #LAST_MDCTN_RESPNS_INTRVL_DAIL#
+		      , #LAST_MDCTN_RESPNS_INTRVL_TIME#
+		      , #LAST_MDCTN_RESPNS_INTRVL_MNT#		    
+		      , #SERIUSFMNM_AT#
+		      , #SERIUSFMNM_DETAIL_CN#
+		      , #SERIUSDO_SE#
+		      , #STEP_SE#
+		      , #DRFSTF_RESPNS_SE#
+		      , #EXPECT_POSBL_SE#
+		      , #WHOART_AT#
+		      , #WHOART_VER#
+		      , #WHOART_ARRN_CODE#
+		      , #MEDDRA_AT#
+		      , #MEDDRA_VER#
+		      , #MEDDRA_LTT_CODE#
+		      , #DIFR_INFO#     
+		      , #REPORTR_RELATION_ONE#
+		      , #REPORTR_RELATION_TWO#
+		      , #SPON_RELATION_ONE#
+		      , #SPON_RELATION_TWO#
+		      , #MAIN_AE_AT#
+		      , #HIGHLT_AT#
+		      , #DEATHDES#
+		      , #DEATH_KCD_VER#
+		      , #KCD_DEATH_CODE#
+		      , #MEMO#
+		      , #EMRPS_KCD_VER#
+		      , #KCD_EMRPS_CODE#
+		      , #EMRPS_RESN#
+		      , #ETC#
+		      , #EMRPS_AT#
+		      , #AE_DETAIL_CN#
+		      ,'Y'
+		      ,sysdate
+		      ,#UPDATE_ID#
+		      ,sysdate
+		      ,#UPDATE_ID# 
+		    )
+		
+		]]>
+	
+	</insert>
+	
+	<select id="SDBC02DAO.selectDemoAeInfo" parameterClass="hashMap" resultClass="hashMap">
+		 <![CDATA[ 
+		SELECT TO_CHAR(FRT_RCEPT_DTE, 'YYYYMMDDHH24MISS') FRT_RCEPT_DTE
+				,LAST_DTES
+				,MFDS_REPORT_AT			
+				,TO_CHAR(MFDS_REPORT_DTE, 'YYYYMMDDHH24MISS') MFDS_REPORT_DTE
+				,KIDS_REPORT_AT			
+				,TO_CHAR(KIDS_REPORT_DTE, 'YYYYMMDDHH24MISS') KIDS_REPORT_DTE 
+				,IRB_REPORT_AT			
+				,TO_CHAR(IRB_REPORT_DATE, 'YYYYMMDDHH24MISS') IRB_REPORT_DATE 
+				,DIFR_INSTT_REPORT_AT			
+				,TO_CHAR(DIFR_INSTT_REPORT_DATE, 'YYYYMMDDHH24MISS') DIFR_INSTT_REPORT_DATE 
+				,MANUFACTURER_AT
+				,MANUFACTURER_REPORT_PD			
+				,TO_CHAR(MANUFACTURER_REPORT_DATE, 'YYYYMMDDHH24MISS') MANUFACTURER_REPORT_DATE 
+				,LEGACY_HEALTH_ENNC	    
+		  FROM SDB_AM_HRMFLNS_CASE_INFO 
+  		 WHERE 1=1
+  		 ]]>
+  		 <isNotEmpty property="HRMFLNS_CASE_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   HRMFLNS_CASE_CODE=#HRMFLNS_CASE_CODE#
+		     ]]>
+		 </isNotEmpty>
+  		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		     <![CDATA[ 
+		     	   PRDUCT_CODE=#PRDUCT_CODE#
+		     ]]>
+		 </isNotEmpty>		
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		     <![CDATA[ 
+		     	   FOLLOW_NO=#FOLLOW_NO#
+		     ]]>
+		 </isNotEmpty>		
+	</select>
+	
+	<update id="SDBC02DAO.updateDemoAe" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_HRMFLNS_CASE_INFO
+		   SET FRT_RCEPT_DTE = #FRT_RCEPT_DTE# 
+		]]>		
+		<isNotEmpty property="LAST_DTES" prepend=",">
+	    <![CDATA[ 
+	    	   LAST_DTES = #LAST_DTES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MFDS_REPORT_AT" prepend=",">
+	    <![CDATA[ 
+	    	   MFDS_REPORT_AT = #MFDS_REPORT_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MFDS_REPORT_DTE" prepend=",">
+	    <![CDATA[ 
+	    	   MFDS_REPORT_DTE = #MFDS_REPORT_DTE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="KIDS_REPORT_AT" prepend=",">
+	    <![CDATA[ 
+	    	   KIDS_REPORT_AT = #KIDS_REPORT_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="KIDS_REPORT_DTE" prepend=",">
+	    <![CDATA[ 
+	    	   KIDS_REPORT_DTE = #KIDS_REPORT_DTE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="IRB_REPORT_AT" prepend=",">
+	    <![CDATA[ 
+	    	   IRB_REPORT_AT = #IRB_REPORT_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="IRB_REPORT_DATE" prepend=",">
+	    <![CDATA[ 
+	    	   IRB_REPORT_DATE = #IRB_REPORT_DATE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DIFR_INSTT_REPORT_AT" prepend=",">
+	    <![CDATA[ 
+	    	   DIFR_INSTT_REPORT_AT = #DIFR_INSTT_REPORT_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DIFR_INSTT_REPORT_DATE" prepend=",">
+	    <![CDATA[ 
+	    	   DIFR_INSTT_REPORT_DATE = #DIFR_INSTT_REPORT_DATE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MANUFACTURER_AT" prepend=",">
+	    <![CDATA[ 
+	    	   MANUFACTURER_AT = #MANUFACTURER_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MANUFACTURER_REPORT_PD" prepend=",">
+	    <![CDATA[ 
+	    	   MANUFACTURER_REPORT_PD = #MANUFACTURER_REPORT_PD# 
+	    ]]>
+	    </isNotEmpty>
+	     <isNotEmpty property="MANUFACTURER_REPORT_DATE" prepend=",">
+	    <![CDATA[ 
+	    	   MANUFACTURER_REPORT_DATE = #MANUFACTURER_REPORT_DATE# 
+	    ]]>
+	    </isNotEmpty>
+	     <isNotEmpty property="LEGACY_HEALTH_ENNC" prepend=",">
+	    <![CDATA[ 
+	    	   LEGACY_HEALTH_ENNC = #LEGACY_HEALTH_ENNC# 
+	    ]]>
+	    </isNotEmpty>
+	    <![CDATA[
+	   	 WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+	   	   AND FOLLOW_NO = #FOLLOW_NO#
+	   	   AND PRDUCT_CODE = #PRDUCT_CODE#
+	   	]]>
+	</update>
+	
+	<update id="SDBC02DAO.updateAe" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE SDB_AM_AE_INFO
+		   SET ADVERSE_EVENT = #ADVERSE_EVENT# 
+		]]>		
+		<isNotEmpty property="BEGIN_DTS" prepend=",">
+	    <![CDATA[ 
+	    	   BEGIN_DTS = #BEGIN_DTS# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="BEGIN_DT_TIME" prepend=",">
+	    <![CDATA[ 
+	    	   BEGIN_DT_TIME = #BEGIN_DT_TIME# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="RESULT_KND" prepend=",">
+	    <![CDATA[ 
+	    	   RESULT_KND = #RESULT_KND# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="END_DTS" prepend=",">
+	    <![CDATA[ 
+	    	   END_DTS = #END_DTS# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="END_DT_TIME" prepend=",">
+	    <![CDATA[ 
+	    	   END_DT_TIME = #END_DT_TIME# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ABOVE_RESPNS_PED" prepend=",">
+	    <![CDATA[ 
+	    	   ABOVE_RESPNS_PED = #ABOVE_RESPNS_PED# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DOUBT_DRFSTF_MDCTN_INTRVL_DAIL" prepend=",">
+	    <![CDATA[ 
+	    	   DOUBT_DRFSTF_MDCTN_INTRVL_DAIL = #DOUBT_DRFSTF_MDCTN_INTRVL_DAIL# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DOUBT_DRFSTF_MDCTN_INTRVL_TIME" prepend=",">
+	    <![CDATA[ 
+	    	   DOUBT_DRFSTF_MDCTN_INTRVL_TIME = #DOUBT_DRFSTF_MDCTN_INTRVL_TIME# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DOUBT_DRFSTF_MDCTN_INTRVL_MNT" prepend=",">
+	    <![CDATA[ 
+	    	   DOUBT_DRFSTF_MDCTN_INTRVL_MNT = #DOUBT_DRFSTF_MDCTN_INTRVL_MNT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="LAST_MDCTN_RESPNS_INTRVL_DAIL" prepend=",">
+	    <![CDATA[ 
+	    	   LAST_MDCTN_RESPNS_INTRVL_DAIL = #LAST_MDCTN_RESPNS_INTRVL_DAIL# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="LAST_MDCTN_RESPNS_INTRVL_TIME" prepend=",">
+	    <![CDATA[ 
+	    	   LAST_MDCTN_RESPNS_INTRVL_TIME = #LAST_MDCTN_RESPNS_INTRVL_TIME# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="LAST_MDCTN_RESPNS_INTRVL_MNT" prepend=",">
+	    <![CDATA[ 
+	    	   LAST_MDCTN_RESPNS_INTRVL_MNT = #LAST_MDCTN_RESPNS_INTRVL_MNT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SERIUSFMNM_AT" prepend=",">
+	    <![CDATA[ 
+	    	   SERIUSFMNM_AT = #SERIUSFMNM_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SERIUSFMNM_DETAIL_CN" prepend=",">
+	    <![CDATA[ 
+	    	   SERIUSFMNM_DETAIL_CN = #SERIUSFMNM_DETAIL_CN# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SERIUSDO_SE" prepend=",">
+	    <![CDATA[ 
+	    	   SERIUSDO_SE = #SERIUSDO_SE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="STEP_SE" prepend=",">
+	    <![CDATA[ 
+	    	   STEP_SE = #STEP_SE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DRFSTF_RESPNS_SE" prepend=",">
+	    <![CDATA[ 
+	    	   DRFSTF_RESPNS_SE = #DRFSTF_RESPNS_SE# 
+	    ]]>
+	    </isNotEmpty>
+	     <isNotEmpty property="EXPECT_POSBL_SE" prepend=",">
+	    <![CDATA[ 
+	    	   EXPECT_POSBL_SE = #EXPECT_POSBL_SE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="WHOART_AT" prepend=",">
+	    <![CDATA[ 
+	    	   WHOART_AT = #WHOART_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="WHOART_VER" prepend=",">
+	    <![CDATA[ 
+	    	   WHOART_VER = #WHOART_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="WHOART_ARRN_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   WHOART_ARRN_CODE = #WHOART_ARRN_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_AT" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_AT = #MEDDRA_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_VER" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_VER = #MEDDRA_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEDDRA_LTT_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   MEDDRA_LTT_CODE = #MEDDRA_LTT_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DIFR_INFO" prepend=",">
+	    <![CDATA[ 
+	    	   DIFR_INFO = #DIFR_INFO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR_RELATION_ONE" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_RELATION_ONE = #REPORTR_RELATION_ONE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="REPORTR_RELATION_TWO" prepend=",">
+	    <![CDATA[ 
+	    	   REPORTR_RELATION_TWO = #REPORTR_RELATION_TWO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SPON_RELATION_ONE" prepend=",">
+	    <![CDATA[ 
+	    	   SPON_RELATION_ONE = #SPON_RELATION_ONE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="SPON_RELATION_TWO" prepend=",">
+	    <![CDATA[ 
+	    	   SPON_RELATION_TWO = #SPON_RELATION_TWO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MAIN_AE_AT" prepend=",">
+	    <![CDATA[ 
+	    	   MAIN_AE_AT = #MAIN_AE_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="HIGHLT_AT" prepend=",">
+	    <![CDATA[ 
+	    	   HIGHLT_AT = #HIGHLT_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DEATHDES" prepend=",">
+	    <![CDATA[ 
+	    	   DEATHDES = #DEATHDES# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="DEATH_KCD_VER" prepend=",">
+	    <![CDATA[ 
+	    	   DEATH_KCD_VER = #DEATH_KCD_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="KCD_DEATH_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   KCD_DEATH_CODE = #KCD_DEATH_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="MEMO" prepend=",">
+	    <![CDATA[ 
+	    	   MEMO = #MEMO# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="EMRPS_KCD_VER" prepend=",">
+	    <![CDATA[ 
+	    	   EMRPS_KCD_VER = #EMRPS_KCD_VER# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="KCD_EMRPS_CODE" prepend=",">
+	    <![CDATA[ 
+	    	   KCD_EMRPS_CODE = #KCD_EMRPS_CODE# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="EMRPS_RESN" prepend=",">
+	    <![CDATA[ 
+	    	   EMRPS_RESN = #EMRPS_RESN# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="ETC" prepend=",">
+	    <![CDATA[ 
+	    	   ETC = #ETC# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="EMRPS_AT" prepend=",">
+	    <![CDATA[ 
+	    	   EMRPS_AT = #EMRPS_AT# 
+	    ]]>
+	    </isNotEmpty>
+	    <isNotEmpty property="AE_DETAIL_CN" prepend=",">
+	    <![CDATA[ 
+	    	   AE_DETAIL_CN = #AE_DETAIL_CN# 
+	    ]]>
+	    </isNotEmpty>
+	    <![CDATA[
+	   	 WHERE AE_NO = #AE_NO#	
+	   	]]>
+	</update>
+	
+	<update id="SDBC02DAO.deleteAe" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE SDB_AM_AE_INFO
+		   SET USE_AT='N'
+		 WHERE AE_NO = #AE_NO#
+ 		]]>
+	
+	</update>
+	
+	<select id="SDBC02DAO.selectMulKorEng" parameterClass="hashMap" resultMap="clobMap">
+	
+		SELECT
+	          KOREAN
+	         ,ENG
+	      FROM SDB_IM_MULLANG_INFO
+		 WHERE MULLANG_CODE = #MULLANG_CODE#
+	
+	</select>
+	
+	<update id="SDBC02DAO.updateTransfer" parameterClass="hashMap">
+		<![CDATA[	
+			UPDATE SDB_AM_HRMFLNS_CASE_INFO
+			   SET LAST_UPDDE = SYSDATE
+			     , PRTCL_NO=#PRTCL_NO#
+			     , SOURC_NO=#SOURC_NO#
+			     , LTRTRE_NO=#LTRTRE_NO#
+			     , ETC_INFO_NO=#ETC_INFO_NO#
+		    WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+			  AND PRDUCT_CODE = #PRDUCT_CODE#
+			  AND FOLLOW_NO = #FOLLOW_NO#
+		]]>
+	</update>
+	
+	<insert id="SDBC02DAO.insertFollowUp" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO 
+			SDB_AM_HRMFLNS_CASE_INFO (
+				HRMFLNS_CASE_CODE
+				,FOLLOW_NO
+				,PRDUCT_CODE
+				,PRTCL_NO
+				,SAFE_REPRT_NO
+				,LTRTRE_NO
+				,ETC_INFO_NO
+				,SOURC_NO
+				,INSTT_NO
+				,TESTEE_NO
+				,CLIENT_MANAGE_NO
+				,ETC_MANAGE_NO
+				,INITIAL_FLAG
+				,SEXDSTN
+				,PREGNAN_AT
+				,PREGNAN_PD_SE
+				,PREGNAN_PD
+				,LAST_PYSICLG_DTES
+				,HEIGHT
+				,BDWGH
+				,AGRE_DTES
+				,REGIST_DTES
+				,IN_OUT_SE
+				,IN_OUT_ETC_MEMO
+				,LIFYEAMD
+				,AGE
+				,AGE_GRUP
+				,DIFR_AGE_INFO_CODE
+				,DIFR_AGE_INFO
+				,PREGNAN_WEEKCO
+				,FILE_ID
+				,MDLC_RCORD_CMMN_MEMO
+				,TEST_RCORD_CMMN_MEMO
+				,DEATH_AT
+				,DEATH_DTES
+				,MAFU_NO
+				,KIDS_NO
+				,DMSTC_OUTNATN_SE
+				,FRT_RCEPT_DTE
+				,LAST_DTES
+				,MFDS_REPORT_PD
+				,MFDS_REPORT_DTE
+				,KIDS_REPORT_PD
+				,KIDS_REPORT_DTE
+				,IRB_REPORT_PD
+				,IRB_REPORT_DATE
+				,DIFR_INSTT_REPORT_PD
+				,DIFR_INSTT_REPORT_DATE
+				,MANUFACTURER_AT
+				,MANUFACTURER_REPORT_PD
+				,MANUFACTURER_REPORT_PD_SE
+				,MANUFACTURER_REPORT_DATE
+				,LEGACY_HEALTH_ENNC
+				,MFDS_REPORT_AT
+				,KIDS_REPORT_AT
+				,IRB_REPORT_AT
+				,DIFR_INSTT_REPORT_AT
+				,USE_AT
+				,FRST_CREDE
+				,REGIST_ID
+				,LAST_UPDDE
+				,UPDATE_ID
+				)
+		SELECT HRMFLNS_CASE_CODE
+				,#CHANGE_FOLLOW_NO# as FOLLOW_NO
+				,PRDUCT_CODE
+				,PRTCL_NO
+				,SAFE_REPRT_NO
+				,LTRTRE_NO
+				,ETC_INFO_NO
+				,SOURC_NO
+				,INSTT_NO
+				,TESTEE_NO
+				,CLIENT_MANAGE_NO
+				,ETC_MANAGE_NO
+				,INITIAL_FLAG
+				,SEXDSTN
+				,PREGNAN_AT
+				,PREGNAN_PD_SE
+				,PREGNAN_PD
+				,LAST_PYSICLG_DTES
+				,HEIGHT
+				,BDWGH
+				,AGRE_DTES
+				,REGIST_DTES
+				,IN_OUT_SE
+				,IN_OUT_ETC_MEMO
+				,LIFYEAMD
+				,AGE
+				,AGE_GRUP
+				,DIFR_AGE_INFO_CODE
+				,DIFR_AGE_INFO
+				,PREGNAN_WEEKCO
+				,FILE_ID
+				,MDLC_RCORD_CMMN_MEMO
+				,TEST_RCORD_CMMN_MEMO
+				,DEATH_AT
+				,DEATH_DTES
+				,#MAFU_NO#
+				,KIDS_NO
+				,DMSTC_OUTNATN_SE
+				,FRT_RCEPT_DTE
+				,LAST_DTES
+				,MFDS_REPORT_PD
+				,MFDS_REPORT_DTE
+				,KIDS_REPORT_PD
+				,KIDS_REPORT_DTE
+				,IRB_REPORT_PD
+				,IRB_REPORT_DATE
+				,DIFR_INSTT_REPORT_PD
+				,DIFR_INSTT_REPORT_DATE
+				,MANUFACTURER_AT
+				,MANUFACTURER_REPORT_PD
+				,MANUFACTURER_REPORT_PD_SE
+				,MANUFACTURER_REPORT_DATE
+				,LEGACY_HEALTH_ENNC
+				,MFDS_REPORT_AT
+				,KIDS_REPORT_AT
+				,IRB_REPORT_AT
+				,DIFR_INSTT_REPORT_AT
+				,'Y' AS USE_AT
+			    ,sysdate AS FRST_CREDE
+			    ,#UPDATE_ID# AS REGIST_ID
+			    ,sysdate AS LAST_UPDDE
+			    ,#UPDATE_ID# AS UPDATE_ID				
+			  FROM SDB_AM_HRMFLNS_CASE_INFO
+			 WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+			  AND PRDUCT_CODE = #PRDUCT_CODE#
+			  AND FOLLOW_NO = #FOLLOW_NO#
+		
+		]]>
+	</insert>
+	
+	<insert id="SDBC02DAO.insertFollowUp_Medical_H" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+			INTO SDB_AM_MDLC_RCORD_INFO
+			    (
+			        MDLC_RCORD_NO
+			      , HRMFLNS_CASE_CODE
+			      , PRDUCT_CODE
+			      , FOLLOW_NO
+			      , MDLC_RCORD_NM
+			      , KCD_USE_AT
+			      , KCD_VER
+			      , KCD_CODE
+			      , MEDDRA_USE_AT
+			      , MEDDRA_VER
+			      , MEDDRA_LTT_CODE
+			      , BEGIN_DTES
+			      , CNTNC_AT
+			      , END_DTES
+			      , RCORD_MEMO
+			      , USE_AT
+			      , FRST_CREDE
+			      , REGIST_ID
+			      , LAST_UPDDE
+			      , UPDATE_ID
+			    )
+			SELECT #CHANGE_MDLC_RCORD_NO# AS MDLC_RCORD_NO
+			  , HRMFLNS_CASE_CODE
+			  , PRDUCT_CODE
+			  , #CHANGE_FOLLOW_NO# AS FOLLOW_NO
+			  , MDLC_RCORD_NM
+			  , KCD_USE_AT
+			  , KCD_VER
+			  , KCD_CODE
+			  , MEDDRA_USE_AT
+			  , MEDDRA_VER
+			  , MEDDRA_LTT_CODE
+			  , BEGIN_DTES
+			  , CNTNC_AT
+			  , END_DTES
+			  , RCORD_MEMO
+			  ,'Y' AS USE_AT
+		      ,sysdate AS FRST_CREDE
+		      ,#UPDATE_ID# AS REGIST_ID
+		      ,sysdate AS LAST_UPDDE
+		      ,#UPDATE_ID# AS UPDATE_ID
+			FROM SDB_AM_MDLC_RCORD_INFO
+		   WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+			 AND PRDUCT_CODE = #PRDUCT_CODE#
+			 AND FOLLOW_NO = #FOLLOW_NO#
+			 AND MDLC_RCORD_NO = #MDLC_RCORD_NO#
+		]]>
+	</insert>
+	
+	<insert id="SDBC02DAO.insertFollowUp_Lab" parameterClass="hashMap">
+		INSERT INTO SDB_AM_TEST_INFO(
+				TEST_NO
+			  , HRMFLNS_CASE_CODE
+			  , PRDUCT_CODE
+			  , FOLLOW_NO
+			  , TEST_DTES
+			  , TEST
+			  , UNIT
+			  , LOW_SCOPE
+			  , HIGH_SCOPE
+			  , RESULT
+			  , MEMO
+			  , USE_AT
+			  , FRST_CREDE
+			  , REGIST_ID
+			  , LAST_UPDDE
+			  , UPDATE_ID
+			)			
+			SELECT SDB_LAB_SEQ.NEXTVAL AS TEST_NO
+			  , HRMFLNS_CASE_CODE
+			  , PRDUCT_CODE
+			  , #CHANGE_FOLLOW_NO# AS FOLLOW_NO
+			  , TEST_DTES
+			  , TEST
+			  , UNIT
+			  , LOW_SCOPE
+			  , HIGH_SCOPE
+			  , RESULT
+			  , MEMO
+			  , 'Y' AS USE_AT
+		      , SYSDATE AS FRST_CREDE
+		      , #UPDATE_ID# AS REGIST_ID
+		      , SYSDATE AS LAST_UPDDE
+		      , #UPDATE_ID# AS UPDATE_ID
+			FROM SDB_AM_TEST_INFO
+		   WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+			 AND PRDUCT_CODE = #PRDUCT_CODE#
+			 AND FOLLOW_NO = #FOLLOW_NO#
+	</insert>
+	<insert id="SDBC02DAO.insertFollowUp_Ae" parameterClass="hashMap">
+	<![CDATA[
+		INSERT
+		  INTO SDB_AM_AE_INFO
+		    (
+		        AE_NO
+		      , HRMFLNS_CASE_CODE
+		      , PRDUCT_CODE
+		      , FOLLOW_NO
+		      , ADVERSE_EVENT
+		      , BEGIN_DTS
+		      , RESULT_KND
+		      , END_DTS
+		      , ABOVE_RESPNS_PED
+		      , DOUBT_DRFSTF_MDCTN_INTRVL_DAIL
+		      , LAST_MDCTN_RESPNS_INTRVL_DAIL
+		      , SERIUSFMNM_AT
+		      , SERIUSFMNM_DETAIL_CN
+		      , SERIUSDO_SE
+		      , STEP_SE
+		      , DRFSTF_RESPNS_SE
+		      , EXPECT_POSBL_SE
+		      , WHOART_AT
+		      , WHOART_VER
+		      , WHOART_ARRN_CODE
+		      , MEDDRA_AT
+		      , MEDDRA_VER
+		      , MEDDRA_LTT_CODE
+		      , DIFR_INFO
+		      , REPORTR_RELATION_ONE
+		      , REPORTR_RELATION_TWO
+		      , SPON_RELATION_ONE
+		      , SPON_RELATION_TWO
+		      , MAIN_AE_AT
+		      , HIGHLT_AT
+		      , DEATHDES
+		      , DEATH_KCD_VER
+		      , KCD_DEATH_CODE
+		      , MEMO
+		      , EMRPS_KCD_VER
+		      , KCD_EMRPS_CODE
+		      , EMRPS_RESN
+		      , ETC
+		      , EMRPS_AT
+		      , DOUBT_DRFSTF_MDCTN_INTRVL_TIME
+		      , DOUBT_DRFSTF_MDCTN_INTRVL_MNT
+		      , LAST_MDCTN_RESPNS_INTRVL_TIME
+		      , LAST_MDCTN_RESPNS_INTRVL_MNT
+		      , BEGIN_DT_TIME
+		      , END_DT_TIME
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		SELECT #CHANGE_AE_NO# AS AE_NO
+			  , HRMFLNS_CASE_CODE
+			  , PRDUCT_CODE
+			  , #CHANGE_FOLLOW_NO# AS FOLLOW_NO
+			  , ADVERSE_EVENT
+			  , BEGIN_DTS
+			  , RESULT_KND
+			  , END_DTS
+			  , ABOVE_RESPNS_PED
+			  , DOUBT_DRFSTF_MDCTN_INTRVL_DAIL
+			  , LAST_MDCTN_RESPNS_INTRVL_DAIL
+			  , SERIUSFMNM_AT
+			  , SERIUSFMNM_DETAIL_CN
+			  , SERIUSDO_SE
+			  , STEP_SE
+			  , DRFSTF_RESPNS_SE
+			  , EXPECT_POSBL_SE
+			  , WHOART_AT
+			  , WHOART_VER
+			  , WHOART_ARRN_CODE
+			  , MEDDRA_AT
+			  , MEDDRA_VER
+			  , MEDDRA_LTT_CODE
+			  , DIFR_INFO
+			  , REPORTR_RELATION_ONE
+			  , REPORTR_RELATION_TWO
+			  , SPON_RELATION_ONE
+			  , SPON_RELATION_TWO
+			  , MAIN_AE_AT
+			  , HIGHLT_AT
+			  , DEATHDES
+			  , DEATH_KCD_VER
+			  , KCD_DEATH_CODE
+			  , MEMO
+			  , EMRPS_KCD_VER
+			  , KCD_EMRPS_CODE
+			  , EMRPS_RESN
+			  , ETC
+			  , EMRPS_AT
+			  , DOUBT_DRFSTF_MDCTN_INTRVL_TIME
+			  , DOUBT_DRFSTF_MDCTN_INTRVL_MNT
+			  , LAST_MDCTN_RESPNS_INTRVL_TIME
+			  , LAST_MDCTN_RESPNS_INTRVL_MNT
+			  , BEGIN_DT_TIME
+			  , END_DT_TIME
+			  , 'Y' AS USE_AT
+		      , SYSDATE AS FRST_CREDE
+		      , #UPDATE_ID# AS REGIST_ID
+		      , SYSDATE AS LAST_UPDDE
+		      , #UPDATE_ID# AS UPDATE_ID
+		FROM SDB_AM_AE_INFO	
+		 WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+			 AND PRDUCT_CODE = #PRDUCT_CODE#
+			 AND FOLLOW_NO = #FOLLOW_NO#
+			 AND AE_NO = #AE_NO#
+		]]> 
+	</insert>
+	
+	<select id="SDBC02DAO.selectFollowUpAe" parameterClass="hashMap" resultClass="hashMap">
+		SELECT AE_NO
+			 , HRMFLNS_CASE_CODE
+			 , PRDUCT_CODE
+			 , FOLLOW_NO 
+		 FROM SDB_AM_AE_INFO
+		WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		  AND PRDUCT_CODE = #PRDUCT_CODE#
+		  AND FOLLOW_NO = #FOLLOW_NO#
+	</select>
+	
+	<select id="SDBC02DAO.selectAeRelation" parameterClass="hashMap" resultClass ="hashMap">
+		SELECT AE_NO
+		     , HRMFLNS_CASE_CODE
+			 , PRDUCT_CODE
+			 , FOLLOW_NO 
+		  FROM SDB_AE_RELATE
+		  WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		  AND PRDUCT_CODE = #PRDUCT_CODE#
+		  AND FOLLOW_NO = #FOLLOW_NO#
+		  AND AE_NO = #AE_NO#
+	</select>
+	
+	<select id="SDBC02DAO.selectDrug" parameterClass="hashMap" resultClass="hashMap">
+		SELECT MEDCIN_INFO_NO
+		  , HRMFLNS_CASE_CODE
+		  , PRDUCT_CODE
+		  , FOLLOW_NO
+		FROM SDB_AM_MEDCIN_INFO
+	   WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+	     AND PRDUCT_CODE = #PRDUCT_CODE#
+		 AND FOLLOW_NO = #FOLLOW_NO#
+	</select>
+	
+	<insert id="SDBC02DAO.insertAeRelation" parameterClass="hashMap">
+		<![CDATA[
+			INSERT
+			INTO SDB_AM_RELATE
+			    (
+			        AE_NO
+			      , HRMFLNS_CASE_CODE
+			      , PRDUCT_CODE
+			      , FOLLOW_NO
+			      , MEDCIN_INFO_NO
+			      , DRFSTFROLE_SE
+			      , MEDCIN_RECOED_NM
+			      , REPORTR_RELATION_ONE
+			      , REPORTR_RELATION_TWO
+			      , SPON_RELATION_ONE
+			      , SPON_RELATION_TWO
+			      , USE_AT
+			      , FRST_CREDE
+			      , REGIST_ID
+			      , LAST_UPDDE
+			      , UPDATE_ID
+			    )
+			SELECT #CHANGE_AE_NO# AS AE_NO
+				  , HRMFLNS_CASE_CODE
+				  , PRDUCT_CODE
+				  , #CHANGE_FOLLOW_NO# AS FOLLOW_NO
+				  , #CHANGE_MEDCIN_INFO_NO# AS MEDCIN_INFO_NO
+				  , DRFSTFROLE_SE
+				  , MEDCIN_RECOED_NM
+				  , REPORTR_RELATION_ONE
+				  , REPORTR_RELATION_TWO
+				  , SPON_RELATION_ONE
+				  , SPON_RELATION_TWO
+				  , 'Y' AS USE_AT
+			      , SYSDATE AS FRST_CREDE
+			      , #UPDATE_ID# AS REGIST_ID
+			      , SYSDATE AS LAST_UPDDE
+			      , #UPDATE_ID# AS UPDATE_ID
+		    FROM SDB_AM_RELATE
+		   WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+			 AND PRDUCT_CODE = #PRDUCT_CODE#
+			 AND FOLLOW_NO = #FOLLOW_NO#
+			 AND AE_NO = #AE_NO#
+			 AND MEDCIN_INFO_NO = #MEDCIN_INFO_NO#
+		   
+		]]>
+	</insert>
+	
+	<insert id="SDBC02DAO.insertFollowUp_Drug" parameterClass="hashMap">
+	INSERT
+	INTO SDB_AM_MEDCIN_INFO
+	    (
+	        MEDCIN_INFO_NO
+	      , HRMFLNS_CASE_CODE
+	      , PRDUCT_CODE
+	      , FOLLOW_NO
+	      , DRFSTFROLE_SE
+	      , MEDCIN_RECOED_NM
+	      , MEDCIN_NM
+	      , MFDS_BRAND_CODE
+	      , MFDS_GNRL_CODE
+	      , UNCONFM_MEDCINNM
+	      , BEGIN_DTES
+	      , CNTNC_AT
+	      , END_DTES
+	      , MDCTN_PD
+	      , RSTRCT_FORM
+	      , COURS
+	      , BATCH_LT_NO
+	      , FDQNT
+	      , UNIT
+	      , NCOUNT
+	      , INTRVL
+	      , INTRVL_UNIT
+	      , DIFR_USAGE_USER_INFO
+	      , SGN_MEMO
+	      , ABOVE_RESPNS_SE
+	      , DRFSTF_WTHDRAW___CPCTY_DCRS_SE
+	      , RECR_SE
+	      , DIFR_INFO
+	      , ATC_AT
+	      , ATC_VER
+	      , ATC_CODE
+	      , KCD_AT
+	      , KCD_VER
+	      , KCD_CODE
+	      , MEDDRA_AT
+	      , MEDDRA_VER
+	      , MEDDRA_LTT_CODE
+	      , REPORTR_DC_AT
+	      , REPORTR_DC_SE
+	      , SPON_DC_AT
+	      , SPON_DC_SE
+	      , USE_AT
+	      , FRST_CREDE
+	      , REGIST_ID
+	      , LAST_UPDDE
+	      , UPDATE_ID
+	    )
+	SELECT #CHANGE_MEDCIN_INFO_NO# AS MEDCIN_INFO_NO
+		  , HRMFLNS_CASE_CODE
+		  , PRDUCT_CODE
+		  , #CHANGE_FOLLOW_NO# AS FOLLOW_NO
+		  , DRFSTFROLE_SE
+		  , MEDCIN_RECOED_NM
+		  , MEDCIN_NM
+		  , MFDS_BRAND_CODE
+		  , MFDS_GNRL_CODE
+		  , UNCONFM_MEDCINNM
+		  , BEGIN_DTES
+		  , CNTNC_AT
+		  , END_DTES
+		  , MDCTN_PD
+		  , RSTRCT_FORM
+		  , COURS
+		  , BATCH_LT_NO
+		  , FDQNT
+		  , UNIT
+		  , NCOUNT
+		  , INTRVL
+		  , INTRVL_UNIT
+		  , DIFR_USAGE_USER_INFO
+		  , SGN_MEMO
+		  , ABOVE_RESPNS_SE
+		  , DRFSTF_WTHDRAW___CPCTY_DCRS_SE
+		  , RECR_SE
+		  , DIFR_INFO
+		  , ATC_AT
+		  , ATC_VER
+		  , ATC_CODE
+		  , KCD_AT
+		  , KCD_VER
+		  , KCD_CODE
+		  , MEDDRA_AT
+		  , MEDDRA_VER
+		  , MEDDRA_LTT_CODE
+		  , REPORTR_DC_AT
+		  , REPORTR_DC_SE
+		  , SPON_DC_AT
+		  , SPON_DC_SE
+		  , 'Y' AS USE_AT
+	      , SYSDATE AS FRST_CREDE
+	      , #UPDATE_ID# AS REGIST_ID
+	      , SYSDATE AS LAST_UPDDE
+	      , #UPDATE_ID# AS UPDATE_ID
+	FROM SDB_AM_MEDCIN_INFO
+   WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+	 AND PRDUCT_CODE = #PRDUCT_CODE#
+	 AND FOLLOW_NO = #FOLLOW_NO#			 
+	 AND MEDCIN_INFO_NO = #MEDCIN_INFO_NO#
+	</insert>
+	
+	<insert id="SDBC02DAO.insertFollowUp_Drug_H" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+			INTO SDB_AM_MEDCIN_RCORD_INFO
+			    (
+			        MEDCIN_RCORD_NO
+			      , HRMFLNS_CASE_CODE
+			      , PRDUCT_CODE
+			      , FOLLOW_NO
+			      , MEDCIN_RECOED_NM
+			      , MEDCIN_RCORD_NM
+			      , MFDS_BRAND_CODE
+			      , MFDS_GNRL_CODE
+			      , UNCONFM_MEDCINNM
+			      , BEGIN_DTES
+			      , END_DTES
+			      , SGN_MEMO
+			      , RESPNS_MEMO
+			      , ATC_AT
+			      , ATC_VER
+			      , ATC_CODE
+			      , MEDDRA_AT
+			      , MEDDRA_VER
+			      , MEDDRA_LTT_CODE
+			      , WHOART_AT
+			      , WHOART_VER
+			      , WHOART_ARRN_CODE
+			      , MEDDRAONE_AT
+			      , MEDDRAONE_VER
+			      , MEDDRAONE_LLT_CODE
+			      , USE_AT
+			      , FRST_CREDE
+			      , REGIST_ID
+			      , LAST_UPDDE
+			      , UPDATE_ID
+			    )
+			SELECT SDB_DRUGHISTORY_SEQ.NEXTVAL AS MEDCIN_RCORD_NO
+			  , HRMFLNS_CASE_CODE
+			  , PRDUCT_CODE
+			  , #CHANGE_FOLLOW_NO# AS FOLLOW_NO
+			  , MEDCIN_RECOED_NM
+			  , MEDCIN_RCORD_NM
+			  , MFDS_BRAND_CODE
+			  , MFDS_GNRL_CODE
+			  , UNCONFM_MEDCINNM
+			  , BEGIN_DTES
+			  , END_DTES
+			  , SGN_MEMO
+			  , RESPNS_MEMO
+			  , ATC_AT
+			  , ATC_VER
+			  , ATC_CODE
+			  , MEDDRA_AT
+			  , MEDDRA_VER
+			  , MEDDRA_LTT_CODE
+			  , WHOART_AT
+			  , WHOART_VER
+			  , WHOART_ARRN_CODE
+			  , MEDDRAONE_AT
+			  , MEDDRAONE_VER
+			  , MEDDRAONE_LLT_CODE
+			  , 'Y' AS USE_AT
+		      , SYSDATE AS FRST_CREDE
+		      , #UPDATE_ID# AS REGIST_ID
+		      , SYSDATE AS LAST_UPDDE
+		      , #UPDATE_ID# AS UPDATE_ID
+			FROM SDB_AM_MEDCIN_RCORD_INFO
+			WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+	 		AND PRDUCT_CODE = #PRDUCT_CODE#
+			 AND FOLLOW_NO = #FOLLOW_NO#	
+		]]>
+		
+	</insert>
+	
+	<insert id="SDBC02DAO.insertFollowUp_Narative" parameterClass="hashMap">
+		<![CDATA[
+			INSERT
+			INTO SDB_AM_HRMFLNS_CASE_DC
+			    (
+			        CASE_DC_SN
+			      , HRMFLNS_CASE_CODE
+			      , PRDUCT_CODE
+			      , FOLLOW_NO
+			      , HRMFLNS_CASE_DC
+			      , REPORTR_OPINION
+			      , APLCNT_OPINION
+			      , DIFR_INFO
+			      , APLCNT_SAFE_REPRT_IDNTFR
+			      , MAIN_NATION_IDNTFC
+			      , RESPNS_OCCRRNC_NATION_IDNTFC
+			      , REPRT_KND
+			      , ADIT_PAPERS_AT
+			      , APLCNT_HOLD_DOC_LIST
+			      , RPD_REPRT_AT
+			      , REGL_INSTT_REPRT_NO
+			      , ETC_REPRT_NO
+			      , REFER_LTRTRE
+			      , RSRCH_NM
+			      , SPON_RSRCH_NO
+			      , RESPNS_OBSERV_RSRCH_TY
+			      , USE_AT
+			      , FRST_CREDE
+			      , REGIST_ID
+			      , LAST_UPDDE
+			      , UPDATE_ID
+			    )
+			SELECT SDB_NARRATIVE_SEQ.NEXTVAL AS CASE_DC_SN
+			  , HRMFLNS_CASE_CODE
+			  , PRDUCT_CODE
+			  , #CHANGE_FOLLOW_NO# AS FOLLOW_NO
+			  , HRMFLNS_CASE_DC
+			  , REPORTR_OPINION
+			  , APLCNT_OPINION
+			  , DIFR_INFO
+			  , APLCNT_SAFE_REPRT_IDNTFR
+			  , MAIN_NATION_IDNTFC
+			  , RESPNS_OCCRRNC_NATION_IDNTFC
+			  , REPRT_KND
+			  , ADIT_PAPERS_AT
+			  , APLCNT_HOLD_DOC_LIST
+			  , RPD_REPRT_AT
+			  , REGL_INSTT_REPRT_NO
+			  , ETC_REPRT_NO
+			  , REFER_LTRTRE
+			  , RSRCH_NM
+			  , SPON_RSRCH_NO
+			  , RESPNS_OBSERV_RSRCH_TY
+			  , 'Y' AS USE_AT
+		      , SYSDATE AS FRST_CREDE
+		      , #UPDATE_ID# AS REGIST_ID
+		      , SYSDATE AS LAST_UPDDE
+		      , #UPDATE_ID# AS UPDATE_ID
+			FROM SDB_AM_HRMFLNS_CASE_DC
+			WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+	 		AND PRDUCT_CODE = #PRDUCT_CODE#
+			 AND FOLLOW_NO = #FOLLOW_NO#	
+		
+		]]>
+		
+	</insert>
+	
+	<select id="SDBC02DAO.selectCaseListPop" parameterClass="hashMap" resultClass="hashMap">
+		SELECT MAX(FOLLOW_NO) AS FOLLOW_NO ,MAX(MAFU_NO) AS MAFU_NO,PRDUCT_CODE,PRDUCT_NM,    TO_CHAR(FRT_RCEPT_DTE, 'YYYYMMDDHH24MISS') FRT_RCEPT_DTE, REPORT_FLAG, HRMFLNS_CASE_CODE , INSTT_NO , TESTEE_NO
+		FROM (
+		 SELECT FOLLOW_NO,PRDUCT_CODE,FN_GET_PRDUCT_NAME(PRDUCT_CODE) AS PRDUCT_NM, MAFU_NO,  FRT_RCEPT_DTE
+			 , CASE WHEN MFDS_REPORT_AT ='Y' THEN 'Y'
+			        WHEN KIDS_REPORT_AT ='Y' THEN 'Y'
+			        WHEN IRB_REPORT_AT ='Y' THEN 'Y'
+			        WHEN DIFR_INSTT_REPORT_AT ='Y' THEN 'Y'
+			        WHEN MANUFACTURER_AT ='Y' THEN 'Y' 
+			    ELSE 'N' END AS REPORT_FLAG
+		    , HRMFLNS_CASE_CODE
+		    , INSTT_NO 
+		    , TESTEE_NO
+		  FROM SDB_AM_HRMFLNS_CASE_INFO
+		)
+		WHERE 1=1
+		 <isNotEmpty property="PRDUCT_NM" prepend="AND">
+		 	<![CDATA[
+		 		PRDUCT_NM LIKE '%'|| #PRDUCT_NM# ||'%'
+		 	]]>
+		 </isNotEmpty>
+		  GROUP BY PRDUCT_CODE,PRDUCT_NM, FRT_RCEPT_DTE, REPORT_FLAG, HRMFLNS_CASE_CODE , INSTT_NO , TESTEE_NO
+	</select>
+	
+	<select id="SDBC02DAO.selectAe_C" parameterClass="hashMap" resultClass="hashMap">
+		SELECT HRMFLNS_CASE_CODE
+	      , PRDUCT_CODE
+	      , FOLLOW_NO
+		  , AE_NO 
+		  , ADVERSE_EVENT		  
+		  , REPORTR_RELATION_ONE
+		  , REPORTR_RELATION_TWO
+		  , SPON_RELATION_ONE
+		  , SPON_RELATION_TWO		  	   
+		FROM SDB_AM_AE_INFO
+	    WHERE 1=1
+		 <isNotEmpty property = "HRMFLNS_CASE_CODE" prepend="AND">
+		 	<![CDATA[
+		 		HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		 	<![CDATA[
+		 		PRDUCT_CODE = #PRDUCT_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		 	<![CDATA[
+		 		FOLLOW_NO = #FOLLOW_NO#
+		 	]]>
+		 </isNotEmpty>
+		 ORDER BY USE_AT ASC, MAIN_AE_AT DESC
+	</select>
+	
+	<select id="SDBC02DAO.selectDrug_C" parameterClass="hashMap" resultClass="hashMap">
+		SELECT MEDCIN_INFO_NO
+			 , DRFSTFROLE_SE
+			 , MEDCIN_RECOED_NM
+		  FROM SDB_AM_MEDCIN_INFO
+		   WHERE 1=1
+		 <isNotEmpty property = "HRMFLNS_CASE_CODE" prepend="AND">
+		 	<![CDATA[
+		 		HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+		 	<![CDATA[
+		 		PRDUCT_CODE = #PRDUCT_CODE#
+		 	]]>		 
+		 </isNotEmpty>
+		 <isNotEmpty property="FOLLOW_NO" prepend="AND">
+		 	<![CDATA[
+		 		FOLLOW_NO = #FOLLOW_NO#
+		 	]]>
+		 </isNotEmpty>
+		 ORDER BY DRFSTFROLE_SE
+	</select>
+	
+	<insert id="SDBC02DAO.insertCasuality_T" parameterClass="hashMap">
+		INSERT
+		INTO SDB_AM_RELATE
+		    (
+		        AE_NO
+		      , HRMFLNS_CASE_CODE
+		      , PRDUCT_CODE
+		      , FOLLOW_NO
+		      , MEDCIN_INFO_NO
+		      , DRFSTFROLE_SE
+		      , MEDCIN_RECOED_NM
+		      , REPORTR_RELATION_ONE
+		      , REPORTR_RELATION_TWO
+		      , SPON_RELATION_ONE
+		      , SPON_RELATION_TWO
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (
+		        #AE_NO#
+		      , #HRMFLNS_CASE_CODE#
+		      , #PRDUCT_CODE#
+		      , #FOLLOW_NO#
+		      , #MEDCIN_INFO_NO#
+		      , #DRFSTFROLE_SE#
+		      , #MEDCIN_RECOED_NM#
+		      , #REPORTR_RELATION_ONE#
+		      , #REPORTR_RELATION_TWO#
+		      , #SPON_RELATION_ONE#
+		      , #SPON_RELATION_TWO#
+		      , 'Y'
+		      , SYSDATE
+		      , #UPDATE_ID#
+		      , SYSDATE
+		      , #UPDATE_ID# 
+		    )
+	
+	</insert>
+	
+	<select id="SDBC02DAO.selectCasuality" parameterClass="hashMap" resultClass="hashMap">
+		SELECT AE_NO
+			 , HRMFLNS_CASE_CODE
+			 , PRDUCT_CODE
+			 , FOLLOW_NO
+			 , MEDCIN_INFO_NO
+		 FROM SDB_AM_RELATE
+		WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		  AND PRDUCT_CODE = #PRDUCT_CODE#
+		  AND FOLLOW_NO = #FOLLOW_NO#
+	</select>
+	
+	<select id="SDBC02DAO.selectFollowUpMedicalH" parameterClass="hashMap" resultClass= "hashMap">
+		SELECT MDLC_RCORD_NO
+			 , HRMFLNS_CASE_CODE
+			 , PRDUCT_CODE
+			 , FOLLOW_NO
+		 FROM SDB_AM_MDLC_RCORD_INFO
+		WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		  AND PRDUCT_CODE = #PRDUCT_CODE#
+		  AND FOLLOW_NO = #FOLLOW_NO#
+	</select>
+	
+	<select id="SDBC02DAO.selectFollowUpDrugH" parameterClass="hashMap" resultClass= "hashMap">
+		SELECT MEDCIN_RCORD_NO
+			 , HRMFLNS_CASE_CODE
+			 , PRDUCT_CODE
+			 , FOLLOW_NO
+		 FROM SDB_AM_MEDCIN_RCORD_INFO
+		WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		  AND PRDUCT_CODE = #PRDUCT_CODE#
+		  AND FOLLOW_NO = #FOLLOW_NO#
+	</select>
+	
+	<select id="SDBC02DAO.selectFollowUpDrug" parameterClass="hashMap" resultClass= "hashMap">
+		SELECT MEDCIN_INFO_NO
+			 , HRMFLNS_CASE_CODE
+			 , PRDUCT_CODE
+			 , FOLLOW_NO
+		 FROM SDB_AM_MEDCIN_INFO
+		WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		  AND PRDUCT_CODE = #PRDUCT_CODE#
+		  AND FOLLOW_NO = #FOLLOW_NO#
+	</select>
+	
+	<select id="SDBC02DAO.selectFollowUpLab" parameterClass="hashMap" resultClass= "hashMap">
+		SELECT TEST_NO
+			 , HRMFLNS_CASE_CODE
+			 , PRDUCT_CODE
+			 , FOLLOW_NO
+		 FROM SDB_AM_TEST_INFO
+		WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		  AND PRDUCT_CODE = #PRDUCT_CODE#
+		  AND FOLLOW_NO = #FOLLOW_NO#
+	</select>
+	
+</sqlMap>	 

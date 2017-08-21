@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ <sqlMap namespace="IWRE01">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+	
+	<select id="IWRE01DAO.selectVisitLabel" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.VISIT_SN
+	          ,A.VISIT_LBL
+	      FROM EDC_CR_VISIT_SCHDUL A
+    INNER JOIN EDC_CR_FORM B
+    		ON A.EDC_VER = B.EDC_VER
+    	   AND A.TASK_SN = B.TASK_SN
+    	   AND B.TASK_SN = #TASK_CODE#
+    	   AND B.CRF_ACTVTY_AT = 'Y'
+	     WHERE A.TASK_SN = #TASK_CODE#
+	       AND A.USE_AT = 'Y'
+	  ORDER BY A.VISIT_SN
+	</select>
+	
+	<select id="IWRE01DAO.selectDispenseCnt" parameterClass="hashmap" resultClass="int">
+		SELECT COUNT(*) CNT
+	      FROM $jointable$
+	</select>
+	
+	<select id="IWRE01DAO.selectDispenseList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.DLVYMANAGE_CODE
+	          ,A.SN
+	          ,A.INVNTRYMANAGE_CODE
+	          ,A.INSTT_CODE
+	          ,A.SUBJECT_CODE
+	          ,A.TASK_CODE
+	          $maincol$
+	      FROM $jointable$
+	</select>
+	
+	<select id="IWRE01DAO.selectSubjectList" parameterClass="hashmap" resultClass="hashmap">
+	    SELECT A.SUBJECT_NO
+	      FROM EDC_CF_SUBJECT A
+	INNER JOIN EDC_CR_INSTT_FORM B
+	        ON A.INSTT_FORM_SN = B.INSTT_FORM_SN
+	     WHERE B.TASK_SN = #TASK_CODE#
+		<isNotEmpty property="INSTT_CODE">
+	       AND B.INSTT_CODE = #INSTT_CODE#
+		</isNotEmpty>
+	</select>
+	
+	<select id="IWRE01DAO.selectDispenseListForSubject" parameterClass="hashmap" resultClass="hashmap">
+		SELECT NVL(TO_CHAR(A.VISIT_SN), ' ') VISIT_SN
+	          ,NVL(A.VISIT_LBL, ' ') VISIT_LBL
+	          ,NVL(C.IP_TYPE, ' ') IP_TYPE
+	          ,TO_CHAR(B.RTUN_DT, 'YYYYMMDDHH24MISS') RTUN_DT
+	          ,NVL(TO_CHAR(B.RTUN_QTT), ' ') RTUN_QTT
+	          ,TO_CHAR(B.RTURN_DT, 'YYYYMMDDHH24MISS') RTURN_DT
+	          ,NVL(TO_CHAR(B.RTURN_QTT), ' ') RTURN_QTT        
+	          ,NVL(TO_CHAR(A.TASK_SN), ' ') TASK_CODE
+	          ,NVL(FN_GET_COMMONCODE('EDC003', D.QUERY_STTUS_CODE, #LOCALE#), '미발행') QUERY_STTUS_CODE
+	      FROM (SELECT A.VISIT_SN
+			          ,A.VISIT_LBL
+			          ,A.TASK_SN
+			      FROM EDC_CR_VISIT_SCHDUL A
+		    INNER JOIN EDC_CR_FORM B
+		    		ON A.EDC_VER = B.EDC_VER
+		    	   AND A.TASK_SN = B.TASK_SN
+		    	   AND B.TASK_SN = #TASK_CODE#
+		    	   AND B.CRF_ACTVTY_AT = 'Y'
+			     WHERE A.TASK_SN = #TASK_CODE#
+			       AND A.USE_AT = 'Y') A
+	 LEFT JOIN IWRS_SJ_RTUNMANAGE B
+	        ON A.VISIT_SN = B.VISIT_CODE
+	       AND B.SUBJECT_CODE = #SUBJECT_CODE#
+	 LEFT JOIN (SELECT A.DLVYMANAGE_CODE
+	                  ,A.SN
+	                  ,A.INVNTRYMANAGE_CODE
+	                  ,A.IP_TYPE
+	                  ,A.TASK_CODE
+	                  ,B.IP_CODE                
+	              FROM IWRS_DS_INVNTRYMANAGE_DETAIL A          
+	        INNER JOIN IWRS_DS_INVNTRYMANAGE_IP_INFO B                  
+	                ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE                 
+	               AND A.SN = B.SN                 
+	               AND A.INVNTRYMANAGE_CODE = B.INVNTRYMANAGE_CODE               
+	             WHERE A.TASK_CODE =  #TASK_CODE#
+		<isNotEmpty property="INSTT_CODE#">                
+	               AND A.INSTT_CODE =  #INSTT_CODE#
+	    </isNotEmpty>
+	    		) C
+	        ON B.DLVYMANAGE_CODE = C.DLVYMANAGE_CODE         
+	       AND B.SN = C.SN         
+	       AND B.INVNTRYMANAGE_CODE = C.INVNTRYMANAGE_CODE         
+	       AND B.IP_CODE = C.IP_CODE
+	 LEFT JOIN (SELECT A.RTUN_NO
+			          ,MIN(B.QUERY_STTUS_CODE) QUERY_STTUS_CODE
+			      FROM IWRS_SJ_RTUNQUERY A
+			INNER JOIN (SELECT A.QUERY_GROUP
+			                  ,(SELECT QUERY_STTUS_CODE FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_STTUS_CODE
+			                  ,(SELECT FRST_CRTR FROM CM_QUERY WHERE QUERY_SN = B.MIN_QUERY_SN) FRST_CRTR
+			                  ,MAX(A.QUERY_TY_CODE) QUERY_TY_CODE
+			                  ,(SELECT RESN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) RESN
+			                  ,B.MIN_QUERY_SN QUERY_SN
+			                  ,(SELECT QUERY_CN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_CN
+			                  ,MAX(A.MODULE_CODE) MODULE_CODE
+			              FROM CM_QUERY A
+			        INNER JOIN (SELECT QUERY_GROUP
+			                          ,MAX(QUERY_SN) MAX_QUERY_SN
+			                          ,MIN(QUERY_SN) MIN_QUERY_SN
+			                      FROM CM_QUERY A
+			                  GROUP BY A.QUERY_GROUP) B
+			                ON A.QUERY_GROUP = B.QUERY_GROUP
+			             WHERE A.MODULE_CODE = 'IWR'
+			          GROUP BY A.QUERY_GROUP, B.MAX_QUERY_SN, B.MIN_QUERY_SN
+			          ORDER BY A.QUERY_GROUP) B
+			        ON A.QUERY_MASTR_SN = B.QUERY_SN
+			  GROUP BY A.RTUN_NO) D
+			ON B.RTUN_NO = D.RTUN_NO
+	     WHERE A.TASK_SN = #TASK_CODE#
+  	  ORDER BY A.VISIT_SN
+	</select>
+	
+	<select id="IWRE01DAO.selectDispenseForView" parameterClass="hashmap" resultClass="hashmap">
+		SELECT VISIT_SN
+	          ,VISIT_LBL
+	          ,TASK_SN
+	          ,NVL(TO_CHAR(RTUN_QTT), ' ') RTUN_QTT
+	          ,RTUN_RTURN_CNFIRM_AT
+	          ,DLVYMANAGE_CODE
+	          ,TYPE
+	          ,QUERY_STTUS_CODE
+	      FROM (SELECT A.VISIT_SN
+	                  ,A.VISIT_LBL
+	                  ,A.TASK_SN
+	                  ,B.RTUN_QTT
+	                  ,NVL(B.RTUN_RTURN_CNFIRM_AT, 'N') RTUN_RTURN_CNFIRM_AT
+	                  ,C.DLVYMANAGE_CODE
+	                  ,'1' TYPE
+	                  ,D.QUERY_STTUS_CODE
+	              FROM (SELECT A.VISIT_SN
+					          ,A.VISIT_LBL
+					          ,A.TASK_SN
+					      FROM EDC_CR_VISIT_SCHDUL A
+				    INNER JOIN EDC_CR_FORM B
+				    		ON A.EDC_VER = B.EDC_VER
+				    	   AND A.TASK_SN = B.TASK_SN
+				    	   AND B.TASK_SN = #TASK_CODE#
+				    	   AND B.CRF_ACTVTY_AT = 'Y'
+					     WHERE A.TASK_SN = #TASK_CODE#
+					       AND A.USE_AT = 'Y') A
+	         LEFT JOIN IWRS_SJ_RTUNMANAGE B
+	                ON A.VISIT_SN = B.VISIT_CODE
+	               AND B.SUBJECT_CODE = #SUBJECT_CODE#
+	         LEFT JOIN IWRS_DS_INVNTRYMANAGE_DETAIL C
+	                ON B.DLVYMANAGE_CODE = C.DLVYMANAGE_CODE
+	               AND B.SN = C.SN
+	               AND B.INVNTRYMANAGE_CODE = C.INVNTRYMANAGE_CODE
+	               AND C.TASK_CODE = #TASK_CODE#
+	         LEFT JOIN (SELECT A.RTUN_NO
+					          ,MIN(B.QUERY_STTUS_CODE) QUERY_STTUS_CODE
+					      FROM IWRS_SJ_RTUNQUERY A
+					 LEFT JOIN (SELECT A.QUERY_GROUP
+					                  ,(SELECT QUERY_STTUS_CODE FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_STTUS_CODE
+					                  ,(SELECT FRST_CRTR FROM CM_QUERY WHERE QUERY_SN = B.MIN_QUERY_SN) FRST_CRTR
+					                  ,MAX(A.QUERY_TY_CODE) QUERY_TY_CODE
+					                  ,(SELECT RESN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) RESN
+					                  ,B.MIN_QUERY_SN QUERY_SN
+					                  ,(SELECT QUERY_CN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_CN
+					                  ,MAX(A.MODULE_CODE) MODULE_CODE
+					              FROM CM_QUERY A
+					        INNER JOIN (SELECT QUERY_GROUP
+					                          ,MAX(QUERY_SN) MAX_QUERY_SN
+					                          ,MIN(QUERY_SN) MIN_QUERY_SN
+					                      FROM CM_QUERY A
+					                  GROUP BY A.QUERY_GROUP) B
+					                ON A.QUERY_GROUP = B.QUERY_GROUP
+					             WHERE A.MODULE_CODE = 'IWR'
+					          GROUP BY A.QUERY_GROUP, B.MAX_QUERY_SN, B.MIN_QUERY_SN
+					          ORDER BY A.QUERY_GROUP) B
+					        ON A.QUERY_MASTR_SN = B.QUERY_SN
+					     WHERE A.DLVY_SE_CODE = '01'
+					  GROUP BY A.RTUN_NO) D	
+					ON B.RTUN_NO = D.RTUN_NO
+	             WHERE A.TASK_SN = #TASK_CODE#
+	            UNION ALL
+	            SELECT A.VISIT_SN
+	                  ,A.VISIT_LBL
+	                  ,A.TASK_SN
+	                  ,B.RTURN_QTT
+	                  ,NVL(B.RTUN_RTURN_CNFIRM_AT, 'N') RTUN_RTURN_CNFIRM_AT
+	                  ,C.DLVYMANAGE_CODE
+	                  ,'2' TYPE
+	                  ,D.QUERY_STTUS_CODE
+	              FROM (SELECT A.VISIT_SN
+					          ,A.VISIT_LBL
+					          ,A.TASK_SN
+					      FROM EDC_CR_VISIT_SCHDUL A
+				    INNER JOIN EDC_CR_FORM B
+				    		ON A.EDC_VER = B.EDC_VER
+				    	   AND A.TASK_SN = B.TASK_SN
+				    	   AND B.TASK_SN = #TASK_CODE#
+				    	   AND B.CRF_ACTVTY_AT = 'Y'
+					     WHERE A.TASK_SN = #TASK_CODE#
+					       AND A.USE_AT = 'Y') A
+	         LEFT JOIN IWRS_SJ_RTUNMANAGE B
+	                ON A.VISIT_SN = B.VISIT_CODE
+	               AND B.SUBJECT_CODE = #SUBJECT_CODE#
+	         LEFT JOIN IWRS_DS_INVNTRYMANAGE_DETAIL C
+	                ON B.DLVYMANAGE_CODE = C.DLVYMANAGE_CODE
+	               AND B.SN = C.SN
+	               AND B.INVNTRYMANAGE_CODE = C.INVNTRYMANAGE_CODE
+	               AND C.TASK_CODE = #TASK_CODE#
+	         LEFT JOIN (SELECT A.RTUN_NO
+					          ,MIN(B.QUERY_STTUS_CODE) QUERY_STTUS_CODE
+					      FROM IWRS_SJ_RTUNQUERY A
+					 LEFT JOIN (SELECT A.QUERY_GROUP
+					                  ,(SELECT QUERY_STTUS_CODE FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_STTUS_CODE
+					                  ,(SELECT FRST_CRTR FROM CM_QUERY WHERE QUERY_SN = B.MIN_QUERY_SN) FRST_CRTR
+					                  ,MAX(A.QUERY_TY_CODE) QUERY_TY_CODE
+					                  ,(SELECT RESN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) RESN
+					                  ,B.MIN_QUERY_SN QUERY_SN
+					                  ,(SELECT QUERY_CN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_CN
+					                  ,MAX(A.MODULE_CODE) MODULE_CODE
+					              FROM CM_QUERY A
+					        INNER JOIN (SELECT QUERY_GROUP
+					                          ,MAX(QUERY_SN) MAX_QUERY_SN
+					                          ,MIN(QUERY_SN) MIN_QUERY_SN
+					                      FROM CM_QUERY A
+					                  GROUP BY A.QUERY_GROUP) B
+					                ON A.QUERY_GROUP = B.QUERY_GROUP
+					             WHERE A.MODULE_CODE = 'IWR'
+					          GROUP BY A.QUERY_GROUP, B.MAX_QUERY_SN, B.MIN_QUERY_SN
+					          ORDER BY A.QUERY_GROUP) B
+					        ON A.QUERY_MASTR_SN = B.QUERY_SN
+					     WHERE A.DLVY_SE_CODE = '02'
+					  GROUP BY A.RTUN_NO) D	
+					ON B.RTUN_NO = D.RTUN_NO
+	             WHERE A.TASK_SN = #TASK_CODE#) A
+	  ORDER BY A.TYPE, A.VISIT_SN
+	</select>
+	
+	<select id="IWRE01DAO.selectDispenseReturnInfo" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.IP_CODE
+			  ,B.IP_TYPE
+			  ,A.RTUN_NO
+	          ,A.DLVYMANAGE_CODE
+	          ,A.SN
+	          ,A.INVNTRYMANAGE_CODE
+	          ,A.SUBJECT_CODE
+	          ,A.VISIT_CODE
+	          ,NVL(TO_CHAR(A.RTUN_QTT), ' ') RTUN_QTT
+	          ,TO_CHAR(A.RTUN_DT, 'YYYYMMDDHH24MISS') RTUN_DT
+	          ,NVL(TO_CHAR(A.RTURN_QTT), ' ') RTURN_QTT
+	          ,NVL(TO_CHAR(A.TAKNG_QTT), ' ') TAKNG_QTT
+	          ,TO_CHAR(A.RTURN_DT, 'YYYYMMDDHH24MISS') RTURN_DT
+	          ,A.RTUN_COMMENT
+	          ,A.RTURN_COMMENT
+	          ,TO_CHAR(A.IPASIGN_DE, 'YYYYMMDDHH24MISS') IPASIGN_DE
+	          ,RTUNMAN_ID
+	          ,RTNPSN_ID
+	      FROM IWRS_SJ_RTUNMANAGE A
+	INNER JOIN IWRS_DS_INVNTRYMANAGE_DETAIL B
+	        ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+	       AND A.SN = B.SN
+	       AND A.INVNTRYMANAGE_CODE = B.INVNTRYMANAGE_CODE
+	       AND B.TASK_CODE = #TASK_CODE#
+	     WHERE A.SUBJECT_CODE = #SUBJECT_CODE#
+	       AND A.VISIT_CODE = #VISIT_CODE#
+	</select>
+	
+	<insert id="IWRE01DAO.insertDispenseInfo" parameterClass="hashmap">
+		INSERT INTO IWRS_SJ_RTUNMANAGE
+	                (
+	                 RTUN_NO
+	                ,IP_CODE
+	                ,DLVYMANAGE_CODE
+	                ,SN
+	                ,INVNTRYMANAGE_CODE
+	                ,INSTT_CODE
+	                ,SUBJECT_CODE
+	                ,VISIT_CODE
+	                ,IPASIGN_DE
+	                ,USE_AT
+	                ,FRST_CREDE
+	                ,REGIST_ID
+	                ,LAST_UPDDE
+	                ,UPDATE_ID
+	                )
+	         VALUES (
+	                 #RTUN_NO#
+	                ,#IP_CODE#
+	                ,#DLVYMANAGE_CODE#
+	                ,#SN#
+	                ,#INVNTRYMANAGE_CODE#
+	                ,#INSTT_CODE#
+	                ,#SUBJECT_CODE#
+	                ,#VISIT_CODE#
+	                ,#IPASIGNDE#
+	                ,#USE_AT#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                )
+	</insert>
+	
+	<update id="IWRE01DAO.updateDispenseInfo" parameterClass="hashmap">
+		UPDATE IWRS_SJ_RTUNMANAGE
+	       SET RTUN_QTT = #RTUN_QTT#
+	          ,RTUN_DT = TO_DATE(#RTUN_DT# || '000000', 'YYYYMMDDHH24MISS')
+	          ,IP_STTUS_CODE = #IP_STTUS_CODE#
+	          ,RTUNMAN_ID = #RTUNMAN_ID#
+	          ,RTUN_COMMENT = #RTUN_COMMENT#
+	          ,UPDATE_ID = #USER_ID#
+	          ,LAST_UPDDE = SYSDATE
+	     WHERE RTUN_NO = #RTUN_NO#
+	       AND IP_CODE = #IP_CODE#
+	       AND DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND SN = #SN#
+	       AND INVNTRYMANAGE_CODE = #INVNTRYMANAGE_CODE#
+	       AND SUBJECT_CODE = #SUBJECT_CODE#
+	       AND VISIT_CODE = #VISIT_CODE#
+	</update>
+	
+	<update id="IWRE01DAO.updateReturnInfo" parameterClass="hashmap">
+		UPDATE IWRS_SJ_RTUNMANAGE
+	       SET RTURN_QTT = #RTURN_QTT#
+	       	  ,TAKNG_QTT = #TAKNG_QTT#
+	          ,RTURN_DT = TO_DATE(#RTURN_DT# || '000000', 'YYYYMMDDHH24MISS')
+	          ,IP_STTUS_CODE = #IP_STTUS_CODE#
+	          ,RTNPSN_ID = #RTNPSN_ID#
+	          ,RTURN_COMMENT = #RTURN_COMMENT#
+	          ,UPDATE_ID = #USER_ID#
+	          ,LAST_UPDDE = SYSDATE
+	     WHERE RTUN_NO = #RTUN_NO#
+	       AND IP_CODE = #IP_CODE#
+	       AND DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND SN = #SN#
+	       AND INVNTRYMANAGE_CODE = #INVNTRYMANAGE_CODE#
+	       AND SUBJECT_CODE = #SUBJECT_CODE#
+	       AND VISIT_CODE = #VISIT_CODE#
+	</update>
+	
+	<update id="IWRE01DAO.updateConfirmInfo" parameterClass="hashmap">
+		UPDATE IWRS_SJ_RTUNMANAGE
+	       SET RTUN_RTURN_CNFRMR_ID = #RTUN_RTURN_CNFRMR_ID#
+	          ,RTUN_RTURN_CNFIRM_AT = #RTUN_RTURN_CNFIRM_AT#
+	          ,UPDATE_ID = #USER_ID#
+	          ,LAST_UPDDE = SYSDATE
+	     WHERE RTUN_NO = #RTUN_NO#
+	       AND IP_CODE = #IP_CODE#
+	       AND DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND SN = #SN#
+	       AND INVNTRYMANAGE_CODE = #INVNTRYMANAGE_CODE#
+	       AND SUBJECT_CODE = #SUBJECT_CODE#
+	       AND VISIT_CODE = #VISIT_CODE#
+	</update>
+	
+	<update id="IWRE01DAO.updateErrorInfo" parameterClass="hashmap">
+		UPDATE IWRS_SJ_RTUNMANAGE
+		   SET IP_STTUS_CODE = #IP_STTUS_CODE#
+		   	  ,UPDATE_ID = #USER_ID#
+		   	  ,LAST_UPDDE = SYSDATE
+		 WHERE RTUN_NO = #RTUN_NO#
+	       AND IP_CODE = #IP_CODE#
+	       AND DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+	       AND SN = #SN#
+	       AND INVNTRYMANAGE_CODE = #INVNTRYMANAGE_CODE#
+	       AND SUBJECT_CODE = #SUBJECT_CODE#
+	       AND VISIT_CODE = #VISIT_CODE#
+	</update>
+	
+	<select id="IWRE01DAO.selectIpInfo" parameterClass="hashmap" resultClass="hashmap">
+		SELECT B.CREAT_CODE
+			  ,B.IP_TYPE
+		  FROM IWRS_SJ_RTUNMANAGE A
+	INNER JOIN IWRS_DS_INVNTRYMANAGE_IP_INFO B
+			ON A.IP_CODE = B.IP_CODE
+		   AND A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+		   AND A.SN = B.SN
+		   AND A.INVNTRYMANAGE_CODE = B.INVNTRYMANAGE_CODE
+		 WHERE A.DLVYMANAGE_CODE = #DLVYMANAGE_CODE#
+		   AND A.RTUN_NO = #RTUN_NO#
+		   AND A.IP_CODE = #IP_CODE#
+		   AND A.INVNTRYMANAGE_CODE = #INVNTRYMANAGE_CODE#
+	</select>
+	
+	<select id="IWRE01DAO.selectQuerySeq" resultClass="String">
+		SELECT CM_QUERY_SEQ.NEXTVAL
+		  FROM DUAL
+	</select>
+	
+	<insert id="IWRE01DAO.insertRtunQuery" parameterClass="hashmap">
+		INSERT INTO IWRS_SJ_RTUNQUERY
+					(
+						RTUN_NO
+					   ,QUERY_MASTR_SN
+					   ,DLVY_SE_CODE
+					   ,QUERY_SE_CODE
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,REGIST_ID
+					   ,LAST_UPDDE
+					   ,UPDATE_ID
+					)
+			 VALUES (
+			 			#RTUN_NO#
+			 		   ,#QUERY_SN#
+			 		   ,#DLVY_SE_CODE#
+			 		   ,#QUERY_SE_CODE#
+			 		   ,#USE_AT#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<insert id="IWRE01DAO.insertQueryMaster" parameterClass="hashmap">
+		INSERT INTO CT_QUERY_MASTR
+					(
+						QUERY_MASTR_SN
+					   ,MODULE_CODE
+					   ,QUERY_TY_CODE
+					   ,PBLSHR_ID
+					   ,PBLICTE_DT
+					   ,QUERY_STTUS_CODE
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,REGIST_ID
+					   ,LAST_UPDDE
+					   ,UPDATE_ID
+					)
+			 VALUES (
+			 			#QUERY_MASTR_SN#
+					   ,#MODULE_CODE#
+					   ,#QUERY_TY_CODE#
+					   ,#PBLSHR_ID#
+					   ,SYSDATE
+					   ,#QUERY_STTUS_CODE#
+					   ,#USE_AT#
+					   ,SYSDATE
+					   ,#USER_ID#
+					   ,SYSDATE
+					   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<update id="IWRE01DAO.updateQueryMaster" parameterClass="hashmap">
+		UPDATE CT_QUERY_MASTR
+		   SET QUERY_STTUS_CODE = #QUERY_STTUS_CODE#
+		   	  ,USE_AT = #USE_AT#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,UPDATE_ID = #USER_ID#
+		 WHERE QUERY_MASTR_SN = #QUERY_MASTR_SN#
+	</update>
+	
+	<update id="IWRE01DAO.updateEndQuery" parameterClass="hashmap">
+		UPDATE CM_QUERY
+		   SET RESN = #RESN#
+		   	  ,END_AT = #END_AT#
+		   	  ,USE_AT = #USE_AT#
+		   	  ,LAST_UPDDE = SYSDATE
+		      ,LAST_UPDUSR = #USER_ID#
+		 WHERE QUERY_GROUP = #QUERY_GROUP#
+	</update>
+	
+	<select id="IWRE01DAO.selectQueryDetailCode" parameterClass="hashmap" resultClass="String">
+		SELECT TO_NUMBER(NVL(MAX(QUERY_DETAIL_CODE), '0')) + 1
+		  FROM CT_QUERY_DETAIL A
+	RIGHT JOIN DUAL
+			ON 1 = 1
+		 WHERE QUERY_MASTR_SN = #QUERY_MASTR_SN#
+	</select>
+	
+	<insert id="IWRE01DAO.insertQueryDetail" parameterClass="hashmap">
+		INSERT INTO CT_QUERY_DETAIL
+					(
+						QUERY_DETAIL_CODE
+					   ,QUERY_MASTR_SN
+					   ,QESTN_ANSWER_STTUS_CODE
+					   ,QUERY_CN
+					   ,REGISTER_ID
+					   ,REGISTER_IP
+					   ,RCVER_ID
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,REGIST_ID
+					   ,LAST_UPDDE
+					   ,UPDATE_ID
+					)
+			 VALUES (
+			 			#QUERY_DETAIL_CODE#
+					   ,#QUERY_MASTR_SN#
+					   ,#QESTN_ANSWER_STTUS_CODE#
+					   ,#QUERY_CN#
+					   ,#REGISTER_ID#
+					   ,#REGISTER_IP#
+					   ,#RCVER_ID#
+					   ,#USE_AT#
+					   ,SYSDATE
+					   ,#USER_ID#
+					   ,SYSDATE
+					   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<insert id="IWRE01DAO.insertQueryInfo" parameterClass="hashmap">
+		INSERT INTO CM_QUERY
+					(
+						QUERY_SN
+					   ,MODULE_CODE
+					   ,QUERY_TY_CODE
+					   ,QUERY_STTUS_CODE
+					   ,QUERY_CN
+					   ,END_AT
+					   ,RESN
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					   ,QUERY_GROUP
+					)
+			 VALUES (
+			 			#QUERY_SN#
+			 		   ,#MODULE_CODE#
+			 		   ,#QUERY_TY_CODE#
+			 		   ,#QUERY_STTUS_CODE#
+			 		   ,#QUERY_CN#
+			 		   ,#END_AT#
+			 		   ,#RESN#
+			 		   ,#USE_AT#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		   ,#QUERY_GROUP#
+					)
+	</insert>
+	
+	<update id="IWRE01DAO.updateEndQueryInfo" parameterClass="hashmap">
+		UPDATE CM_QUERY
+		   SET END_AT = #END_AT#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,LAST_UPDUSR = #USER_ID#
+		 WHERE QUERY_GROUP = #QUERY_GROUP#
+	</update>
+		
+	<select id="IWRE01DAO.selectQueryInfo" parameterClass="hashmap" resultClass="hashmap">
+	    SELECT A.RTUN_NO
+	          ,C.IP_CODE
+	          ,A.DLVY_SE_CODE
+	          ,QUERY_SE_CODE
+	          ,B.QUERY_SN
+	          ,B.QUERY_TY_CODE
+	          ,B.RESN
+	          ,B.QUERY_STTUS_CODE
+	          ,FN_GET_COMMONCODE('EDC003', B.QUERY_STTUS_CODE, #LOCALE#) QUERY_STTUS_NM
+	          ,FN_GET_COMMONCODE('EDC002', B.QUERY_TY_CODE, #LOCALE#) QUERY_TY_NM
+	          ,B.QUERY_CN
+	          ,B.END_AT
+	          ,B.QUERY_GROUP
+	          ,CASE WHEN (SELECT COUNT(*) FROM CM_QUERY WHERE QUERY_GROUP = B.QUERY_GROUP AND QUERY_STTUS_CODE = '02' ) > 0 THEN 'ANSWER'
+				 	ELSE 'OPEN' 
+					END STATUS
+	      FROM IWRS_SJ_RTUNQUERY A
+	INNER JOIN CM_QUERY B
+	        ON A.QUERY_MASTR_SN = B.QUERY_SN
+	       AND B.MODULE_CODE = 'IWR'
+	       AND B.END_AT = 'N'
+	       AND B.USE_AT = 'Y'
+	INNER JOIN IWRS_SJ_RTUNMANAGE C
+	        ON A.RTUN_NO = C.RTUN_NO
+	       AND C.SUBJECT_CODE = #SUBJECT_CODE#
+	       AND C.VISIT_CODE = #VISIT_CODE#
+	INNER JOIN IWRS_DS_INVNTRYMANAGE_DETAIL D
+	        ON C.DLVYMANAGE_CODE = D.DLVYMANAGE_CODE
+	       AND C.SN = D.SN
+	       AND C.INVNTRYMANAGE_CODE = D.INVNTRYMANAGE_CODE
+	       AND D.TASK_CODE = #TASK_CODE#
+	  ORDER BY B.QUERY_SN DESC
+	</select>
+</sqlMap>

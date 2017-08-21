@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCI01DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+	
+	<select id="selectResearchSubjectList" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT    A.TASK_SN
+		        , A.SANCLINE_SN
+		        , A.INSTT_FORM_SN
+		        , A.INSTT_NM
+		        , A.SUBJECT_NO
+		        , A.R_NO
+		        , A.IP_CODE
+		        , A.MEDICINE_NM
+		        , A.BLIND_STTUS_CODE
+		        , A.BLIND_STTUS_NM
+		        , A.RELIS_RESN
+		        , A.REQUST_NO
+		  FROM    (        
+		              SELECT    CRT.TASK_SN
+		                      , CRT.SANCLINE_SN
+		                      , CRIF.INSTT_FORM_SN
+		                      , (
+		                            SELECT  NAME1
+		                              FROM  SAP_BCNC_INFO
+		                             WHERE  USE_YN = 'Y'
+		                               AND	KUNNR = (
+		                                                SELECT  KUNNR
+		                                                  FROM  CM_INSTT
+		                                                 WHERE  USE_YN = 'Y'
+		                                                   AND	INSTT_CODE = CRIF.INSTT_CODE
+		                                            )
+		                        ) INSTT_NM
+		                      , CFS.SUBJECT_NO
+		                      , '대상자번호' R_NO
+		                      , 'IP코드' IP_CODE
+		                      , '임상시험용의약품' MEDICINE_NM
+		                      , CFS.BLIND_STTUS_CODE
+		                      , FN_GET_COMMONCODE('EDC010', CFS.BLIND_STTUS_CODE, #LOCALE#) BLIND_STTUS_NM
+		                      , CFS.RELIS_RESN
+		                      , CFS.REQUST_NO
+		                FROM    EDC_CR_TASK CRT
+		                      , EDC_CR_INSTT_FORM CRIF
+		                      , EDC_CF_SUBJECT CFS
+		               WHERE    CRT.TASK_SN = CRIF.TASK_SN
+		                 AND	CRT.USE_AT = 'Y'
+		                 AND	CRIF.USE_AT = 'Y'
+		                 AND	CFS.USE_AT = 'Y'
+		                 AND    CRIF.INSTT_FORM_SN = CFS.INSTT_FORM_SN
+		          ) A
+		  WHERE	  A.TASK_SN = #TASK_SN#
+		<isNotEmpty property="INSTT_NM" prepend="AND">
+			A.INSTT_NM LIKE '%'||#INSTT_NM#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			A.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		</isNotEmpty>
+		<!-- 대상자번호, IP코드, 임상시험용의약품 필드는 IWRS테이블에서 끌어와야한다.
+				SITE 필드는 기관명이며 기관 테이블에서 가져와야 한다.
+			 -->
+			 
+	</select>
+	
+	<select id="selectFieldSubjectList" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT    A.TASK_SN
+		        , A.SANCLINE_SN
+		        , A.INSTT_FORM_SN
+		        , A.INSTT_NM
+		        , A.SUBJECT_NO
+		        , A.R_NO
+		        , A.IP_CODE
+		        , A.BLIND_STTUS_CODE
+		        , A.BLIND_STTUS_NM
+		        , A.RELIS_RESN
+		        , A.REQUST_NO
+		  FROM    (        
+		              SELECT    CRT.TASK_SN
+		                      , CRT.SANCLINE_SN
+		                      , CRIF.INSTT_FORM_SN
+		                      , (
+		                            SELECT  NAME1
+		                              FROM  SAP_BCNC_INFO
+		                             WHERE  USE_YN = 'Y'
+		                               AND	KUNNR = (
+		                                                SELECT  KUNNR
+		                                                  FROM  CM_INSTT
+		                                                 WHERE  USE_YN = 'Y'
+		                                                   AND	INSTT_CODE = CRIF.INSTT_CODE
+		                                            )
+		                        ) INSTT_NM
+		                      , CFS.SUBJECT_NO
+		                      , '대상자번호' R_NO
+		                      , 'IP코드' IP_CODE
+		                      , CFS.BLIND_STTUS_CODE
+		                      , FN_GET_COMMONCODE('EDC010', CFS.BLIND_STTUS_CODE, #LOCALE#) BLIND_STTUS_NM
+		                      , CFS.RELIS_RESN
+		                      , CFS.REQUST_NO
+		                FROM    EDC_CR_TASK CRT
+		                      , EDC_CR_INSTT_FORM CRIF
+		                      , EDC_CF_SUBJECT CFS
+		               WHERE    CRT.TASK_SN = CRIF.TASK_SN
+		                 AND	CRT.USE_AT = 'Y'
+		                 AND	CRIF.USE_AT = 'Y'
+		                 AND	CFS.USE_AT = 'Y'
+		                 AND    CRIF.INSTT_FORM_SN = CFS.INSTT_FORM_SN
+		          ) A
+		  WHERE	  A.TASK_SN = #TASK_SN#
+		<isNotEmpty property="INSTT_NM" prepend="AND">
+			A.INSTT_NM LIKE '%'||#INSTT_NM#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			A.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		</isNotEmpty>
+		<!-- 대상자번호, IP코드, 임상시험용의약품 필드는 IWRS테이블에서 끌어와야한다.
+				SITE 필드는 기관명이며 기관 테이블에서 가져와야 한다.
+			 -->
+	</select>
+	
+	<select id="selectTaskBlindPk" parameterClass="hashMap" resultClass="hashMap">
+		SELECT SANCLINE_SN
+		FROM EDC_CR_TASK WHERE TASK_SN = #TASK_SN#
+	</select>
+		
+	<update id="updateEdcCfSubjectByInfo" parameterClass="HashMap">
+	    UPDATE    EDC_CF_SUBJECT
+	       SET    BLIND_STTUS_CODE = #BLIND_STTUS_CODE#
+	       		, RELIS_RESN = #RELIS_RESN#
+	       		, LAST_UPDDE = SYSDATE
+	       		, LAST_UPDUSR = #UPDATE_ID#
+<!-- 	       		isNotEmpty에서 ,도 조건으로 묶이는지 확인 필요 -->
+	       		, REQUST_NO = #REQUST_NO#
+	    WHERE     SUBJECT_NO = #SUBJECT_NO#
+	</update>
+		
+	<insert id="insertEdcSanctnRequstByEdcSanClineDetailInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_SANCTN_REQUST
+		     ( 
+			       REQUST_NO
+		         , RQESTER_ID
+		         , STTUS_CODE
+		         , REQUST_COMMENT
+		         , USE_YN
+		         , FRST_CREDE
+		         , REGIST_ID
+		         , LAST_UPDDE
+		         , UPDATE_ID	
+		         , REQUST_NM     
+		     )
+		VALUES
+		     ( 
+			       #REQUST_NO#
+		         , #RQESTER_ID#
+		         , #STTUS_CODE#
+		         , #RELIS_RESN#
+		         , #USE_YN#
+		         , SYSDATE
+		         , #UPDATE_ID#
+		         , SYSDATE
+		         , #UPDATE_ID#
+		         , #REQUST_NM#
+		     )
+		]]>
+	</insert>
+		
+	<select id="selectCmSanclineDetailInfo" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT 	  DETAIL_SN
+				, SANCTN_CODE
+				, SANCLINE_SN
+				, USE_YN
+				, FRST_CREDE
+				, REGIST_ID
+				, LAST_UPDDE
+				, UPDATE_ID
+				, CONFMER_ID
+				, SANCTN_ORDR
+				, STTUS_ORDR
+		FROM	CM_SANCLINE_DETAIL
+		WHERE	SANCLINE_SN = #SANCLINE_SN#			 
+	</select>
+	
+	<insert id="insertCmSanctnProcessByCmSanClineDetailInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO CM_SANCTN_PROCESS
+		( 
+			   SANCTN_CODE
+	         , SANCTN_NO
+	         , SANCTNER_ID
+	         , STTUS_CODE
+	         , REQUST_NO
+	         , SANCTN_DT
+	         , SANCTN_COMMENT
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	         , SANCTN_ORDR
+	         , STTUS_ORDR
+		)
+		VALUES
+		( 	   #SANCTN_CODE#
+	         , #SANCTN_NO#
+	         , #SANCTNER_ID#
+	         , #STTUS_CODE#
+	         , #REQUST_NO#
+	         , DECODE(#STTUS_CODE#, '02', SYSDATE, NULL)
+	         , #SANCTN_COMMENT#
+	         , #USE_YN#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , #SANCTN_ORDR#
+	         , #STTUS_ORDR#
+		)
+		]]>
+	</insert>
+	
+	
+	<select id="selectCfSubject" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT 	SUBJECT_NO,
+				BLIND_STTUS_CODE,
+				RELIS_RESN
+		FROM	EDC_CF_SUBJECT
+		WHERE	SUBJECT_NO LIKE '%' || #subjectNo# || '%'
+		<!-- 대상자번호, IP코드, 임상시험용의약품 필드는 IWRS테이블에서 끌어와야한다.
+				SITE 필드는 기관명이며 기관 테이블에서 가져와야 한다.
+			 -->
+			 
+	</select>
+	
+	
+	<update id="updateEdcCfSubjectByBlindSttusCd" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE EDC_CF_SUBJECT
+		   SET BLIND_STTUS_CODE = #BLIND_STTUS_CODE#
+		 WHERE SUBJECT_NO = #SUBJECT_NO#   
+	]]>		
+	</update>
+	
+	<select id="selectRelisConfmNoInfo" parameterClass="hashMap" resultClass="int">
+		SELECT COUNT(*) CNT
+		  FROM EDC_CF_SUBJECT
+		 WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+		   AND SUBJECT_NO = #SUBJECT_NO#
+		   AND RELIS_CONFM_NO = #RELIS_CONFM_NO#
+	</select>
+	
+	<select id="selectSanctnRequstSttus" parameterClass="hashMap" resultClass="hashMap">
+		SELECT   CSR.STTUS_CODE
+		       , CSR.RQESTER_ID
+		       , FN_GET_USER_NAME(CSR.RQESTER_ID) USER_NM
+		       , (
+		            SELECT DAMO_DEC(CU.TELNO)
+		              FROM CM_USER  CU
+		             WHERE CSR.RQESTER_ID = CU.USER_ID
+		          ) TEL_NO
+		       , (
+		            SELECT DAMO_DEC(CU.EMAIL)
+		              FROM CM_USER  CU
+		             WHERE CSR.RQESTER_ID = CU.USER_ID
+		          ) EMAIL
+		  FROM CM_SANCTN_REQUST CSR
+		 WHERE CSR.REQUST_NO = #REQUST_NO#
+	</select>
+	
+	<select id="selectSendInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT    SUBJECT_NO
+		  FROM    EDC_CF_SUBJECT
+		 WHERE    SUBJECT_NO = #SUBJECT_NO#
+	</select>
+	
+	<insert id="insertCmSanctnProcessDraft" parameterClass="hashMap">
+		INSERT INTO CM_SANCTN_PROCESS
+		(
+		      	FRST_CREDE
+			,	LAST_UPDDE
+			,	REGIST_ID
+			,	REQUST_NO
+			,	SANCTNER_ID
+			,	SANCTN_CODE
+			,	SANCTN_COMMENT
+			,	SANCTN_DT
+			,	SANCTN_NO
+			,	SANCTN_ORDR
+			,	STTUS_CODE
+			,	STTUS_ORDR
+			,	UPDATE_ID
+			,	USE_YN        
+		)VALUES(
+		      	SYSDATE
+		    ,	SYSDATE
+		    ,	#USER_ID#
+		    ,	#REQUST_NO#
+		    ,	#USER_ID#
+		    ,	#SANCTN_CODE#
+			,	#SANCTN_COMMENT#
+			,	SYSDATE
+			,	#SANCTN_NO#
+			,	#SANCTN_ORDR#
+			,	#STTUS_CODE#
+			,	1
+			,	#USER_ID#
+			,	#USE_YN#
+		)
+	</insert>
+	
+	<select id="selectCmSanclineDetail" parameterClass="hashMap" resultClass="hashMap">
+		SELECT      DETAIL_SN
+		          , SANCTN_CODE
+		          , SANCLINE_SN
+		          , USE_YN
+		          , FRST_CREDE
+		          , REGIST_ID
+		          , LAST_UPDDE
+		          , UPDATE_ID
+		          , CONFMER_ID
+		          , SANCTN_ORDR
+		          , STTUS_ORDR
+		          , #REQUST_NM# REQUST_NM
+		          , #REQUST_COMMENT# REQUST_COMMENT
+		  FROM      CM_SANCLINE_DETAIL
+ 		 WHERE      SANCLINE_SN = 	(
+ 		 								SELECT		SANCLINE_SN
+ 		 								  FROM		EDC_CR_TASK
+ 		 								 WHERE		TASK_SN = #TASK_SN#
+ 		 							)
+	</select>
+	
+	<select id="selectCmSanctnProcessBySeq" resultClass="String">
+			SELECT	CM_SANCTN_PROCESS_SEQ.NEXTVAL
+			  FROM	DUAL
+	</select>
+	
+	<update id="updateEdcCfSubjectByCnfmNo" parameterClass="hashMap">
+		UPDATE	EDC_CF_SUBJECT
+		   SET	RELIS_CONFM_NO = #RELIS_CONFM_NO#
+		 WHERE	INSTT_FORM_SN = #INSTT_FORM_SN#
+		   AND	SUBJECT_NO = #SUBJECT_NO#
+	</update>
+	
+</sqlMap>

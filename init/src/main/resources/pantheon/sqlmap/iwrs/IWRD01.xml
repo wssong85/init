@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ <sqlMap namespace="IWRD01">
+	<typeAlias  alias="hashMap" type="java.util.HashMap"/>
+	
+	<select id="IWRD01.selectDrugStockInfo" parameterClass="hashMap" resultClass="hashMap">
+	    SELECT A.INSTT_CODE
+	    	  ,MAX(A.NAME1) NAME1
+	          ,A.TASK_CODE
+	          ,H.IP_TYPE
+	          ,NVL(MAX(B.DLVY_REQUST_QTT), 0) TRIGGER_CNT
+	          ,NVL(MAX(C.DLVY_REQUST_QTT), 0) REQUEST_CNT
+	          ,NVL(MAX(D.DLVY_REQUST_QTT), 0) DELIVERY_CNT
+	          ,NVL(MAX(E.DLVY_REQUST_QTT), 0) COMPLETE_CNT
+	          ,NVL(SUM(F.PARMACY_INVNTRY_QTT), '0') PARMACY_INVNTRY_QTT
+	          ,NVL(SUM(I.USEFUL_INVNTRY_QTT), '0') USEFUL_INVNTRY_QTT
+	          ,NVL(SUM(G.RTUN_QTT), '0') KTUN_QTT
+	      FROM (SELECT A.TASK_SN TASK_CODE
+		              ,C.INSTT_CODE
+		              ,D.NAME1
+		          FROM EDC_CR_INSTT_FORM A
+		    INNER JOIN CM_RSRCHUSER B
+		            ON A.INSTT_CODE = B.INSTT_CODE
+		    INNER JOIN CM_INSTT C
+		            ON B.INSTT_CODE = C.INSTT_CODE
+		    INNER JOIN SAP_BCNC_INFO D
+		            ON C.KUNNR = D.KUNNR
+		         WHERE TASK_SN = #task_code#
+		      GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1) A
+     LEFT JOIN (SELECT A.IP_TYPE
+                    ,B.CREAT_CODE
+                    ,B.TASK_CODE
+                FROM IWRS_IP_IP_CODE A
+          INNER JOIN IWRS_IP_CREATMASTR B
+                  ON A.CREAT_CODE = B.CREAT_CODE
+                 AND B.TASK_CODE = #task_code#
+            GROUP BY A.IP_TYPE
+                    ,B.CREAT_CODE
+                    ,B.TASK_CODE) H
+          	ON A.TASK_CODE = H.TASK_CODE
+	 LEFT JOIN (SELECT A.INSTT_CODE
+			          ,A.TASK_CODE
+			          ,A.IP_TYPE
+			          ,COUNT(A.DLVY_REQUST_QTT) DLVY_REQUST_QTT
+			      FROM IWRS_DL_DLVYMANAGE A
+			INNER JOIN IWRS_DL_DLVY_IP_INFO B
+					ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+				   AND A.SN = B.SN
+			     WHERE A.USE_AT = 'Y'
+			       AND A.DLVY_REQUST_OCCRRNC_CODE = '01'
+			       AND A.DLVY_STTUS_CODE IN ('01', '02')
+			       AND A.TASK_CODE = #task_code#
+			  GROUP BY A.INSTT_CODE, A.TASK_CODE, A.IP_TYPE) B
+	        ON A.INSTT_CODE = B.INSTT_CODE
+	       AND A.TASK_CODE = B.TASK_CODE
+	       AND H.IP_TYPE = B.IP_TYPE
+	 LEFT JOIN (SELECT A.INSTT_CODE
+			          ,A.TASK_CODE
+			          ,A.IP_TYPE
+			          ,COUNT(A.DLVY_REQUST_QTT) DLVY_REQUST_QTT
+			      FROM IWRS_DL_DLVYMANAGE A
+			INNER JOIN IWRS_DL_DLVY_IP_INFO B
+					ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+				   AND A.SN = B.SN
+			     WHERE A.USE_AT = 'Y'
+			       AND A.DLVY_REQUST_OCCRRNC_CODE = '02'
+			       AND A.DLVY_STTUS_CODE = '02'
+			       AND TASK_CODE = #task_code#
+			  GROUP BY A.INSTT_CODE, A.TASK_CODE, A.IP_TYPE) C
+	        ON A.INSTT_CODE = C.INSTT_CODE
+	       AND A.TASK_CODE = C.TASK_CODE
+	       AND H.IP_TYPE = C.IP_TYPE
+	 LEFT JOIN (SELECT A.INSTT_CODE
+			          ,A.TASK_CODE
+			          ,A.IP_TYPE
+			          ,COUNT(A.DLVY_REQUST_QTT) DLVY_REQUST_QTT
+			      FROM IWRS_DL_DLVYMANAGE A
+			INNER JOIN IWRS_DL_DLVY_IP_INFO B
+					ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+				   AND A.SN = B.SN
+			     WHERE A.USE_AT = 'Y'
+			       AND A.DLVY_STTUS_CODE = '04'
+			       AND TASK_CODE = #task_code#
+			  GROUP BY A.INSTT_CODE, A.TASK_CODE, A.IP_TYPE) D
+	        ON A.INSTT_CODE = D.INSTT_CODE
+	       AND A.TASK_CODE = D.TASK_CODE
+	       AND H.IP_TYPE = D.IP_TYPE
+	 LEFT JOIN (SELECT A.INSTT_CODE
+			          ,A.TASK_CODE
+			          ,A.IP_TYPE
+			          ,COUNT(A.DLVY_REQUST_QTT) DLVY_REQUST_QTT
+			      FROM IWRS_DL_DLVYMANAGE A
+			INNER JOIN IWRS_DL_DLVY_IP_INFO B
+					ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+				   AND A.SN = B.SN
+			     WHERE A.USE_AT = 'Y'
+			       AND A.DLVY_STTUS_CODE = '06'
+			       AND TASK_CODE = #task_code#
+			  GROUP BY A.INSTT_CODE, A.TASK_CODE, A.IP_TYPE) E
+	        ON A.INSTT_CODE = E.INSTT_CODE
+	       AND A.TASK_CODE = E.TASK_CODE
+	       AND H.IP_TYPE = E.IP_TYPE
+	 LEFT JOIN (SELECT A.INSTT_CODE
+			          ,A.TASK_CODE
+			          ,A.IP_TYPE
+			          ,COUNT(A.PARMACY_INVNTRY_QTT) PARMACY_INVNTRY_QTT
+			      FROM IWRS_DS_INVNTRYMANAGE_DETAIL A
+			INNER JOIN IWRS_DS_INVNTRYMANAGE_IP_INFO B
+			        ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+			       AND A.SN = B.SN
+			       AND A.INVNTRYMANAGE_CODE = B.INVNTRYMANAGE_CODE
+			       AND NVL(B.IP_ERROR_CODE, ' ') NOT IN ('04', '05', '06')
+			  GROUP BY A.INSTT_CODE, A.TASK_CODE, A.IP_TYPE) F
+	        ON A.INSTT_CODE = F.INSTT_CODE
+	       AND A.TASK_CODE = F.TASK_CODE
+	       AND H.IP_TYPE = F.IP_TYPE
+     LEFT JOIN (SELECT A.INSTT_CODE
+			          ,A.TASK_CODE
+			          ,A.IP_TYPE
+			          ,COUNT(A.USEFUL_INVNTRY_QTT) USEFUL_INVNTRY_QTT
+			      FROM IWRS_DS_INVNTRYMANAGE_DETAIL A
+			INNER JOIN IWRS_DS_INVNTRYMANAGE_IP_INFO B
+			        ON A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+			       AND A.SN = B.SN
+			       AND A.INVNTRYMANAGE_CODE = B.INVNTRYMANAGE_CODE
+			       AND NVL(B.IP_ERROR_CODE, ' ') NOT IN ('04', '05', '06')
+			       AND B.USEFUL_INVNTRY_AT = 'Y'
+			  GROUP BY A.INSTT_CODE, A.TASK_CODE, A.IP_TYPE) I
+			ON A.INSTT_CODE = I.INSTT_CODE
+		   AND A.TASK_CODE = I.TASK_CODE
+		   AND H.IP_TYPE = I.IP_TYPE
+	 LEFT JOIN (SELECT A.RTUN_QTT
+	                  ,C.INSTT_CODE
+	                  ,C.TASK_CODE
+	                  ,B.IP_TYPE
+	              FROM IWRS_SJ_RTUNMANAGE A
+	        INNER JOIN IWRS_DS_INVNTRYMANAGE_IP_INFO B
+	                ON A.INVNTRYMANAGE_CODE = B.INVNTRYMANAGE_CODE
+	               AND A.IP_CODE = B.IP_CODE
+	               AND A.DLVYMANAGE_CODE = B.DLVYMANAGE_CODE
+	               AND A.SN = B.SN
+	        INNER JOIN IWRS_DS_INVNTRYMANAGE_DETAIL C
+	                ON B.INVNTRYMANAGE_CODE = C.INVNTRYMANAGE_CODE
+	               AND B.DLVYMANAGE_CODE = C.DLVYMANAGE_CODE
+	               AND B.SN = C.SN) G
+	        ON A.INSTT_CODE = G.INSTT_CODE
+	       AND A.TASK_CODE = G.TASK_CODE
+	       AND H.IP_TYPE = G.IP_TYPE
+	     WHERE A.TASK_CODE = #task_code#
+	  GROUP BY A.INSTT_CODE, A.TASK_CODE, H.IP_TYPE
+	  ORDER BY A.INSTT_CODE, H.IP_TYPE 
+	</select>
+</sqlMap>

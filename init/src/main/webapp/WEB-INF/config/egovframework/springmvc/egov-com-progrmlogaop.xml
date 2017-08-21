@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+	
+	<!-- Progrm Log Aspect -->
+	<bean id="progrmConectLog" class="pantheon.com.utl.service.PantheonProgrmLogAspect"/>
+	
+	<aop:config>
+		<aop:aspect id="progrmConectAspect" ref="progrmConectLog">
+			<aop:after pointcut="execution(public * pantheon..*Controller.com*(..))"  method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.edc*(..))"  method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.iwr*(..))"  method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.sdb*(..))"  method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.dm*(..))"   method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.ctm*(..))"  method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.EDC*(..))"  method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.IWR*(..))"  method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.SDB*(..))"  method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.DM*(..))"   method="insertProgrmLog"/>
+			<aop:after pointcut="execution(public * pantheon..*Controller.CTM*(..))"  method="insertProgrmLog"/>
+		</aop:aspect>
+	</aop:config>
+	
+</beans>

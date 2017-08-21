@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMH01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+		
+	<select id="COMH01DAO.selectCmUserCountForDupCheck" parameterClass="string" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_USER
+		 WHERE USER_ID = #str#
+		]]>	
+	</select>
+	
+	<select id="COMH01DAO.selectEdcCrTaskCountForDupCheckByTaskNo" parameterClass="string" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*) 
+		  FROM EDC_CR_TASK
+		 WHERE TASK_NO = #str#
+		]]>
+	</select>
+	
+	<insert id="COMH01DAO.insertCmUserForJoin" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_USER
+		     ( USER_ID
+	         , PASSWORD
+	         , USER_NM
+	         , USER_SE_CODE
+	         , USER_ENGNM
+	         , EMAIL
+	         , TELNO
+	         , LOGIN_FAILR_CO
+	         , PASSWORD_CHANGE_DE
+	         , SBSCRB_DE
+	         , ACNT_LOCK_AT
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	         , PASSWORD1
+	         , PASSWORD2
+	         , PASSWORD3
+	         , PASSWORD_ODR
+	         , PASSWORD_CODE
+	         , STD_TIME_SN
+		     )
+		VALUES
+		     ( #USER_ID#
+	         , DAMO_HASH(#PASSWORD#)
+	         , #USER_NM#
+	         , '02'
+	         , #USER_ENGNM#
+	         , DAMO_ENC(#EMAIL#)
+	         , DAMO_ENC(#TELNO#)
+	         , 0
+	         , SYSDATE
+	         , #SBSCRB_DE#
+	         , 'N'
+	         , 'Y'
+	         , #FRST_CREDE#
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , DAMO_HASH(#PASSWORD#)
+	         , DAMO_HASH(#PASSWORD2#)
+	         , DAMO_HASH(#PASSWORD3#)
+	         , '1'
+	         , #PASSWORD_CODE#
+	         , #STD_TIME_SN#
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COMH01DAO.insertCmRsrchuserForJoin" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_RSRCHUSER
+		     ( USER_ID
+             , INSTT_CODE
+             , IRB_AT
+             , HSPTL_NM
+             , ZIP
+             , ADDRONE
+             , ADDRTWO
+             , CNTRCT_STTUS
+             , FILE_MASTR_SN
+             , USE_YN
+             , FRST_CREDE
+             , REGIST_ID
+             , LAST_UPDDE
+             , UPDATE_ID
+             , ISF_PYMNT_AT
+             , ISF_PYMNT_DE
+             , RM
+             , CONFM_SE
+		     )
+		VALUES
+		     ( #USER_ID#
+             , #INSTT_CODE#
+             , #IRB_AT#
+             , #HSPTL_NM#
+             , #ZIP#
+             , DAMO_ENC(#ADDRONE#)
+             , DAMO_ENC(#ADDRTWO#)
+             , 'N'
+             , #FILE_MASTR_SN#
+             , 'Y'
+             , SYSDATE
+             , #USER_ID#
+             , SYSDATE
+             , #USER_ID#
+             , 'N'
+             , #ISF_PYMNT_DE#
+             , #RM#
+             , 'N'
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COMH01DAO.insertCtmsCoCntrctManageForJoin" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CTMS_CO_CNTRCT_MANAGE
+		     ( CNTRCT_SN
+	         , USER_ID
+	         , TASK_SN
+	         , GOAL_NO
+	         , IRB_AT
+	         , CNTRCT_SE
+	         , STTUS
+	         , STTUS_DTE
+	         , ATCH_FILE
+	         , USE_AT
+	         , FRST_CREAT_DE
+	         , FRST_CRTR
+	         , LAST_UPDT_DE
+	         , LAST_UPDUSR
+	         , EXMNT_REQUST_DE
+	         , PYMNT_PLAN_CNT
+	         , PYMNT_CNT
+	         , CNTRCT_DE	
+		     )
+		VALUES
+		     ( #CNTRCT_SN#
+	         , #USER_ID#
+	         , (SELECT TASK_SN FROM EDC_CR_TASK WHERE TASK_NO = #TASK_NO#)
+	         , #GOAL_NO#
+	         , #IRB_AT#
+	         , '01'
+	         , #STTUS#
+	         , #STTUS_DTE#
+	         , #ATCH_FILE#
+	         , 'Y'
+	         , SYSDATE
+	         , #LAST_UPDUSR#
+	         , SYSDATE
+	         , #LAST_UPDUSR#
+	         , #EXMNT_REQUST_DE#
+	         , #PYMNT_PLAN_CNT#
+	         , #PYMNT_CNT#
+	         , SYSDATE
+		     )
+		]]>
+	</insert>
+	
+	<update id="COMH01DAO.updateCtmsCoCntrctManageForJoin" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CTMS_CO_CNTRCT_MANAGE
+		   SET GOAL_NO = #GOAL_NO#
+		     , LAST_UPDUSR = #LAST_UPDUSR#
+		     , LAST_UPDT_DE = SYSDATE
+		 WHERE CNTRCT_SN = #CNTRCT_SN#
+		]]>
+	</update>
+	
+	<select id="COMH01DAO.selectCmStdTimeForJoin" resultClass="hashMap">
+		<![CDATA[
+		SELECT STD_TIME_SN
+		     , STD_TIME_NM
+		  FROM CM_STD_TIME
+		]]>
+	</select>
+	
+	<select id="COMH01DAO.selectCtmsCoCntrctManageForSeq" resultClass="string">
+		<![CDATA[
+		SELECT 'C1' || LPAD(MAX(TO_NUMBER(SUBSTR(NVL(CNTRCT_SN, 'C100000'), 3, 9))) + 1, 5, '0') FROM CTMS_CO_CNTRCT_MANAGE
+		]]>
+	</select>
+	
+	<insert id="COMH01DAO.insertCmUserTaskForJoin" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_USERTASK
+		     ( USER_ID
+		     , TASK_SN
+		     , TASK_NO
+		     , USE_YN
+		     , FRST_CREDE
+		     , REGIST_ID
+		     , LAST_UPDDE
+		     , UPDATE_ID
+		     )
+		VALUES
+		     ( #USER_ID#
+		     , (SELECT TASK_SN FROM EDC_CR_TASK WHERE TASK_NO = #TASK_NO#)
+		     , #TASK_NO#
+		     , 'Y'
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     )   
+		]]>
+	</insert>
+	
+	<select id="COMH01DAO.selectCmUserByReqUserId" parameterClass="string" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.USER_ID
+		     , A.USER_NM
+             , B.HSPTL_NM
+             , DAMO_DEC(A.TELNO) TELNO
+             , (SELECT X.STD_TIME_NM FROM CM_STD_TIME X WHERE X.STD_TIME_SN = A.STD_TIME_SN) STD_TIME_NM
+             , DAMO_DEC(A.EMAIL) EMAIL
+             ,'(' || B.ZIP || ') ' || DAMO_DEC(B.ADDRONE) ADDR
+		  FROM CM_USER A
+		     , CM_RSRCHUSER B
+		 WHERE A.USER_ID = B.USER_ID 
+            AND A.USER_ID = #str#
+		]]>	
+	</select>
+	
+	<select id="COMH01DAO.selectCmUserForContractReq" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		   AND PASSWORD = DAMO_HASH(#PASSWORD#)
+		   AND USE_YN = 'Y'
+		   AND ACNT_LOCK_AT = 'N'
+		]]>
+	</select>
+	
+	<select id="COMH01DAO.selectCmUserForAcntLockAt" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT ACNT_LOCK_AT
+		     , LOGIN_FAILR_CO
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		]]>
+	</select>
+	
+	<select id="COMH01DAO.selectCmUserByUserId" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		]]>
+	</select>
+	
+	<select id="COMH01DAO.selectCmUserByUseYn" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		   AND USE_YN = 'Y'
+		]]>
+	</select>
+		
+	<select id="COMH01DAO.selectCmUserByAcntLockAt" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		   AND ACNT_LOCK_AT = 'Y'
+		]]>
+	</select>
+	
+	<select id="COMH01DAO.selectCmUserForLoginFailrCo" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT NVL(LOGIN_FAILR_CO, 0)
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		]]>
+	</select>
+	
+	<update id="COMH01DAO.updateCmUserForLoginFailrCo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_USER
+		   SET LOGIN_FAILR_CO = '0'
+		 WHERE USER_ID = #USER_ID#
+		   AND PASSWORD = DAMO_HASH(#PASSWORD#)
+		]]>
+	</update>
+	
+	<select id="COMH01DAO.selectCmRsrchuserCountByUserId" parameterClass="string" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_RSRCHUSER
+		 WHERE USER_ID = #USER_ID#
+		]]>
+	</select>
+	
+	<select id="COMH01DAO.selectCmUserCountForEmail" parameterClass="string" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*) 
+		  FROM CM_USER
+		 WHERE EMAIL = DAMO_ENC(#EMAIL#)
+		]]>
+	</select>
+	
+	<update id="NTCOMH01DAO.updateCmUserForAcntLockAt" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_USER
+		   SET LOGIN_FAILR_CO = NVL(LOGIN_FAILR_CO, 0) + 1
+		     , ACNT_LOCK_AT = CASE WHEN NVL(LOGIN_FAILR_CO, 0) > 1  THEN 'Y'
+                              ELSE 'N'
+               END                              
+		 WHERE USER_ID = #USER_ID#
+		]]>
+	</update>
+	
+	<select id="COMH01DAO.selectEdcCrTaskForTaskSn" parameterClass="hashMap" resultClass="string">
+		<![CDATA[
+		SELECT TASK_SN 
+		  FROM EDC_CR_TASK 
+		 WHERE TASK_NO = #TASK_NO#
+		]]>
+	</select>
+	 
+</sqlMap>

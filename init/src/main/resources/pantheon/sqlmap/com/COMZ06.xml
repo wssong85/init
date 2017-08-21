@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMZ06">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<insert id="COMZ06DAO.insertCmDtaAtrail" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_DTA_ATRAIL
+		     ( ATRAIL_SN
+		     , UPDT_DE
+	         , UPDTBFE_VALUE
+	         , AFTUPD_VALUE
+	         , STRE_ETC_RESN
+	         , STRE_RESN_CODE
+	         , USER_ID
+	         , TABLE_NM
+	         , COLUMN_NM
+	         , TABLE_PK
+	         , PK_NM	 
+	         , MODULE
+             , LABEL_NM
+             , TASK_NO
+	         , CONECT_IP
+             , PROGRM_NM        
+		     )
+		VALUES
+			 ( CM_DTA_ATRAIL_SEQ.NEXTVAL
+			 , SYSDATE
+	         , #UPDTBFE_VALUE#
+	         , #AFTUPD_VALUE#
+	         , #STRE_ETC_RESN#
+	         , #STRE_RESN_CODE#
+	         , #USER_ID#
+	         , #TABLE_NM#
+	         , #COLUMN_NM#
+	         , #TABLE_PK#
+	         , #PK_NM#
+	         , #MODULE#
+	         , #LABEL_NM#
+	         , #TASK_NO#
+		]]>
+		<isEmpty property="CONECT_IP">
+		<![CDATA[
+	         , (SELECT A.CONECT_IP 
+	              FROM CM_PROGRM_CONECT A, 
+	                   CM_PROGRM B 
+	             WHERE A.PROGRM_ID = B.PROGRM_ID 
+	               AND A.CONECT_DT = (SELECT MAX(X.CONECT_DT) FROM CM_PROGRM_CONECT X WHERE X.USER_ID = #USER_ID#)
+	               AND ROWNUM = 1)
+		]]>
+		</isEmpty>
+		<isNotEmpty property="CONECT_IP">
+		<![CDATA[
+			, #CONECT_IP#
+		]]>
+		</isNotEmpty>
+		<isEmpty property="PROGRM_NM">
+		<![CDATA[
+	         , (SELECT B.PROGRM_NM 
+	              FROM CM_PROGRM_CONECT A, 
+	                   CM_PROGRM B 
+	             WHERE A.PROGRM_ID = B.PROGRM_ID 
+	               AND A.CONECT_DT = (SELECT MAX(X.CONECT_DT) FROM CM_PROGRM_CONECT X WHERE X.USER_ID = #USER_ID#)
+	               AND ROWNUM = 1)
+		]]>
+		</isEmpty>
+		<isNotEmpty property="PROGRM_NM">
+		<![CDATA[
+			, #PROGRM_NM#
+		]]>
+		</isNotEmpty>
+		<![CDATA[
+			 )
+		]]>
+	</insert>
+	
+	<insert id="COMZ06DAO.insertCmDtaAtrailForClob" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_CLOB_ATRAIL
+		     ( ATRAIL_SN
+		     , UPDT_DE
+	         , UPDTBFE_VALUE
+	         , AFTUPD_VALUE
+	         , STRE_ETC_RESN
+	         , STRE_RESN_CODE
+	         , USER_ID
+	         , TABLE_NM
+	         , COLUMN_NM
+	         , TABLE_PK
+	         , PK_NM	 
+	         , MODULE
+             , LABEL_NM
+             , TASK_NO
+	         , CONECT_IP
+             , PROGRM_NM        
+		     )
+		VALUES
+			 ( CM_CLOB_ATRAIL_SEQ.NEXTVAL
+			 , SYSDATE
+	         , #UPDTBFE_VALUE:CLOB#
+	         , #AFTUPD_VALUE:CLOB#
+	         , #STRE_ETC_RESN#
+	         , #STRE_RESN_CODE#
+	         , #USER_ID#
+	         , #TABLE_NM#
+	         , #COLUMN_NM#
+	         , #TABLE_PK#
+	         , #PK_NM#
+	         , #MODULE#
+	         , #LABEL_NM#
+	         , #TASK_NO#
+	         , (SELECT A.CONECT_IP 
+	              FROM CM_PROGRM_CONECT A, 
+	                   CM_PROGRM B 
+	             WHERE A.PROGRM_ID = B.PROGRM_ID 
+	               AND A.CONECT_DT = (SELECT MAX(X.CONECT_DT) FROM CM_PROGRM_CONECT X WHERE X.USER_ID = #USER_ID#)
+	               AND ROWNUM = 1)
+	         , (SELECT B.PROGRM_NM 
+	              FROM CM_PROGRM_CONECT A, 
+	                   CM_PROGRM B 
+	             WHERE A.PROGRM_ID = B.PROGRM_ID 
+	               AND A.CONECT_DT = (SELECT MAX(X.CONECT_DT) FROM CM_PROGRM_CONECT X WHERE X.USER_ID = #USER_ID#)
+	               AND ROWNUM = 1)
+			 )
+		]]>
+	</insert>
+		
+	<select id="COMZ06DAO.selectDynamicTable" parameterClass="string" resultClass="hashMap" remapResults="true">
+	<![CDATA[
+		$SQL$
+	]]>
+	</select>
+</sqlMap>

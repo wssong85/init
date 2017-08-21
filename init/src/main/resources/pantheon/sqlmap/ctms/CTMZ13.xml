@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMZ13">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="CTMZ13DAO.selectIRBBasicInfoList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+	SELECT    PC.SN SN
+			, PC.TASK_SN
+	        , BI.KUNNR INSTT_ID
+	        , BI.NAME1 INSTT_NM
+	        , CU.USER_ID USER_ID
+	        , CU.USER_NM USER_NM
+	        , PC.ISESTATN ISESTATN
+	        , PC.DETAIL_CN DETAIL_CN
+	        , TO_CHAR(PC.FRST_CREAT_DE, 'YYYYMMDDHH24MISS') FRST_CREAT_DE
+	  FROM    CTMS_ST_PROGRS_CN PC
+	        , CM_USER CU
+	        , CM_RSRCHUSER CR
+	        , CM_INSTT CI
+	        , SAP_BCNC_INFO BI
+	 WHERE    PC.USER_ID = CU.USER_ID
+	   AND    PC.USER_ID = CR.USER_ID
+	   AND    PC.USE_AT = 'Y'
+	   AND    CR.INSTT_CODE = CI.INSTT_CODE
+	   AND    CI.KUNNR = BI.KUNNR
+	   AND    PC.TASK_SN    = #TASK_SN#
+]]>
+    <isNotEmpty property="INSTT_NM" prepend="AND">
+	<![CDATA[ 
+	BI.NAME1    LIKE '%'||#INSTT_NM#||'%'
+	]]>
+	</isNotEmpty>
+    <isNotEmpty property="USER_NM" prepend="AND">
+	<![CDATA[ 
+	CU.USER_NM    LIKE '%'||#USER_NM#||'%'
+	]]>
+	</isNotEmpty>
+	 ORDER BY PC.SN DESC
+</select>
+
+
+	<insert id="CTMZ13DAO.insertIRBBasicInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO CTMS_ST_PROGRS_CN(
+		         SN
+		       , TASK_SN
+		       , USER_ID
+		       , ISESTATN
+		       , DETAIL_CN
+		       , USE_AT
+		       , FRST_CREAT_DE
+		       , FRST_CRTR
+		       , LAST_UPDT_DE
+		       , LAST_UPDUSR
+		)
+		VALUES(
+		       #SN#
+		     , #TASK_SN#
+		     , #USER_ID#
+		     , #ISESTATN#
+		     , #DETAIL_CN#
+		     , #USE_AT#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		)
+		]]>
+	</insert>
+	
+	
+	<update id="CTMZ13DAO.updateIRBBasicInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE 	  CTMS_ST_PROGRS_CN SET
+		       	  ISESTATN         	= #ISESTATN#
+		     	, DETAIL_CN      	= #DETAIL_CN#
+		     	, LAST_UPDT_DE     	= SYSDATE
+		     	, LAST_UPDUSR      	= #UPDATE_ID#
+		 WHERE 	  SN  = #SN#
+		   AND 	  TASK_SN      = #TASK_SN#
+		]]>
+	</update>
+	
+	<update id="CTMZ13DAO.deleteIRBBasicInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE    CTMS_ST_PROGRS_CN SET
+			      USE_AT      	= 'N'
+		     	, LAST_UPDT_DE  = SYSDATE
+		     	, LAST_UPDUSR 	= #UPDATE_ID#
+		 WHERE 	  SN 		  = #SN#
+		   AND 	  TASK_SN     = #TASK_SN#
+		]]>
+	</update>
+	
+	<select id="CTMZ13DAO.selectUserInfoList" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+		SELECT    CU.USER_ID USER_ID
+		        , CU.USER_NM USER_NM
+		        , BI.KUNNR INSTT_ID
+		        , BI.NAME1 INSTT_NM
+		  FROM    CM_USERTASK UT
+		        , EDC_CR_TASK CT      
+		        , CM_RSRCHUSER CR      
+		        , CM_USER CU          
+		        , CM_INSTT CI         
+		        , SAP_BCNC_INFO BI    
+		 WHERE    UT.TASK_SN = CT.TASK_SN
+		   AND    UT.USER_ID = CR.USER_ID
+		   AND    CR.USER_ID = CU.USER_ID
+		   AND    CR.INSTT_CODE = CI.INSTT_CODE
+		   AND    CI.KUNNR = BI.KUNNR
+		   AND    CT.TASK_SN    = #TASK_SN#
+	]]>
+	    <isNotEmpty property="USER_NM" prepend="AND">
+		<![CDATA[ 
+		CU.USER_NM    LIKE #USER_NM#||'%'
+		]]>
+		</isNotEmpty>
+		 ORDER BY CU.USER_NM
+	</select>
+
+</sqlMap>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	
+	<!-- egov peopertiese-->
+	<bean name="propertiesService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TEST" value="TEST"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- Mail properties (entry 에 지속적 추가)-->  
+	<bean name="propertiesMailService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TEST_MAIL_TEMPLATE" value="TEST_MAIL_TEMPLATE.html"/>
+	            <entry key="PASSWORD_MAIL_TEMPLATE" value="PASSWORD_MAIL_TEMPLATE.html"/>
+	            <entry key="SANCTN_RSLT_MAIL_TEMPLATE" value="SANCTN_RSLT_MAIL_TEMPLATE.html" />
+			</map>
+		</property>
+	</bean>
+	
+	<!-- SMS properties (entry 에 지속적 추가)-->
+	<bean name="propertiesSmsService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TEST_SMS_TEMPLATE" value="TEST_SMS_TEMPLATE.html"/>
+	            <entry key="SANCTN_RSLT_SMS_TEMPLATE" value="SANCTN_RSLT_SMS_TEMPLATE.html"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- PDF 파일 하나당 bean 생성 -->
+	<bean name="comPdfService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="HTML_TEMPLATE" value="COM_HTML_1_TEMPLATE.html"/>
+	            <entry key="CSS_TEMPLATE" value="COM_CSS_1_TEMPLATE.css"/>
+			</map>
+		</property>
+	</bean>
+</beans>	

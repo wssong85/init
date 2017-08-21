@@ -1,0 +1,36 @@
+html, body {width:100%; height:100%;} body {overflow:auto;}
+#wrap {width: 100%; height: 100%;}
+
+/*슬라이드 이미지*/
+#Slider {width:100%;  height:100%; position: absolute; top:0; z-index: 0;}
+.visualImg {width:100%; min-width:1200px; height:100%; overflow:hidden;}
+.visualImg01 {background: url(../../../images/pantheon/common/introBg01.png) center center;}
+.visualImg02 {background: url(../../../images/pantheon/common/introBg02.png) center center;}
+.visualImg03 {background: url(../../../images/pantheon/common/introBg03.png) center center;}
+
+/*시스템링크*/
+#sstBtnBox {width:100%; height:100%;}
+.sstBtnBoxInner {} 
+.sstBtn {width:100%; min-width:1200px; position:absolute; left:50%; top:50%; margin-top:-107px; /*transform:translate(-50%, -50%);*/ text-align:center; color:#fff; font-size: 30px;}
+.sstBtn a {color:#fff !important;}
+.sstBtnLst {width: 214px; height:214px; display: inline-block; background: #627be4; border-radius: 50%; margin-right:9.5px; margin-left:9.5px; line-height: 214px; border:2px #627be4 solid; box-sizing: border-box; transition-duration:0.5s; position: relative;}
+.sstBtnLst:hover {background: rgba(255,255,255,0); border:2px #fff solid; box-sizing: border-box; transition-duration:0.5s; /*transform:rotateY(180deg);*/} 
+
+/*메인컨텐츠 반응형 너비 css*/
+@media (max-width:1400px) {
+.sstBtnLst {width: 184px; height:184px; line-height: 184px;/*  margin-right:5px; margin-left:5px; */ margin:10px 5px;}
+.sstBtnSub {padding-top: 70px !important;}
+}
+
+.sstBtnSubLst > a:hover {color:#627be4 !important; transition-duration:0.3s;}
+.sstBtnSubLst > a {color:#fff !important; transition-duration:0.3s;}
+.sstBtnLst01 > span {position: relative; top:-43px; z-index: 1;}
+.sstBtnSub {position: absolute; top:0; left:0; margin-left:auto; right:0; margin-right:auto;  line-height: 1.6em; font-size: 18px; padding-top: 87px;}
+
+
+
+
+/* 인트로 상단 오른쪽 추가 */
+.intro_top { position: fixed; top:0; right: 20px; color:#fff;  }
+.intro_top #topHeader{padding:0 20px 0 5px; height:34px; background: none; min-width:1200px; text-align: right; }
+.intro_top #topHeader #topMenu .gnb{ height:34px; line-height: 19px; padding-top:25px;  display:block; width:100%;}

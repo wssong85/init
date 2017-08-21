@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DMCJ07">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+
+	<select id="DMCJ07DAO.selectRoleByProgAndBtnList" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+        SELECT M.ROLE_ID
+             , M.MODULE_CODE
+             , M.MENU_ID
+             , M.PROGRM_ID
+             , M.MENU_NM
+             , M.UPPER_MENU_NM
+             , M.PROGRM_NM
+             , M.BUTTON_ID
+             , M.BUTTON_NM
+             , M.BUTTON_DC
+             , DECODE(M.BUTTON_ORDR, 0, '', M.BUTTON_ORDR) AS BUTTON_ORDR
+             , M.ROWS_ID
+             , M.ESSNTL_AT
+             , M.TASK_AT
+          FROM (
+                SELECT A.ROLE_ID
+                     , C.MODULE_CODE
+                     , C.MENU_ID
+                     , A.PROGRM_ID
+                     , C.MENU_NM
+                     , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = C.UPPER_MENU_ID) UPPER_MENU_NM
+                     , B.PROGRM_NM
+                     , '' AS BUTTON_ID
+                     , '' AS BUTTON_NM
+                     , '' AS BUTTON_DC
+                     , 0 AS BUTTON_ORDR
+                     , A.PROGRM_ID AS ROWS_ID
+                     , B.ESSNTL_AT
+                     , B.TASK_AT
+                  FROM CM_ROLE_AUTHOR A
+                     , CM_PROGRM B
+                     , CM_MENU C
+                 WHERE A.PROGRM_ID = B.PROGRM_ID
+                   AND B.MENU_ID   = C.MENU_ID
+                   AND A.ROLE_ID   = #ROLE_ID#
+                   AND A.USE_YN    = 'Y'
+                   AND B.USE_YN    = 'Y'
+                   AND C.USE_YN    = 'Y'
+                   AND B.TASK_AT   = 'Y'
+            UNION           
+                SELECT A.ROLE_ID
+                    , C.MODULE_CODE
+                    , C.MENU_ID
+                    , A.PROGRM_ID
+                    , C.MENU_NM
+                    , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = C.UPPER_MENU_ID) UPPER_MENU_NM
+                    , B.PROGRM_NM
+                    , D.BUTTON_ID
+                    , D.BUTTON_NM
+                    , D.BUTTON_DC
+                    , D.BUTTON_ORDR
+                    , A.PROGRM_ID||D.BUTTON_ID AS ROWS_ID
+                    , B.ESSNTL_AT
+                    , B.TASK_AT
+                 FROM CM_ROLE_AUTHOR A
+                    , CM_PROGRM B
+                    , CM_MENU C
+                    , CM_BUTTON D
+                WHERE A.PROGRM_ID = B.PROGRM_ID
+                  AND B.MENU_ID   = C.MENU_ID
+                  AND A.ROLE_ID   = #ROLE_ID#
+                  AND A.PROGRM_ID = D.PROGRM_ID
+                  AND A.USE_YN    = 'Y'
+                  AND B.USE_YN    = 'Y'
+                  AND C.USE_YN    = 'Y'
+                  AND D.USE_YN    = 'Y'
+                  AND B.TASK_AT   = 'Y'
+               ) M
+         WHERE NOT EXISTS (
+                       SELECT TR.ROLE_ID
+                         FROM CTMS_DMC_TASK_ROLE TR
+                        WHERE TR.ROLE_ID = #ROLE_ID#
+                          AND TR.TASK_SN = #TASK_SN#
+                          AND M.ROWS_ID  = TR.PROGRM_ID||TR.BUTTON_ID
+                      )
+         ORDER BY M.PROGRM_ID, M.BUTTON_ORDR
+		]]>
+	</select>
+
+	<select id="DMCJ07DAO.selectTaskByBtnList" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+        SELECT M.ROLE_ID
+             , M.MODULE_CODE
+             , M.MENU_ID
+             , M.PROGRM_ID
+             , M.MENU_NM
+             , M.UPPER_MENU_NM
+             , M.PROGRM_NM
+             , M.BUTTON_ID
+             , M.BUTTON_NM
+             , M.BUTTON_DC
+             , M.BUTTON_ORDR
+             , M.TASK_SN
+             , M.ROWS_ID
+             , M.TASK_AT
+          FROM (
+                SELECT TR.ROLE_ID
+                     , TR.MODULE_CODE
+                     , CM.MENU_ID
+                     , TR.PROGRM_ID
+                     , CM.MENU_NM
+                     , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID) UPPER_MENU_NM
+                     , CP.PROGRM_NM
+                     , TR.BUTTON_ID
+                     , '' AS BUTTON_NM
+                     , '' AS BUTTON_DC
+                     , TR.BUTTON_ORDR
+                     , TR.TASK_SN
+                     , TR.PROGRM_ID||TR.PROGRM_ID AS ROWS_ID
+                     , CP.TASK_AT
+                  FROM CTMS_DMC_TASK_ROLE TR
+                     , CM_PROGRM          CP
+                     , CM_MENU            CM
+                 WHERE TR.ROLE_ID     = #ROLE_ID#
+                   AND TR.TASK_SN     = #TASK_SN#
+                   AND TR.PROGRM_ID   = CP.PROGRM_ID
+                   AND CP.MENU_ID     = CM.MENU_ID
+                   AND CP.TASK_AT     = 'Y'
+                   AND TR.BUTTON_ORDR = 0
+            UNION
+                SELECT TR.ROLE_ID
+                     , TR.MODULE_CODE
+                     , CM.MENU_ID
+                     , TR.PROGRM_ID
+                     , CM.MENU_NM
+                     , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = CM.UPPER_MENU_ID) UPPER_MENU_NM
+                     , CP.PROGRM_NM
+                     , TR.BUTTON_ID
+                     , CB.BUTTON_NM
+                     , CB.BUTTON_DC
+                     , TR.BUTTON_ORDR
+                     , TR.TASK_SN
+                     , TR.PROGRM_ID||TR.PROGRM_ID AS ROWS_ID
+                     , CP.TASK_AT
+                  FROM CTMS_DMC_TASK_ROLE TR
+                     , CM_PROGRM          CP
+                     , CM_MENU            CM
+                     , CM_BUTTON          CB
+                 WHERE TR.ROLE_ID   = #ROLE_ID#
+                   AND TR.TASK_SN   = #TASK_SN#
+                   AND TR.PROGRM_ID = CP.PROGRM_ID
+                   AND CP.MENU_ID   = CM.MENU_ID
+                   AND TR.PROGRM_ID = CB.PROGRM_ID
+                   AND TR.BUTTON_ID = CB.BUTTON_ID
+                   AND CP.TASK_AT   = 'Y'
+               ) M
+           ORDER BY M.PROGRM_ID, M.BUTTON_ORDR 
+        ]]>
+	</select>
+
+	<select id="DMCJ07DAO.selectOldTaskByBtnList" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+        SELECT TR.ROLE_ID
+             , TR.PROGRM_ID
+             , TR.BUTTON_ID
+             , TR.TASK_SN
+          FROM CTMS_DMC_TASK_ROLE TR
+         WHERE TR.ROLE_ID   = #ROLE_ID#
+           AND TR.TASK_SN   = #TASK_SN#
+        ]]>
+	</select>
+	
+	<delete id="DMCJ07DAO.deleteOldTaskByBtnList" parameterClass="hashMap">
+		<![CDATA[
+        DELETE FROM CTMS_DMC_TASK_ROLE
+         WHERE ROLE_ID   = #ROLE_ID#
+           AND TASK_SN   = #TASK_SN#
+		]]>
+	</delete>
+	
+	<insert id="DMCJ07DAO.insertTaskByBtnList" parameterClass="hashMap">
+		<![CDATA[
+		INSERT INTO CTMS_DMC_TASK_ROLE (
+		       ROLE_ID
+		     , PROGRM_ID
+		     , TASK_SN
+		     , BUTTON_ID
+		     , BUTTON_ORDR
+		     , MODULE_CODE
+		     , FRST_CREAT_DE
+		     , FRST_CRTR
+		     , LAST_UPDT_DE
+		     , LAST_UPDUSR
+		) VALUES(
+		       #ROLE_ID#
+		     , #PROGRM_ID#
+		     , #TASK_SN#
+		     , #BUTTON_ID#
+		     , DECODE(#BUTTON_ORDR#, '', 0, #BUTTON_ORDR#)
+		     , #MODULE_CODE#
+		     , SYSDATE
+		     , #UPDATE_ID#
+		     , SYSDATE
+		     , NVL(#UPDATE_ID#, 'ABCDE')
+		)
+		]]>
+	</insert>
+	
+</sqlMap>

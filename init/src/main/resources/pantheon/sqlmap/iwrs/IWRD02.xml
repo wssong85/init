@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ <sqlMap namespace="IWRD02">
+	<typeAlias  alias="hashMap" type="java.util.HashMap"/>
+	
+	<select id="IWRD02.selectDrugStock" parameterClass="hashMap" resultClass="hashMap">
+		SELECT B.INSTT_CODE
+			  ,A.NAME1 INSTT_NAME
+	          ,B.IP_TYPE
+	          ,C.IP_CODE
+	          ,FN_GET_COMMONCODE('IWRS005', C.IP_STTUS_CODE, #LOCALE#) IP_STTUS_CODE
+	          ,NVL(TO_CHAR(C.WRHOUSNGDE, 'YYYYMMDDHH24MISS'), '') WRHOUSNGDE
+	          ,C.MNFCTURNO
+	          ,NVL(TO_CHAR(C.VALIDPD, 'YYYYMMDDHH24MISS'), '') VALIDPD
+	      FROM IWRS_DS_INVNTRYMANAGE_DETAIL B
+	INNER JOIN IWRS_DS_INVNTRYMANAGE_IP_INFO C
+	        ON B.INVNTRYMANAGE_CODE = C.INVNTRYMANAGE_CODE
+	       AND B.DLVYMANAGE_CODE = C.DLVYMANAGE_CODE
+	       AND B.SN = C.SN
+	 LEFT JOIN (SELECT A.TASK_SN
+	                  ,C.INSTT_CODE
+	                  ,D.NAME1
+	              FROM EDC_CR_INSTT_FORM A
+	        INNER JOIN CM_RSRCHUSER B
+	                ON A.INSTT_CODE = B.INSTT_CODE
+	        INNER JOIN CM_INSTT C
+	                ON B.INSTT_CODE = C.INSTT_CODE
+	        INNER JOIN SAP_BCNC_INFO D
+	                ON C.KUNNR = D.KUNNR
+	          GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1) A
+	        ON A.TASK_SN = B.TASK_CODE
+	       AND A.INSTT_CODE = B.INSTT_CODE
+	     WHERE B.TASK_CODE = #task_code#
+	     <isNotEmpty property="instt_code">
+	       AND B.INSTT_CODE = #instt_code#
+	     </isNotEmpty>
+	  ORDER BY B.INSTT_CODE, B.IP_TYPE, C.IP_CODE
+	</select>
+</sqlMap>

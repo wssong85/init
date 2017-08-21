@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DMCJ02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="DMCJ02DAO.selectCommonCodeList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT CMMN_CODE    AS CODE
+     , CMMN_CODE_NM AS NAME
+ FROM CM_CMMNCODE
+ WHERE CMMN_CLCODE = #CMMN_CLCODE#
+ AND     USE_AT = 'Y'
+ ORDER BY SORT_ORDR
+]]>
+</select>
+
+<select id="DMCJ02DAO.selectRoleId" parameterClass="hashMap" resultClass="hashMap">
+SELECT ROLE_ID AS CODE
+     , ROLE_NM AS NAME
+  FROM CM_ROLE
+WHERE  ROLE_ID NOT IN ('IS_AUTHENTICATED_ANONYMOUSLY', 'IS_AUTHENTICATED_REMEMBERED', 'IS_AUTHENTICATED_FULLY', 'ROLE_USER', 'ROLE_EXTENDS')
+  AND  USE_YN = 'Y'
+  AND  TASK_AT = 'Y'
+</select>
+
+<select id="DMCJ02DAO.selectAllNoticeList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 MA.NOTICE_SN
+		,MA.MODULE_SE
+		,MA.NOTICE_SE
+		,TA.TASK_NM
+		,TA.TASK_NO
+		,MA.FRSTCRTR
+		,TO_CHAR(MA.FRST_CREAT_DE, 'YYYYMMDDHH24MISS') AS FRST_CREAT_DE
+FROM 
+		CTMS_DMC_NOTICE_MANAGE MA
+		LEFT JOIN EDC_CR_TASK TA
+ON 		MA.TASK_SN = TA.TASK_SN
+]]>
+	<isNotEmpty property="TASK_NO">	
+	<![CDATA[ 
+	WHERE UPPER(TA.TASK_NO) LIKE '%' ||UPPER(#TASK_NO#)|| '%' 
+	]]>	
+	</isNotEmpty>
+</select>
+
+<select id="DMCJ02DAO.selectNoticeByPopup" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT 		 AU.AUTHOR_SN
+			,AU.NOTICE_SN
+			,AU.MANAGE_SE
+			,AU.ROLE_ID
+			,MA.MODULE_SE
+			,MA.NOTICE_SE
+			,MA.TASK_SN
+FROM 
+			CTMS_DMC_NOTICE_AUTHOR AU
+JOIN 		CTMS_DMC_NOTICE_MANAGE MA
+ON 			AU.NOTICE_SN=MA.NOTICE_SN
+LEFT JOIN 	EDC_CR_TASK TA
+ON 			MA.TASK_SN = TA.TASK_SN
+WHERE  		MA.NOTICE_SN = #NOTICE_SN#
+AND     	MANAGE_SE = #MANAGE_SE#
+]]>
+</select>
+
+
+
+<!-- 공지사항관리 -->
+<insert id="DMCJ02DAO.insertNoticeManageData" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CTMS_DMC_NOTICE_MANAGE(
+	NOTICE_SN
+	,MODULE_SE
+	,NOTICE_SE
+	,TASK_SN
+	,USE_AT
+	,FRST_CREAT_DE
+	,FRSTCRTR
+	,LAST_UPDT_DE
+	,LASTUPDUSR
+)VALUES(
+	 (SELECT NVL(MAX(TO_NUMBER(NOTICE_SN)), 0)+1 FROM CTMS_DMC_NOTICE_MANAGE )
+	,#MODULE_SE#
+	,#NOTICE_SE#
+	,#TASK_SN#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>
+</insert>
+
+<!-- 공지역할 -->
+<insert id="DMCJ02DAO.insertNoticeAuthor" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CTMS_DMC_NOTICE_AUTHOR(
+	 AUTHOR_SN
+	,NOTICE_SN
+	,MANAGE_SE
+	,ROLE_ID
+	,USE_AT
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,LAST_UPDUSR
+)VALUES(
+	 (SELECT NVL(MAX(TO_NUMBER(AUTHOR_SN)), 0)+1 FROM CTMS_DMC_NOTICE_AUTHOR )
+	,(SELECT MAX(NOTICE_SN) FROM CTMS_DMC_NOTICE_MANAGE )
+	,#MANAGE_SE#
+	,#ROLE_ID#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>
+</insert>
+
+
+
+<delete id="deleteNoticeBySendRole" parameterClass="hashMap"> 
+<![CDATA[
+DELETE FROM 
+CTMS_DMC_NOTICE_WRITE
+WHERE SN = #SN#
+]]>
+</delete>
+
+<delete id="deleteNoticeByReceptionRole" parameterClass="hashMap"> 
+<![CDATA[
+DELETE FROM 
+CTMS_DMC_NOTICE_REDNG
+WHERE SN = #SN#
+]]>
+</delete>
+
+</sqlMap>

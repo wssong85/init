@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SDBB02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<select id="SDBB02DAO.selectOrganInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+		 SELECT 
+		        DELNGLN_NM
+		      , A.DELNGLN_CODE
+		      , FN_GET_COMMONCODE('SDB002', DMSTC_SE, #LOCALE#) AS DMSTC_SE 
+		      , FN_GET_COMMONCODE('SDB003', DELNGLN_SE, #LOCALE#) AS DELNGLN_SE
+		      ,CNTRCT_FILE_ID
+		      ,C.DETAIL_SN 
+		   FROM SDB_IM_DELNGLN_MANAGE A		   
+		   LEFT JOIN DM_FILE_DETAIL C
+		   ON A.CNTRCT_FILE_ID = C.FILE_MASTR_SN
+	       WHERE A.USE_AT='Y' 
+	         AND INSTT_SE IS NULL
+	     ]]>
+	     <isNotEmpty property="DELNGLN_NM" prepend="AND">
+	     <![CDATA[ 
+	     	   DELNGLN_NM LIKE '%'|| #DELNGLN_NM# ||'%' 
+	     ]]>
+	     </isNotEmpty>	  
+	     ORDER BY A.USE_AT DESC, A.FRST_CREDE DESC
+	</select>
+	
+	<insert id="SDBB02DAO.insertOrgan" parameterClass="hashMap">
+	<![CDATA[
+		INSERT INTO SDB_IM_DELNGLN_MANAGE (
+			    DELNGLN_CODE
+			   , DELNGLN_NM
+			   , DELNGLN_SE
+			   , DMSTC_SE
+			   , CNTRCT_PD
+			   , CNTRCT_PD_END
+			   , EFECT_OCCRRNCDE   
+			   , PRMISNDE
+			   , CMTDE
+			   , CNTRCT_FILE_ID      
+			   , USE_AT
+			   , FRST_CREDE
+			   , REGIST_ID
+			   , LAST_UPDDE
+			   , UPDATE_ID
+			   ) 
+			VALUES ( 
+				#DELNGLN_CODE#
+				,#DELNGLN_NM#
+				,#DELNGLN_SE#
+				,#DMSTC_SE#
+				,#CNTRCT_PD#
+				,#CNTRCT_PD_END#
+				,#EFECT_OCCRRNCDE#
+				,#PRMISNDE#
+				,#CMTDE#
+				,#CNTRCT_FILE_ID#
+				,'Y'
+				,sysdate
+				,#UPDATE_ID#
+				,sysdate
+				,#UPDATE_ID#
+			 )
+	]]>
+	</insert>
+	
+	<update id="SDBB02DAO.updateOrgan" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_IM_DELNGLN_MANAGE
+	   SET DELNGLN_NM = #DELNGLN_NM# 
+	]]>
+	<isNotEmpty property="DELNGLN_SE" prepend=",">
+    <![CDATA[ 
+    	   DELNGLN_SE = #DELNGLN_SE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CNTRCT_PD" prepend=",">
+    <![CDATA[ 
+    	   CNTRCT_PD = #CNTRCT_PD# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CNTRCT_PD_END" prepend=",">
+    <![CDATA[ 
+    	   CNTRCT_PD_END = #CNTRCT_PD_END# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CTY" prepend=",">
+    <![CDATA[ 
+    	   EFECT_OCCRRNCDE = #EFECT_OCCRRNCDE# 
+    ]]>
+    </isNotEmpty>  
+    <isNotEmpty property="PRMISNDE" prepend=",">
+    <![CDATA[ 
+    	   PRMISNDE = #PRMISNDE# 
+    ]]>
+    </isNotEmpty>   
+    <isNotEmpty property="CMTDE" prepend=",">
+    <![CDATA[ 
+    	   CMTDE = #CMTDE# 
+    ]]>
+    </isNotEmpty>   
+    <isNotEmpty property="CNTRCT_FILE_ID" prepend=",">
+    <![CDATA[ 
+    	   CNTRCT_FILE_ID = #CNTRCT_FILE_ID# 
+    ]]>
+    </isNotEmpty>   
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   LAST_UPDDE = SYSDATE 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE DELNGLN_CODE = #DELNGLN_CODE#
+   	]]> 
+	</update>
+	
+	<update id="SDBB02DAO.deleteOrganByPk" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE SDB_IM_DELNGLN_MANAGE
+		   SET USE_AT = 'N'	
+	   	 WHERE DELNGLN_CODE = #DELNGLN_CODE#	       
+	]]>
+	</update>
+	<select id="SDBB02DAO.selectDelnglnInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+			 SELECT 
+			      DELNGLN_CODE
+			    , DELNGLN_NM
+			    , DELNGLN_SE
+			    , DMSTC_SE
+			    , TO_CHAR(CNTRCT_PD,'YYYYMMDDHH24MISS') AS CNTRCT_PD
+			    , TO_CHAR(CNTRCT_PD_END,'YYYYMMDDHH24MISS') AS CNTRCT_PD_END
+			    , TO_CHAR(EFECT_OCCRRNCDE,'YYYYMMDDHH24MISS') AS EFECT_OCCRRNCDE
+			    , TO_CHAR(PRMISNDE,'YYYYMMDDHH24MISS') AS PRMISNDE
+			    , TO_CHAR(CMTDE,'YYYYMMDDHH24MISS') AS CMTDE
+			    , CNTRCT_FILE_ID    
+			    
+			FROM SDB_IM_DELNGLN_MANAGE
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="DELNGLN_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   DELNGLN_CODE = #DELNGLN_CODE# 
+	     ]]>
+	     </isNotEmpty>
+	</select>
+	
+	<select id="SDBB02DAO.selectCntrctInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+		  SELECT 
+			      DETAIL_SN
+			    , FILE_MASTR_SN
+			    , ORGINL_FILE_NM ||'.'||ORGINL_EXTSN_NM AS FILE_NAME
+			    , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE
+			FROM DM_FILE_DETAIL
+	       WHERE FILE_MASTR_SN = #FILE_MASTR_SN#
+	       	 AND USE_AT='Y' 
+	       ORDER BY DETAIL_SN
+	     ]]>
+	</select>
+	
+	<select id="SDBB02DAO.selectChagerListInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+		  SELECT
+			    CHARGER_SN
+			   , DELNGLN_CODE
+			   , CHARGER_NM
+			   , CLSF
+			   , damo_dec(CTTPC) CTTPC
+			   , damo_dec(EMAIL) EMAIL
+			   , FAX
+			   , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE
+		  FROM SDB_IM_DELNGLN_CHARGER_MANAGE
+	     WHERE DELNGLN_CODE = #DELNGLN_CODE# 
+	 	 ORDER BY CHARGER_SN	    
+	     ]]>
+	    
+	</select>
+	
+	<select id="SDBB02DAO.selectChagerInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+		  SELECT
+			    CHARGER_SN
+			   , DELNGLN_CODE
+			   , CHARGER_NM
+			   , CLSF
+			   , damo_dec(CTTPC) CTTPC
+			   , damo_dec(EMAIL) EMAIL
+			   , FAX   
+			   , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE 
+		  FROM SDB_IM_DELNGLN_CHARGER_MANAGE
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="CHARGER_SN" prepend="AND">
+	     <![CDATA[ 
+	     	   CHARGER_SN = #CHARGER_SN# 
+	     ]]>
+	     </isNotEmpty>
+	</select>
+	
+	<insert id="SDBB02DAO.insertCharger" parameterClass="hashMap">
+	INSERT INTO SDB_IM_DELNGLN_CHARGER_MANAGE (
+				   CHARGER_SN
+				   , DELNGLN_CODE
+				   , CHARGER_NM
+				   , CLSF
+				   , CTTPC
+				   , EMAIL			   
+				   , USE_AT
+				   , FRST_CREDE
+				   , REGIST_ID
+				   , LAST_UPDDE
+				   , UPDATE_ID
+				   ) 
+				VALUES ( 
+				  SDB_CHARGER_SEQ.nextval
+				 ,#DELNGLN_CODE#
+				 ,#CHARGER_NM#
+				 ,#CLSF#
+				 ,damo_enc(#CTTPC#)
+				 ,damo_enc(#EMAIL#)
+				 ,'Y'
+				 ,sysdate
+				 ,#UPDATE_ID#
+				 ,sysdate
+				 ,#UPDATE_ID#
+				 )
+	</insert>
+	
+	<update id="SDBB02DAO.updateCharger" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_IM_DELNGLN_CHARGER_MANAGE
+	   SET DELNGLN_CODE = #DELNGLN_CODE# 
+	]]>
+	<isNotEmpty property="CHARGER_NM" prepend=",">
+    <![CDATA[ 
+    	   CHARGER_NM = #CHARGER_NM# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CLSF" prepend=",">
+    <![CDATA[ 
+    	   CLSF = #CLSF# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="CTTPC" prepend=",">
+    <![CDATA[ 
+    	   CTTPC = damo_enc(#CTTPC#) 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="EMAIL" prepend=",">
+    <![CDATA[ 
+    	   EMAIL = damo_enc(#EMAIL#) 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   LAST_UPDDE = SYSDATE 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE CHARGER_SN = #CHARGER_SN#
+   	]]> 
+	</update>
+	
+	<delete id="SDBB02DAO.deleteCharger" parameterClass="hashMap">
+	<![CDATA[
+		DELETE FROM SDB_IM_DELNGLN_CHARGER_MANAGE 
+		      WHERE CHARGER_SN = #CHARGER_SN#		       
+	]]>
+	</delete>
+	
+	
+	<insert id="SDBB02DAO.insertProduct" parameterClass="hashMap">
+	INSERT INTO SDB_IM_DELNGLN_TRTMNT_PRDUCT_M (
+		   PRDUCT_MANAGE_CODE
+		   , PRDUCT_CODE
+		   , DELNGLN_CODE   
+		   , USE_AT
+		   , FRST_CREDE
+		   , REGIST_ID
+		   , LAST_UPDDE
+		   , UPDATE_ID   
+		   ) 
+		VALUES ( 
+		  SDB_TPRODUCT_SEQ.NEXTVAL
+		 ,#PRDUCT_CODE#
+		 ,#DELNGLN_CODE#
+		 ,'Y'
+		 ,sysdate
+		 ,#UPDATE_ID#
+		 ,sysdate
+		 ,#UPDATE_ID# 
+		 )
+	</insert>
+	
+	
+	<update id="SDBB02DAO.updateProduct" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_IM_DELNGLN_TRTMNT_PRDUCT_M
+	   SET USE_AT = 'N' 
+	]]>
+	<![CDATA[
+   	 WHERE DELNGLN_CODE = #DELNGLN_CODE#
+   	]]> 
+	</update>
+	
+	<select id="SDBB02DAO.selectProductInfo" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+			SELECT FN_GET_MULLANG(B.PRDUCTNM_CODE) AS WORD
+		           , A.PRDUCT_CODE
+		      FROM SDB_IM_DELNGLN_TRTMNT_PRDUCT_M A
+		      LEFT JOIN SDB_IM_PRDUCT_INFO_MANAGE B
+		        ON A.PRDUCT_CODE = B.PRDUCT_CODE
+	         WHERE A.USE_AT='Y'
+	           AND A.DELNGLN_CODE = #DELNGLN_CODE# 
+	     ]]>	    
+	</select>
+	
+   	<update id="SDBB02DAO.delOrgan" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE SDB_IM_DELNGLN_MANAGE
+		   SET USE_AT = 'N'	
+	   	 WHERE DELNGLN_CODE = #DELNGLN_CODE#
+   	]]>
+	</update>	
+	
+	<update id="SDBB02DAO.delCtFile" parameterClass="hashMap">
+	<![CDATA[
+		UPDATE DM_FILE_DETAIL
+		   SET USE_AT = 'N'	
+	   	 WHERE DETAIL_SN = #DETAIL_SN#
+   	]]>
+	</update>
+	
+	
+	<select id="SDBB02DAO.selectProductList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		 SELECT *
+			FROM
+			    (SELECT U.*
+			      , FLOOR(( ROWNUM - 1 ) / #COUNT# + 1 ) AS PAGE
+			    FROM
+			        (SELECT PRDUCT_CODE
+			          , FN_GET_PRDUCT_NAME(PRDUCT_CODE) AS PRDUCTNM_CODE
+			          , PRDUCTNM
+			          , TO_CHAR(A.LAST_UPDDE,'YYYYMMDDHH24MISS') AS LAST_UPDDE
+			          , FN_GET_MULLANG(GNRL_NM_CODE3)            AS GNRL_NM_CODE3
+			          , FN_GET_MULLANG(GNRL_NM_CODE2)            AS GNRL_NM_CODE2
+			          , FN_GET_MULLANG(GNRL_NM_CODE1)            AS GNRL_NM_CODE1
+			          , FRST_MFBIZ_CODE
+			          , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS')     AS FRST_CREDE
+			          , TO_CHAR(CONFM_DTE, 'YYYYMMDDHH24MISS')        AS CONFM_DTE
+			          , FN_GET_MULLANG(CONFM_BFE_IP_NM_MULLANG_CODE3) AS CONFM_BFE_IP_NM_MULLANG_CODE3
+			          , FN_GET_MULLANG(CONFM_BFE_IP_NM_MULLANG_CODE2) AS CONFM_BFE_IP_NM_MULLANG_CODE2
+			          , FN_GET_MULLANG(CONFM_BFE_IP_NM_MULLANG_CODE1) AS CONFM_BFE_IP_NM_MULLANG_CODE1
+			          , COMAVA_AT
+			          , ROW_NUMBER() OVER (ORDER BY A.FRST_CREDE DESC) AS RNUM
+			        FROM SDB_IM_PRDUCT_INFO_MANAGE A
+			        LEFT JOIN SDB_IM_MULLANG_INFO B
+			        ON  A.PRDUCTNM_CODE = B.MULLANG_CODE
+			        WHERE 1  =1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_NM" prepend="AND">
+	     <![CDATA[	     	    
+	     	   (KOREAN LIKE '%'|| #PRDUCT_NM# ||'%' OR ENG LIKE '%'|| #PRDUCT_NM# ||'%') 
+	     ]]>
+	     </isNotEmpty>	 
+	     			ORDER BY RNUM DESC  
+			     ) U
+		    )
+		WHERE PAGE = #PAGE#
+	</select>
+	
+	<select id="SDBB02DAO.selectProductListReg" parameterClass="hashMap" resultClass="hashMap">
+		 <![CDATA[
+		SELECT  PRDUCT_CODE
+			   ,FN_GET_PRDUCT_NAME(PRDUCT_CODE) AS PRDUCTNM_CODE
+			   ,CONFM_BFE_IP_NM_MULLANG_CODE1
+			   ,TO_CHAR(CONFM_DTE,'YYYYMMDDHH24MISS') AS CONFM_DTE
+			   ,CONFM_BFE_IP_NM_MULLANG_CODE1
+			   ,COMAVA_AT
+		  FROM SDB_IM_PRDUCT_INFO_MANAGE
+		WHERE PRDUCT_CODE IN (
+			SELECT PRDUCT_CODE
+			  FROM SDB_IM_DELNGLN_TRTMNT_PRDUCT_M
+			 WHERE USE_AT ='Y'
+			 	AND DELNGLN_CODE = #DELNGLN_CODE#
+		 )	
+		 ]]>
+	</select>
+	
+	<select id="SDBB02DAO.selectProductListCount" parameterClass="hashMap" resultClass="string">
+		<![CDATA[
+		  SELECT 
+			COUNT(*) AS COUNT
+		  FROM SDB_IM_PRDUCT_INFO_MANAGE A
+		  LEFT JOIN SDB_IM_MULLANG_INFO B
+		  ON A.PRDUCTNM_CODE = B.MULLANG_CODE
+	       WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_NM" prepend="AND">
+	     <![CDATA[	     	    
+	     	   (KOREAN LIKE '%'|| #PRDUCT_NM# ||'%' OR ENG LIKE '%'|| #PRDUCT_NM# ||'%') 
+	     ]]>
+	     </isNotEmpty>	  
+	</select>
+	
+</sqlMap>	

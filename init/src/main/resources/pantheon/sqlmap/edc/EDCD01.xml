@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCD01DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+	
+	<select id="selectQueryTemplate" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT	CVR.SET_VRIABL_SN, 
+			    CG.VISIT_GROUP_SN,
+			    DV.VRIABL_NM,
+			    ECG.GROUP_LBL,
+			    CV.SN,
+			    CVS.VISIT_LBL,
+			    CS.SUBJECT_NO,
+			    SBI.NAME1,
+			    CVR.INSTT_FORM_SN,
+      			CVR.VISIT_SN,
+            	CVR.SET_ROW_SN,
+           		CVR.VRIABL_ROW_SN
+     
+		FROM	EDC_CF_VRIABL CVR
+		JOIN	EDC_CR_SET_VRIABL CSV
+		ON		CVR.SET_VRIABL_SN = CSV.SET_VRIABL_SN
+		AND		CSV.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+		AND		CSV.EDC_VER = #EDV_VERSION#
+		AND		CSV.TASK_SN = #TASK_SN#
+		JOIN	EDC_CR_VRIABL ECV
+		ON 		ECV.VRIABL_SN = CSV.VRIABL_SN
+		AND 	ECV.TASK_SN = #TASK_SN#
+		AND 	ECV.EDC_VER = #EDV_VERSION#
+		AND 	ECV.GROUP_SN = CSV.GROUP_SN
+		JOIN 	CDISC_DOMN_VRIABL DV
+		ON 		DV.DOMN_VRIABL_SN = ECV.DOMN_VRIABL_SN
+		JOIN 	EDC_CF_GROUP CG
+		ON 		CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+		AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+		AND 	CG.VISIT_SN = CVR.VISIT_SN
+		AND 	CG.SN = CVR.SN
+		AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+		JOIN 	EDC_CR_VISIT_GROUP CVG
+		ON 		CVG.VISIT_GROUP_SN = CG.VISIT_GROUP_SN
+		AND 	CVG.EDC_VER = #EDV_VERSION#
+		AND 	CVG.TASK_SN = #TASK_SN#  
+		JOIN 	EDC_CR_GROUP ECG
+		ON 		ECG.GROUP_SN = CSV.GROUP_SN
+		AND 	ECG.EDC_VER = #EDV_VERSION#
+		AND 	ECG.TASK_SN = #TASK_SN#
+		JOIN 	EDC_CF_VISIT CV
+		ON 		CV.INSTT_FORM_SN = CG.INSTT_FORM_SN
+		AND 	CV.SUBJECT_NO = CG.SUBJECT_NO
+		AND 	CV.VISIT_SN = CG.VISIT_SN
+		JOIN 	EDC_CR_VISIT_SCHDUL CVS
+		ON 		CVS.VISIT_SN = CVG.VISIT_SN
+		AND 	CVS.EDC_VER = #EDV_VERSION#
+		AND 	CVS.TASK_SN = #TASK_SN#
+		JOIN 	EDC_CF_SUBJECT CS
+		ON 		CS.INSTT_FORM_SN = CV.INSTT_FORM_SN
+		AND 	CS.SUBJECT_NO = CV.SUBJECT_NO
+		JOIN 	EDC_CR_INSTT_FORM CIF
+		ON 		CIF.INSTT_FORM_SN = CS.INSTT_FORM_SN
+		JOIN 	CM_INSTT CI
+		ON 		CIF.INSTT_CODE = CI.INSTT_CODE
+		LEFT JOIN	SAP_BCNC_INFO SBI
+		ON 		CI.KUNNR = SBI.KUNNR
+        <isNotEmpty property="INSTT_NM" prepend="AND">
+			SBI.NAME1 LIKE '%' || #INSTT_NM# || '%'
+		</isNotEmpty>
+	</select>
+	
+	<select id="selectQueryListByPre" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT      (
+		              SELECT NAME1
+		                FROM SAP_BCNC_INFO
+		               WHERE KUNNR = ECIF.INSTT_CODE
+                     	 AND USE_YN = 'Y'
+		            ) INSTT_NM
+		          , ECS.SUBJECT_NO
+		          , (
+		              SELECT      VISIT_LBL
+		                FROM      EDC_CR_VISIT_SCHDUL
+		               WHERE      VISIT_SN = ECQ.VISIT_SN
+                         AND      USE_AT = 'Y'
+		                 AND      TASK_SN = #TASK_SN#
+		                 AND      EDC_VER = #EDC_VER#
+		            ) VISIT_LBL
+		          , (
+		              SELECT      ECG.GROUP_LBL
+		                FROM      EDC_CR_GROUP ECG
+		                        , EDC_CR_VISIT_GROUP ECVG
+		               WHERE      ECVG.TASK_SN = ECG.TASK_SN
+		                 AND      ECVG.EDC_VER =  ECG.EDC_VER
+		                 AND      ECVG.TASK_SN = #TASK_SN#
+		                 AND      ECVG.EDC_VER = #EDC_VER#
+		                 AND      ECVG.GROUP_SN = ECG.GROUP_SN
+		                 AND      ECVG.VISIT_GROUP_SN = ECQ.VISIT_GROUP_SN
+	                     AND      ECG.USE_AT = 'Y'
+	                     AND      ECVG.USE_AT = 'Y'
+		            ) GROUP_LBL
+		          , (
+		              SELECT    CDV.VRIABL_NM
+		                FROM    EDC_CR_SET_VRIABL ECSV
+		                      , EDC_CR_VRIABL ECV
+		                      , CDISC_DOMN_VRIABL CDV
+		               WHERE    ECQ.VISIT_GROUP_SN = ECSV.VISIT_GROUP_SN
+		                 AND    ECQ.SET_VRIABL_SN = ECSV.SET_VRIABL_SN
+		                 AND    ECSV.EDC_VER = #EDC_VER#
+		                 AND    ECSV.TASK_SN = #TASK_SN#
+		                 AND    ECSV.TASK_SN = ECV.TASK_SN
+		                 AND    ECSV.EDC_VER = ECV.EDC_VER
+		                 AND    ECSV.GROUP_SN = ECV.GROUP_SN
+		                 AND    ECV.DOMN_VRIABL_SN = CDV.DOMN_VRIABL_SN
+	                     AND    ECV.USE_AT = 'Y'
+	                     AND    CDV.USE_AT = 'Y'
+	                     AND	ROWNUM = 1
+		            ) VRBL
+		          , FN_GET_COMMONCODE('EDC003', CQ.QUERY_STTUS_CODE, #LOCALE#)  QUERY_STTUS_CODE    /* Status */
+		          , CQ.QUERY_SN
+		          , FN_GET_COMMONCODE('EDC002', CQ.QUERY_TY_CODE, #LOCALE#) QUERY_TY_CODE        	/* Type */       
+		          ,	(
+		              SELECT	TO_CHAR(WM_CONCAT(CR.ROLE_NM))           
+		                FROM	CM_TASK_USER_ROLE CTUR             
+		                      ,	CM_ROLE CR            
+		               WHERE	CTUR.USER_ID = CQ.FRST_CRTR               
+		                 AND  	CTUR.TASK_SN = #TASK_SN#               
+		                 AND   	CTUR.ROLE_ID = CR.ROLE_ID 
+                     	 AND  	CR.USE_YN = 'Y'
+		            ) AS ROLE_NM  			/* Role */
+		          , FN_GET_USER_NAME(CQ.FRST_CRTR) FRST_CRTR           /* Issue */
+		          , FN_GET_USER_NAME(CQ.LAST_UPDUSR) LAST_UPDUSR          /* Modifier */
+		          , CQ.QUERY_CN             /* Query */
+		          , CQ.RESN                 /* Reason */
+		          , CQ.LAST_UPDDE			/* Mod Date */
+		  FROM      EDC_CF_QUERY ECQ
+		          , CM_QUERY CQ
+		          , EDC_CF_SUBJECT ECS
+		          , EDC_CR_INSTT_FORM ECIF
+		 WHERE      ECQ.QUERY_SN = CQ.QUERY_SN
+		   AND      ECS.INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		   AND      ECS.SUBJECT_NO = ECQ.SUBJECT_NO
+		   AND      ECIF.INSTT_FORM_SN = ECQ.INSTT_FORM_SN
+		   AND		ECIF.TASK_SN = #TASK_SN#
+           AND      ECQ.USE_AT = 'Y'
+		   AND		CQ.USE_AT = 'Y'
+	       AND      ECS.USE_AT = 'Y'
+	       AND      ECIF.USE_AT = 'Y'
+		   AND      CQ.QUERY_STTUS_CODE = '04'	/* 예비 */
+		   <isNotEmpty property="INSTT_NM" prepend="AND">
+		   (
+             SELECT NAME1
+               FROM SAP_BCNC_INFO
+              WHERE KUNNR = ECIF.INSTT_CODE
+                AND USE_YN = 'Y'
+           ) LIKE '%'||#INSTT_NM#||'%'
+		   </isNotEmpty>
+		   <isNotEmpty property="SUBJECT_NO" prepend="AND">
+		   ECS.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		   </isNotEmpty>				
+	</select>
+	
+	<select id="selectGetEdcVer" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT    MAX(EDC_VER) EDC_VER
+		  FROM    EDC_CR_FORM
+		 WHERE    TASK_SN = #TASK_SN#  
+		   AND    USE_AT = 'Y'
+	</select>
+	
+	<select id="selectQueryListByOpen" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT      (
+		              SELECT NAME1
+		                FROM SAP_BCNC_INFO
+		               WHERE KUNNR = ECIF.INSTT_CODE
+                     	 AND USE_YN = 'Y'
+		            ) INSTT_NM
+		          , ECS.SUBJECT_NO
+		          , (
+		              SELECT      VISIT_LBL
+		                FROM      EDC_CR_VISIT_SCHDUL
+		               WHERE      VISIT_SN = ECQ.VISIT_SN
+                         AND      USE_AT = 'Y'
+		                 AND      TASK_SN = #TASK_SN#
+		                 AND      EDC_VER = #EDC_VER#
+		            ) VISIT_LBL
+		          , (
+		              SELECT      ECG.GROUP_LBL
+		                FROM      EDC_CR_GROUP ECG
+		                        , EDC_CR_VISIT_GROUP ECVG
+		               WHERE      ECVG.TASK_SN = ECG.TASK_SN
+		                 AND      ECVG.EDC_VER =  ECG.EDC_VER
+		                 AND      ECVG.TASK_SN = #TASK_SN#
+		                 AND      ECVG.EDC_VER = #EDC_VER#
+		                 AND      ECVG.GROUP_SN = ECG.GROUP_SN
+		                 AND      ECVG.VISIT_GROUP_SN = ECQ.VISIT_GROUP_SN
+	                     AND      ECG.USE_AT = 'Y'
+	                     AND      ECVG.USE_AT = 'Y'
+		            ) GROUP_LBL
+		          , (
+		              SELECT    CDV.VRIABL_NM
+		                FROM    EDC_CR_SET_VRIABL ECSV
+		                      , EDC_CR_VRIABL ECV
+		                      , CDISC_DOMN_VRIABL CDV
+		               WHERE    ECQ.VISIT_GROUP_SN = ECSV.VISIT_GROUP_SN
+		                 AND    ECQ.SET_VRIABL_SN = ECSV.SET_VRIABL_SN
+		                 AND    ECSV.EDC_VER = #EDC_VER#
+		                 AND    ECSV.TASK_SN = #TASK_SN#
+		                 AND    ECSV.TASK_SN = ECV.TASK_SN
+		                 AND    ECSV.EDC_VER = ECV.EDC_VER
+		                 AND    ECSV.GROUP_SN = ECV.GROUP_SN
+            			 AND    ECSV.VRIABL_SN = ECV.VRIABL_SN
+		                 AND    ECV.DOMN_VRIABL_SN = CDV.DOMN_VRIABL_SN
+	                     AND    ECV.USE_AT = 'Y'
+	                     AND    CDV.USE_AT = 'Y'
+		            ) VRBL
+		          , FN_GET_COMMONCODE('EDC003', CQ.QUERY_STTUS_CODE, #LOCALE#)  QUERY_STTUS_CODE    /* Status */
+		          , CQ.QUERY_SN
+		          , FN_GET_COMMONCODE('EDC002', CQ.QUERY_TY_CODE, #LOCALE#) QUERY_TY_CODE        	/* Type */       
+		          ,	(
+		              SELECT	TO_CHAR(WM_CONCAT(CR.ROLE_NM))           
+		                FROM	CM_TASK_USER_ROLE CTUR             
+		                      ,	CM_ROLE CR            
+		               WHERE	CTUR.USER_ID = CQ.FRST_CRTR               
+		                 AND  	CTUR.TASK_SN = #TASK_SN#               
+		                 AND   	CTUR.ROLE_ID = CR.ROLE_ID 
+                     	 AND  	CR.USE_YN = 'Y'
+		            ) AS ROLE_NM  			/* Role */
+		          , FN_GET_USER_NAME(CQ.FRST_CRTR) FRST_CRTR            /* Issue */
+		          , FN_GET_USER_NAME(CQ.LAST_UPDUSR) LAST_UPDUSR          /* Modifier */
+		          , CQ.QUERY_CN             /* Query */
+		          , CQ.RESN                 /* Reason */
+		          , CQ.LAST_UPDDE			/* Mod Date */
+		  FROM      EDC_CF_QUERY ECQ
+		          , CM_QUERY CQ
+		          , EDC_CF_SUBJECT ECS
+		          , EDC_CR_INSTT_FORM ECIF
+		 WHERE      ECQ.QUERY_SN = CQ.QUERY_SN
+		   AND      ECS.INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		   AND      ECS.SUBJECT_NO = ECQ.SUBJECT_NO
+		   AND      ECIF.INSTT_FORM_SN = ECQ.INSTT_FORM_SN
+		   AND		ECIF.TASK_SN = #TASK_SN#
+           AND      ECQ.USE_AT = 'Y'
+		   AND		CQ.USE_AT = 'Y'
+	       AND      ECS.USE_AT = 'Y'
+	       AND      ECIF.USE_AT = 'Y'
+		   AND      CQ.QUERY_STTUS_CODE = '01' /* 오픈 */
+		   <isNotEmpty property="INSTT_NM" prepend="AND">
+		   (
+             SELECT NAME1
+               FROM SAP_BCNC_INFO
+              WHERE KUNNR = ECIF.INSTT_CODE
+                AND USE_YN = 'Y'
+           ) LIKE '%'||#INSTT_NM#||'%'
+		   </isNotEmpty>
+		   <isNotEmpty property="SUBJECT_NO" prepend="AND">
+		   ECS.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		   </isNotEmpty>
+	</select>
+	
+	<update id="updateCmQueryByQuerySttus" parameterClass="hashMap">
+		UPDATE 	  CM_QUERY
+		   SET 	  QUERY_STTUS_CODE = #QUERY_STTUS_CODE#
+		   		, LAST_UPDDE = SYSDATE
+		   		, LAST_UPDUSR = #UPDATE_ID#
+		 WHERE 	  QUERY_SN = #QUERY_SN#
+	</update>
+	
+	<update id="updateCmQueryByUseAt" parameterClass="hashMap">
+		UPDATE 	  CM_QUERY
+		   SET 	  USE_AT = #USE_AT#
+		   		, LAST_UPDDE = SYSDATE
+		   		, LAST_UPDUSR = #UPDATE_ID#
+		 WHERE 	  QUERY_SN = #QUERY_SN#
+	</update>
+	
+	<insert id="insertQueryMst" parameterClass="hashMap">
+		INSERT INTO CM_QUERY(
+				    QUERY_SN,
+				    MODULE_CODE,
+				    QUERY_TY_CODE,
+				    QUERY_STTUS_CODE,
+				    END_AT,
+				    FRST_CREDE,
+				    FRST_CRTR,
+				    LAST_UPDDE,
+				    LAST_UPDUSR,
+				    QUERY_GROUP
+				    )
+				    VALUES(
+				    #QUERY_SN#,
+				    '02',
+				    '02',
+				    '04',
+				    'N',
+				    SYSDATE,
+				    #USER_ID#,
+				    SYSDATE,
+				    #USER_ID#,
+				    #QUERY_SN#
+				    )
+	</insert>
+	
+	<insert id="insertCfQuery" parameterClass="hashMap">
+		INSERT INTO EDC_CF_QUERY(
+				    QUERY_SN,
+				    INSTT_FORM_SN,
+				    SUBJECT_NO,
+				    VISIT_SN,
+				    SN,
+				    VISIT_GROUP_SN,
+				    SET_VRIABL_SN,
+				    SET_ROW_SN,
+				    VRIABL_ROW_SN,
+				    FRST_CREDE,
+				    FRST_CRTR,
+				    LAST_UPDDE,
+				    LAST_UPDUSR
+				    )
+				    VALUES(
+				    #QUERY_SN#,
+				    #insttFormSn#,
+				    #Subject#,
+				    #visitSn#,
+				    #Sn#,
+				    #VisitGroupSn#,
+				    #SetVriablSn#,
+				    #setRowSn#,
+				    #vriablRowSn#,
+				    SYSDATE,
+				    #USER_ID#,
+				    SYSDATE,
+				    #USER_ID#
+				    )
+	</insert>
+</sqlMap>

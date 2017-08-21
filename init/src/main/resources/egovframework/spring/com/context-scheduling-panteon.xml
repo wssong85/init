@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<!-- 거래처 정보 -->
+	<bean id="panteonStats1" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="COME01Service" />
+		<property name="targetMethod" value="batchSapBcncTmpr" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+	<!-- simple trigger -->
+<!-- 	<bean id="pantheonStatsTrigger1" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean"> -->
+<!-- 		<property name="jobDetail" ref="panteonStats1" /> -->
+<!-- 		<property name="startDelay" value="60000" /> -->
+<!-- 		<property name="repeatInterval" value="100000" /> -->
+<!-- 	</bean> -->
+	
+	<!-- cron trigger -->
+	<bean id="pantheonStatsTrigger1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+   		<property name="jobDetail" ref="panteonStats1" />
+   		<property name="cronExpression" value="0 0 0,6,12,18 * * ?" />
+	</bean>
+	
+	<!-- 부서정보  -->
+	<bean id="panteonStats2" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="COME01Service" />
+		<property name="targetMethod" value="batchInfraDeptTmpr" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+<!-- 	<bean id="pantheonStatsTrigger2" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean"> -->
+<!-- 		<property name="jobDetail" ref="panteonStats2" /> -->
+<!-- 		<property name="startDelay" value="60000" /> -->
+<!-- 		<property name="repeatInterval" value="2160000" /> -->
+<!-- 	</bean> -->
+
+	<bean id="pantheonStatsTrigger2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+   		<property name="jobDetail" ref="panteonStats2" />
+   		<property name="cronExpression" value="0 0 7 * * ?" />
+	</bean>
+
+	
+	<!-- 유저정보 -->	
+	<bean id="panteonStats3" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="COME01Service" />
+		<property name="targetMethod" value="batchInfraUserTmpr" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+<!-- 	<bean id="pantheonStatsTrigger3" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean"> -->
+<!-- 		<property name="jobDetail" ref="panteonStats3" /> -->
+<!-- 		<property name="startDelay" value="60000" /> -->
+<!-- 		<property name="repeatInterval" value="2160000" /> -->
+<!-- 	</bean> -->
+
+	<bean id="pantheonStatsTrigger3" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+   		<property name="jobDetail" ref="panteonStats3" />
+   		<property name="cronExpression" value="0 0 7 * * ?" />
+	</bean>
+	
+
+	<bean id="pantheonScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="pantheonStatsTrigger1" />
+				<ref bean="pantheonStatsTrigger2" />
+				<ref bean="pantheonStatsTrigger3" />
+			</list>
+		</property>
+	</bean>
+	
+</beans>

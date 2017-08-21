@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="IWRG01">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+	
+	<select id="IWRG01DAO.selectTaskList" parameterClass="hashmap" resultClass="hashmap">
+	    SELECT A.TASK_SN
+	          ,A.TASK_NO
+	          ,A.TASK_NM
+	          ,B.IWRS_VER
+	          ,TO_CHAR(B.APPLC_DE, 'YYYYMMDDHH24MISS') APPLC_DE
+	          ,B.PROGRS_CODE
+	      FROM EDC_CR_TASK A
+	 LEFT JOIN IWRS_DESIGN B
+	        ON A.TASK_SN = B.TASK_SN
+	     WHERE A.USE_AT = 'Y'
+		<isNotEmpty property="TASK_NO">
+	       AND TASK_NO LIKE '%' || #TASK_NO# || '%'
+	    </isNotEmpty>
+	    <isNotEmpty property="TASK_NM">
+	       AND TASK_NM LIKE '%' || #TASK_NM# || '%'
+	    </isNotEmpty>
+	  ORDER BY A.LAST_UPDDE DESC
+	</select>
+	
+	<select id="IWRG01DAO.selectIwrsDesignList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT TASK_SN
+	          ,IWRS_VER
+	          ,PROGRS_CODE
+	          ,CHANGE_RESN
+	          ,TO_CHAR(APPLC_DE, 'YYYYMMDDHH24MISS') APPLC_DE
+	          ,FRST_CRTR
+	          ,TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	      FROM IWRS_DESIGN
+	     WHERE TASK_SN = #TASK_SN#
+	  ORDER BY IWRS_VER DESC
+	</select>
+	
+	<select id="IWRG01DAO.selectIwrsDesignerInfo" parameterClass="hashmap" resultClass="String">
+		SELECT CASE WHEN NVL(MAX(IWRS_VER), ' ') = ' ' THEN '1.0'               
+	                ELSE TO_CHAR(TO_NUMBER(MAX(IWRS_VER)) + 0.1)               
+	                END IWRS_VER  
+	      FROM (SELECT MAX(IWRS_VER) IWRS_VER
+	              FROM IWRS_DESIGN
+	             WHERE TASK_SN = #TASK_SN#
+	          GROUP BY TASK_SN) A
+	RIGHT JOIN DUAL B
+	        ON 1 = 1
+	</select>
+	
+	<insert id="IWRG01DAO.insertIwrsDesignerInfo" parameterClass="hashmap">
+		INSERT INTO IWRS_DESIGN
+					(
+						TASK_SN
+					   ,IWRS_VER
+					   ,PROGRS_CODE
+					   ,CHANGE_RESN
+					   ,APPLC_CODE
+   		<isNotEmpty property="APPLC_DE">
+					   ,APPLC_DE
+		</isNotEmpty>
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					)
+			 VALUES (
+			 			#TASK_SN#
+			 		   ,#IWRS_VER#
+			 		   ,#PROGRS_CODE#
+			 		   ,#CHANGE_RESN#
+		<isNotEmpty property="APPLC_DE">
+			 		   ,#APPLC_CODE#
+		</isNotEmpty>
+			 		   ,TO_DATE(#APPLC_DE# || '000000', 'YYYYMMDDHH24MISS')
+			 		   ,#USE_AT#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<select id="IWRG01DAO.selectRandomizationList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.CREAT_CODE
+	          ,A.TASK_SN
+	          ,A.IWRS_VER
+	          ,FN_GET_COMMONCODE('IWRS016', A.SE_CODE, #LOCALE#) SE_CODE
+	          ,FN_GET_COMMONCODE('IWRS017', A.STTUS_CODE, #LOCALE#) STTUS_CODE
+	          ,FN_GET_COMMONCODE('IWRS018', A.CODE_TY, #LOCALE#) || '(' || FN_GET_COMMONCODE('IWRS019', A.RULE_TY, #LOCALE#) || ',' || DECODE(STRTFY_AT, 'Y', '층화', '비층화') || ')' CODE_TY
+	          ,C.TRGTER_CO
+	          ,A.CODE_CO
+	          ,FN_GET_COMMONCODE('IWRS020', A.OPER_TY, #LOCALE#) OPER_TY
+	          ,FN_GET_USER_NAME(A.FRST_CRTR) FRST_CRTR
+	          ,C.VISIT_LBL
+	      FROM IWRS_CODE_CREAT A
+	 LEFT JOIN EDC_CR_TASK B
+	        ON A.TASK_SN = B.TASK_SN
+	 LEFT JOIN EDC_CR_PRDUCT C
+	 		ON A.TASK_SN = C.TASK_SN
+	 LEFT JOIN (SELECT A.TASK_SN
+	                  ,A.EDC_VER
+	                  ,B.CREAT_CODE
+	                  ,LISTAGG(A.VISIT_LBL, ',') WITHIN GROUP (ORDER BY A.VISIT_SN) VISIT_LBL
+	              FROM EDC_CR_VISIT_SCHDUL A
+	        INNER JOIN IWRS_VISIT_SCHDUL B
+	                ON A.EDC_VER = B.EDC_VER
+	               AND A.VISIT_SN = B.VISIT_SN
+	          GROUP BY A.TASK_SN, A.EDC_VER, B.CREAT_CODE) C
+	        ON A.TASK_SN = B.TASK_SN
+	     WHERE A.TASK_SN = #TASK_SN#
+	       AND A.IWRS_VER = #IWRS_VER#
+	  ORDER BY A.LAST_UPDDE DESC
+	</select>
+	
+	<select id="IWRG01DAO.selectVisitInfo" parameterClass="hashmap" resultClass="hashmap">
+		SELECT VISIT_SN
+	          ,VISIT_LBL
+	      FROM EDC_CR_VISIT_SCHDUL A
+	INNER JOIN (
+	              SELECT TASK_SN
+	                    ,MAX(EDC_VER) EDC_VER
+	                FROM EDC_CR_FORM
+	               WHERE TASK_SN = #TASK_SN#
+	            GROUP BY TASK_SN) B
+	        ON A.TASK_SN = B.TASK_SN
+	       AND A.EDC_VER = B.EDC_VER
+	     WHERE A.USE_AT = 'Y'
+	  ORDER BY A.VISIT_ORDR
+	</select>
+	
+	<select id="IWRG01DAO.selectArmRaioInfo" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.TA_SN
+	          ,A.TA_CODE
+	          ,A.TA_LBL
+	          ,A.EDC_VER
+	          ,A.TASK_SN
+	      FROM EDC_CR_TA A
+	INNER JOIN (SELECT TASK_SN
+	                  ,MAX(EDC_VER) EDC_VER
+	              FROM EDC_CR_FORM
+	             WHERE TASK_SN = #TASK_SN#
+	               AND USE_AT = 'Y'
+	          GROUP BY TASK_SN) C
+	        ON A.EDC_VER = C.EDC_VER
+	     WHERE A.TASK_SN = #TASK_SN#
+	       AND A.USE_AT = 'Y'
+	  ORDER BY A.TA_SN
+	</select>
+	
+	<select id="IWRG01DAO.selectEdcVersion" parameterClass="hashmap" resultClass="String">
+		SELECT MAX(EDC_VER) EDC_VER
+          FROM EDC_CR_FORM
+         WHERE TASK_SN = #TASK_SN#
+           AND USE_AT = 'Y'
+      GROUP BY TASK_SN
+	</select>
+	
+	<select id="IWRG01DAO.selectGenerateCreateCode" parameterClass="hashmap" resultClass="String">
+		SELECT DBMS_RANDOM.STRING('A', 32) CREAT_CODE
+   		  FROM DUAL
+	</select>
+	
+	<select id="IWRG01DAO.selectCreateCode" parameterClass="hashmap" resultClass="int">
+		SELECT COUNT(*) CNT
+		  FROM IWRS_CODE_CREAT
+		 WHERE CREAT_CODE = #CREAT_CODE#
+	</select>
+	
+	<insert id="IWRG01DAO.insertCodeCreat" parameterClass="hashmap">
+		INSERT INTO IWRS_CODE_CREAT
+					(
+						CREAT_CODE
+					   ,TASK_SN
+					   ,IWRS_VER
+					   ,SE_CODE
+					   ,STTUS_CODE
+					   ,CODE_TY
+					   ,RULE_TY
+					   ,STRTFY_AT
+					   ,CODE_CO
+					   ,OPER_TY
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					)
+			 VALUES (
+			 			#CREAT_CODE#
+			 		   ,#TASK_SN#
+			 		   ,#IWRS_VER#
+			 		   ,#SE_CODE#
+			 		   ,#STTUS_CODE#
+			 		   ,#CODE_TY#
+					   ,#RULE_TY#
+					   ,#STRTFY_AT#
+					   ,#CODE_CO#
+					   ,#OPER_TY#
+					   ,#USE_AT#
+					   ,SYSDATE
+					   ,#USER_ID#
+					   ,SYSDATE
+					   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<insert id="IWRG01DAO.insertVisitSchdul" parameterClass="hashmap">
+		INSERT INTO IWRS_VISIT_SCHDUL
+					(
+						CREAT_CODE
+					   ,EDC_VER
+					   ,VISIT_SN
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					)
+			 VALUES (
+			 			#CREAT_CODE#
+			 		   ,#EDC_VER#
+					   ,#VISIT_SN#
+					   ,#USE_AT#
+					   ,SYSDATE
+					   ,#USER_ID#
+					   ,SYSDATE
+					   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<insert id="IWRG01DAO.insertArmRatioInfo" parameterClass="hashmap">
+		INSERT INTO IWRS_ARM_RATE
+					(
+						CREAT_CODE
+					   ,EDC_VER
+					   ,TA_CODE
+					   ,TA_LBL
+					   ,TA_RATE
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					)
+			 VALUES (
+			 			#CREAT_CODE#
+					   ,#EDC_VER#
+					   ,#TA_CODE#
+					   ,#TA_LBL#
+					   ,#TA_RATE#
+					   ,#USE_AT#
+					   ,SYSDATE
+					   ,#USER_ID#
+					   ,SYSDATE
+					   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<insert id="IWRG01DAO.insertCodeConf" parameterClass="hashmap">
+		INSERT INTO IWRS_CODE_CONF
+					(
+						CREAT_CODE
+					   ,CONF_SN
+					   ,CONF_TY
+					   ,CONF_SIZE
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					)
+			 VALUES (
+			 			#CREAT_CODE#
+					   ,#CONF_SN#
+					   ,#CONF_TY#
+					   ,#CONF_SIZE#
+					   ,#USE_AT#
+					   ,SYSDATE
+					   ,#USER_ID#
+					   ,SYSDATE
+					   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<insert id="IWRG01DAO.insertCodeConfValue" parameterClass="hashmap">
+		INSERT INTO IWRS_CONF_VALUE
+					(
+						CREAT_CODE
+					   ,CONF_SN
+					   ,VALUE_SN
+					   ,CONF_VALUE
+					   ,STRTFY_SN
+					   ,LVL_SN
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					)
+			 VALUES (
+			 			#CREAT_CODE#
+					   ,#CONF_SN#
+					   ,#VALUE_SN#
+					   ,#CONF_VALUE#
+					   ,#STRTFY_SN#
+					   ,#LVL_SN#
+					   ,#USE_AT#
+					   ,SYSDATE
+					   ,#USER_ID#
+					   ,SYSDATE
+					   ,#USER_ID#
+			 		) 
+	</insert>
+	
+	<select id="IWRG01DAO.selectConfSn" parameterClass="hashmap" resultClass="int">
+		SELECT NVL(MAX(CONF_SN), 0) + 1
+		  FROM IWRS_CODE_CONF
+		 WHERE CREAT_CODE = #CREAT_CODE#
+	</select>
+	
+	<select id="IWRG01DAO.selectConfValueSn" parameterClass="hashmap" resultClass="int">
+		SELECT NVL(MAX(VALUE_SN), 0) + 1
+		  FROM IWRS_CONF_VALUE
+		 WHERE CREAT_CODE = #CREAT_CODE#
+		   AND CONF_SN = #CONF_SN#
+	</select>
+	
+	<insert id="IWRG01DAO.insertRandomSeed" parameterClass="hashmap">
+		INSERT INTO IWRS_RANDOM_SEED
+					(
+						CREAT_CODE
+					   ,OPER_TY
+					   ,SEED_CO
+					   ,BLCK_SEED_CO
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					)
+			 VALUES (
+			 			#CREAT_CODE#
+					   ,#OPER_TY#
+					   ,#SEED_CO#
+					   ,#BLCK_SEED_CO#
+					   ,#USE_AT#
+					   ,SYSDATE
+					   ,#USER_ID#
+					   ,SYSDATE
+					   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<insert id="IWRG01DAO.insertBlock" parameterClass="hashmap">
+		INSERT INTO IWRS_BLCK
+					(
+						CREAT_CODE
+					   ,OPER_TY
+					   ,BLCK_SN
+					   ,BLCK_SIZE
+					   ,BLCK_CO
+					   ,CREAT_CO
+					   ,ADIT_AT
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					)
+			 VALUES (
+			 			#CREAT_CODE#
+					   ,#OPER_TY#
+					   ,#BLCK_SN#
+					   ,#BLCK_SIZE#
+					   ,#BLCK_CO#
+					   ,#CREAT_CO#
+					   ,#ADIT_AT#
+					   ,#USE_AT#
+					   ,SYSDATE
+					   ,#USER_ID#
+					   ,SYSDATE
+					   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<select id="IWRG01DAO.selectBlckSn" parameterClass="hashmap" resultClass="int">
+		SELECT NVL(MAX(BLCK_SN), 0) + 1
+		  FROM IWRS_BLCK
+		 WHERE CREAT_CODE = #CREAT_CODE#
+		   AND OPER_TY = #OPER_TY#
+	</select>
+	
+	<select id="IWRG01DAO.selectArmRatioInfoForGeneration" parameterClass="hashmap" resultClass="hashmap">
+		SELECT TA_CODE
+          	  ,TA_RATE
+          	  ,EDC_VER
+		  FROM IWRS_ARM_RATE
+		 WHERE CREAT_CODE = #CREAT_CODE#
+	</select>
+	
+	<select id="IWRG01DAO.selectRandomSeedInfoForGeneration" parameterClass="hashmap" resultClass="hashmap">
+		SELECT SEED_CO
+	          ,BLCK_SEED_CO
+	      FROM IWRS_RANDOM_SEED
+	     WHERE CREAT_CODE = #CREAT_CODE#
+	</select>
+	
+	<select id="IWRG01DAO.selectBlockSizeInfoForGeneration" parameterClass="hashmap" resultClass="hashmap">
+		SELECT BLCK_SIZE
+	          ,BLCK_CO
+	      FROM IWRS_BLCK
+	     WHERE CREAT_CODE = #CREAT_CODE#
+	  ORDER BY BLCK_SN
+	</select>
+	
+	<select id="IWRG01DAO.selectCodeConfForGeneration" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.CONF_SIZE
+	          ,A.CONF_TY
+	          ,B.CONF_VALUE
+	      FROM IWRS_CODE_CONF A
+	INNER JOIN IWRS_CONF_VALUE B
+	        ON A.CREAT_CODE = B.CREAT_CODE
+	       AND A.CONF_SN = B.CONF_SN
+	       AND B.USE_AT = 'Y'
+	     WHERE A.CREAT_CODE = #CREAT_CODE#
+	       AND A.USE_AT = 'Y'
+	  ORDER BY A.CONF_SN, B.VALUE_SN
+	</select>
+	
+	<insert id="IWRG01DAO.insertRandomizationCode" parameterClass="hashmap">
+		INSERT INTO IWRS_RANDOM_CODE
+	                (
+	                    EDC_VER
+	                   ,TA_CODE
+	                   ,RANDOM_CODE
+	                   ,CREAT_CODE
+	                   ,OPER_TY
+	                   ,STRTFY_SN
+	                   ,LVL_SN
+	                   ,ADIT_AT
+	                   ,USE_AT
+	                   ,FRST_CREDE
+	                   ,FRST_CRTR
+	                   ,LAST_UPDDE
+	                   ,LAST_UPDUSR
+	                )
+	         VALUES (
+	                    #EDC_VER#
+	                   ,#TA_CODE#
+	                   ,#RANDOM_CODE#
+	                   ,#CREAT_CODE#
+	                   ,#OPER_TY#
+	                   ,#STRTFY_SN#
+	                   ,#LVL_SN#
+	                   ,#ADIT_AT#
+	                   ,#USE_AT#
+	                   ,SYSDATE
+	                   ,#USER_ID#
+	                   ,SYSDATE
+	                   ,#USER_ID#
+	                )
+	</insert>
+</sqlMap>

@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMG01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="CTMG01DAO.selectRsrchuserCount" parameterClass="hashMap" resultClass="integer">
+<![CDATA[
+    SELECT COUNT(CU.USER_ID)
+      FROM CM_USER       CU
+         , CM_RSRCHUSER  CR
+         , CM_INSTT      CI
+         , SAP_BCNC_INFO SI
+         , CM_USER_ROLE  UR
+         , CM_ROLE       CM
+         , CM_USERTASK   UT
+         , EDC_CR_TASK   CT         
+     WHERE CU.USER_ID    = CR.USER_ID
+       AND CR.INSTT_CODE = CI.INSTT_CODE
+       AND CI.KUNNR      = SI.KUNNR
+       AND CU.USER_ID    = UR.USER_ID
+       AND UR.ROLE_ID    = CM.ROLE_ID
+       AND CU.USER_ID    = UT.USER_ID
+       AND UT.TASK_SN    = CT.TASK_SN
+]]>
+
+<isNotEmpty property="SEARCH_TYPE">
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="1">
+    <![CDATA[
+    SI.NAME1 LIKE '%'||#SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+    
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="2">
+    <![CDATA[
+    CU.USER_NM LIKE '%'||#SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+
+</isNotEmpty>
+
+    ORDER BY SI.NAME1, CU.USER_NM
+</select>
+
+<select id="CTMG01DAO.selectRsrchuserList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+         DISTINCT
+           M.USER_ID
+         , M.TASK_SN
+         , M.INSTT_CD
+         , M.INSTT_NM
+         , M.REGIO
+         , M.ORT01
+         , M.TASK_NO
+         , M.USER_NM
+         , M.ROLE_ID
+         , M.ROLE_NM
+         , M.EMAIL
+         , M.TELNO
+         , M.CNTRCT_STTUS
+         , M.CONFM_SE
+         , M.STRAS
+         , M.PSTLZ
+         , M.USER_ENGNM
+         , M.STD_TIME_SN       
+         , M.CNTRCT_SE
+         , M.FRST_CREDE
+      FROM (
+            SELECT 
+                   CU.USER_ID
+                 , UT.TASK_SN
+                 , SI.KUNNR  AS INSTT_CD
+                 , SI.NAME1  AS INSTT_NM
+                 , SI.REGIO
+                 , SI.ORT01
+                 , SI.STRAS
+                 , SI.PSTLZ
+                 , CT.TASK_NO
+                 , CU.USER_NM
+                 , CU.USER_ENGNM
+                 , CM.ROLE_ID
+                 , CM.ROLE_NM
+                 , DAMO_DEC(CU.EMAIL) AS EMAIL
+                 , DAMO_DEC(CU.TELNO) AS TELNO
+                 , CU.STD_TIME_SN
+                 , CR.CNTRCT_STTUS
+                 , UT.CONFM_SE
+                 , MA.CNTRCT_SE
+                 , UT.FRST_CREDE
+              FROM CM_USER       CU
+                 , CM_RSRCHUSER  CR
+                 , CM_INSTT      CI
+                 , SAP_BCNC_INFO SI
+                 , CM_USER_ROLE  UR
+                 , CM_ROLE       CM
+                 , CM_USERTASK   UT
+                 , EDC_CR_TASK   CT
+                 , CTMS_CO_CNTRCT_MANAGE MA
+             WHERE CU.USER_ID    = CR.USER_ID
+               AND CR.INSTT_CODE = CI.INSTT_CODE
+               AND CI.KUNNR      = SI.KUNNR
+               AND CU.USER_ID    = UR.USER_ID
+               AND UR.ROLE_ID    = CM.ROLE_ID
+               AND CU.USER_ID    = UT.USER_ID
+               AND UT.TASK_SN    = CT.TASK_SN
+               AND UT.TASK_SN    = MA.TASK_SN(+)
+               AND UT.USER_ID    = MA.USER_ID(+)
+               AND MA.CNTRCT_SE IS NULL
+               AND CM.ROLE_ID IN ('ROLE_PI' ,'ROLE_CRC', 'ROLE_SUB_I')
+               AND UT.USE_YN     = 'Y'
+               
+]]>
+
+<isNotEmpty property="SEARCH_TYPE">
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="1">
+    <![CDATA[
+        SI.NAME1 LIKE '%'||#SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+    
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="2">
+    <![CDATA[
+        CU.USER_NM LIKE '%'||#SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+
+</isNotEmpty>
+
+<![CDATA[
+    ) M 
+    ORDER BY M.FRST_CREDE DESC
+]]>
+</select>
+
+<select id="CTMG01DAO.selectTaskUserCount" parameterClass="hashMap" resultClass="integer">
+<![CDATA[
+    SELECT COUNT(*)
+      FROM CM_USERTASK
+     WHERE USER_ID = #USER_ID#
+       AND TASK_SN = #TASK_SN#
+       AND USE_YN  = 'Y'
+]]>
+</select>
+<!-- =============================================================================================== -->
+
+<!-- 표준시간 조회 -->
+<select id="CTMG01DAO.standardTimeList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT   STD_TIME_SN
+		,STD_TIME_NM 
+		,STD_TIME_STDR 
+FROM 
+		CM_STD_TIME
+
+]]>	
+</select> 
+
+<!-- 연구자ID 조회 -->
+<select id="CTMG01DAO.selectCmUser" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 DISTINCT
+		 US.USER_ID
+		,TA.TASK_SN
+		,US.EMAIL
+		,US.TELNO
+		,US.USER_ENGNM
+		,US.USER_NM
+		,US.STD_TIME_SN
+		,RO.ROLE_ID
+        ,IT.INSTT_CODE
+        ,BI.KUNNR  AS INSTT_CD
+        ,BI.NAME1  AS INSTT_NM
+        ,BI.ORT01 ||' '|| BI.STRAS AS ADDRESS
+FROM 	
+  		 CM_USER US
+  		,CM_USERTASK TA
+ 		,CM_USER_ROLE RO  
+        ,CM_INSTT IT
+        ,CM_RSRCHUSER RS
+        ,SAP_BCNC_INFO BI
+WHERE	 US.USER_ID = TA.USER_ID
+  AND    US.USER_ID = RO.USER_ID
+  AND    US.USER_ID = RS.USER_ID
+  AND    RS.INSTT_CODE = IT.INSTT_CODE
+  AND    IT.KUNNR = BI.KUNNR
+  AND    US.USER_ID = #USER_ID#
+  AND    TA.USE_YN = 'Y'
+
+]]>	
+</select> 
+
+<!-- 연구자정보 저장 -->
+<insert id="CTMG01DAO.insertRsrchUserInfo" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_RSRCHUSER 
+USING DUAL ON( USER_ID = #USER_ID#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,INSTT_CODE
+	,IRB_AT
+	,HSPTL_NM
+	,ZIP
+	,ADDRONE
+	,ADDRTWO
+	,CNTRCT_STTUS
+	,FILE_MASTR_SN
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+	,ISF_PYMNT_AT
+	,ISF_PYMNT_DE
+	,RM
+	,CONFM_SE
+)VALUES(
+	 #USER_ID#
+	,#INSTT_CODE#
+	,'Y'
+	,#HSPTL_NM#
+	,#ZIP#
+	,DAMO_ENC(#ADDRONE#)
+	,DAMO_ENC(#ADDRTWO#)
+	,'N'
+	,''
+	,'N'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,'N'
+	,''
+	,''
+	,'03'
+)
+]]>
+</insert>
+
+<!-- 사용자 정보 저장 -->
+<insert id="CTMG01DAO.insertUserInfo" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_USER 
+USING DUAL ON( USER_ID = #USER_ID#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,PASSWORD
+	,USER_NM
+	,USER_SE_CODE
+	,USER_ENGNM
+	,EMAIL
+	,TELNO
+	,LOGIN_FAILR_CO
+	,PASSWORD_CHANGE_DE
+	,SBSCRB_DE
+	,ACNT_LOCK_AT
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+	,PASSWORD1
+	,PASSWORD2
+	,PASSWORD3
+	,PASSWORD_ODR
+	,PASSWORD_CODE
+	,STD_TIME_SN
+)VALUES(
+	 #USER_ID#
+	,#PASSWORD#
+	,#USER_NM#
+	,'02'
+	,#USER_ENGNM#
+	,DAMO_ENC(#EMAIL#)
+	,DAMO_ENC(#TELNO#)
+	,''
+	,''
+	,SYSDATE
+	,'Y'
+	,'N'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,DAMO_ENC('')
+	,DAMO_ENC('')
+	,DAMO_ENC('')
+	,''
+	,''
+	,#STD_TIME_SN#
+)
+]]>
+</insert>
+
+
+<!-- 기관정보 저장 -->
+<insert id="CTMG01DAO.insertInsttInfo" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_INSTT 
+USING DUAL ON( INSTT_CODE = #INSTT_CODE# AND KUNNR = #INSTT_CODE#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 INSTT_CODE
+	,KUNNR
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+	,INSTT_TY
+)VALUES(
+	 #INSTT_CODE#
+	,#INSTT_CODE#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,'01'
+)
+]]>
+</insert>
+
+<!-- 사용자과제정보 저장 -->
+<insert id="CTMG01DAO.insertUserTaskInfo" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_USERTASK 
+USING DUAL ON( USER_ID = #USER_ID# AND TASK_SN = #TASK_SN#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+]]>
+	<isEqual prepend="" property="CONFM_SE" compareValue="02">
+       ,CONFM_SE = '02'
+       ,LAST_UPDDE = SYSDATE
+       ,UPDATE_ID = #LAST_UPDUSR#
+    </isEqual>
+<![CDATA[
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+	,TASK_NO
+	,TASK_SN
+	,CONFM_SE
+	,DSCNTC_AT
+	,DSCNTC_DE
+)VALUES(
+	 #USER_ID#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,#TASK_NO#
+	,#TASK_SN#
+	,'01'
+	,'N'
+	,''
+)
+]]>
+</insert>
+
+<!-- 사용자 Role 저장 -->
+<insert id="CTMG01DAO.insertUserRoleInfo" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_USER_ROLE 
+USING DUAL ON( USER_ID = #USER_ID#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,ROLE_ID
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+)VALUES(
+	 #USER_ID#
+	,#ROLE_ID#
+	,'N'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>
+</insert>
+
+<!-- 사용자 과제 Role 저장전 삭제 -->
+<delete id="CTMG01DAO.deleteTaskUserRoleInfo" parameterClass="hashMap"> 
+<![CDATA[
+DELETE FROM CM_TASK_USER_ROLE 
+ WHERE USER_ID = #USER_ID# 
+   AND TASK_SN = #TASK_SN#
+]]>
+</delete>
+
+<!-- 사용자 과제 Role 저장 -->
+<insert id="CTMG01DAO.insertTaskUserRoleInfo" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CM_TASK_USER_ROLE(
+	 ROLE_SN
+	,USER_ID
+	,ROLE_ID
+	,TASK_SN
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,FRST_UPDUSR
+)VALUES(
+	 CM_TASK_USER_ROLE_SEQ.NEXTVAL
+	,#USER_ID#
+	,#ROLE_ID#
+	,#TASK_SN#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>
+</insert>
+
+
+
+
+<!-- 사용자정보 수정 -->
+<update id="CTMG01DAO.updateUserInfo" parameterClass="hashMap"> 
+<![CDATA[
+UPDATE CM_USER 
+SET	 	
+		EMAIL = DAMO_ENC(#EMAIL#)
+		,USER_NM = #USER_NM#
+		,USER_ENGNM = #USER_ENGNM#
+		,TELNO = DAMO_ENC(#TELNO#)
+		,STD_TIME_SN = #STD_TIME_SN#
+		,LAST_UPDDE = SYSDATE
+        ,UPDATE_ID = #LAST_UPDUSR#
+WHERE	USER_ID = #USER_ID#
+]]>
+</update>
+
+<!-- role 정보 수정 -->
+<update id="CTMG01DAO.updateUserRoleInfo" parameterClass="hashMap"> 
+<![CDATA[
+UPDATE CM_USER_ROLE 
+SET	   ROLE_ID = #ROLE_ID#
+	  ,LAST_UPDDE = SYSDATE
+	  ,UPDATE_ID = #LAST_UPDUSR#
+WHERE USER_ID = #USER_ID# 
+]]>
+</update>
+
+
+
+<!-- 사용자 과제정보 삭제 -->
+<update id="CTMG01DAO.deleteTaskUserInfo" parameterClass="hashMap"> 
+<![CDATA[
+UPDATE CM_USERTASK
+SET	   USE_YN = 'N'
+	  ,LAST_UPDDE = SYSDATE
+	  ,UPDATE_ID = #LAST_UPDUSR#
+WHERE USER_ID = #USER_ID# 
+  AND TASK_SN = #TASK_SN#
+]]>
+</update>
+
+
+
+
+
+
+
+</sqlMap>

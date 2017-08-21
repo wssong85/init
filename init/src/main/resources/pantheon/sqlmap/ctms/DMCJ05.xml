@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DMCJ05">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+
+<select id="DMCJ05DAO.selectInstt_tyByCommonCode" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT CMMN_CODE    AS CODE
+     , CMMN_CODE_NM AS NAME
+ FROM CM_CMMNCODE
+ WHERE CMMN_CLCODE = 'CTMS022'
+ AND     USE_AT = 'Y'
+ ORDER BY SORT_ORDR
+]]>
+</select>
+
+<select id="DMCJ05DAO.selectInstitutionInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT 	SAP.KUNNR
+		,INS.INSTT_CODE
+		,INS.INSTT_TY
+		,SAP.NAME1
+		,SAP.VKBUR
+		,SAP.STCD2
+		,SAP.ORT01
+		,SAP.REGIO
+		,SAP.STRAS		
+		,TO_CHAR(SAP.FRST_CREDE, 'YYYYMMDDHH24MISS') AS FRST_CREDE
+FROM
+		SAP_BCNC_INFO SAP
+JOIN 	CM_INSTT INS
+ON 		SAP.KUNNR = INS.KUNNR
+WHERE   SAP.NAME1 LIKE '%'||#NAME1#||'%'
+AND     SAP.USE_YN = 'Y'
+]]>
+</select>
+
+
+
+
+
+</sqlMap>

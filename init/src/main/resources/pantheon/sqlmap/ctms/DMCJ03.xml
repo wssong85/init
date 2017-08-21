@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DMCJ03">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+
+<select id="DMCJ03DAO.selectEduMgrCount" parameterClass="hashMap" resultClass="integer">
+<![CDATA[
+    SELECT COUNT(EM.EDC_SN)
+      FROM CTMS_DMC_EDC_MANAGE EM
+         , EDC_CR_TASK         CT
+     WHERE EM.TASK_SN = CT.TASK_SN(+)
+]]>
+
+<isNotEmpty property="SEARCH_COND">
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="1">
+    <![CDATA[
+    CT.TASK_NM LIKE #SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+    
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="2">
+    <![CDATA[
+    CT.TASK_NO LIKE UPPER(#SEARCH_COND#)||'%'
+    ]]>
+    </isEqual>
+</isNotEmpty>
+
+</select>
+
+<select id="DMCJ03DAO.selectEduMgrList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT M.EDC_SN
+         , M.TASK_SN
+         , M.TASK_NO
+         , M.TASK_NM
+         , M.MODULE
+         , M.MODULE_NM
+         , M.ROLE_NM
+         , M.SJ
+         , M.VER
+         , M.UDPATE_DE
+         , M.EDC_AT
+      FROM (
+            SELECT ROW_NUMBER() OVER(ORDER BY EM.TASK_SN DESC) RN
+                 , DECODE(EM.TASK_SN, '', 'SYSTEM', 'TASK') AS GUBUN
+                 , EM.EDC_SN
+                 , EM.TASK_SN
+                 , CT.TASK_NO
+                 , CASE WHEN EM.TASK_SN IS NULL THEN CM.CMMN_CODE_NM
+                        ELSE CT.TASK_NM
+                    END TASK_NM
+                 , EM.MODULE
+                 , CM.CMMN_CODE_NM AS MODULE_NM
+                 , EM.ROLE_NM
+                 , EM.SJ
+                 , EM.VER
+                 , TO_CHAR(EM.LAST_UPDT_DE, 'YYYYMMDD') AS UDPATE_DE
+                 , EM.EDC_AT
+              FROM CTMS_DMC_EDC_MANAGE EM
+                 , EDC_CR_TASK         CT
+                 , CM_CMMNCODE         CM
+             WHERE EM.TASK_SN  = CT.TASK_SN(+)
+               AND EM.MODULE   = CM.CMMN_CODE
+               AND CMMN_CLCODE = 'COM007'
+]]>
+
+<isNotEmpty property="SEARCH_COND">
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="1">
+    <![CDATA[
+    CT.TASK_NM LIKE '%'||#SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+    
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="2">
+    <![CDATA[
+    CT.TASK_NO LIKE '%'||UPPER(#SEARCH_COND#)||'%'
+    ]]>
+    </isEqual>
+    
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="3">
+    <![CDATA[
+    UPPER(EM.SJ) LIKE '%'||UPPER(#SEARCH_COND#)||'%'
+    ]]>
+    </isEqual>
+</isNotEmpty>
+
+<![CDATA[
+             ORDER BY LAST_UPDT_DE DESC
+         ) M
+     WHERE M.GUBUN = #GUBUN#
+]]>
+</select>
+
+<select id="DMCJ03DAO.selectEduMgrInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT EM.EDC_SN
+         , EM.MODULE
+         , EM.TASK_SN
+         , CT.TASK_NO
+         , CT.TASK_NM
+         , EM.SJ
+         , EM.VER
+         , EM.ATCH_FILE_SN
+         , EM.CN
+         , EM.ROLE_NM
+         , EM.EDC_AT
+         , FM.UPLOAD_PHYSIC_COURS AS UP_PATH
+         , FM.DWLD_PHYSIC_COURS   AS DN_PATH
+         , FD.DETAIL_SN
+         , FD.ORGINL_FILE_NM
+         , FD.ORGINL_EXTSN_NM
+         , FD.UPLOAD_FILE_NM
+      FROM CTMS_DMC_EDC_MANAGE EM
+         , EDC_CR_TASK         CT
+         , DM_FILE_MASTR       FM
+         , DM_FILE_DETAIL      FD
+     WHERE EM.TASK_SN       = CT.TASK_SN(+)
+       AND EM.EDC_SN        = #EDC_SN#
+       AND EM.MODULE        = #MODULE#
+       AND EM.ATCH_FILE_SN  = FM.FILE_MASTR_SN(+)
+       AND FM.FILE_MASTR_SN = FD.FILE_MASTR_SN(+)
+]]>
+</select>
+
+<select id="DMCJ03DAO.selectEduRoleList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT DISTINCT CR.ROLE_ID
+         , CR.ROLE_NM
+         , DECODE(ER.ROLE_ID, '', 'N', 'Y') ROLE_YN
+      FROM CM_ROLE           CR
+         , CTMS_DMC_EDC_ROLE ER
+     WHERE CR.USE_YN    = 'Y'
+       AND CR.ROLE_ID   = ER.ROLE_ID(+)
+       AND ER.EDC_SN(+) = #EDC_SN#
+       AND ER.MODULE(+) = #MODULE#
+       AND CR.ROLE_ID NOT IN ('IS_AUTHENTICATED_ANONYMOUSLY', 'IS_AUTHENTICATED_REMEMBERED', 'IS_AUTHENTICATED_FULLY')
+]]>
+</select>
+
+	<insert id="DMCJ03DAO.insertEduMgrInfo" parameterClass="hashMap">
+	<![CDATA[
+        INSERT INTO CTMS_DMC_EDC_MANAGE (
+               EDC_SN
+             , MODULE
+             , TASK_SN
+             , SJ
+             , VER
+             , ATCH_FILE_SN
+             , CN
+             , ROLE_NM
+             , EDC_AT
+             , USE_AT
+             , FRST_CREAT_DE
+             , FRST_CRTR
+             , LAST_UPDT_DE
+             , LAST_UPDUSR
+        ) VALUES (
+               #EDC_SN#
+             , #MODULE#
+             , #TASK_SN#
+             , #SJ#
+	]]>
+
+	<isNotEmpty property="TASK_SN">
+	<![CDATA[ 
+             , (SELECT TO_CHAR(NVL(MAX(VER)+1, 1), 'FM90.0') FROM CTMS_DMC_EDC_MANAGE WHERE MODULE = #MODULE# AND TASK_SN = #TASK_SN#)
+	]]>
+	</isNotEmpty>
+	<isEmpty property="TASK_SN">
+	<![CDATA[ 
+             , (SELECT TO_CHAR(NVL(MAX(VER)+1, 1), 'FM90.0') FROM CTMS_DMC_EDC_MANAGE WHERE MODULE = #MODULE#)
+	]]>
+	</isEmpty>
+
+	<![CDATA[
+             
+             , #ATCH_FILE_SN#
+             , #CN#
+             , #ROLE_NM#
+             , 'Y'
+             , #USE_AT#
+             , SYSDATE
+             , #UPDATE_ID#
+             , SYSDATE
+             , #UPDATE_ID#
+        )
+	]]>
+	</insert>
+
+	<update id="DMCJ03DAO.updateEduMgrInfo" parameterClass="hashMap">
+	<![CDATA[
+        UPDATE CTMS_DMC_EDC_MANAGE SET
+               SJ            = #SJ#
+             , VER           = #VER#
+             , ATCH_FILE_SN  = #ATCH_FILE_SN#
+             , CN            = #CN#
+             , ROLE_NM       = #ROLE_NM#
+             , LAST_UPDT_DE  = SYSDATE
+             , LAST_UPDUSR   = #UPDATE_ID#
+         WHERE EDC_SN        = #EDC_SN#
+           AND MODULE        = #MODULE#
+	]]>
+	</update>
+
+	<update id="DMCJ03DAO.deleteEduMgrInfo" parameterClass="hashMap">
+	<![CDATA[
+        UPDATE CTMS_DMC_EDC_MANAGE SET
+               USE_AT        = #USE_AT#
+             , LAST_UPDT_DE  = SYSDATE
+             , LAST_UPDUSR   = #UPDATE_ID#
+         WHERE EDC_SN        = #EDC_SN#
+           AND MODULE        = #MODULE#
+	]]>
+	</update>
+
+    <select id="DMCJ03DAO.selectOldEduRoleList" parameterClass="hashMap" resultClass="hashMap">
+    <![CDATA[
+        SELECT EDC_SN
+             , MODULE
+             , ROLE_SN
+             , ROLE_ID
+          FROM CTMS_DMC_EDC_ROLE
+         WHERE EDC_SN = #EDC_SN#
+           AND MODULE = #MODULE#
+    ]]>
+    </select>
+
+	<insert id="DMCJ03DAO.insertEduRoleInfo" parameterClass="hashMap">
+	<![CDATA[
+        INSERT INTO CTMS_DMC_EDC_ROLE(
+               EDC_SN
+             , MODULE
+             , ROLE_SN
+             , ROLE_ID
+             , FRST_CREAT_DE
+             , FRST_CRTR
+             , LAST_UPDT_DE
+             , LAST_UPDUSR
+        )
+        VALUES(
+               #EDC_SN#
+             , #MODULE#
+             , #ROLE_SN#
+             , #ROLE_ID#
+             , SYSDATE
+             , #UPDATE_ID#
+             , SYSDATE
+             , #UPDATE_ID#
+        )
+	]]>
+	</insert>
+
+	<delete id="DMCJ03DAO.deleteEduRoleInfo" parameterClass="hashMap">
+		<![CDATA[
+        DELETE CTMS_DMC_EDC_ROLE
+         WHERE EDC_SN        = #EDC_SN#
+           AND MODULE        = #MODULE#
+		]]>
+	</delete>
+
+	<delete id="DMCJ03DAO.updateEduAtModule" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_DMC_EDC_MANAGE SET EDC_AT = 'N' WHERE MODULE = #MODULE#
+		]]>
+	</delete>
+	
+	<delete id="DMCJ03DAO.updateEduAtTaskSn" parameterClass="hashMap">
+		<![CDATA[
+        UPDATE CTMS_DMC_EDC_MANAGE SET EDC_AT = 'N' WHERE MODULE = #MODULE# AND TASK_SN = #TASK_SN#
+		]]>
+	</delete>
+	
+<select id="DMCJ03DAO.selectUserByEducationList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT M.GUBUN
+         , M.USER_ID
+         , M.TASK_SN
+         , M.EDC_SN
+         , M.MODULE
+         , CCA.CMMN_CODE_NM AS MODULE_NM
+         , M.VER
+         , M.ATCH_FILE_SN
+         , M.USER_NM
+         , M.COMPLETE_YN
+         , DECODE(M.COMPLETE_YN, 'Y', '수료', '미수료') AS COMPLETE_NM
+         , M.LAST_UPDT_DE
+         , M.USER_SE_CODE
+         , M.COL_NM
+         , FM.UPLOAD_PHYSIC_COURS AS UP_PATH
+         , FM.DWLD_PHYSIC_COURS   AS DN_PATH
+         , FD.ORGINL_FILE_NM
+         , FD.ORGINL_EXTSN_NM
+         , FD.UPLOAD_FILE_NM
+         , CASE WHEN M.USER_SE_CODE = '01' THEN (
+                                                  SELECT SAP.NAME1
+                                                    FROM CM_RSRCHUSER CR
+                                                       , SAP_BCNC_INFO SAP
+                                                   WHERE CR.USER_ID = M.USER_ID
+                                                     AND CR.INSTT_CODE = SAP.KUNNR
+                                                )
+                WHEN M.USER_SE_CODE = '02' THEN (
+                                                  SELECT SAP.NAME1
+                                                    FROM CM_BCNCUSER CB
+                                                       , SAP_BCNC_INFO SAP
+                                                   WHERE CB.USER_ID = M.USER_ID
+                                                     AND CB.INSTT_CODE = SAP.KUNNR
+                                                )
+                ELSE  (
+                        SELECT SAP.NAME1
+                          FROM CM_RSRCHUSER CR
+                             , SAP_BCNC_INFO SAP
+                         WHERE CR.USER_ID = M.USER_ID
+                           AND CR.INSTT_CODE = SAP.KUNNR
+                      )
+              END INSTT_NM
+      FROM (
+            SELECT 'TASK' AS GUBUN
+                 , T.USER_ID
+                 , T.TASK_SN
+                 , T.EDC_SN
+                 , T.MODULE
+                 , T.VER
+                 , T.ATCH_FILE_SN
+                 , T.USER_NM
+                 , T.COMPLETE_YN COMPLETE_YN
+                 , T.LAST_UPDT_DE
+                 , T.USER_SE_CODE
+                 , T.COL_NM
+              FROM (
+                    SELECT DISTINCT EM.EDC_SN
+                         , UT.USER_ID
+                         , UT.TASK_SN
+                         , EM.MODULE
+                         , EM.VER
+                         , EM.ATCH_FILE_SN
+                         , CU.USER_NM
+                         , CASE WHEN EC.USER_ID IS NOT NULL THEN 'Y'
+                                ELSE 'N'
+                            END COMPLETE_YN
+                         , CASE WHEN EC.USER_ID IS NOT NULL THEN TO_CHAR(EC.LAST_UPDT_DE, 'YYYYMMDDHH24MISS')
+                                ELSE ''
+                            END LAST_UPDT_DE
+                         , CU.USER_SE_CODE
+                         , CT.TASK_NM AS COL_NM
+                      FROM CM_USERTASK         UT
+                         , CM_USER             CU
+                         , EDC_CR_TASK         CT
+                         , CTMS_DMC_EDC_MANAGE EM
+                         , CTMS_DMC_EDC_ROLE   ER
+                         , CTMS_DMC_EDC_COMPL  EC
+                     WHERE UT.USER_ID     = #USER_ID#
+                       AND UT.USE_YN      = 'Y'
+                       AND UT.DSCNTC_AT   = 'N'
+                       AND UT.USER_ID     = CU.USER_ID
+                       AND UT.TASK_SN     = CT.TASK_SN
+                       AND CT.TASK_END_AT = 'N'
+                       AND CT.USE_AT      = 'Y'
+                       AND UT.TASK_SN     = EM.TASK_SN
+                       AND EM.EDC_AT      = 'Y'
+                       AND EM.EDC_SN      = ER.EDC_SN
+                       AND EM.MODULE      = ER.MODULE
+                       AND EM.EDC_SN      = EC.EDC_SN(+)
+                       AND EM.MODULE      = EC.MODULE(+)
+                       AND EM.TASK_SN     = EC.TASK_SN(+)
+               ) T
+      UNION ALL
+            SELECT 'SYSTEM' AS GUBUN
+                 , UI.USER_ID
+                 , 0 AS TASK_SN
+                 , EM.EDC_SN
+                 , UI.MODULE_CODE AS MODULE
+                 , EM.VER
+                 , EM.ATCH_FILE_SN
+                 , UI.USER_NM
+                 , CASE WHEN EC.USER_ID IS NOT NULL THEN 'Y'
+                        ELSE 'N'
+                    END COMPLETE_YN
+                 , CASE WHEN EC.USER_ID IS NOT NULL THEN TO_CHAR(EC.LAST_UPDT_DE, 'YYYYMMDDHH24MISS')
+                        ELSE ''
+                    END LAST_UPDT_DE
+                 , UI.USER_SE_CODE
+                 , UI.MODULE_CODE AS COL_NM
+              FROM (
+                    SELECT DISTINCT CM.MODULE_CODE
+                         , CU.USER_ID
+                         , UR.ROLE_ID
+                         , CU.USER_NM
+                         , CU.USER_SE_CODE
+                      FROM CM_USER CU
+                         , CM_USER_ROLE UR
+                         , CM_ROLE_AUTHOR RA
+                         , CM_PROGRM      CP
+                         , CM_MENU        CM
+                     WHERE CU.USER_ID   = #USER_ID#
+                       AND CU.USE_YN    = 'Y'
+                       AND CU.USER_ID   = UR.USER_ID
+                       AND UR.ROLE_ID   = RA.ROLE_ID
+                       AND RA.PROGRM_ID = CP.PROGRM_ID
+                       AND CP.MENU_ID   = CM.MENU_ID
+                       AND UR.USE_YN    = 'Y'
+                       AND RA.USE_YN    = 'Y'
+                       AND CP.USE_YN    = 'Y'
+                       AND CM.USE_YN    = 'Y'
+                   ) UI
+                 , CTMS_DMC_EDC_MANAGE EM
+                 , CTMS_DMC_EDC_ROLE   ER
+                 , CTMS_DMC_EDC_COMPL  EC
+             WHERE EDC_AT         = 'Y'
+               AND UI.MODULE_CODE = EM.MODULE
+               AND EM.TASK_SN     IS NULL
+               AND EM.EDC_SN      = ER.EDC_SN
+               AND EM.MODULE      = ER.MODULE
+               AND UI.ROLE_ID     = ER.ROLE_ID
+               AND EM.EDC_SN      = EC.EDC_SN(+)
+               AND EM.MODULE      = EC.MODULE(+)
+          ) M
+          , CM_CMMNCODE    CCA
+          , DM_FILE_MASTR  FM
+          , DM_FILE_DETAIL FD
+     WHERE M.MODULE = CCA.CMMN_CODE
+       AND CCA.CMMN_CLCODE  = 'COM007'
+       AND M.ATCH_FILE_SN   = FM.FILE_MASTR_SN
+       AND FM.FILE_MASTR_SN = FD.FILE_MASTR_SN
+]]>
+
+<isNotEmpty property="GUBUN">
+<![CDATA[ 
+       AND M.GUBUN = #GUBUN#
+]]>
+</isNotEmpty>
+</select>
+
+
+</sqlMap>

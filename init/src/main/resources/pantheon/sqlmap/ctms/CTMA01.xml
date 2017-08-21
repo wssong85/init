@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMA01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+
+<select id="CTMA01DAO.selectNotice" parameterClass="hashMap" resultClass="hashMap">	
+<![CDATA[
+	SELECT	SN
+		   ,TASK_SN
+		   ,MODULE_SE
+		   ,NOTICE_SE
+		   ,SJ
+		   ,CN
+		   ,ATCH_FILE_SN
+		   ,USE_AT
+		   ,FRST_CREAT_DE
+		   ,FRST_CRTR
+		   ,LAST_UPDT_DE
+		   ,LAST_UPDUSR
+	  FROM 	CTMS_DMC_NOTICE
+	 WHERE  USE_AT = 'Y'
+]]>
+</select>
+
+<select id="CTMA01DAO.selectNoticeInfo" parameterClass="hashMap" resultClass="hashMap">	
+<![CDATA[
+    SELECT DN.SN
+         , DECODE(DN.TASK_SN, '', 'ALL', 'TASK') AS GUBUN
+         , DN.TASK_SN
+         , DN.MODULE_SE
+         , CM.CMMN_CODE_NM AS MODULE_NM
+         , DN.NOTICE_SE
+         , DN.SJ
+         , DN.CN
+         , DN.ATCH_FILE_SN
+         , DN.USE_AT
+         , TO_CHAR(DN.FRST_CREAT_DE, 'YYYY-MM-DD') AS CREATE_DE
+         , DN.FRST_CRTR
+         , CU.USER_NM
+      FROM CTMS_DMC_NOTICE DN
+         , EDC_CR_TASK     CT
+         , CM_CMMNCODE     CM
+         , CM_USER         CU
+     WHERE DN.USE_AT      = 'Y'
+       AND DN.TASK_SN     = CT.TASK_SN(+)
+       AND DN.MODULE_SE   = CM.CMMN_CODE
+       AND CM.CMMN_CLCODE = 'DMCJ01'
+       AND DN.FRST_CRTR   = CU.USER_ID
+]]>
+<isEmpty property="PLUSDAYS">
+       AND DN.SN = #NOTICE_SN#
+</isEmpty>
+</select>
+
+<select id="CTMA01DAO.selectNoticeByCount" parameterClass="hashMap" resultClass="hashMap">	
+<![CDATA[
+SELECT COUNT(SN) AS COUNT 
+FROM   CTMS_DMC_NOTICE 
+WHERE  USE_AT = 'Y'
+]]>
+</select>
+
+<update id="CTMA01DAO.updateNotice" parameterClass="hashMap">
+UPDATE CTMS_DMC_NOTICE SET
+	 SJ = #SJ#
+	,CN = #CN#
+	,LAST_UPDT_DE = SYSDATE
+	,LAST_UPDUSR = #UPDATE_ID#
+WHERE
+     SN = #SN#
+</update>
+
+<update id="CTMA01DAO.deleteNotice" parameterClass="hashMap">
+UPDATE CTMS_DMC_NOTICE SET
+      USE_AT = 'N'
+	 ,LAST_UPDT_DE = SYSDATE
+	 ,LAST_UPDUSR = #UPDATE_ID#
+WHERE
+     SN = #SN#
+</update>
+
+<insert id="CTMA01DAO.insertNotice" parameterClass="hashMap">
+<![CDATA[
+INSERT INTO CTMS_DMC_NOTICE(
+	 SN
+	,TASK_SN
+	,MODULE_SE
+	,NOTICE_SE
+	,SJ
+	,CN
+	,ATCH_FILE_SN
+	,USE_AT
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,LAST_UPDUSR
+)VALUES(
+	 #SN#
+	,#TASK_SN#
+	,#MODULE_SE#
+	,#NOTICE_SE#
+	,#SJ#
+	,#CN#
+	,#ATCH_FILE_SN#
+	,'Y'
+	,SYSDATE
+	,#UPDATE_ID#
+	,SYSDATE
+	,#UPDATE_ID#
+)
+]]>
+</insert>
+
+<select id="CTMA01DAO.selectNotifyCtmsList" parameterClass="hashMap" resultClass="hashMap">	
+<![CDATA[
+    SELECT
+           M.NOTIFY_SN
+         , M.REQUEST_SN
+         , M.JOB_TYPE
+         , CM.CMMN_CODE_NM AS JOB_NM
+         , M.TASK_SN
+         , CT.TASK_NO
+         , M.NOTIFY_SJ
+         , M.CHARGER_ID
+         , M.LINK_URL
+         , M.LINK_KEY
+         , M.LINK_VALUE
+         , M.NOTIFY_BEGIN
+         , M.NOFTIFY_END
+         , M.FRST_CREAT_DE
+         , M.LAST_UPDT_DE
+         , M.CREAT_DE
+         , M.UPDT_DE
+      FROM (
+            SELECT
+                   NOTIFY_SN
+                 , REQUEST_SN
+                 , JOB_TYPE
+                 , TASK_SN
+                 , NOTIFY_SJ
+                 , CHARGER_ID
+                 , LINK_URL
+                 , LINK_KEY
+                 , LINK_VALUE
+                 , TO_CHAR(NOTIFY_BEGIN, 'YYYY/MM/DD') AS NOTIFY_BEGIN
+                 , TO_CHAR(NOFTIFY_END, 'YYYY/MM/DD')  AS NOFTIFY_END
+                 , TO_CHAR(FRST_CREAT_DE, 'YYYYMMDDHH24MISS') AS FRST_CREAT_DE
+                 , TO_CHAR(LAST_UPDT_DE, 'YYYYMMDDHH24MISS') AS LAST_UPDT_DE
+                 , TO_CHAR(FRST_CREAT_DE, 'YYYYMMDDHH') AS CREAT_DE
+                 , TO_CHAR(LAST_UPDT_DE, 'YYYYMMDDHH') AS UPDT_DE
+              FROM CTMS_ST_NOTIFY
+             WHERE JOB_TYPE IN ('D1', 'E1')
+               AND USE_AT = 'Y'
+        UNION ALL
+            SELECT
+                   NOTIFY_SN
+                 , REQUEST_SN
+                 , JOB_TYPE
+                 , TASK_SN
+                 , NOTIFY_SJ
+                 , CHARGER_ID
+                 , LINK_URL
+                 , LINK_KEY
+                 , LINK_VALUE
+                 , TO_CHAR(NOTIFY_BEGIN, 'YYYY/MM/DD') AS NOTIFY_BEGIN
+                 , TO_CHAR(NOFTIFY_END, 'YYYY/MM/DD')  AS NOFTIFY_END
+                 , TO_CHAR(FRST_CREAT_DE, 'YYYYMMDDHH24MISS') AS FRST_CREAT_DE
+                 , TO_CHAR(LAST_UPDT_DE, 'YYYYMMDDHH24MISS') AS LAST_UPDT_DE
+                 , TO_CHAR(FRST_CREAT_DE, 'YYYYMMDDHH') AS CREAT_DE
+                 , TO_CHAR(LAST_UPDT_DE, 'YYYYMMDDHH') AS UPDT_DE
+              FROM CTMS_ST_NOTIFY
+             WHERE JOB_TYPE IN ('A1','B1','C1','C2','C3','F1','G1','H1')
+               AND CHARGER_ID = #LOGIN_ID#
+               AND USE_AT     = 'Y'
+           ) M
+           , EDC_CR_TASK CT
+           , CM_CMMNCODE CM
+     WHERE M.TASK_SN      = CT.TASK_SN
+       AND M.JOB_TYPE     = CM.CMMN_CODE
+       AND CM.CMMN_CLCODE = 'CTMS040'
+]]>
+</select>
+
+<select id="CTMA01DAO.selectNotifyDmcList" parameterClass="hashMap" resultClass="hashMap">	
+<![CDATA[
+    SELECT
+           NOTIFY_SN
+         , REQUEST_SN
+         , JOB_TYPE
+         , TASK_SN
+         , NOTIFY_SJ
+         , CHARGER_ID
+         , LINK_URL
+         , LINK_KEY
+         , LINK_VALUE
+         , TO_CHAR(NOTIFY_BEGIN, 'YYYY/MM/DD') AS NOTIFY_BEGIN
+         , TO_CHAR(NOFTIFY_END, 'YYYY/MM/DD')  AS NOFTIFY_END
+      FROM CTMS_ST_NOTIFY
+     WHERE JOB_TYPE IN ('H2','G2','I1','I2','I3','J1','K1','K2','L1','M1')
+       AND USE_AT = 'Y'
+     ORDER BY LAST_UPDT_DE DESC
+]]>
+</select>
+
+<select id="CTMA01DAO.selectNotifyInfo" parameterClass="hashMap" resultClass="hashMap">	
+<![CDATA[
+    SELECT
+           NOTIFY_SN
+         , REQUEST_SN
+         , JOB_TYPE
+         , TASK_SN
+         , NOTIFY_SJ
+         , CHARGER_ID
+         , LINK_URL
+         , LINK_KEY
+         , LINK_VALUE
+         , USE_AT
+      FROM CTMS_ST_NOTIFY
+     WHERE REQUEST_SN = #REQUEST_SN#
+]]>
+</select>
+
+<insert id="CTMA01DAO.insertNotification" parameterClass="hashMap">
+<![CDATA[
+    INSERT INTO CTMS_ST_NOTIFY (
+           NOTIFY_SN
+         , REQUEST_SN
+         , JOB_TYPE
+         , TASK_SN
+         , NOTIFY_SJ
+         , CHARGER_ID
+         , LINK_URL
+         , LINK_KEY
+         , LINK_VALUE
+         , NOTIFY_BEGIN
+         , NOFTIFY_END
+         , USE_AT
+         , FRST_CREAT_DE
+         , FRST_CRTR
+         , LAST_UPDT_DE
+         , LAST_UPDUSR
+    )
+    VALUES (
+           #NOTIFY_SN#
+         , #REQUEST_SN#
+         , #JOB_TYPE#
+         , #TASK_SN#
+         , #NOTIFY_SJ#
+         , #CHARGER_ID#
+         , #LINK_URL#
+         , #LINK_KEY#
+         , #LINK_VALUE#
+]]>
+
+<isNotEmpty property="PLUSDAYS">
+	<isEqual property="PLUSDAYS" compareValue="3">
+    <![CDATA[
+         , SYSDATE
+         , SYSDATE + 2
+    ]]>
+    </isEqual>
+
+</isNotEmpty>
+<isEmpty property="PLUSDAYS">
+         , #NOTIFY_BEGIN#
+         , #NOFTIFY_END#
+</isEmpty>
+
+<![CDATA[
+         , 'Y'
+         , SYSDATE
+         , #UPDATE_ID#
+         , SYSDATE
+         , #UPDATE_ID#
+    )
+]]>
+</insert>
+
+<update id="CTMA01DAO.updateNotification" parameterClass="hashMap">
+    UPDATE CTMS_ST_NOTIFY SET
+           USE_AT        = 'N'
+         , LAST_UPDT_DE  = SYSDATE
+         , LAST_UPDUSR   = #UPDATE_ID#
+     WHERE REQUEST_SN    = #REQUEST_SN#
+</update>
+
+</sqlMap>

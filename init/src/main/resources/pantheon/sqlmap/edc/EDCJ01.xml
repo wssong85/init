@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCJ01DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+	
+	<select id="selectSaeRepList" parameterClass="hashMap" resultClass="egovMap" >
+	SELECT *
+		FROM
+		(SELECT A.*,
+		ROWNUM AS RNUM,
+		FLOOR(( ROWNUM - 1 ) / #COUNT# + 1 ) AS PAGE
+		FROM
+		(
+		SELECT	ERS.SUBJECT_NO,
+				ERS.INSTT_FORM_SN,
+			    ERS.SAE_REPRT_SN,
+			    ERS.REPORTR_NM,
+			    (SELECT CMMN_CODE_NM FROM CM_CMMNCODE WHERE CMMN_CLCODE = 'EDC027' AND CMMN_CODE =  ERS.STRE_STTUS_CODE) AS STRE_STTUS_CODE,
+          		(SELECT CMMN_CODE_NM FROM CM_CMMNCODE WHERE CMMN_CLCODE = 'EDC028' AND CMMN_CODE =  ERS.REPORT_CL_CODE) AS REPORT_CL_CODE,
+			    ERA.AET_NM,
+			    SBI.NAME1
+		FROM	EDC_RM_SAEREPRT ERS,
+				EDC_RM_AET ERA,
+			 	EDC_CF_SUBJECT ECS,
+			 	EDC_CR_INSTT_FORM CIF,
+          		CM_INSTT CI,
+          		SAP_BCNC_INFO SBI
+		WHERE	ERS.SUBJECT_NO  = ERA.SUBJECT_NO 
+    	AND  	ERS.INSTT_FORM_SN = ERA.INSTT_FORM_SN      
+        AND  	ERS.SAE_REPRT_SN = ERA.SAE_REPRT_SN        
+        AND  	ERS.SUBJECT_NO = ECS.SUBJECT_NO        
+        AND  	ERS.INSTT_FORM_SN = ECS.INSTT_FORM_SN
+        AND  	CIF.INSTT_FORM_SN = ECS.INSTT_FORM_SN
+        AND  	CIF.INSTT_CODE = CI.INSTT_CODE
+      	AND		SBI.KUNNR = CI.KUNNR
+    	<isNotEmpty property="subjectNo" prepend="AND">
+			ERS.SUBJECT_NO LIKE '%' || #SUBJECT_NO# || '%'
+		</isNotEmpty>
+    	<isNotEmpty property="insttNm" prepend="AND">
+			SBI.NAME1 LIKE '%' || #insttNm# || '%'
+		</isNotEmpty>
+    	ORDER BY ERS.SAE_REPRT_SN DESC
+		) A
+		)
+		WHERE PAGE = #PAGE#
+	</select>
+	
+	<select id="selectSaeRep" parameterClass="hashMap" resultClass="egovMap" >
+		SELECT 	SUBJECT_NO,
+				INSTT_FORM_SN,
+				SAE_REPRT_SN,				
+				REPORTR_NM,
+				REPORTR_TLPHON,
+				REPORTR_FAX,
+				REPORTR_EMAIL,
+				CONFM_OFCDOCU_NO,
+				OFCDOCU_SEQNO,
+				REPORT_CL_CODE,
+				REPORT_DE,
+				SUBJECT_INITIAL,
+				SUBJECT_SEXDSTN,
+				SUBJECT_LIFYEAMD,
+				SUBJECT_AGE,
+				SUBJECT_HEIGHT,
+				SUBJECT_BDWGH,
+				SUBJECT_CLNIC_CODE,
+				SUBJECT_CLNIC_ETC,
+				PREGNAN_AT,
+				PREGNAN_PD
+				LAST_MENSE_DE,
+				DEATH_AT,
+				DEATH_DE,
+				DEATH_CAUSE,
+				ATPSY_AT,
+				CASE_TCHNLGY,
+				ADIT_INFO,
+				REPORTR_OPINION,
+				INFO_OFFER_NM,
+				INFO_OFFER_OFCPS,
+				INFO_OFFER_MAJOR,
+				INFO_OFFER_INSTT,
+				INFO_OFFER_TLPHON,
+				INFO_OFFER_FAX,
+				INFO_OFFER_ADRES,
+				INFO_OFFER_EMAIL
+		FROM	EDC_RM_SAEREPRT
+		WHERE	SUBJECT_NO = #subjectNo#
+		AND		INSTT_FORM_SN = #insttFormSn#
+		AND		SAE_REPRT_SN =  #saeReprtSn#
+	</select>
+	
+	<select id="selectSaeRepAetList" parameterClass="hashMap" resultClass="egovMap" >
+		SELECT	ERA.SUBJECT_NO,
+				ERA.INSTT_FORM_SN,
+				ERA.SAE_REPRT_SN,
+				ERA.AET_SN,
+				ERA.AET_NM,
+				ERA.AET_BEGIN_DE,
+				ERA.AET_END_DE,
+				ERA.DRFSTF_RELATE_CODE,
+				ERA.DRFSTF_MDLRT_CODE,
+				ERA.LAST_OBSERV_RESULT_CODE,
+				ERA.AET_RESULT_CODE
+		FROM	EDC_RM_AET ERA
+		JOIN	EDC_RM_SAEREPRT ERS
+    	ON		ERS.SUBJECT_NO  = ERA.SUBJECT_NO 
+        AND		ERS.INSTT_FORM_SN = ERA.INSTT_FORM_SN
+    	AND		ERS.SAE_REPRT_SN = ERA.SAE_REPRT_SN
+      	WHERE	ERS.SUBJECT_NO = #subjectNo#
+		AND		ERS.INSTT_FORM_SN = #insttFormSn#
+		AND		ERS.SAE_REPRT_SN =  #saeReprtSn#
+	</select>
+	
+	<select id="selectSaeRepDreAList" parameterClass="hashMap" resultClass="egovMap" >
+		SELECT	ERD.SUBJECT_NO,
+				ERD.INSTT_FORM_SN,
+				ERD.SAE_REPRT_SN,
+				ERD.DRFSTF_SN,
+				ERD.DRFSTF_SE_CODE,
+				ERD.DRFSTF_NM,
+				ERD.USHAP
+				ERD.UNIT,
+				ERD.DAILCPCTY,
+				ERD.USAGE,
+				ERD.MDCTN_COURS,
+				ERD.MDCTN_BEGIN_DE,
+				ERD.MDCTN_END_DE,
+				ERD.DFME,
+				ERD.DSCNTC_RESULT_CODE,
+				ERD.REMDCT_RESULT_CODE
+		FROM	EDC_RM_DRFSTF ERD
+		JOIN	EDC_RM_SAEREPRT ERS
+    	ON		ERS.SUBJECT_NO  = ERD.SUBJECT_NO 
+    	AND		ERS.INSTT_FORM_SN = ERD.INSTT_FORM_SN
+    	AND		ERS.SAE_REPRT_SN = ERD.SAE_REPRT_SN
+      	WHERE	ERD.SUBJECT_NO = #subjectNo#
+		AND		ERD.INSTT_FORM_SN = #insttFormSn#
+		AND		ERD.SAE_REPRT_SN =  #saeReprtSn#
+		AND		ERD.DRFSTF_SE_CODE = '01'
+	</select>
+	
+	<select id="selectSaeRepDreBList" parameterClass="hashMap" resultClass="egovMap" >
+		SELECT	ERD.SUBJECT_NO,
+				ERD.INSTT_FORM_SN,
+				ERD.SAE_REPRT_SN,
+				ERD.DRFSTF_SN,
+				ERD.DRFSTF_SE_CODE,
+				ERD.DRFSTF_NM,
+				ERD.USHAP
+				ERD.UNIT,
+				ERD.DAILCPCTY,
+				ERD.USAGE,
+				ERD.MDCTN_COURS,
+				ERD.MDCTN_BEGIN_DE,
+				ERD.MDCTN_END_DE,
+				ERD.DFME,
+				ERD.DSCNTC_RESULT_CODE,
+				ERD.REMDCT_RESULT_CODE
+		FROM	EDC_RM_DRFSTF ERD
+		JOIN	EDC_RM_SAEREPRT ERS
+    	ON		ERS.SUBJECT_NO  = ERD.SUBJECT_NO 
+    	AND		ERS.INSTT_FORM_SN = ERD.INSTT_FORM_SN
+    	AND		ERS.SAE_REPRT_SN = ERD.SAE_REPRT_SN
+      	WHERE	ERD.SUBJECT_NO = #subjectNo#
+		AND		ERD.INSTT_FORM_SN = #insttFormSn#
+		AND		ERD.SAE_REPRT_SN =  #saeReprtSn#
+		AND		ERD.DRFSTF_SE_CODE = '02'
+	</select>
+	
+	<select id="selectSaeRepHstcsList" parameterClass="hashMap" resultClass="egovMap" >
+		SELECT	ERH.SUBJECT_NO,
+				ERH.INSTT_FORM_SN,
+				ERH.SAE_REPRT_SN,
+				ERH.HSTCS_SN,
+				ERH.HSTCS_NM,
+				ERH.HSTCS_BGNDE,
+				ERH.HSTCS_CNTNC_AT,
+				ERH.HSTCS_ENDDE,
+				ERH.HSTCS_OPINION
+		FROM	EDC_RM_HSTCS ERH
+		JOIN	EDC_RM_SAEREPRT ERS
+    	ON		ERS.SUBJECT_NO  = ERH.SUBJECT_NO 
+    	AND		ERS.INSTT_FORM_SN = ERH.INSTT_FORM_SN
+    	AND		ERS.SAE_REPRT_SN = ERH.SAE_REPRT_SN
+      	WHERE	ERH.SUBJECT_NO = #subjectNo#
+		AND		ERH.INSTT_FORM_SN = #insttFormSn#
+		AND		ERH.SAE_REPRT_SN =  #saeReprtSn#
+	</select>
+	
+	<select id="selectSaeRepDreHstcsList" parameterClass="hashMap" resultClass="egovMap" >
+		SELECT	DRDH.SUBJECT_NO,
+				DRDH.INSTT_FORM_SN,
+				DRDH.SAE_REPRT_SN,
+				DRDH.DRFSTF_HSTCS_SN,
+				DRDH.DRFSTF_NM,
+				DRDH.MDCTN_BEGIN_DE,
+				DRDH.MDCTN_END_DE,
+				DRDH.DFME,
+				DRDH.AET
+		FROM	EDC_RM_DRFSTF_HSTCS DRDH
+		JOIN	EDC_RM_SAEREPRT ERS
+    	ON		ERS.SUBJECT_NO  = DRDH.SUBJECT_NO 
+    	AND		ERS.INSTT_FORM_SN = DRDH.INSTT_FORM_SN
+    	AND		ERS.SAE_REPRT_SN = DRDH.SAE_REPRT_SN
+      	WHERE	DRDH.SUBJECT_NO = #subjectNo#
+		AND		DRDH.INSTT_FORM_SN = #insttFormSn#
+		AND		DRDH.SAE_REPRT_SN =  #saeReprtSn#
+	</select>
+	
+	<select id="selectSaeRepInspctList" parameterClass="hashMap" resultClass="egovMap" >
+		SELECT	DRIR.SUBJECT_NO,
+				DRIR.INSTT_FORM_SN,
+				DRIR.SAE_REPRT_SN,
+				DRIR.INSPCT_RESULT_SN,
+				DRIR.INSPCT_RESULT_DE,
+				DRIR.INSPCT_KND,
+				DRIR.INSPCT_UNIT,
+				DRIR.NRMLT_LWLT_NCL,
+				DRIR.NRMLT_UPLMT_NCL,
+				DRIR.INSPCT_RESULT,
+				DRIR.ADIT_INFO_AT
+		FROM	EDC_RM_INSPCT_RESULT DRIR
+		JOIN	EDC_RM_SAEREPRT ERS
+    	ON		ERS.SUBJECT_NO  = DRIR.SUBJECT_NO 
+    	AND		ERS.INSTT_FORM_SN = DRIR.INSTT_FORM_SN
+    	AND		ERS.SAE_REPRT_SN = DRIR.SAE_REPRT_SN
+      	WHERE	DRIR.SUBJECT_NO = #subjectNo#
+		AND		DRIR.INSTT_FORM_SN = #insttFormSn#
+		AND		DRIR.SAE_REPRT_SN =  #saeReprtSn#
+	</select>
+	
+	<update id="updateSaeList" parameterClass="hashMap">
+		UPDATE EDC_RM_SAEREPRT SET
+		  REPORTR_NM = #reportrNm#
+		, REPORTR_TLPHON = #reportrTlphon#
+		, REPORTR_FAX = #reportrFax#
+		, REPORTR_EMAIL = #reportrEmail#
+		, CONFM_OFCDOCU_NO = #confmOfcdocuNo#
+		, OFCDOCU_SEQNO = #ofcdocuSeqNo#
+		, REPORT_CL_CODE = #reportClCode#
+		, REPORT_DE = #reportDe#
+		, SUBJECT_CLNIC_CODE = #subjectClnicCode#
+		, SUBJECT_CLNIC_ETC = #subjectClnicEtc#
+		, PREGNAN_AT = #pregnanAt1#
+		, PREGNAN_PD = #pregnanPd#
+		, LAST_MENSE_DE = #lastMenseDe#
+		, DEATH_AT = #deathAt#
+		, DEATH_DE = #deathDe#
+		, DEATH_CAUSE = #deathCause#
+		, ATPSY_AT = #atpsyAt#
+		, CASE_TCHNLGY = #caseTchnlgy#
+		, ADIT_INFO = #aditInfo#
+		, REPORTR_OPINION = #reportrOpinion#
+		, INFO_OFFER_OFCPS = #infoOfferOfcps#
+		, INFO_OFFER_MAJOR = #infoOfferMajor#
+		, INFO_OFFER_TLPHON = #infoOfferTlphon#
+		, INFO_OFFER_FAX = #infoOfferFax#
+		, INFO_OFFER_ADRES = #infoOfferAdres#
+		, LAST_UPDUSR = SYSDATE
+		, LAST_UPDDE = SYSDATE
+		WHERE SAE_REPRT_SN = #saeReprtSn#
+	</update>
+	
+	<insert id="insertRepDre" parameterClass="hashMap">
+		INSERT INTO EDC_RM_DRFSTF(
+		DRFSTF_SN,
+		DRFSTF_SE_CODE,
+		DRFSTF_NM,
+		USHAP,
+		UNIT,
+		DAILCPCTY,
+		USAGE,
+		MDCTN_COURS,
+		MDCTN_BEGIN_DE,
+		MDCTN_END_DE,
+		DFME,
+		DSCNTC_RESULT_CODE,
+		REMDCT_RESULT_CODE,
+		FRST_CREDE,
+		FRST_CRTR
+		)
+		VALUES (
+		#drfstfSn#,
+		#drfstfSeCode# ,
+		#drfstfNm#,
+		#ushap# ,
+		#unit# ,
+		#dailcpcty# ,
+		#usage# ,
+		#mdctnCours# ,
+		#mdctnBeginDe# ,
+		#mdctnEndDe# ,
+		#dfme# ,
+		#dscntcResultCode#,
+		#remdctResultCode#,
+		'ADMIN',
+		 SYSDATE
+		)
+		
+	</insert>
+	
+	<update id="updateRepDre" parameterClass="hashMap">
+		UPDATE EDC_RM_DRFSTF SET
+		  DRFSTF_SE_CODE = #drfstfSeCode#
+		  ,DRFSTF_NM = #drfstfNm#
+		  ,USHAP = #ushap#
+		  ,UNIT = #unit#
+		  ,DAILCPCTY = #dailcpcty#
+		  ,USAGE = #usage#
+		  ,MDCTN_COURS = #mdctnCours#
+		  ,MDCTN_BEGIN_DE = #mdctnBeginDe#
+		  ,MDCTN_END_DE = #mdctnEndDe#
+		  ,DFME = #dfme#
+		  ,DSCNTC_RESULT_CODE = #dscntcResultCode#
+		  ,REMDCT_RESULT_CODE = #remdctResultCode#
+		, LAST_UPDUSR = 'ADMIN'
+		, LAST_UPDDE = SYSDATE
+		WHERE DRFSTF_SN = #drfstfSn#
+	</update>
+	
+	<insert id="insertRepHstcs" parameterClass="hashMap">
+		INSERT INTO EDC_RM_HSTCS(
+		HSTCS_SN,
+		HSTCS_NM,
+		HSTCS_BGNDE,
+		HSTCS_CNTNC_AT,
+		HSTCS_ENDDE,
+		HSTCS_OPINION,
+		FRST_CREDE,
+		FRST_CRTR
+		)
+		VALUES (
+		#hstcsSn#,
+		#hstcsNm# ,
+		#hstcsBgnde#,
+		#hstcsCntncAt# ,
+		#hstcsEndde# ,
+		#hstcsOpinion# ,
+		'ADMIN',
+		 SYSDATE
+		)
+		
+	</insert>
+	
+	<update id="updateRepHstcs" parameterClass="hashMap">
+		UPDATE EDC_RM_HSTCS SET
+		  HSTCS_NM = #hstcsNm#
+		, HSTCS_BGNDE = #hstcsBgnde#
+		, HSTCS_CNTNC_AT = #hstcsCntncAt#
+		, HSTCS_ENDDE = #hstcsEndde#
+		, HSTCS_OPINION = #hstcsOpinion#
+		, LAST_UPDUSR = 'ADMIN'
+		, LAST_UPDDE = SYSDATE
+		WHERE HSTCS_SN = #hstcsSn#
+	</update>
+	
+	<insert id="insertRepDreHstcs" parameterClass="hashMap">
+		INSERT INTO EDC_RM_DRFSTF_HSTCS(
+		DRFSTF_HSTCS_SN ,
+		DRFSTF_NM,
+		MDCTN_BEGIN_DE,
+		MDCTN_END_DE,
+		DFME,
+		AET,
+		FRST_CREDE,
+		FRST_CRTR
+		)
+		VALUES (
+		#drfstfHstcsSn#,
+		#drfstfNm# ,
+		#mdctnBeginDe#,
+		#mdctnEndDe# ,
+		#dfme# ,
+		#aet# ,
+		'ADMIN',
+		 SYSDATE
+		)
+		
+	</insert>
+	
+	<update id="updateRepDreHstcs" parameterClass="hashMap">
+		UPDATE EDC_RM_DRFSTF_HSTCS SET
+		, DRFSTF_NM = #drfstfNm#
+		, MDCTN_BEGIN_DE = #mdctnBeginDe#
+		, MDCTN_END_DE = #mdctnEndDe#
+		, DFME = #dfme#
+		, AET = #aet#
+		, LAST_UPDUSR = 'ADMIN'
+		, LAST_UPDDE = SYSDATE
+		WHERE DRFSTF_HSTCS_SN = #drfstfHstcsSn#
+	</update>
+	
+	<insert id="insertRepInspct" parameterClass="hashMap">
+		INSERT INTO EDC_RM_INSPCT_RESULT(
+		INSPCT_RESULT_SN ,
+		INSPCT_RESULT_DE,
+		INSPCT_KND,
+		INSPCT_UNIT,
+		NRMLT_LWLT_NCL,
+		NRMLT_UPLMT_NCL,
+		INSPCT_RESULT,
+		ADIT_INFO_AT
+		FRST_CREDE,
+		LAST_UPDDE
+		)
+		VALUES (
+		#inspctResultSn#,
+		#inspctResultDe# ,
+		#inspctKnd#,
+		#inspctUnit# ,
+		#nrmltLwltNcl# ,
+		#nrmltUplmtNcl# ,
+		#inspctResult# ,
+		#aditInfoAt# ,
+		'ADMIN',
+		 SYSDATE
+		)
+		
+	</insert>
+	
+	<update id="updateRepInspct" parameterClass="hashMap">
+		UPDATE EDC_RM_INSPCT_RESULT SET
+		  INSPCT_RESULT_DE = #inspctResultDe#
+		, INSPCT_KND = #inspctKnd#
+		, INSPCT_UNIT = #inspctUnit#
+		, NRMLT_LWLT_NCL = #nrmltLwltNcl#
+		, NRMLT_UPLMT_NCL = #nrmltUplmtNcl#
+		, INSPCT_RESULT = #inspctResult#
+		, ADIT_INFO_AT = #aditInfoAt#
+		, LAST_UPDUSR = 'ADMIN'
+		, LAST_UPDDE = SYSDATE
+		WHERE INSPCT_RESULT_SN = #inspctResultSn#
+	</update>
+	
+</sqlMap>

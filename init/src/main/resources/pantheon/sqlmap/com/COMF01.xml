@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMZ02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+
+	<select id="COMF01DAO.selectCmUserListByUser" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT RN
+		     , USER_ID
+             , PASSWORD
+             , USER_NM
+             , USER_SE_CODE
+             , FN_GET_COMMONCODE('COM001', USER_SE_CODE, #LOCALE#) AS USER_SE_CODE_NM
+             , USER_ENGNM
+             , DAMO_DEC(EMAIL) EMAIL
+             , DAMO_DEC(TELNO) TELNO
+             , LOGIN_FAILR_CO
+             , TO_CHAR(PASSWORD_CHANGE_DE, 'YYYYMMDDHH24MISS') PASSWORD_CHANGE_DE
+             , TO_CHAR(SBSCRB_DE, 'YYYYMMDDHH24MISS') SBSCRB_DE
+             , ACNT_LOCK_AT
+             , USE_YN
+             , TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+             , REGIST_ID
+             , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+             , UPDATE_ID
+             , (SELECT X.ROLE_ID FROM CM_USER_ROLE X WHERE X.USER_ID = INN_USER_ID AND ROWNUM = 1) ROLE_ID
+		  FROM
+		(
+		SELECT ROWNUM RN
+		     , USER_ID
+		     , USER_ID INN_USER_ID
+             , PASSWORD
+             , USER_NM
+             , USER_SE_CODE
+             , USER_ENGNM
+             , EMAIL
+             , TELNO
+             , LOGIN_FAILR_CO
+             , PASSWORD_CHANGE_DE 
+             , SBSCRB_DE 
+             , ACNT_LOCK_AT
+             , USE_YN
+             , FRST_CREDE 
+             , REGIST_ID
+             , LAST_UPDDE 
+             , UPDATE_ID
+          FROM CM_USER
+         WHERE 1=1
+		]]>
+		<isNotEmpty property="USER_ID" prepend="AND">
+		<![CDATA[
+		       USER_ID LIKE '%' || #USER_ID# || '%' 
+		]]>         
+		</isNotEmpty>
+		<isNotEmpty property="USER_NM" prepend="AND">
+		<![CDATA[
+		       USER_NM LIKE '%' || #USER_NM# || '%'
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="USER_SE_CODE" prepend="AND">
+		<![CDATA[
+		       USER_SE_CODE = #USER_SE_CODE#
+		]]>
+		</isNotEmpty>
+		<![CDATA[
+		)
+		WHERE RN > ($page$ - 1) * $count$
+		  AND RN <= ($page$ * $count$)
+		]]>  
+	</select> 
+	
+	<select id="COMF01DAO.selectCmUserListCountByUser" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*) 
+		  FROM CM_USER
+		 WHERE 1=1
+		]]>
+		<isNotEmpty property="USER_ID" prepend="AND">
+		<![CDATA[
+		       USER_ID LIKE '%' || #USER_ID# || '%'
+		]]>         
+		</isNotEmpty>
+		<isNotEmpty property="USER_NM" prepend="AND">
+		<![CDATA[
+		       USER_NM LIKE '%' || #USER_NM# || '%'
+		]]>
+		</isNotEmpty>
+		<isNotEmpty property="USER_SE_CODE" prepend="AND">
+		<![CDATA[
+		       USER_SE_CODE = #USER_SE_CODE#
+		]]>
+		</isNotEmpty>
+		
+	</select>
+	
+	<select id="COMF01DAO.selectCmUserRoleByUserId" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT USER_ID
+	         ,(SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.USER_ID AND ROWNUM = 1) USER_NM
+	         ,ROLE_ID
+	         ,(SELECT X.ROLE_NM FROM CM_ROLE X WHERE X.ROLE_ID = A.ROLE_ID AND ROWNUM = 1) ROLE_NM
+	         ,TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         ,UPDATE_ID
+	         ,(SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM 
+	         ,USE_YN
+	         ,ROWNUM RN
+	     FROM CM_USER_ROLE A
+	    WHERE USER_ID = #USER_ID#
+	  	]]>
+	</select>
+	
+	<insert id="COMF01DAO.insertCmUserRoleByUserId" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_USER_ROLE
+		     ( USER_ID
+	         , ROLE_ID
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+		     )
+		VALUES
+		     ( #USER_ID#
+	         , #ROLE_ID#
+	         , 'Y'
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+		     )
+		]]>
+	</insert>
+	
+	<update id="COMF01DAO.updateCmUserRoleByUserId" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_USER_ROLE
+		   SET LAST_UPDDE = SYSDATE
+		     , UPDATE_ID = #UPDATE_ID#
+		 WHERE USER_ID = #USER_ID#  
+		   AND ROLE_ID = #ROLE_ID#
+		]]>
+	</update>
+	
+	<select id="COMF01DAO.selectCmUserRoleForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_USER_ROLE
+		 WHERE USER_ID = #USER_ID# 
+		   AND ROLE_ID = #ROLE_ID#
+		]]>
+	</select>
+		
+	<delete id="COMF01DAO.deleteCmUserRoleByUserId" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM CM_USER_ROLE WHERE USER_ID = #USER_ID# AND ROLE_ID = #ROLE_ID#
+		]]>
+	</delete>
+	
+	<insert id="COMF01DAO.insertCmUserForCreate" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_USER
+		     ( USER_ID
+	            , PASSWORD
+	            , USER_NM
+	            , USER_SE_CODE
+	            , USER_ENGNM
+	            , EMAIL
+	            , TELNO
+	            , LOGIN_FAILR_CO
+	            , PASSWORD_CHANGE_DE
+	            , SBSCRB_DE
+	            , ACNT_LOCK_AT
+	            , USE_YN
+	            , FRST_CREDE
+	            , REGIST_ID
+	            , LAST_UPDDE
+	            , UPDATE_ID
+	            , PASSWORD1
+	            , PASSWORD2
+	            , PASSWORD3
+	            , PASSWORD_ODR
+	            , PASSWORD_CODE
+	            , STD_TIME_SN
+		     )
+		VALUES
+		     ( #USER_ID#
+	            , DAMO_HASH(#PASSWORD#)
+	            , #USER_NM#
+	            , '01'
+	            , #USER_ENGNM#
+	            , DAMO_ENC(#EMAIL#)
+	            , DAMO_ENC(#TELNO#)
+	            , NVL(#LOGIN_FAILR_CO#, 0)
+	            , SYSDATE
+	            , #SBSCRB_DE#
+	            , 'N'
+	            , NVL(#USE_YN#, 'Y')
+	            , SYSDATE
+	            , #UPDATE_ID#
+	            , SYSDATE
+	            , #UPDATE_ID#
+	            , DAMO_HASH(#PASSWORD#)
+	            , DAMO_HASH(#PASSWORD2#)
+	            , DAMO_HASH(#PASSWORD3#)
+	            , '1'
+	            , #PASSWORD_CODE#
+	            , '304'
+		     )
+		]]>
+	</insert>
+	
+	<update id="COMF01DAO.updateCmUserByUserSeCode02" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_USER
+		   SET EMAIL = DAMO_ENC(#EMAIL#)
+		     , TELNO = DAMO_ENC(#TELNO#)
+		     , USER_NM = #USER_NM#
+		 WHERE USER_ID = #USER_ID#
+		]]>
+	</update>	
+</sqlMap>

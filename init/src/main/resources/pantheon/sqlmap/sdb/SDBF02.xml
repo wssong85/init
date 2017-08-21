@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="SDBF02">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+   	
+   	<select id="SDBF02.selectLiteratureList" parameterClass="hashmap" resultClass="hashmap">
+   		SELECT LTRTRE_SEARCH_SN
+	          ,CMPNY_NM
+	          ,PRDUCT_NM
+	          ,KWRD
+	          ,SEARCH_SITE
+	          ,TO_CHAR(SEARCH_OPERTNDE_ONE, 'YYYYMMDDHH24MISS') SEARCH_OPERTNDE_ONE
+	          ,TO_CHAR(SEARCH_OPERTNDE_TWO, 'YYYYMMDDHH24MISS') SEARCH_OPERTNDE_TWO
+	          ,EXMNT_THESIS_CO_ONE
+	          ,EXMNT_THESIS_CO_TWO
+	          ,REPORT_THESIS_CO_ONE
+	          ,REPORT_THESIS_CO_TWO
+	          ,REPORT_NUM_ONE
+	          ,REPORT_NUM_TWO
+	          ,THESISURL
+	          ,USE_AT
+	      FROM SDB_SM_LTRTRE_SEARCH_INFO
+	     WHERE USE_AT = 'Y'
+	  ORDER BY FRST_CREDE DESC
+   	</select>
+   	
+   	<insert id="SDBF02.insertLiteratureInfo" parameterClass="hashmap">
+   		INSERT INTO SDB_SM_LTRTRE_SEARCH_INFO
+	                (LTRTRE_SEARCH_SN
+	                ,CMPNY_NM
+	                ,PRDUCT_NM
+	                ,KWRD
+	                ,SEARCH_SITE
+	                ,SEARCH_OPERTNDE_ONE
+	                ,SEARCH_OPERTNDE_TWO
+	                ,EXMNT_THESIS_CO_ONE
+	                ,EXMNT_THESIS_CO_TWO
+	                ,REPORT_THESIS_CO_ONE
+	                ,REPORT_THESIS_CO_TWO
+	                ,REPORT_NUM_ONE
+                	,REPORT_NUM_TWO
+	                ,THESISURL
+	                ,USE_AT
+	                ,FRST_CREDE
+	                ,REGIST_ID
+	                ,LAST_UPDDE
+	                ,UPDATE_ID
+	                )
+	         VALUES (#LTRTRE_SEARCH_SN#
+	                ,#CMPNY_NM#
+	                ,#PRDUCT_NM#
+	                ,#KWRD#
+	                ,#SEARCH_SITE#
+	                ,TO_DATE(#SEARCH_OPERTNDE_ONE# || '000000', 'YYYYMMDDHH24MISS')
+	                ,TO_DATE(#SEARCH_OPERTNDE_TWO# || '000000', 'YYYYMMDDHH24MISS')
+	                ,#EXMNT_THESIS_CO_ONE#
+	                ,#EXMNT_THESIS_CO_TWO#
+	                ,#REPORT_THESIS_CO_ONE#
+	                ,#REPORT_THESIS_CO_TWO#
+	                ,#REPORT_NUM_ONE#
+                	,#REPORT_NUM_TWO#
+	                ,#THESISURL#
+	                ,#USE_AT#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                )
+   	</insert>
+   	
+   	<update id="SDBF02.updateLiteratureInfo" parameterClass="hashmap">
+   		UPDATE SDB_SM_LTRTRE_SEARCH_INFO
+	       SET CMPNY_NM = #CMPNY_NM#
+	          ,PRDUCT_NM = #PRDUCT_NM#
+	          ,KWRD = #KWRD#
+	          ,SEARCH_SITE = #SEARCH_SITE#
+	          ,SEARCH_OPERTNDE_ONE = TO_DATE(#SEARCH_OPERTNDE_ONE# || '000000', 'YYYYMMDDHH24MISS')
+	          ,SEARCH_OPERTNDE_TWO = TO_DATE(#SEARCH_OPERTNDE_TWO# || '000000', 'YYYYMMDDHH24MISS')
+	          ,EXMNT_THESIS_CO_ONE = #EXMNT_THESIS_CO_ONE#
+	          ,EXMNT_THESIS_CO_TWO = #EXMNT_THESIS_CO_TWO#
+	          ,REPORT_THESIS_CO_ONE = #REPORT_THESIS_CO_ONE#
+	          ,REPORT_THESIS_CO_TWO = #REPORT_THESIS_CO_TWO#
+	          ,REPORT_NUM_ONE = #REPORT_NUM_ONE#
+       		  ,REPORT_NUM_TWO = #REPORT_NUM_TWO#
+	          ,THESISURL = #THESISURL#
+	          ,LAST_UPDDE = SYSDATE
+	          ,UPDATE_ID = #USER_ID#
+	     WHERE LTRTRE_SEARCH_SN = #LTRTRE_SEARCH_SN#
+   	</update>
+   	
+   	<update id="SDBF02.deleteLiteratureInfo" parameterClass="hashmap">
+   		UPDATE SDB_SM_LTRTRE_SEARCH_INFO
+   		   SET USE_AT = #USE_AT#
+   			  ,LAST_UPDDE = SYSDATE
+   			  ,UPDATE_ID = #USER_ID#
+   		 WHERE LTRTRE_SEARCH_SN = #LTRTRE_SEARCH_SN#
+   	</update>
+   	
+   	<select id="SDBF02.selectLiteratureSeq" resultClass="int">
+   		SELECT SDB_LITERATURE_SEQ.NEXTVAL
+   		  FROM DUAL
+   	</select>
+</sqlMap>

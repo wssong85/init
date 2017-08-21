@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ <sqlMap namespace="SDBE03">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+	
+	<select id="SDBE03DAO.selectQueryList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.PRDUCT_CODE
+  			  ,FN_GET_PRDUCT_NAME(A.PRDUCT_CODE) PRDUCT_NM
+	          ,A.PROGRM_ID
+	          ,C.PROGRM_NM
+	          ,A.SE_NO
+	          ,A.COLUMNNM
+	          ,FN_GET_USER_NAME(B.FRST_CRTR) PBLSHR_ID
+	          ,TO_CHAR(B.FRST_CREDE, 'YYYYMMDDHH24MISS') PBLICTE_DT
+	          ,FN_GET_COMMONCODE('EDC003', B.QUERY_STTUS_CODE, #LOCALE#) QUERY_STTUS_CODE
+	          ,FN_GET_COMMONCODE('EDC002', B.QUERY_TY_CODE, #LOCALE#) QUERY_TY_CODE
+	          ,B.QUERY_SN
+	          ,B.QUERY_CN
+	      FROM SDB_AM_PHASE_LC_INFO A
+	INNER JOIN (
+				SELECT A.QUERY_GROUP
+			          ,(SELECT QUERY_STTUS_CODE FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_STTUS_CODE
+			          ,(SELECT FRST_CRTR FROM CM_QUERY WHERE QUERY_SN = B.MIN_QUERY_SN) FRST_CRTR
+			          ,(SELECT FRST_CREDE FROM CM_QUERY WHERE QUERY_SN = B.MIN_QUERY_SN) FRST_CREDE
+			          ,MAX(A.QUERY_TY_CODE) QUERY_TY_CODE
+			          ,(SELECT RESN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) RESN
+			          ,B.MIN_QUERY_SN QUERY_SN
+			          ,(SELECT QUERY_CN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_CN
+			          ,MAX(A.MODULE_CODE) MODULE_CODE
+			      FROM CM_QUERY A
+			INNER JOIN (SELECT QUERY_GROUP
+			                  ,MAX(QUERY_SN) MAX_QUERY_SN
+			                  ,MIN(QUERY_SN) MIN_QUERY_SN
+			              FROM CM_QUERY A
+			          GROUP BY A.QUERY_GROUP) B
+			        ON A.QUERY_GROUP = B.QUERY_GROUP
+			  GROUP BY A.QUERY_GROUP, B.MAX_QUERY_SN, B.MIN_QUERY_SN
+			  ORDER BY A.QUERY_GROUP
+				) B
+	        ON A.QUERY_MASTR_SN = B.QUERY_SN
+	       AND B.MODULE_CODE = 'SDB'
+    INNER JOIN CM_PROGRM C
+       		ON A.PROGRM_ID = C.PROGRM_ID
+	  ORDER BY B.QUERY_SN DESC
+	</select>
+	
+	<select id="SDBE03DAO.selectQueryCnt" parameterClass="hashmap" resultClass="int">
+		SELECT COUNT(*)
+	      FROM SDB_AM_PHASE_LC_INFO A
+	INNER JOIN CT_QUERY_MASTR B
+	        ON A.QUERY_MASTR_SN = B.QUERY_MASTR_SN
+	INNER JOIN CT_QUERY_DETAIL C
+	        ON A.QUERY_MASTR_SN = C.QUERY_MASTR_SN
+	</select>
+	
+	<select id="SDBE03DAO.selectQuerySeq" resultClass="String">
+		SELECT CM_QUERY_SEQ.NEXTVAL
+		  FROM DUAL
+	</select>
+	
+	<select id="SDBE03DAO.selectQueryInfo" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.PRDUCT_CODE
+	          ,A.PROGRM_ID
+	          ,A.SE_NO
+	          ,A.COLUMNNM
+	          ,A.HRMFLNSCASESOURC_CODE
+	          ,A.HRMFLNSCASESOURC_NO
+	          ,A.FOLLOW_NO
+	          ,B.QUERY_TY_CODE
+	          ,B.QUERY_CN
+	          ,B.QUERY_GROUP
+	      FROM SDB_AM_PHASE_LC_INFO A
+	INNER JOIN CM_QUERY B
+	        ON A.QUERY_MASTR_SN = B.QUERY_SN
+	     WHERE A.QUERY_MASTR_SN = #QUERY_SN#
+	       AND B.MODULE_CODE = 'SDB'
+	</select>
+	
+	<insert id="SDBE03DAO.insertQueryInfo" parameterClass="hashmap">
+		INSERT INTO CM_QUERY
+					(
+						QUERY_SN
+					   ,MODULE_CODE
+					   ,QUERY_TY_CODE
+					   ,QUERY_STTUS_CODE
+					   ,QUERY_CN
+					   ,END_AT
+					   ,RESN
+					   ,USE_AT
+					   ,FRST_CREDE
+					   ,FRST_CRTR
+					   ,LAST_UPDDE
+					   ,LAST_UPDUSR
+					   ,QUERY_GROUP
+					)
+			 VALUES (
+			 			#QUERY_SN#
+			 		   ,#MODULE_CODE#
+			 		   ,#QUERY_TY_CODE#
+			 		   ,#QUERY_STTUS_CODE#
+			 		   ,#QUERY_CN#
+			 		   ,#END_AT#
+			 		   ,#RESN#
+			 		   ,#USE_AT#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		   ,#QUERY_GROUP#
+					)
+	</insert>
+	
+	<insert id="SDBE03DAO.insertPhaseInfo" parameterClass="hashmap">
+		INSERT INTO SDB_AM_PHASE_LC_INFO
+					(
+						QUERY_MASTR_SN
+					   ,PRDUCT_CODE
+					   ,PROGRM_ID
+					   ,SE_NO
+					   ,COLUMNNM
+					   ,USE_AT
+					   ,HRMFLNSCASESOURC_CODE
+					   ,HRMFLNSCASESOURC_NO
+					   ,FOLLOW_NO
+					   ,FRST_CREDE
+					   ,REGIST_ID
+					   ,LAST_UPDDE
+					   ,UPDATE_ID
+					)
+			 VALUES (
+			 			#QUERY_SN#
+			 		   ,#PRDUCT_CODE#
+			 		   ,#PROGRM_ID#
+			 		   ,#SE_NO#
+			 		   ,#COLUMNNM#
+			 		   ,#USE_AT#
+			 		   ,#HRMFLNSCASESOURC_CODE#
+			 		   ,#HRMFLNSCASESOURC_NO#
+			 		   ,#FOLLOW_NO#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		   ,SYSDATE
+			 		   ,#USER_ID#
+			 		)
+	</insert>
+	
+	<update id="SDBE03DAO.updateEndQueryInfo" parameterClass="hashmap">
+		UPDATE CM_QUERY
+		   SET END_AT = #END_AT#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,LAST_UPDUSR = #USER_ID#
+		 WHERE QUERY_GROUP = #QUERY_GROUP#
+	</update>
+	
+	<select id="SDBE03DAO.selectVerificationInfo" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.MAFU_NO
+	          ,FN_GET_PRDUCT_NAME(A.PRDUCT_CODE) PRDUCT_NM
+	          ,DECODE(B.SERIUSFMNM_AT, 'Y', 'YES', 'NO') SERIUSFMNM_AT
+	          ,TO_CHAR(B.KIDS_REPORT_DTE, 'YYYYMMDDHH24MISS') KIDS_REPORT_DTE
+	          ,TO_CHAR(B.FRT_RCEPT_DTE, 'YYYYMMDDHH24MISS') FRT_RCEPT_DTE
+	          ,A.KIDS_NO
+	          ,DECODE(NVL(A.KIDS_NO, ' '), ' ', '비정상', '정상')  NORMAL
+	      FROM SDB_AM_HRMFLNS_CASE_INFO A
+	INNER JOIN SDB_AM_AE_INFO B
+	        ON A.HRMFLNS_CASE_CODE = B.HRMFLNS_CASE_CODE
+	       AND A.FOLLOW_NO = B.FOLLOW_NO
+	       AND A.PRDUCT_CODE = B.PRDUCT_CODE
+	       AND B.KIDS_REPORT_AT = 'Y'
+	       AND B.FRT_RCEPT_DTE BETWEEN TO_DATE(#FIRST_DATE_START# || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#FIRST_DATE_END# || '235959', 'YYYYMMDDHH24MISS')
+	       AND B.KIDS_REPORT_DTE BETWEEN TO_DATE(#REPORT_DATE_START# || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#REPORT_DATE_END# || '235959', 'YYYYMMDDHH24MISS')
+	     WHERE 1 = 1
+	<isNotEmpty property="DMSTC_OUTNATN_SE">
+	       AND A.DMSTC_OUTNATN_SE = #DMSTC_OUTNATN_SE#
+	</isNotEmpty>
+	<isNotEmpty property="PRDUCT_NM">
+	       AND FN_GET_PRDUCT_NAME(A.PRDUCT_CODE) LIKE '%' || #PRDUCT_NM# || '%'
+	</isNotEmpty>
+	<isNotEmpty property="MAFU_NO">
+	       AND A.MAFU_NO LIKE '%' || #MAFU_NO# || '%'
+	</isNotEmpty>
+	<isNotEmpty property="NORMAL">
+		<isEqual property="NORMAL" compareValue="01">
+	       AND NVL(A.KIDS_NO, ' ') != ' '
+		</isEqual>
+		<isEqual property="NORMAL" compareValue="02">
+	       AND NVL(A.KIDS_NO, ' ') = ' '
+		</isEqual>
+	</isNotEmpty>
+	</select>
+	
+	<insert id="SDBE03DAO.insertExcelInfo" parameterClass="hashmap">
+		INSERT INTO SDB_AM_HRMFLNS_CASE_TMPR
+					(
+					 MAFU_NO
+					,FILENM
+					,KIDS_NO
+					,REPORT_DE
+					,REGIST_DE
+					,MDCIN_NM
+					,EXCEL_ROW
+					,USE_AT
+					,FRST_CREDE
+					,REGIST_ID
+					)
+			 VALUES (
+			 		 #MAFU_NO#
+			 		,#FILENM#
+			 		,#KIDS_NO#
+			 		,TO_DATE(#REPORT_DE# || '000000', 'YYYYMMDDHH24MISS')
+			 		,TO_DATE(#REGIST_DE# || '000000', 'YYYYMMDDHH24MISS')
+			 		,#MDCIN_NM#
+			 		,#EXCEL_ROW#
+			 		,#USE_AT#
+			 		,SYSDATE
+			 		,#USER_ID#
+		 			)
+	</insert>
+	
+	<select id="SDBE03DAO.selectVerificationForExcel" parameterClass="hashmap" resultClass="hashmap">
+		SELECT B.EXCEL_ROW
+			  ,A.MAFU_NO
+			  ,A.PRDUCT_NM
+			  ,A.SERIUSFMNM_AT
+			  ,TO_CHAR(B.REPORT_DE, 'YYYYMMDDHH24MISS') KIDS_REPORT_DTE
+			  ,DECODE(NVL(B.MAFU_NO, ' '), ' ', '비정상', '정상')  NORMAL
+			  ,DECODE(NVL(B.MAFU_NO, ' '), ' ', 'N', 'Y')  NORMAL_CODE
+			  ,B.KIDS_NO
+			  ,A.HRMFLNS_CASE_CODE
+	          ,A.FOLLOW_NO
+		  FROM (SELECT A.MAFU_NO
+			          ,FN_GET_PRDUCT_NAME(A.PRDUCT_CODE) PRDUCT_NM
+			          ,DECODE(B.SERIUSFMNM_AT, 'Y', 'YES', 'NO') SERIUSFMNM_AT
+			          ,TO_CHAR(B.KIDS_REPORT_DTE, 'YYYYMMDDHH24MISS') KIDS_REPORT_DTE
+			          ,TO_CHAR(B.FRT_RCEPT_DTE, 'YYYYMMDDHH24MISS') FRT_RCEPT_DTE
+			          ,A.KIDS_NO
+			          ,A.HRMFLNS_CASE_CODE
+			          ,A.FOLLOW_NO
+          			  ,DECODE(NVL(A.KIDS_NO, ' '), ' ', 'N', 'Y')  NORMAL
+			      FROM SDB_AM_HRMFLNS_CASE_INFO A
+			INNER JOIN SDB_AM_AE_INFO B
+			        ON A.HRMFLNS_CASE_CODE = B.HRMFLNS_CASE_CODE
+			       AND A.FOLLOW_NO = B.FOLLOW_NO
+			       AND A.PRDUCT_CODE = B.PRDUCT_CODE
+			       AND B.KIDS_REPORT_AT = 'Y'
+			       AND B.FRT_RCEPT_DTE BETWEEN TO_DATE(#FIRST_DATE_START# || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#FIRST_DATE_END# || '235959', 'YYYYMMDDHH24MISS')
+			       AND B.KIDS_REPORT_DTE BETWEEN TO_DATE(#REPORT_DATE_START# || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#REPORT_DATE_END# || '235959', 'YYYYMMDDHH24MISS')
+			     WHERE 1 = 1
+			<isNotEmpty property="DMSTC_OUTNATN_SE">
+			       AND A.DMSTC_OUTNATN_SE = #DMSTC_OUTNATN_SE#
+			</isNotEmpty>
+			<isNotEmpty property="PRDUCT_NM">
+			       AND FN_GET_PRDUCT_NAME(A.PRDUCT_CODE) LIKE '%' || #PRDUCT_NM# || '%'
+			</isNotEmpty>
+			<isNotEmpty property="MAFU_NO">
+			       AND A.MAFU_NO LIKE '%' || #MAFU_NO# || '%'
+			</isNotEmpty>
+			<isNotEmpty property="NORMAL">
+				<isEqual property="NORMAL" compareValue="01">
+			       AND NVL(A.KIDS_NO, ' ') != ' '
+				</isEqual>
+				<isEqual property="NORMAL" compareValue="02">
+			       AND NVL(A.KIDS_NO, ' ') = ' '
+				</isEqual>
+			</isNotEmpty>) A
+	 LEFT JOIN SDB_AM_HRMFLNS_CASE_TMPR B
+			ON A.MAFU_NO = B.MAFU_NO
+		   AND B.FILENM = #FILENM#
+		 WHERE A.NORMAL = 'N'
+	</select>
+	
+	<delete id="SDBE03DAO.deleteVerificationForTemp" parameterClass="hashmap">
+		DELETE FROM SDB_AM_HRMFLNS_CASE_TMPR
+			  WHERE FILENM = #FILENM#
+	</delete>
+	
+	<update id="SDBE03DAO.updateVerificationInfoForCase" parameterClass="hashmap">
+		UPDATE SDB_AM_HRMFLNS_CASE_INFO
+		   SET KIDS_NO = #KIDS_NO#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,UPDATE_ID = #USER_ID#
+		 WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		   AND FOLLOW_NO = #FOLLOW_NO#
+	</update>
+	
+	<update id="SDBE03DAO.updateVerificationInfoForAe" parameterClass="hashmap">
+		UPDATE SDB_AM_AE_INFO
+		   SET KIDS_REPORT_DTE = TO_DATE(#KIDS_REPORT_DTE#, 'YYYY-MM-DD HH24:MI:SS')
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,UPDATE_ID = #USER_ID#
+		 WHERE HRMFLNS_CASE_CODE = #HRMFLNS_CASE_CODE#
+		   AND FOLLOW_NO = #FOLLOW_NO#
+	</update>
+	
+	<select id="SDBE03DAO.selectChargeListPop" parameterClass="hashMap" resultClass="hashMap">
+		SELECT C.CHARGER_SN
+			  ,A.DELNGLN_NM
+			  ,C.DELNGLN_CODE
+			  ,C.CHARGER_NM
+			  ,damo_dec(C.EMAIL) AS EMAIL
+	     FROM SDB_IM_DELNGLN_MANAGE A
+	     LEFT OUTER JOIN SDB_IM_DELNGLN_TRTMNT_PRDUCT_M B
+	     ON A.DELNGLN_CODE = B.DELNGLN_CODE
+	     LEFT OUTER JOIN SDB_IM_DELNGLN_CHARGER_MANAGE C
+	     ON A.DELNGLN_CODE = C.DELNGLN_CODE
+		WHERE 1=1 
+		<isNotEmpty property="PRDUCT_CODE" prepend="AND">
+			 	<![CDATA[
+			 		B.PRDUCT_CODE = #PRDUCT_CODE#
+			 	]]>
+		</isNotEmpty>
+	</select>
+	
+	<insert id="SDBE03DAO.insertEmailHistory" parameterClass="hashMap">
+	<![CDATA[
+	INSERT
+	INTO SDB_EMAIL_TRNSMIS_HIST
+	    (
+	        HRMFLNS_CASE_CODE
+	      , FOLLOW_NO
+	      , SEQ
+	      , EMAIL
+	      , CHARGER_SN
+	      , USER_ID
+	      , TRNSMIS_DT
+	    )
+	    VALUES
+	    (
+	        #HRMFLNS_CASE_CODE#
+	      , #FOLLOW_NO#
+	      , SDB_EMAIL_TRANS_SEQ.NEXTVAL
+	      , damo_enc(#EMAIL#)
+	      , #CHARGER_SN#
+	      , #USER_ID#
+	      , SYSDATE
+	    )
+	]]>
+	</insert>
+</sqlMap>

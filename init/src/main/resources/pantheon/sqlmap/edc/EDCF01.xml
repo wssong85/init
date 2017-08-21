@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCF01DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+	
+	<select id="selectGetEdcVer" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT    MAX(EDC_VER) EDC_VER
+		  FROM    EDC_CR_FORM
+		 WHERE    TASK_SN = #TASK_SN#  
+		   AND    USE_AT = 'Y'
+	</select>
+	
+	<select id="selectEdcCrInsttForm" parameterClass="hashMap" resultClass="hashMap">
+		SELECT    A.TASK_SN
+		        , A.INSTT_FORM_SN
+		        , A.INSTT_CODE
+		        , A.INSTT_NM
+		        , A.FREEZING_STTUS_CODE
+		        , A.FREEZING_STTUS_NM
+		        , SUM(A.OPEN_QUERY) OPEN_QUERY
+		        , (
+		        		CASE WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)!=0
+			                 THEN '03'
+			                 WHEN SUM(A.SDV_NOT_YET)!=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+			                 THEN '01'
+			                 WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+			                 THEN '01'
+			            ELSE      '02' 
+			            END
+		          ) SDV_STTUS_CODE
+		        , FN_GET_COMMONCODE('EDC047',(
+		            CASE WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)!=0
+		                 THEN '03'
+		                 WHEN SUM(A.SDV_NOT_YET)!=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+		                 THEN '01'
+		                 WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+		                 THEN '01'
+		            ELSE      '02' 
+		            END
+		          ), #LOCALE#) AS SDV_STTUS_NM
+		        , (
+		        		CASE WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)!=0
+			                 THEN '03'
+			                 WHEN SUM(A.CMPL_NOT_YET)!=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+			                 THEN '01'
+			                 WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+			                 THEN '01'
+			            ELSE      '02' 
+			            END
+		          ) SDV_COMPT_STTUS_CODE
+		        , FN_GET_COMMONCODE('EDC049',(
+		            CASE WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)!=0
+		                 THEN '03'
+		                 WHEN SUM(A.CMPL_NOT_YET)!=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+		                 THEN '01'
+		                 WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+		                 THEN '01'
+		            ELSE      '02' 
+		            END
+		          ), #LOCALE#) AS SDV_COMPT_STTUS_NM        
+		  FROM    (
+		              SELECT    ECIF.TASK_SN
+		                      , ECIF.INSTT_FORM_SN
+		                      , ECIF.INSTT_CODE
+		                      , ECIF.FREEZING_STTUS_CODE
+		                      , FN_GET_COMMONCODE('EDC046', ECIF.FREEZING_STTUS_CODE, #LOCALE#) AS FREEZING_STTUS_NM
+		                      , (
+		                          SELECT    NAME1
+		                            FROM    SAP_BCNC_INFO
+		                           WHERE    KUNNR = ECIF.INSTT_CODE
+		                             AND	USE_YN = 'Y'
+		                        ) AS INSTT_NM
+		                      , (
+		                          SELECT    COUNT(1)
+		                            FROM    EDC_CF_QUERY ECQ
+		                                  , CM_QUERY CQM
+		                           WHERE    ECQ.QUERY_SN = CQM.QUERY_SN
+		                             AND    ECQ.INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		                             AND    CQM.QUERY_STTUS_CODE = '01'
+		                             AND	ECQ.USE_AT = 'Y'
+		                             AND	CQM.USE_AT = 'Y'
+		                        ) OPEN_QUERY
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		                             AND    SDV_STTUS_CODE = '01'
+		                             AND	USE_AT = 'Y'
+		                        ) SDV_NOT_YET
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		                             AND    SDV_STTUS_CODE = '02'
+		                             AND	USE_AT = 'Y'
+		                        ) SDV_SUB_COMP
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		                             AND    SDV_STTUS_CODE = '03'
+		                             AND	USE_AT = 'Y'
+		                        ) SDV_ALL_COMP
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		                             AND    SDV_COMPT_STTUS_CODE = '01'
+		                             AND	USE_AT = 'Y'
+		                        ) CMPL_NOT_YET
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		                             AND    SDV_COMPT_STTUS_CODE = '02'
+		                             AND	USE_AT = 'Y'
+		                        ) CMPL_SUB_COMP
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		                             AND    SDV_COMPT_STTUS_CODE = '03'
+		                             AND	USE_AT = 'Y'
+		                        ) CMPL_ALL_COMP
+		                FROM    EDC_CR_INSTT_FORM ECIF
+		               WHERE	ECIF.USE_AT = 'Y'
+		            ) A
+		 WHERE		1=1
+		   AND		A.TASK_SN = #TASK_SN#
+		   <isNotEmpty property="INSTT_NM" prepend="AND">
+		   			A.INSTT_NM LIKE '%'||#INSTT_NM#||'%'
+		   </isNotEmpty>
+		GROUP BY    A.TASK_SN
+		          , A.INSTT_FORM_SN
+		          , A.INSTT_CODE
+		          , A.INSTT_NM
+		          , A.FREEZING_STTUS_CODE
+		          , A.FREEZING_STTUS_NM 
+	</select>
+	
+	<select id="selectEdcCrSubject" parameterClass="hashMap" resultClass="hashMap">
+		SELECT    A.TASK_SN
+		        , A.INSTT_FORM_SN
+		        , A.INSTT_CODE
+		        , A.INSTT_NM
+		        , A.SUBJECT_NO
+		        , A.FREEZING_STTUS_CODE
+		        , A.FREEZING_STTUS_NM
+		        , SUM(A.OPEN_QUERY) OPEN_QUERY
+		        , (
+		            CASE WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)!=0
+		                 THEN '03'
+		                 WHEN SUM(A.SDV_NOT_YET)!=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+		                 THEN '01'
+		                 WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+		                 THEN '01'
+		            ELSE      '02' 
+		            END
+		          ) AS SDV_STTUS_CODE
+		        , FN_GET_COMMONCODE('EDC047',(
+		            CASE WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)!=0
+		                 THEN '03'
+		                 WHEN SUM(A.SDV_NOT_YET)!=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+		                 THEN '01'
+		                 WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+		                 THEN '01'
+		            ELSE      '02' 
+		            END
+		          ), #LOCALE#) AS SDV_STTUS_NM
+		        , (
+		            CASE WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)!=0
+		                 THEN '03'
+		                 WHEN SUM(A.CMPL_NOT_YET)!=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+		                 THEN '01'
+		                 WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+		                 THEN '01'
+		            ELSE      '02' 
+		            END
+		          ) AS SDV_COMPT_STTUS_CODE
+		        , FN_GET_COMMONCODE('EDC049',(
+		            CASE WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)!=0
+		                 THEN '03'
+		                 WHEN SUM(A.CMPL_NOT_YET)!=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+		                 THEN '01'
+		                 WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+		                 THEN '01'
+		            ELSE      '02' 
+		            END
+		          ), #LOCALE#) AS SDV_COMPT_STTUS_NM        
+		  FROM    (
+		              SELECT    ECIF.TASK_SN
+		                      , ECIF.INSTT_FORM_SN
+		                      , ECIF.INSTT_CODE
+		                      , ECS.FREEZING_STTUS_CODE
+		                      , FN_GET_COMMONCODE('EDC046', ECS.FREEZING_STTUS_CODE, #LOCALE#) AS FREEZING_STTUS_NM
+		                      , (
+		                          SELECT    NAME1
+		                            FROM    SAP_BCNC_INFO
+		                           WHERE    KUNNR = ECIF.INSTT_CODE
+		                             AND	USE_YN = 'Y'
+		                        ) AS INSTT_NM
+		                      , ECS.SUBJECT_NO
+		                      , (
+		                          SELECT    COUNT(1)
+		                            FROM    EDC_CF_QUERY ECQ
+		                                  , CM_QUERY CQM
+		                           WHERE    ECQ.QUERY_SN = CQM.QUERY_SN
+		                             AND    ECQ.INSTT_FORM_SN = ECS.INSTT_FORM_SN
+		                             AND    ECQ.SUBJECT_NO = ECS.SUBJECT_NO
+		                             AND    CQM.QUERY_STTUS_CODE = '01'
+		                             AND	ECQ.USE_AT = 'Y'
+		                             AND	CQM.USE_AT = 'Y'
+		                        ) OPEN_QUERY
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECS.INSTT_FORM_SN
+		                             AND    SUBJECT_NO = ECS.SUBJECT_NO
+		                             AND    SDV_STTUS_CODE = '01'
+		                             AND	USE_AT = 'Y'
+		                        ) SDV_NOT_YET
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECS.INSTT_FORM_SN
+		                             AND    SUBJECT_NO = ECS.SUBJECT_NO
+		                             AND    SDV_STTUS_CODE = '02'
+		                             AND	USE_AT = 'Y'
+		                        ) SDV_SUB_COMP
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECS.INSTT_FORM_SN
+		                             AND    SUBJECT_NO = ECS.SUBJECT_NO
+		                             AND    SDV_STTUS_CODE = '03'
+		                             AND	USE_AT = 'Y'
+		                        ) SDV_ALL_COMP
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECS.INSTT_FORM_SN
+		                             AND    SUBJECT_NO = ECS.SUBJECT_NO
+		                             AND    SDV_COMPT_STTUS_CODE = '01'
+		                             AND	USE_AT = 'Y'
+		                        ) CMPL_NOT_YET
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECS.INSTT_FORM_SN
+		                             AND    SUBJECT_NO = ECS.SUBJECT_NO
+		                             AND    SDV_COMPT_STTUS_CODE = '02'
+		                             AND	USE_AT = 'Y'
+		                        ) CMPL_SUB_COMP
+		                      , (
+		                          SELECT    NVL(COUNT(1), 0)
+		                            FROM    EDC_CF_GROUP
+		                           WHERE    INSTT_FORM_SN = ECS.INSTT_FORM_SN
+		                             AND    SUBJECT_NO = ECS.SUBJECT_NO
+		                             AND    SDV_COMPT_STTUS_CODE = '03'
+		                             AND	USE_AT = 'Y'
+		                        ) CMPL_ALL_COMP
+		                FROM    EDC_CF_SUBJECT ECS
+		                      , EDC_CR_INSTT_FORM ECIF
+		               WHERE	ECS.INSTT_FORM_SN = ECIF.INSTT_FORM_SN
+		                 AND    ECS.USE_AT = 'Y'
+		                 AND    ECIF.USE_AT = 'Y'
+		            ) A
+		 WHERE		1=1
+		   AND		A.TASK_SN = #TASK_SN#
+		   <isNotEmpty property="INSTT_NM" prepend="AND">
+		   			A.INSTT_NM LIKE '%'||#INSTT_NM#||'%'
+		   </isNotEmpty>
+		   <isNotEmpty property="SUBJECT_NO" prepend="AND">
+		   			A.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		   </isNotEmpty>
+		GROUP BY    A.TASK_SN
+		          , A.INSTT_FORM_SN
+		          , A.INSTT_CODE
+		          , A.INSTT_NM
+		          , A.SUBJECT_NO
+		          , A.FREEZING_STTUS_CODE
+		          , A.FREEZING_STTUS_NM
+	</select>
+	
+	<select id="selectEdcCfVisit" parameterClass="hashMap" resultClass="hashMap">
+		SELECT      A.INSTT_NM
+		          , A.SUBJECT_NO
+		          , A.VISIT_SN
+		          , A.SN
+		          , A.VISIT_LBL
+		          , SUM(A.QUERY_OPEN_CNT) OPEN_QUERY
+		          , FN_GET_COMMONCODE('EDC047',(
+				            CASE WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)!=0
+				                 THEN '03'
+				                 WHEN SUM(A.SDV_NOT_YET)!=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+				                 THEN '01'
+				                 WHEN SUM(A.SDV_NOT_YET)=0 AND SUM(A.SDV_SUB_COMP)=0 AND SUM(A.SDV_ALL_COMP)=0
+				                 THEN '01'
+				            ELSE      '02' 
+				            END
+				          ), #LOCALE#) AS SDV_STTUS_NM
+			      , FN_GET_COMMONCODE('EDC049',(
+			            CASE WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)!=0
+			                 THEN '03'
+			                 WHEN SUM(A.CMPL_NOT_YET)!=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+			                 THEN '01'
+			                 WHEN SUM(A.CMPL_NOT_YET)=0 AND SUM(A.CMPL_SUB_COMP)=0 AND SUM(A.CMPL_ALL_COMP)=0
+			                 THEN '01'
+			            ELSE      '02' 
+			            END
+			        ), #LOCALE#) AS SDV_COMPT_STTUS_NM 
+		  FROM      (
+		                SELECT      (
+		                                SELECT    NAME1
+		                                  FROM    SAP_BCNC_INFO
+		                                 WHERE    KUNNR = ECIF.INSTT_CODE
+		                                   AND    USE_YN = 'Y'
+		                            ) INSTT_NM
+		                          , ECV.INSTT_FORM_SN
+		                          , ECS.SUBJECT_NO
+		                          , ECV.VISIT_SN
+		                          , ECV.SN
+		                          , (
+		                                SELECT    ECVS.VISIT_LBL
+		                                  FROM    EDC_CR_VISIT_SCHDUL ECVS
+		                                 WHERE    ECVS.TASK_SN = #TASK_SN#
+		                                   AND    ECVS.EDC_VER = #EDC_VER#
+		                                   AND    ECVS.VISIT_SN = ECV.VISIT_SN
+		                                   AND    USE_AT = 'Y'
+		                            ) VISIT_LBL
+		                          , (
+		                                SELECT    COUNT(1)
+		                                  FROM    CM_QUERY CQ
+		                                        , EDC_CF_QUERY ECQ
+		                                 WHERE    CQ.QUERY_SN = ECQ.QUERY_SN
+		                                   AND    ECQ.INSTT_FORM_SN = ECV.INSTT_FORM_SN
+		                                   AND    ECQ.SUBJECT_NO = ECV.SUBJECT_NO
+		                                   AND    ECQ.VISIT_SN = ECV.VISIT_SN
+		                                   AND    ECQ.SN = ECV.SN
+		                                   AND    CQ.QUERY_STTUS_CODE = '01'
+		                                   AND    CQ.USE_AT = 'Y'
+		                                   AND    ECQ.USE_AT = 'Y'
+		                            ) QUERY_OPEN_CNT
+				                      , (
+				                          SELECT    NVL(COUNT(1), 0)
+				                            FROM    EDC_CF_GROUP
+				                           WHERE    INSTT_FORM_SN = ECV.INSTT_FORM_SN
+				                             AND    SUBJECT_NO = ECV.SUBJECT_NO
+		                                 	 AND    VISIT_SN = ECV.VISIT_SN
+		                                 	 AND    SN = ECV.SN
+				                             AND    SDV_STTUS_CODE = '01'
+				                             AND	USE_AT = 'Y'
+				                        ) SDV_NOT_YET
+				                      , (
+				                          SELECT    NVL(COUNT(1), 0)
+				                            FROM    EDC_CF_GROUP
+				                           WHERE    INSTT_FORM_SN = ECV.INSTT_FORM_SN
+				                             AND    SUBJECT_NO = ECV.SUBJECT_NO
+		                                 	 AND    VISIT_SN = ECV.VISIT_SN
+		                                 	 AND    SN = ECV.SN
+				                             AND    SDV_STTUS_CODE = '02'
+				                             AND	USE_AT = 'Y'
+				                        ) SDV_SUB_COMP
+				                      , (
+				                          SELECT    NVL(COUNT(1), 0)
+				                            FROM    EDC_CF_GROUP
+				                           WHERE    INSTT_FORM_SN = ECV.INSTT_FORM_SN
+				                             AND    SUBJECT_NO = ECV.SUBJECT_NO
+		                                 	 AND    VISIT_SN = ECV.VISIT_SN
+		                                 	 AND    SN = ECV.SN
+				                             AND    SDV_STTUS_CODE = '03'
+				                             AND	USE_AT = 'Y'
+				                        ) SDV_ALL_COMP
+				                      , (
+				                          SELECT    NVL(COUNT(1), 0)
+				                            FROM    EDC_CF_GROUP
+				                           WHERE    INSTT_FORM_SN = ECV.INSTT_FORM_SN
+				                             AND    SUBJECT_NO = ECV.SUBJECT_NO
+		                                 	 AND    VISIT_SN = ECV.VISIT_SN
+		                                 	 AND    SN = ECV.SN
+				                             AND    SDV_COMPT_STTUS_CODE = '01'
+				                             AND	USE_AT = 'Y'
+				                        ) CMPL_NOT_YET
+				                      , (
+				                          SELECT    NVL(COUNT(1), 0)
+				                            FROM    EDC_CF_GROUP
+				                           WHERE    INSTT_FORM_SN = ECV.INSTT_FORM_SN
+				                             AND    SUBJECT_NO = ECV.SUBJECT_NO
+		                                 	 AND    VISIT_SN = ECV.VISIT_SN
+		                                 	 AND    SN = ECV.SN
+				                             AND    SDV_COMPT_STTUS_CODE = '02'
+				                             AND	USE_AT = 'Y'
+				                        ) CMPL_SUB_COMP
+				                      , (
+				                          SELECT    NVL(COUNT(1), 0)
+				                            FROM    EDC_CF_GROUP
+				                           WHERE    INSTT_FORM_SN = ECV.INSTT_FORM_SN
+				                             AND    SUBJECT_NO = ECV.SUBJECT_NO
+		                                 	 AND    VISIT_SN = ECV.VISIT_SN
+		                                 	 AND    SN = ECV.SN
+				                             AND    SDV_COMPT_STTUS_CODE = '03'
+				                             AND	USE_AT = 'Y'
+				                        ) CMPL_ALL_COMP
+		                  FROM      EDC_CR_INSTT_FORM ECIF
+		                          , EDC_CF_SUBJECT ECS
+		                          , EDC_CF_VISIT ECV
+		                 WHERE      ECIF.INSTT_FORM_SN = ECS.INSTT_FORM_SN
+		                   AND      ECS.INSTT_FORM_SN = ECV.INSTT_FORM_SN
+		                   AND      ECS.SUBJECT_NO = ECV.SUBJECT_NO
+		                   AND      ECIF.USE_AT = 'Y'
+		                   AND      ECS.USE_AT = 'Y'
+		                   AND      ECV.USE_AT = 'Y'
+		                   AND      ECIF.TASK_SN = #TASK_SN#
+		            ) A
+		 WHERE		1=1
+		   <isNotEmpty property="INSTT_NM" prepend="AND">
+		   			A.INSTT_NM LIKE '%'||#INSTT_NM#||'%'
+		   </isNotEmpty>
+		   <isNotEmpty property="SUBJECT_NO" prepend="AND">
+		   			A.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		   </isNotEmpty>
+		GROUP BY    A.INSTT_NM
+		          , A.SUBJECT_NO
+		          , A.VISIT_SN
+		          , A.SN
+		          , A.VISIT_LBL 
+	</select>
+	
+	<select id="selectEdcCfGroup" parameterClass="hashMap" resultClass="hashMap">
+		SELECT      A.INSTT_NM
+                  , A.INSTT_FORM_SN
+                  , A.SUBJECT_NO
+                  , A.VISIT_SN
+                  , A.SN
+                  , A.VISIT_GROUP_SN
+		          , A.VISIT_LBL
+		          , A.CRF_NM
+		          , SUM(A.QUERY_OPEN_CNT) QUERY_OPEN_CNT
+		          , FN_GET_COMMONCODE('EDC047', A.SDV_STTUS_CODE, #LOCALE#) SDV_STTUS_NM
+		          , FN_GET_COMMONCODE('EDC049', A.SDV_COMPT_STTUS_CODE, #LOCALE#) SDV_COMPT_STTUS_NM
+		  FROM      (
+		                SELECT      (
+		                                SELECT    NAME1
+		                                  FROM    SAP_BCNC_INFO
+		                                 WHERE    KUNNR = ECIF.INSTT_CODE
+		                                   AND    USE_YN = 'Y'
+		                            ) INSTT_NM
+		                          , ECG.INSTT_FORM_SN
+		                          , ECG.SUBJECT_NO
+		                          , ECG.VISIT_SN
+		                          , ECG.SN
+		                          , ECG.VISIT_GROUP_SN
+		                          , (
+		                                SELECT    ECVS.VISIT_LBL
+		                                  FROM    EDC_CR_VISIT_SCHDUL ECVS
+		                                 WHERE    ECVS.TASK_SN = #TASK_SN#
+		                                   AND    ECVS.EDC_VER = #EDC_VER#
+		                                   AND    ECVS.VISIT_SN = ECV.VISIT_SN
+		                                   AND    ECVS.USE_AT = 'Y'
+		                            ) VISIT_LBL
+		                          , (
+		                                SELECT    ECRG.GROUP_LBL
+		                                  FROM    EDC_CR_GROUP ECRG
+		                                        , EDC_CR_VISIT_GROUP ECVG
+		                                 WHERE    ECVG.VISIT_GROUP_SN = ECG.VISIT_GROUP_SN
+		                                   AND    ECVG.GROUP_SN = ECRG.GROUP_SN    
+							               AND    ECVG.TASK_SN = ECRG.TASK_SN                                  
+							               AND    ECVG.EDC_VER = ECRG.EDC_VER   
+		                                   AND    ECRG.USE_AT = 'Y'
+		                                   AND    ECVG.USE_AT = 'Y'
+		                                   AND    ECRG.TASK_SN = #TASK_SN#
+		                                   AND    ECRG.EDC_VER = #EDC_VER#
+		                            ) CRF_NM
+		                          , (
+		                                SELECT    COUNT(1)
+		                                  FROM    CM_QUERY CQ
+		                                        , EDC_CF_QUERY ECQ
+		                                 WHERE    CQ.QUERY_SN = ECQ.QUERY_SN
+		                                   AND    ECQ.INSTT_FORM_SN = ECG.INSTT_FORM_SN
+		                                   AND    ECQ.SUBJECT_NO = ECG.SUBJECT_NO
+		                                   AND    ECQ.VISIT_SN = ECG.VISIT_SN
+		                                   AND    ECQ.SN = ECG.SN
+		                                   AND    ECQ.VISIT_GROUP_SN = ECG.VISIT_GROUP_SN
+		                                   AND    CQ.QUERY_STTUS_CODE = '01'
+		                                   AND    CQ.USE_AT = 'Y'
+		                                   AND    ECQ.USE_AT = 'Y'
+		                            ) QUERY_OPEN_CNT
+		                          , ECG.SDV_STTUS_CODE
+		                          , ECG.SDV_COMPT_STTUS_CODE
+		                  FROM      EDC_CR_INSTT_FORM ECIF
+		                          , EDC_CF_SUBJECT ECS
+		                          , EDC_CF_VISIT ECV
+		                          , EDC_CF_GROUP ECG
+		                 WHERE      ECIF.INSTT_FORM_SN = ECS.INSTT_FORM_SN
+		                   AND      ECS.INSTT_FORM_SN = ECV.INSTT_FORM_SN
+		                   AND      ECS.SUBJECT_NO = ECV.SUBJECT_NO
+		                   AND      ECV.INSTT_FORM_SN = ECG.INSTT_FORM_SN
+		                   AND      ECV.SUBJECT_NO = ECG.SUBJECT_NO
+		                   AND      ECV.VISIT_SN = ECG.VISIT_SN
+		                   AND      ECV.SN = ECG.SN
+		                   AND      ECIF.USE_AT = 'Y'
+		                   AND      ECS.USE_AT = 'Y'
+		                   AND      ECV.USE_AT = 'Y'
+		                   AND      ECG.USE_AT = 'Y'
+		                   AND      ECIF.TASK_SN = #TASK_SN#
+		            ) A
+		 WHERE		1=1
+		   <isNotEmpty property="INSTT_NM" prepend="AND">
+		   			A.INSTT_NM LIKE '%'||#INSTT_NM#||'%'
+		   </isNotEmpty>
+		   <isNotEmpty property="SUBJECT_NO" prepend="AND">
+		   			A.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		   </isNotEmpty>
+		GROUP BY    A.INSTT_NM
+                  , A.INSTT_FORM_SN
+                  , A.SUBJECT_NO
+                  , A.VISIT_SN
+                  , A.SN
+                  , A.VISIT_GROUP_SN
+		          , A.VISIT_LBL
+		          , A.CRF_NM      
+		          , A.SDV_STTUS_CODE     
+		          , A.SDV_COMPT_STTUS_CODE      
+	</select>
+	
+	<update id="updateSdvSttusBySite" parameterClass="hashMap">
+		UPDATE EDC_CF_GROUP
+		   SET SDV_STTUS_CODE = #SDV_STTUS_CODE#
+		 WHERE 1=1
+		 <isNotEmpty property="INSTT_FORM_SN" prepend="AND">
+		 	INSTT_FORM_SN = #INSTT_FORM_SN#
+		 </isNotEmpty>
+		 <isNotEmpty property="SUBJECT_NO" prepend="AND">
+		 	SUBJECT_NO = #SUBJECT_NO#
+		 </isNotEmpty>
+		 <isNotEmpty property="VISIT_SN" prepend="AND">
+		 	VISIT_SN = #VISIT_SN#
+		 </isNotEmpty>
+		 <isNotEmpty property="SN" prepend="AND">
+		 	SN = #SN#
+		 </isNotEmpty>
+		 <isNotEmpty property="VISIT_GROUP_SN" prepend="AND">
+		 	VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		 </isNotEmpty>
+	</update>
+	
+	<update id="updateSdvCmplSttusBySite" parameterClass="hashMap">
+		UPDATE EDC_CF_GROUP
+		   SET SDV_COMPT_STTUS_CODE = #SDV_COMPT_STTUS_CODE#
+		 WHERE 1=1
+		 <isNotEmpty property="INSTT_FORM_SN" prepend="AND">
+		 	INSTT_FORM_SN = #INSTT_FORM_SN#
+		 </isNotEmpty>
+		 <isNotEmpty property="SUBJECT_NO" prepend="AND">
+		 	SUBJECT_NO = #SUBJECT_NO#
+		 </isNotEmpty>
+		 <isNotEmpty property="VISIT_SN" prepend="AND">
+		 	VISIT_SN = #VISIT_SN#
+		 </isNotEmpty>
+		 <isNotEmpty property="SN" prepend="AND">
+		 	SN = #SN#
+		 </isNotEmpty>
+		 <isNotEmpty property="VISIT_GROUP_SN" prepend="AND">
+		 	VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		 </isNotEmpty>
+	</update>
+	
+	<select id="selectEdcCfGroupOldList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT		INSTT_FORM_SN
+				,	SUBJECT_NO
+				,	VISIT_SN
+				,	SN
+				,	VISIT_GROUP_SN
+				,	SDV_STTUS_CODE
+		  FROM		EDC_CF_GROUP
+		 WHERE		1=1
+		 <isNotEmpty property="INSTT_FORM_SN" prepend="AND">
+		 	INSTT_FORM_SN = #INSTT_FORM_SN#
+		 </isNotEmpty>
+		 <isNotEmpty property="SUBJECT_NO" prepend="AND">
+		 	SUBJECT_NO = #SUBJECT_NO#
+		 </isNotEmpty>
+		 <isNotEmpty property="VISIT_SN" prepend="AND">
+		 	VISIT_SN = #VISIT_SN#
+		 </isNotEmpty>
+		 <isNotEmpty property="SN" prepend="AND">
+		 	SN = #SN#
+		 </isNotEmpty>
+		 <isNotEmpty property="VISIT_GROUP_SN" prepend="AND">
+		 	VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		 </isNotEmpty>		 
+	</select>
+</sqlMap>

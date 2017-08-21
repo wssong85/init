@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+	
+	<bean id="egov.propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:/egovframework/egovProps/globals.properties</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- 실행환경에서 빈이름 참조(EgovAbstractDAO) -->
+	<bean id="egov.lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true" />
+
+	<bean id="egov.sqlMapClient" class="egovframework.rte.psl.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocations">
+			<list>
+				<value>classpath:/pantheon/config/**/*.xml</value>
+			</list>
+		</property>
+		<property name="dataSource" ref="egov.dataSource"/>
+		<property name="lobHandler" ref="egov.lobHandler"/>
+	</bean>
+	
+	<bean id="nonTransaction.sqlMapClient" class="egovframework.rte.psl.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocations">
+			<list>
+				<value>classpath:/pantheon/config/com/sql-map-config-com.xml</value>
+			</list>
+		</property>
+		<property name="dataSource" ref="dataSource-maria2"/>
+		<property name="lobHandler" ref="egov.lobHandler"/>
+	</bean>
+	
+	<!-- mybatis mapper 설정 -->
+	<bean class="egovframework.rte.psl.dataaccess.mapper.MapperConfigurer">
+		<property name="basePackage" value="realtime.**.mapper" />
+	</bean>
+	
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="mariadb.log4jdbc.dataSource" />
+		<property name="mapperLocations" value="classpath:/realtime/mappers/**/*.xml" />
+	</bean>
+	
+	<bean id="mariadb.log4jdbc.dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+        <constructor-arg ref="dataSource-maria" />
+        <property name="logFormatter">
+            <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+                <property name="loggingType" value="MULTI_LINE" />
+                <property name="sqlPrefix" value="SQL => \n"/>
+            </bean>
+        </property>
+    </bean>
+    
+</beans>	

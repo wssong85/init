@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="IWRB01">
+	<typeAlias  alias="hashMap" type="java.util.HashMap"/>
+   	<insert id="IWRB01DAO.insertTriggerInfo" parameterClass="java.util.HashMap">
+		INSERT INTO IWRS_DS_TRIGR
+		           (TRIGR_NO
+		           ,APPLCDE
+		           ,TRIGR_LVL
+		           ,MXMM_INVNTRY_QTT
+		           ,IP_TYPE
+		           ,MEMO
+		           ,TASK_CODE
+		           ,INSTT_CODE
+		           ,FRST_CREDE
+		           ,REGIST_ID
+		           ,LAST_UPDDE
+		           ,UPDATE_ID)
+		    VALUES (#TRIGR_NO#
+		           ,TO_DATE(#APPLCDE# || '000000', 'YYYYMMDDHH24MISS')
+		           ,#TRIGR_LVL#
+		           ,#MXMM_INVNTRY_QTT#
+		           ,#IP_TYPE#
+		           ,#MEMO#
+		           ,#TASK_CODE#
+		           ,#INSTT_CODE#
+		           ,SYSDATE
+		           ,#USER_ID#
+		           ,SYSDATE
+		           ,#USER_ID#)
+	</insert>
+	
+	<update id="IWRB01DAO.updateTriggerInfo" parameterClass="java.util.HashMap">
+	    UPDATE IWRS_DS_TRIGR
+	       SET IP_TYPE          = #IP_TYPE#
+	          ,TRIGR_LVL        = #TRIGR_LVL#
+	          ,MXMM_INVNTRY_QTT = #MXMM_INVNTRY_QTT#
+	          ,APPLCDE          = TO_DATE(#APPLCDE# || '000000', 'YYYYMMDDHH24MISS')
+	          ,MEMO             = #MEMO#
+	          ,LAST_UPDDE       = SYSDATE
+	          ,UPDATE_ID        = #USER_ID#
+	     WHERE IP_TYPE          = #IP_TYPE#
+	       AND TASK_CODE		= #TASK_CODE#
+	       AND INSTT_CODE		= #INSTT_CODE#
+	</update>
+	
+	<select id="IWRB01DAO.selectTriggerInfo" parameterClass="java.util.HashMap" resultClass="hashMap">
+	    SELECT A.INSTT_CODE
+	          ,A.TASK_SN
+	          ,A.NAME1
+	          $mainCol$
+	          ,TO_CHAR(B.APPLCDE, 'YYYYMMDDHH24MISS') APPLCDE
+	          ,B.MEMO
+	          $trigrNoCol$
+	      FROM (SELECT A.TASK_SN
+	                  ,C.INSTT_CODE
+	                  ,D.NAME1
+	              FROM EDC_CR_INSTT_FORM A
+	        INNER JOIN CM_RSRCHUSER B
+	                ON A.INSTT_CODE = B.INSTT_CODE
+	        INNER JOIN CM_INSTT C
+	                ON B.INSTT_CODE = C.INSTT_CODE
+	        INNER JOIN SAP_BCNC_INFO D
+	                ON C.KUNNR = D.KUNNR
+	          GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1) A
+	 LEFT JOIN (SELECT A.INSTT_CODE
+	                   $col$
+	                  ,A.APPLCDE
+	                  ,A.MEMO
+	                  ,A.TASK_CODE
+	              FROM (SELECT TASK_CODE
+	                          ,INSTT_CODE
+	                          ,APPLCDE
+	                          ,MEMO
+	                      FROM IWRS_DS_TRIGR
+	                  GROUP BY TASK_CODE, INSTT_CODE, APPLCDE, MEMO) A
+	        INNER JOIN (SELECT TASK_CODE
+	                          ,INSTT_CODE
+	                          $ipTypeCol$
+	                      FROM (SELECT TASK_CODE
+	                                  ,INSTT_CODE
+	                                  ,IP_TYPE
+	                                  ,TRIGR_LVL 
+	                              FROM IWRS_DS_TRIGR 
+	                             WHERE TASK_CODE = #TASK_SN#) 
+	                     PIVOT (MAX(TRIGR_LVL) FOR IP_TYPE IN ($ipTypeWhere$))) B
+	                ON A.TASK_CODE = B.TASK_CODE
+	               AND A.INSTT_CODE = B.INSTT_CODE
+	        INNER JOIN (SELECT TASK_CODE
+	                          ,INSTT_CODE
+	                          $ipTypeCol$
+	                      FROM (SELECT TASK_CODE
+	                                  ,INSTT_CODE
+	                                  ,IP_TYPE
+	                                  ,MXMM_INVNTRY_QTT
+	                              FROM IWRS_DS_TRIGR
+	                             WHERE TASK_CODE = #TASK_SN#)
+	                     PIVOT (MAX(MXMM_INVNTRY_QTT) FOR IP_TYPE IN ($ipTypeWhere$))) C
+	                ON A.TASK_CODE = C.TASK_CODE
+	               AND A.INSTT_CODE = C.INSTT_CODE) B
+	        ON A.TASK_SN = B.TASK_CODE
+	       AND A.INSTT_CODE = B.INSTT_CODE
+	     WHERE A.TASK_SN = #TASK_SN#
+	  ORDER BY A.INSTT_CODE
+	</select> 
+	
+	<procedure id="IWRB01DAO.insertRequestDelivery">
+	
+		{call SP_INSERT_REQUEST_DELIVERY}
+	
+	</procedure> 
+	
+	<select id="IWRB01DAO.selectIpType" parameterClass="java.util.HashMap" resultClass="hashMap">
+	    SELECT B.IP_TYPE || '_INV' INV
+	          ,B.IP_TYPE || '_MAX' MAX
+	          ,B.IP_TYPE
+	      FROM IWRS_IP_CREATMASTR A
+	INNER JOIN IWRS_IP_IP_CODE B
+	        ON A.CREAT_CODE = B.CREAT_CODE
+	     WHERE A.TASK_CODE = #TASK_SN# 
+	  GROUP BY B.IP_TYPE
+	</select>
+	
+	<select id="IWRB01DAO.selectUserInfo" parameterClass="hashMap" resultClass="int">
+		SELECT COUNT(*) CNT
+		  FROM CM_USER
+		 WHERE USER_ID = #USER_ID#
+		   AND PASSWORD = DAMO_HASH(#PASSWORD#)
+	</select>
+	
+	<select id="IWRB01DAO.selectTriggerNo" resultClass="String">
+		SELECT IWRS_TRIGGER_SEQ.NEXTVAL
+		  FROM DUAL
+	</select>
+	
+	<select id="IWRB01DAO.selectTaskInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT TASK_SN TASK_CODE
+		  FROM EDC_CR_INSTT_FORM
+		 WHERE USE_AT = 'Y'
+		<isNotEmpty property="TASK_SN">
+		   AND TASK_SN = #TASK_SN#
+		</isNotEmpty>
+	  GROUP BY TASK_SN
+	  ORDER BY TASK_SN
+	</select>
+	
+	<select id="IWRB01DAO.selectInsttInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT INSTT_CODE
+	      FROM EDC_CR_INSTT_FORM A
+	INNER JOIN CM_RSRCHUSER B
+	        ON A.USER_ID = B.USER_ID
+	     WHERE A.TASK_SN = #TASK_CODE#
+	    <isNotEmpty property="INSTT_CODE">
+	       AND B.INSTT_CODE = #INSTT_CODE#
+	    </isNotEmpty>
+	  GROUP BY INSTT_CODE
+	</select>
+	
+	<select id="IWRB01DAO.selectTriggerFlag" parameterClass="hashMap" resultClass="String">
+		SELECT CASE WHEN A.TRIGR_LVL > NVL(B.USEFUL_INVNTRY_QTT, 0) THEN 'Y'
+                    ELSE 'N'
+                    END TRIGGER_FLAG
+          FROM (SELECT TASK_CODE
+                      ,INSTT_CODE
+                      ,IP_TYPE
+                      ,TRIGR_LVL
+                  FROM IWRS_DS_TRIGR
+                 WHERE TASK_CODE = #TASK_CODE#
+                   AND INSTT_CODE = #INSTT_CODE#
+                   AND IP_TYPE = #IP_TYPE#) A
+     LEFT JOIN (SELECT B.TASK_CODE
+                      ,B.INSTT_CODE
+                      ,B.IP_TYPE 
+                      ,B.USEFUL_INVNTRY_QTT
+                  FROM IWRS_DS_INVNTRYMANAGE_DETAIL B
+                 WHERE B.TASK_CODE = #TASK_CODE#
+                   AND B.INSTT_CODE = #INSTT_CODE#
+                   AND B.IP_TYPE = #IP_TYPE#) B
+            ON A.TASK_CODE = B.TASK_CODE
+           AND A.INSTT_CODE = B.INSTT_CODE
+           AND A.IP_TYPE = B.IP_TYPE
+	</select>
+	
+	<select id="IWRB01DAO.selectDeliveryCount" parameterClass="hashMap" resultClass="int">
+		SELECT COUNT(*) DELIVERY_CNT
+          FROM IWRS_DL_DLVYMANAGE
+         WHERE TASK_CODE = #TASK_CODE#
+           AND INSTT_CODE = #INSTT_CODE#
+           AND IP_TYPE = #IP_TYPE#
+           AND DLVY_STTUS_CODE IN ('01', '02', '03', '04')
+	</select>
+	
+	<select id="IWRB01DAO.selectMaxInventoryQuantity" parameterClass="hashMap" resultClass="int">
+		SELECT MXMM_INVNTRY_QTT
+          FROM IWRS_DS_TRIGR
+         WHERE TASK_CODE = #TASK_CODE#
+           AND INSTT_CODE = #INSTT_CODE#
+           AND IP_TYPE = #IP_TYPE#
+	</select>
+	
+	<select id="IWRB01DAO.selectUsefulInventoryQuantity" parameterClass="hashMap" resultClass="int">
+		SELECT NVL(B.USEFUL_INVNTRY_QTT, 0) USEFUL_INVNTRY_QTT
+          FROM IWRS_DS_TRIGR A
+     LEFT JOIN (
+                SELECT USEFUL_INVNTRY_QTT
+                      ,B.TASK_CODE
+                      ,B.INSTT_CODE
+                      ,B.IP_TYPE
+                  FROM IWRS_DS_INVNTRYMANAGE_DETAIL B
+                 WHERE B.TASK_CODE = #TASK_CODE#
+                   AND B.INSTT_CODE = #INSTT_CODE#
+                   AND B.IP_TYPE = #IP_TYPE#) B
+            ON A.TASK_CODE = B.TASK_CODE
+           AND A.INSTT_CODE = B.INSTT_CODE
+           AND A.IP_TYPE = B.IP_TYPE
+         WHERE A.TASK_CODE = #TASK_CODE#
+           AND A.INSTT_CODE = #INSTT_CODE#
+           AND A.IP_TYPE = #IP_TYPE#
+	</select>
+	
+	<insert id="IWRB01DAO.insertDlvyManageInfo" parameterClass="hashMap">
+		INSERT INTO IWRS_DL_DLVYMANAGE
+                    (DLVYMANAGE_CODE
+                    ,SN
+                    ,INSTT_CODE
+                    ,TASK_CODE
+                    ,DLVY_REQUST_OCCRRNC_CODE
+                    ,DLVY_REQUST_QTT
+                    ,IP_TYPE
+                    ,DLVY_STTUS_CODE
+                    ,DLVY_HOPEDE
+                    ,DLVY_REQUST_COMMENT
+                    ,USE_AT
+                    ,FRST_CREDE
+                    ,REGIST_ID
+                    ,LAST_UPDDE
+                    ,UPDATE_ID)
+            VALUES (#DLVYMANAGE_CODE#
+            	   ,#SN#
+                   ,#INSTT_CODE#
+                   ,#TASK_CODE#
+                   ,'01'
+                   ,#MXMM_INVNTRY_QTT# - #USEFUL_INVNTRY_QTT#
+                   ,#IP_TYPE#
+                   ,'01'
+                   ,TO_DATE(TO_CHAR(SYSDATE + 2, 'YYYYMMDD') || '000000', 'YYYYMMDDHH24MISS')
+                   ,'트리거 배송 요청입니다.'
+                   ,'Y'
+                   ,SYSDATE
+                   ,'TRIGGER'
+                   ,SYSDATE
+                   ,'TRIGGER')
+	</insert>
+</sqlMap>

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMA02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+
+	<select id="COMA02DAO.selectCmProgrm" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.PROGRM_ID
+			 , A.PROGRM_NM
+			 , A.PROGRM_ENG_NM
+			 , A.PROGRM_JAPAN_NM
+			 , A.PROGRM_CHINA1_NM
+			 , A.PROGRM_CHINA2_NM
+			 , A.PROGRM_DC
+			 , A.USE_YN
+			 , A.REGIST_ID
+			 , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+			 , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+			 , A.UPDATE_ID
+			 , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+			 , A.PROGRM_URL
+			 , A.PROGRM_ORDR
+			 , (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) UPPER_MENU_ID
+			 , (SELECT Y.MENU_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) UPPER_MENU_NM
+			 , (SELECT Y.MENU_ENG_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) UPPER_MENU_ENG_NM
+			 , (SELECT Y.MENU_JAPAN_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) UPPER_MENU_JAPAN_NM
+			 , (SELECT Y.MENU_CHINA1_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) UPPER_MENU_CHINA1_NM
+			 , (SELECT Y.MENU_CHINA2_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) UPPER_MENU_CHINA2_NM
+			 , A.MENU_ID
+			 , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) MENU_NM
+			 , (SELECT X.MENU_ENG_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) MENU_ENG_NM
+			 , (SELECT X.MENU_JAPAN_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) MENU_JAPAN_NM
+			 , (SELECT X.MENU_CHINA1_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) MENU_CHINA1_NM
+			 , (SELECT X.MENU_CHINA2_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) MENU_CHINA2_NM
+			 , (SELECT Y.MODULE_CODE FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) MODULE_CODE
+			 , (SELECT Y.MENU_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) || '/' || (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) UPPER_MENU_NM_ID 
+			 , (SELECT Y.MENU_ENG_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) || '/' || (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) UPPER_MENU_ENG_NM_ID 
+			 , (SELECT Y.MENU_JAPAN_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) || '/' || (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) UPPER_MENU_JAPAN_NM_ID 
+			 , (SELECT Y.MENU_CHINA1_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) || '/' || (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) UPPER_MENU_CHINA1_NM_ID 
+			 , (SELECT Y.MENU_CHINA2_NM FROM CM_MENU Y WHERE Y.MENU_ID = (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID)) || '/' || (SELECT X.UPPER_MENU_ID FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) UPPER_MENU_CHINA2_NM_ID 
+			 , (SELECT X.MENU_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) || '/' || A.MENU_ID MENU_NM_ID
+			 , (SELECT X.MENU_ENG_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) || '/' || A.MENU_ID MENU_ENG_NM_ID
+			 , (SELECT X.MENU_JAPAN_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) || '/' || A.MENU_ID MENU_JAPAN_NM_ID
+			 , (SELECT X.MENU_CHINA1_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) || '/' || A.MENU_ID MENU_CHINA1_NM_ID
+			 , (SELECT X.MENU_CHINA2_NM FROM CM_MENU X WHERE X.MENU_ID = A.MENU_ID) || '/' || A.MENU_ID MENU_CHINA2_NM_ID
+			 , A.ESSNTL_AT
+			 , A.TASK_AT
+			 , DECODE((SELECT COUNT(*) FROM CM_ROLE_LMTT X WHERE X.PROGRM_ID = A.PROGRM_ID), 0, 'N', 'Y') FIXING_AT
+		  FROM CM_PROGRM A
+		]]>
+	</select>
+	
+	<insert id="COMA02DAO.insertCmProgrm" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_PROGRM
+		     ( PROGRM_ID
+			 , PROGRM_NM
+			 , PROGRM_ENG_NM
+			 , PROGRM_JAPAN_NM
+			 , PROGRM_CHINA1_NM
+			 , PROGRM_CHINA2_NM
+			 , PROGRM_DC
+			 , USE_YN
+			 , FRST_CREDE
+			 , REGIST_ID
+			 , LAST_UPDDE
+			 , UPDATE_ID
+			 , PROGRM_URL
+			 , PROGRM_ORDR
+			 , MENU_ID
+			 , ESSNTL_AT
+			 , TASK_AT
+		     )
+		VALUES
+		     ( #PROGRM_ID#
+			 , #PROGRM_NM#
+			 , NVL(#PROGRM_ENG_NM#, #PROGRM_NM#)
+			 , NVL(#PROGRM_JAPAN_NM#, #PROGRM_NM#)
+			 , NVL(#PROGRM_CHINA1_NM#, #PROGRM_NM#)
+			 , NVL(#PROGRM_CHINA2_NM#, #PROGRM_NM#)
+			 , #PROGRM_DC#
+			 , #USE_YN#
+			 , SYSDATE
+			 , #UPDATE_ID#
+			 , SYSDATE
+			 , #UPDATE_ID#
+			 , #PROGRM_URL#
+			 , #PROGRM_ORDR#
+			 , #MENU_ID#
+			 , NVL(#ESSNTL_AT#, 'N')
+			 , NVL(#TASK_AT#, 'N')
+		     )
+		]]>
+	</insert>
+	
+	<update id="COMA02DAO.updateCmProgrmByPk" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_PROGRM
+		   SET PROGRM_NM = #PROGRM_NM#
+		     , PROGRM_ENG_NM = NVL(#PROGRM_ENG_NM#, #PROGRM_NM#)
+		     , PROGRM_JAPAN_NM = NVL(#PROGRM_JAPAN_NM#, #PROGRM_NM#)
+		     , PROGRM_CHINA1_NM = NVL(#PROGRM_CHINA1_NM#, #PROGRM_NM#)
+		     , PROGRM_CHINA2_NM = NVL(#PROGRM_CHINA2_NM#, #PROGRM_NM#)
+		     , MENU_ID = #MENU_ID#
+		     , PROGRM_ORDR = '1'
+             , ESSNTL_AT = NVL(#ESSNTL_AT#, 'N')
+			 , TASK_AT = NVL(#TASK_AT#, 'N')
+		     , USE_YN = NVL(#USE_YN#, 'Y')
+		     , PROGRM_URL = #PROGRM_URL#
+		     , UPDATE_ID = #UPDATE_ID#
+		     , LAST_UPDDE = SYSDATE
+		 WHERE PROGRM_ID = #PROGRM_ID#
+		]]>
+	</update>
+	
+	<delete id="COMA02DAO.deleteCmProgrmbyPk" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM CM_PROGRM WHERE PROGRM_ID = #PROGRM_ID#
+		]]>
+	</delete>
+	
+	<select id="COMA02DAO.selectCmButtonByProgrmId" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.BUTTON_ID
+	         , A.BUTTON_NM
+	         , A.BUTTON_DC
+	         , A.BUTTON_ORDR
+	         , A.USE_YN
+	         , A.REGIST_ID
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , A.UPDATE_ID
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+	         , A.PROGRM_ID
+	      FROM CM_BUTTON A
+	     WHERE A.PROGRM_ID = #PROGRM_ID#
+		]]>
+	</select>
+	
+	<insert id="COMA02DAO.insertCmButton" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_BUTTON
+		     ( BUTTON_ID
+	         , BUTTON_NM
+	         , BUTTON_DC
+	         , BUTTON_ORDR
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	         , PROGRM_ID
+		     )
+		VALUES
+		     ( #BUTTON_ID#
+	         , #BUTTON_NM#
+	         , #BUTTON_DC#
+	         , #BUTTON_ORDR#
+	         , #USE_YN#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , #PROGRM_ID#
+		     ) 
+		]]>  
+	</insert>
+	
+	<update id="COMA02DAO.updateCmButton" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_BUTTON
+		   SET BUTTON_NM = #BUTTON_NM#
+		     , BUTTON_DC = #BUTTON_DC#
+		     , BUTTON_ORDR = #BUTTON_ORDR#
+		     , USE_YN = #USE_YN#
+		     , UPDATE_ID = #UPDATE_ID#
+		     , LAST_UPDDE = SYSDATE
+		 WHERE BUTTON_ID = #BUTTON_ID#
+		]]>
+	</update>
+	
+	<delete id="COMA02DAO.deleteCmButton" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM CM_BUTTON WHERE BUTTON_ID = #BUTTON_ID#
+		]]> 
+	</delete>
+	
+	<select id="COMA02DAO.selectCmProgrmForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_PROGRM
+		 WHERE PROGRM_ID = #PROGRM_ID#
+		]]>
+	</select>
+	
+	<select id="COMA02DAO.selectCmButtonForDelete" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_BUTTON
+		 WHERE PROGRM_ID = #PROGRM_ID#
+		   AND USE_YN = 'Y'
+		]]>
+	</select>
+	
+	<select id="COMA02DAO.selectCmButtonForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_BUTTON
+		 WHERE BUTTON_ID = #BUTTON_ID#
+		]]>
+	</select>
+	
+	<update id="COMA02DAO.updateCmProgrmForDelete" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_PROGRM
+		   SET USE_YN = 'N'
+		     , LAST_UPDDE = SYSDATE
+			 , UPDATE_ID = #UPDATE_ID#
+		 WHERE PROGRM_ID = #PROGRM_ID#
+		]]>
+	</update>
+	
+	<update id="COMA02DAO.updateCmButtonForDelete" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_BUTTON
+		   SET USE_YN = 'N'
+			 , LAST_UPDDE = SYSDATE
+			 , UPDATE_ID = #UPDATE_ID#
+		 WHERE BUTTON_ID = #BUTTON_ID#
+		]]>
+	</update>
+	
+	<select id="COMA02DAO.selectCmProgrmForDulCheckByEssntlAt" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_PROGRM
+		 WHERE PROGRM_ID = #PROGRM_ID#
+		   AND ESSNTL_AT IN ('Y', 'A')
+		]]>
+	</select>
+	
+	<select id="COMA02DAO.selectCmRoleLmttByProgrmId" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.PROGRM_ID
+	         , A.ROLE_ID
+	         , A.USE_YN
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , A.FRST_CRTR
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , A.LAST_UPDUSR
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.LAST_UPDUSR) UPDATE_NM 
+	      FROM CM_ROLE_LMTT A
+	     WHERE A.PROGRM_ID = #PROGRM_ID#
+		]]>
+	</select>
+	
+	<select id="COMA02DAO.selectCmRoleLmttByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.PROGRM_ID
+	         , A.ROLE_ID
+	         , A.USE_YN
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , A.FRST_CRTR
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , A.LAST_UPDUSR
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.LAST_UPDUSR) UPDATE_NM 
+	      FROM CM_ROLE_LMTT A
+	     WHERE A.PROGRM_ID = #PROGRM_ID#
+	       AND A.ROLE_ID = #ROLE_ID#
+		]]>
+	</select>
+	
+	<insert id="COMA02DAO.insertCmRoleLmttByPk" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_ROLE_LMTT
+		     ( PROGRM_ID
+	         , ROLE_ID
+	         , USE_YN
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+		     )
+		VALUES
+		     ( #PROGRM_ID#
+	         , #ROLE_ID#
+	         , NVL(#USE_YN#, 'Y')
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+		     )   
+		]]>
+	</insert>
+	
+	<delete id="COMA02DAO.deleteCmRoleLmttByPk" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM CM_ROLE_LMTT WHERE PROGRM_ID = #PROGRM_ID# AND ROLE_ID = #ROLE_ID#
+		]]>
+	</delete>
+	
+	<delete id="COMA02DAO.deleteCmRoleLmttByProgrmId" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM CM_ROLE_LMTT WHERE PROGRM_ID = #PROGRM_ID#
+		]]>
+	</delete>
+	
+	<update id="COMA02DAO.updateCmRoleLmttByPk" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_ROLE_LMTT
+		   SET ROLE_ID = #ROLE_ID#
+		     , LAST_UPDDE = SYSDATE
+		     , LAST_UPDUSR = #USER_ID#
+		 WHERE PROGRM_ID = #PROGRM_ID#
+		   AND ROLE_ID = #ROLE_ID#
+		]]> 
+	</update>	
+	
+	<update id="COMA02DAO.updateCmRoleLmttForDelete" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_ROLE_LMTT
+		   SET USE_YN = 'N'
+		     , LAST_UPDDE = SYSDATE
+		     , LAST_UPDUSR = #USER_ID#
+		 WHERE PROGRM_ID = #PROGRM_ID#
+		   AND ROLE_ID = #ROLE_ID#
+		]]>
+	</update>
+	
+	<select id="COMA02DAO.selectCmRoleByFixingAtForComboBox" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT ROLE_ID
+			 , ROLE_NM
+	      FROM CM_ROLE
+	     WHERE USE_YN = 'Y'
+		   AND FIXING_AT = 'Y'
+		]]>
+	</select>
+	
+	<select id="COMA02DAO.selectCmRoleLmttByPkForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*) 
+		  FROM CM_ROLE_LMTT
+		 WHERE PROGRM_ID = #PROGRM_ID#
+		   AND ROLE_ID = #ROLE_ID#
+		]]>
+	</select>	
+</sqlMap>

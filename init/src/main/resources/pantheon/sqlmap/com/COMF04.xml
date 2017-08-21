@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMF04">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<insert id="COMF04DAO.insertCmSysConectByLogin" parameterClass="hashMap">
+	<![CDATA[
+	INSERT 
+	  INTO CM_SYS_CONECT
+	     ( CONECT_SN
+         , USER_ID
+         , CONECT_SE
+         , CONECT_IP
+         , CONECT_DT
+	     )
+	VALUES
+	     ( #CONECT_SN#
+         , #USER_ID#
+         , #CONECT_SE#
+         , #CONECT_IP#
+         , SYSDATE
+	     )
+	]]>
+	</insert>
+	
+	<select id="COMF04DAO.selectCmSysConectListCountByCondition" parameterClass="hashMap" resultClass="integer">
+	<![CDATA[
+	SELECT COUNT(*)
+      FROM CM_SYS_CONECT A,
+           CM_USER B
+     WHERE A.USER_ID = B.USER_ID(+)
+    ]]> 
+    
+    <isNotEmpty property="CONECT_DT" prepend="AND">
+    <![CDATA[
+    A.CONECT_DT BETWEEN TO_DATE(#SDATE# || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#EDATE# || '235959', 'YYYYMMDDHH24MISS')
+    ]]>
+    </isNotEmpty>
+    
+    <isNotEmpty property="USER_ID" prepend="AND">
+    <![CDATA[
+    B.USER_ID = #USER_ID#
+    ]]>
+    </isNotEmpty>
+    
+    <isNotEmpty property="USER_NM" prepend="AND">
+    <![CDATA[
+    B.USER_NM = #USER_NM#
+    ]]>
+    </isNotEmpty>
+    
+    <isNotEmpty property="USER_SE_CODE" prepend="AND">
+    <![CDATA[
+    B.USER_SE_CODE = #USER_SE_CODE#
+    ]]>
+    </isNotEmpty>
+	</select>
+	
+	<select id="COMF04DAO.selectCmSysConectListByCondition" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+	SELECT CONECT_SN
+	     , USER_ID
+	     , NVL(USER_NM, 'UNKNOWN') USER_NM
+	     , CONECT_SE
+	     , CONECT_SE_NM
+	     , CONECT_IP
+	     , TO_CHAR(CONECT_DT, 'YYYYMMDDHH24MISS') CONECT_DT
+	     , USER_SE_CODE
+	     , USER_SE_CODE_NM
+	FROM
+	(
+	SELECT ROW_NUMBER() OVER(ORDER BY A.CONECT_SN DESC) RN
+	     , A.CONECT_SN
+         , A.USER_ID
+         , B.USER_NM
+         , A.CONECT_SE
+         , FN_GET_COMMONCODE('COM002', A.CONECT_SE, #LOCALE#) AS CONECT_SE_NM
+         , A.CONECT_IP
+         , A.CONECT_DT
+         , B.USER_SE_CODE
+		 , FN_GET_COMMONCODE('COM001', B.USER_SE_CODE, #LOCALE#) AS USER_SE_CODE_NM
+     FROM CM_SYS_CONECT A,
+          CM_USER B
+    WHERE A.USER_ID = B.USER_ID(+)
+    ]]>
+    
+    <isNotEmpty property="SDATE" prepend="AND">
+    <isNotEmpty property="EDATE">
+    <![CDATA[
+    A.CONECT_DT BETWEEN TO_DATE(#SDATE# || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#EDATE# || '235959', 'YYYYMMDDHH24MISS')
+    ]]>
+    </isNotEmpty>
+    </isNotEmpty>
+    
+    <isNotEmpty property="USER_ID" prepend="AND">
+    <![CDATA[
+    B.USER_ID = #USER_ID#
+    ]]>
+    </isNotEmpty>
+    
+    <isNotEmpty property="USER_NM" prepend="AND">
+    <![CDATA[
+    B.USER_NM = #USER_NM#
+    ]]>
+    </isNotEmpty>
+    
+    <isNotEmpty property="USER_SE_CODE" prepend="AND">
+    <![CDATA[
+    B.USER_SE_CODE = #USER_SE_CODE#
+    ]]>
+    </isNotEmpty>
+    
+    <![CDATA[
+	)
+	WHERE RN > ($page$ - 1) * $count$
+      AND RN <= ($page$ * $count$)
+	]]>
+	</select>
+</sqlMap>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMB02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+<select id="CTMB02DAO.selectPmsTask_NoList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT  	 TA.TASK_SN
+			,TA.TASK_NO
+FROM 
+			 EDC_CR_TASK TA
+			,CM_USERTASK US
+WHERE 1=1 
+AND 		TA.TASK_SN = US.TASK_SN
+AND 		TA.TASK_NO LIKE '%'||#TASK_NO#||'%'
+AND 		TA.TASK_TY_CODE = '03'
+AND 		TA.USE_AT = 'Y'
+AND 		US.USE_YN = 'Y'
+AND         TA.TASK_END_AT = #TASK_END_AT#
+AND 		US.USER_ID = #USER_ID#
+
+]]>	
+</select> 
+
+<select id="CTMB02DAO.selectPmsSummaryGrid" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 TASK_SN
+		,TASK_NO
+		,PRMISN_DE
+		,TO_CHAR(REJDGE_BEGIN, 'YYYY-MM-DD')   ||' ~ '|| TO_CHAR(REJDGE_END, 'YYYY-MM-DD')  AS REJDGE
+		,TRGTER_CO
+FROM 
+		EDC_CR_TASK		
+WHERE 1=1
+	AND TASK_TY_CODE = '03'
+	AND TASK_NO = #TASK_NO#
+	AND USE_AT = 'Y'
+ORDER BY TASK_SN DESC
+]]>	
+</select> 
+
+<select id="CTMB02DAO.selectPmsProtocolGrid" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT   P.SN
+		,P.TASK_SN
+		,P.VER
+		,TO_CHAR(REJDGE_BEGIN, 'YYYY-MM-DD')   ||' ~ '|| TO_CHAR(REJDGE_END, 'YYYY-MM-DD')  AS REJDGE
+		,TO_CHAR(P.CONFMDE, 'YYYYMMDDHH24MISS') AS CONFMDE
+		,TO_CHAR(P.FRMLA_OFFIC_PRESENTNDE, 'YYYYMMDDHH24MISS') AS FRMLA_OFFIC_PRESENTNDE
+		,P.EXPRSE
+		,P.USE_AT
+FROM   CTMS_ST_PROTOCOL P
+      ,EDC_CR_TASK T
+WHERE  1=1 
+AND    P.TASK_SN = T.TASK_SN
+AND    T.TASK_TY_CODE = '03'
+AND    T.TASK_NO = #TASK_NO#
+AND    P.USE_AT = 'Y'
+ORDER BY P.SN DESC
+]]>	
+</select>
+
+<select id="CTMB02DAO.selectPmsAnnualGrid" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 YR.SN 																						AS SN
+		,YR.TASK_SN 																				AS TASK_SN
+		,YR.ANNUAL 																					AS ANNUAL
+		,YR.SUMMARY 																				AS SUMMARY
+		,TO_CHAR(YR.PERIOD_FROM, 'YYYY-MM-DD')   ||' ~ '|| TO_CHAR(YR.PERIOD_TO, 'YYYY-MM-DD')  	AS PERIOD
+		,YR.SAFETY 																					AS SAFETY
+		,YR.EFFICACY 																				AS EFFICACY	
+		,TO_CHAR(YR.FDRMREPORT_PRESENTNDE, 'YYYYMMDDHH24MISS') 										AS FDRMREPORT_PRESENTNDE
+		,TO_CHAR(YR.EXAMINPD_FROM, 'YYYY-MM-DD')   ||' ~ '|| TO_CHAR(YR.EXAMINPD_TO, 'YYYY-MM-DD')  AS EXAMINPD
+		,YR.USE_AT 																					AS USE_AT
+FROM  
+		CTMS_ST_YRYCREPRT YR
+		LEFT JOIN EDC_CR_TASK TA
+		ON YR.TASK_SN = TA.TASK_SN
+WHERE   EXPRSE = '03'
+		AND   TA.TASK_NO = #TASK_NO#
+		AND   YR.USE_AT = 'Y'
+ORDER BY SN DESC
+]]>	
+</select>
+
+<select id="CTMB02DAO.selectPmsStatusGrid" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT DISTINCT  TA.TASK_NO 																							
+				,TA.TASK_SN 																							
+				,TO_CHAR(RSRCH_BEGIN, 'YYYY-MM-DD')   ||' ~ '|| TO_CHAR(RSRCH_END, 'YYYY-MM-DD')  				  	    AS RSRCH_DATE
+				,DECODE(TA.TRGTER_CO, '' , 'N/A', TA.TRGTER_CO)															AS TRGTER_CO
+				,(SELECT DECODE(COUNT(1),'','N/A',COUNT(1))  
+					FROM CTMS_CO_CNTRCT_MANAGE CNT WHERE CNT.TASK_SN = TA.TASK_SN AND CNT.USE_AT='Y')					AS INSTT_CODE
+					
+        		,(SELECT DECODE(COUNT(INS.FREEZING_STTUS_CODE),'','N/A',COUNT(INS.FREEZING_STTUS_CODE))
+         		    FROM EDC_CR_INSTT_FORM INS  WHERE TASK_SN = TA.TASK_SN AND USE_AT='Y')  						    AS FREEZING_INSTT
+   		     
+       			,(SELECT DECODE(COUNT(SUB.FREEZING_STTUS_CODE),'','N/A',COUNT(SUB.FREEZING_STTUS_CODE))
+       			 	FROM EDC_CF_SUBJECT SUB, EDC_CR_INSTT_FORM INS 
+       				WHERE SUB.INSTT_FORM_SN = INS.INSTT_FORM_SN AND INS.TASK_SN = TA.TASK_SN  AND SUB.USE_AT='Y') 		AS FREEZING_SUBJECT
+   		     
+				,(SELECT DECODE(SUM(GOAL_NO),'','N/A',SUM(GOAL_NO))  
+					FROM CTMS_CO_CNTRCT_MANAGE CNT WHERE CNT.TASK_SN = TA.TASK_SN AND USE_AT='Y')						AS GOAL_CO
+					
+				,(SELECT DECODE(COUNT(1),'','N/A',COUNT(1))  
+					FROM  EDC_CF_VRIABL CVR, EDC_CR_INSTT_FORM INS  
+					WHERE VRIABL_SN = '10' AND INS.TASK_SN = TA.TASK_SN 
+					AND CVR.INSTT_FORM_SN = INS.INSTT_FORM_SN AND CVR.USE_AT='Y')										AS AE
+					
+				,(SELECT DECODE(COUNT(1),'','N/A',COUNT(1))  
+					FROM  EDC_CF_VRIABL CVR, EDC_CR_INSTT_FORM INS 
+					WHERE VRIABL_SN = '11'AND INS.TASK_SN = TA.TASK_SN 
+					AND CVR.INSTT_FORM_SN = INS.INSTT_FORM_SN AND CVR.USE_AT='Y')										AS SAE
+					
+				,(SELECT DECODE(COUNT(1),'','N/A',COUNT(1))  
+					FROM  EDC_CF_VRIABL CVR, EDC_CR_INSTT_FORM INS 
+					WHERE VRIABL_SN = '12'AND INS.TASK_SN = TA.TASK_SN 
+					AND CVR.INSTT_FORM_SN = INS.INSTT_FORM_SN AND CVR.USE_AT='Y') 										AS ADR
+FROM	 
+		 		 EDC_CR_TASK TA
+				,EDC_CR_INSTT_FORM INS
+				,EDC_CF_VRIABL CVR
+WHERE 1=1
+			 	 AND TA.TASK_NO = #TASK_NO#
+				 AND INS.TASK_SN = TA.TASK_SN
+				 AND CVR.INSTT_FORM_SN = INS.INSTT_FORM_SN
+				 AND TASK_TY_CODE = '03'
+
+]]>	
+</select>
+
+</sqlMap>

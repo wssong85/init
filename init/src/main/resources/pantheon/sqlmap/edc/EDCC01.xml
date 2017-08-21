@@ -1,0 +1,1222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCC01DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+	
+	<select id="selectEdcSubjectList" parameterClass="hashMap" resultClass="hashMap" >
+			SELECT	CS.SUBJECT_NO,
+					CS.INSTT_FORM_SN,
+       				CS.SUBJECT_INITIAL,
+       				FN_GET_COMMONCODE('EDC005', CS.SUBJECT_STTUS_CODE, #LOCALE#) AS STRE_STTUS_CODE,
+       				TO_CHAR(CS.DOCMNT_AGRE_DE, 'YYYYMMDDHH24MISS') AS DOCMNT_AGRE_DE,
+       				TO_CHAR(CS.FRST_CREDE, 'YYYYMMDDHH24MISS') AS FRST_CREDE,
+       				FN_GET_COMMONCODE('EDC045', CS.ELTSGN_STTUS_CODE, #LOCALE#) AS ELTSGN_STTUS_CODE,
+       				(SELECT CMMN_CODE_NM 
+			       	FROM CM_CMMNCODE 
+			       	WHERE CMMN_CLCODE = 'EDC047' 
+			       	AND CMMN_CODE =  
+							        (SELECT CASE WHEN A.VAR2 = 0 AND A.VAR3 = 0 THEN '01'
+							                WHEN A.VAR1 = 0 AND A.VAR2 = 0 THEN '03'
+							                ELSE '02'
+							                END AS SDV_STTUS_CODE
+							                FROM (
+							                SELECT SUM(DECODE(CG.SDV_STTUS_CODE, '01', 1,0)) VAR1,
+							                SUM(DECODE(CG.SDV_STTUS_CODE, '02', 1,0)) VAR2,
+							                SUM(DECODE(CG.SDV_STTUS_CODE, '03', 1,0)) VAR3
+							                FROM EDC_CF_VISIT CV
+							                LEFT JOIN EDC_CF_GROUP CG
+							                ON CG.SN = CV.SN 
+							                AND CG.INSTT_FORM_SN = CV.INSTT_FORM_SN 
+							                AND CG.SUBJECT_NO = CV.SUBJECT_NO 
+							                AND CG.VISIT_SN = CV.VISIT_SN )  A )) AS SDV_STTUS_CODE,
+					(SELECT CMMN_CODE_NM 
+			       	FROM CM_CMMNCODE 
+			       	WHERE CMMN_CLCODE = 'EDC049' 
+			       	AND CMMN_CODE =  
+							        (SELECT CASE WHEN A.VAR2 = 0 AND A.VAR3 = 0 THEN '01'
+							                WHEN A.VAR1 = 0 AND A.VAR2 = 0 THEN '03'
+							                ELSE '02'
+							                END AS SDV_STTUS_CODE
+							                FROM (
+							                SELECT SUM(DECODE(CG.SDV_COMPT_STTUS_CODE, '01', 1,0)) VAR1,
+							                SUM(DECODE(CG.SDV_COMPT_STTUS_CODE, '02', 1,0)) VAR2,
+							                SUM(DECODE(CG.SDV_COMPT_STTUS_CODE, '03', 1,0)) VAR3
+							                FROM EDC_CF_VISIT CV
+							                LEFT JOIN EDC_CF_GROUP CG
+							                ON CG.SN = CV.SN 
+							                AND CG.INSTT_FORM_SN = CV.INSTT_FORM_SN 
+							                AND CG.SUBJECT_NO = CV.SUBJECT_NO 
+							                AND CG.VISIT_SN = CV.VISIT_SN )  A )) AS SDV_COMPT_STTUS_CODE,
+       				FN_GET_COMMONCODE('EDC046', CS.FREEZING_STTUS_CODE, #LOCALE#) AS FREEZING_STTUS_CODE,
+	       			SBI.NAME1, 
+                    (SELECT	COUNT(CQ.QUERY_SN)
+              		FROM	EDC_CF_SUBJECT SCS
+			       	LEFT JOIN EDC_CF_VISIT CV
+			       	ON 		SCS.INSTT_FORM_SN = CV.INSTT_FORM_SN
+			       	AND 	SCS.SUBJECT_NO = CV.SUBJECT_NO
+	                LEFT JOIN EDC_CF_GROUP CG
+	                ON 		CV.INSTT_FORM_SN = CG.INSTT_FORM_SN
+	                AND 	CV.SUBJECT_NO = CG.SUBJECT_NO
+	                AND 	CV.VISIT_SN = CG.VISIT_SN
+	                LEFT JOIN EDC_CF_VRIABL CVR
+	                ON 		CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+	                AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+	                AND 	CG.VISIT_SN = CVR.VISIT_SN
+	                AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+	                LEFT JOIN (SELECT CQ.QUERY_SN,
+		                              CQ.VISIT_GROUP_SN,
+		                              CQ.SUBJECT_NO,
+		                              CQ.SET_VRIABL_SN,
+		                              CQ.INSTT_FORM_SN,
+		                              CQ.SET_ROW_SN,
+		                              QM.QUERY_STTUS_CODE
+	                          FROM EDC_CF_QUERY CQ
+	                          JOIN CM_QUERY QM
+	                          ON CQ.QUERY_SN = QM.QUERY_SN) CQ
+	                ON 		CVR.SUBJECT_NO = CQ.SUBJECT_NO
+	                AND 	CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+	                AND 	CVR.SET_ROW_SN = CQ.SET_ROW_SN
+	                WHERE 	CQ.QUERY_STTUS_CODE = '01' 
+	                AND 	SCS.SUBJECT_NO = CS.SUBJECT_NO) AS OPEN_QUERY
+			FROM	EDC_CF_SUBJECT CS
+	    	LEFT JOIN EDC_CR_INSTT_FORM CIF
+	    	ON		CS.INSTT_FORM_SN = CIF.INSTT_FORM_SN
+		    LEFT JOIN CM_INSTT CI
+	        ON		CIF.INSTT_CODE = CI.INSTT_CODE
+	        LEFT JOIN	SAP_BCNC_INFO SBI
+	        ON		CI.KUNNR = SBI.KUNNR
+	    WHERE 1=1
+	    AND 	CI.INSTT_CODE IN (SELECT CB.INSTT_CODE
+						       	FROM 	CM_USERTASK CU
+						       	JOIN 	CM_BCNCUSER CB
+						       	ON 		CU.USER_ID = CB.USER_ID
+						       	AND 	CU.TASK_SN = #TASK_SN#
+						       	WHERE	
+						       	1=1
+	    <isNotEmpty property="USER_ID" prepend="AND">
+		</isNotEmpty>
+		)
+        <isNotEmpty property="INSTT_NM" prepend="AND">
+			SBI.NAME1 LIKE '%' || #INSTT_NM# || '%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			CS.SUBJECT_NO LIKE '%' || #SUBJECT_NO# || '%'
+		</isNotEmpty>
+		ORDER BY CS.FRST_CREDE DESC
+	</select>
+	
+	<select id="selectEdcSubjectListCount" parameterClass="hashMap" resultClass="string">
+		SELECT
+		COUNT(*) AS COUNT
+		FROM	EDC_CF_SUBJECT CS
+    	LEFT JOIN EDC_CR_INSTT_FORM CIF
+    	ON		CS.INSTT_FORM_SN = CIF.INSTT_FORM_SN
+	    LEFT JOIN CM_INSTT CI
+        ON		CIF.INSTT_CODE = CI.INSTT_CODE
+        LEFT JOIN	SAP_BCNC_INFO SBI
+        ON		CI.KUNNR = SBI.KUNNR
+        WHERE 1=1
+        AND 	CI.INSTT_CODE IN (SELECT CB.INSTT_CODE
+							     	FROM 	CM_USERTASK CU
+							     	JOIN 	CM_BCNCUSER CB
+							     	ON 		CU.USER_ID = CB.USER_ID
+							     	AND 	CU.TASK_SN = #TASK_SN#
+							     	WHERE	
+							     	1=1
+								    <isNotEmpty property="USER_ID" prepend="AND">
+									</isNotEmpty>
+									)
+		<isNotEmpty property="INSTT_NM" prepend="AND">
+			SBI.NAME1 LIKE '%' || #INSTT_NM# || '%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			CS.SUBJECT_NO LIKE '%' || #SUBJECT_NO# || '%'
+		</isNotEmpty>
+	</select>
+	
+	<!-- 피험자 등록 전 기관양식 테이블에 로그인한 사용자의 기관정보가 있는지 유무판단 후 기관 순번 return -->
+	<select id="selectLoginInsttFormSn" parameterClass="hashMap" resultClass="string">
+		SELECT	INSTT_FORM_SN
+       	FROM	EDC_CR_INSTT_FORM 
+       	WHERE	INSTT_CODE = (	SELECT	CB.INSTT_CODE
+						        FROM	CM_USERTASK CU
+						       	JOIN	CM_BCNCUSER CB
+						       	ON		CU.USER_ID = CB.USER_ID
+						       	AND 	CU.TASK_SN = #TASK_SN#
+						       	WHERE	CU.USER_ID = #USER_ID#)
+		AND		TASK_SN = #TASK_SN#
+	</select>
+	
+	<!-- 로그인한 사용자의 기관코드를 return -->
+	<select id="selectInsttCode" parameterClass="hashMap" resultClass="string">
+		SELECT	INSTT_CODE FROM	CM_BCNCUSER	WHERE	USER_ID = #USER_ID#
+	</select>
+	
+	<!-- 현재 활성화되어있는 EDC Version을 return -->
+	<select id="selectEdcVer" parameterClass="hashMap" resultClass="string">
+		SELECT EDC_VER FROM EDC_CR_FORM WHERE CRF_ACTVTY_AT = 'Y' AND USE_AT = 'Y' AND TASK_SN = #TASK_SN#
+	</select>
+	
+	<!-- 현재 활성화되어있는 CRF Version을 return -->
+	<select id="selectCrfVer" parameterClass="hashMap" resultClass="string">
+		SELECT CRF_VER FROM EDC_CR_FORM WHERE CRF_ACTVTY_AT = 'Y' AND USE_AT = 'Y' AND TASK_SN = #TASK_SN#
+	</select>
+	
+	<!-- 기관양식 테이블에 insert -->
+	<insert id="insertInsttForm" parameterClass="hashMap">
+		INSERT INTO EDC_CR_INSTT_FORM(
+		TASK_SN, 
+		INSTT_FORM_SN,
+		FREEZING_STTUS_CODE,
+		FRST_CREDE, 
+		FRST_CRTR, 
+		INSTT_CODE
+		)
+		VALUES (
+		#TASK_SN#,
+		#INSTT_FORM_SN# ,
+		'01',
+		SYSDATE,
+		#USER_ID#,
+		#INSTT_CODE# 
+		)
+	</insert>
+	
+	<!-- 피험자 테이블에 insert -->
+	<insert id="insertSubject" parameterClass="hashMap">
+		INSERT INTO EDC_CF_SUBJECT(
+       	SUBJECT_NO,
+       	INSTT_FORM_SN,
+       	DOCMNT_AGRE_AT,
+       	DOCMNT_AGRE_DE,
+       	SUBJECT_INITIAL,
+       	SUBJECT_STTUS_CODE,
+		ELTSGN_STTUS_CODE,
+		FREEZING_STTUS_CODE,
+		FRST_CRTR,
+		FRST_CREDE
+		)
+		VALUES (
+		#SUBJECT_NO#,
+		#INSTT_FORM_SN# ,
+		#DOCMNT_AGRE_AT# ,
+		#DOCMNT_AGRE_DE# ,
+		#SUBJECT_INITIAL# ,
+		'01',
+		'01',
+		'01',
+		#USER_ID#,
+		SYSDATE 
+		)
+	</insert>
+	
+	<!-- 과제순번과 EDC버전에 맞는 방문일정을 LIST로  return -->
+	<select id="selectInsttCodeList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT	VISIT_SN 
+		FROM	EDC_CR_VISIT_SCHDUL 
+		WHERE	TASK_SN = #TASK_SN# 
+		AND		EDC_VER = #EDC_VERSION#
+	</select>
+	
+	<!-- EDC_CF 방문 테이블에 insert -->
+	<insert id="insertCfVisit" parameterClass="hashMap">
+		INSERT INTO EDC_CF_VISIT(
+       	VISIT_SN,
+       	INSTT_FORM_SN,
+       	SUBJECT_NO,
+       	SN,
+		ELTSGN_STTUS_CODE,
+		FRST_CREDE,
+		FRST_CRTR,
+		VMODE_SN
+		)
+		VALUES (
+		#VISIT_SN#,
+		#INSTT_FORM_SN#,
+		#SUBJECT_NO#,
+		#SN#,
+		'01',
+		SYSDATE,
+		#USER_ID#,
+		#VMODE_SN# 
+		)
+	</insert>
+	
+	<!-- Subject 메뉴 목록 List -->
+	<select id="selectSubjectMenuList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT	 CS.INSTT_FORM_SN, SUBJECT_NO
+        FROM	EDC_CF_SUBJECT CS
+    	LEFT JOIN EDC_CR_INSTT_FORM CIF
+    	ON		CS.INSTT_FORM_SN = CIF.INSTT_FORM_SN
+	    LEFT JOIN CM_INSTT CI
+        ON		CIF.INSTT_CODE = CI.INSTT_CODE
+        LEFT JOIN	SAP_BCNC_INFO SBI
+	    ON		CI.KUNNR = SBI.KUNNR
+        WHERE 	CI.INSTT_CODE IN (SELECT CB.INSTT_CODE
+						       	FROM 	CM_USERTASK CU
+						       	JOIN 	CM_BCNCUSER CB
+						       	ON 		CU.USER_ID = CB.USER_ID
+						       	AND 	CU.TASK_SN = #TASK_SN#
+						       	WHERE	
+						       	1=1
+	    <isNotEmpty property="USER_ID" prepend="AND">
+		</isNotEmpty>
+		)
+		<isNotEmpty property="INSTT_NM" prepend="AND">
+			SBI.NAME1 LIKE '%' || #INSTT_NM# || '%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			CS.SUBJECT_NO LIKE '%' || #SUBJECT_NO# || '%'
+		</isNotEmpty>
+		ORDER BY CS.SUBJECT_NO
+	</select>
+	
+	<!-- Subject 목록 List -->
+	<select id="selectVisitList" parameterClass="hashMap" resultClass="hashMap">
+	SELECT *
+		FROM
+		(SELECT AA.*,
+		ROWNUM AS RNUM,
+		FLOOR(( ROWNUM - 1 ) / #COUNT# + 1 ) AS PAGE
+		FROM
+		(
+		SELECT CV.VISIT_SN,
+        CASE WHEN SN = 1 THEN (SELECT VISIT_LBL FROM EDC_CR_VISIT_SCHDUL CVS WHERE VISIT_SN = CV.VISIT_SN AND CVS.TASK_SN = #TASK_SN# AND CVS.EDC_VER= #EDC_VERSION#)
+      		 WHEN SN != 1 THEN (SELECT VISIT_LBL FROM EDC_CR_VISIT_SCHDUL CVS WHERE VISIT_SN = CV.VISIT_SN AND CVS.TASK_SN = #TASK_SN# AND CVS.EDC_VER= #EDC_VERSION#)||SN END AS VISIT_LBL,
+       (SELECT COUNT(VISIT_GROUP_SN) FROM EDC_CF_GROUP CG WHERE CG.SN = CV.SN AND CG.INSTT_FORM_SN = CV.INSTT_FORM_SN AND CG.SUBJECT_NO = CV.SUBJECT_NO AND CG.VISIT_SN = CV.VISIT_SN AND CG.STRE_CODE = '01') || '/' || 
+       (SELECT COUNT(VISIT_GROUP_SN) FROM EDC_CR_VISIT_GROUP CVG WHERE CVG.TASK_SN = #TASK_SN# AND EDC_VER= #EDC_VERSION# AND CVG.VISIT_SN = CV.VISIT_SN) AS SAVE,
+       (SELECT COUNT(VISIT_GROUP_SN) FROM EDC_CF_GROUP CG WHERE CG.SN = CV.SN AND CG.INSTT_FORM_SN = CV.INSTT_FORM_SN AND CG.SUBJECT_NO = CV.SUBJECT_NO AND CG.VISIT_SN = CV.VISIT_SN AND CG.STRE_CODE = '02') || '/' || 
+       (SELECT COUNT(VISIT_GROUP_SN) FROM EDC_CR_VISIT_GROUP CVG WHERE CVG.TASK_SN = #TASK_SN# AND EDC_VER= #EDC_VERSION# AND CVG.VISIT_SN = CV.VISIT_SN) AS TEMP_SAVE,
+       (SELECT COUNT(VISIT_GROUP_SN) FROM EDC_CR_VISIT_GROUP CVG WHERE CVG.TASK_SN = #TASK_SN# AND EDC_VER= #EDC_VERSION# AND CVG.VISIT_SN = CV.VISIT_SN) -
+       (SELECT COUNT(VISIT_GROUP_SN) FROM EDC_CF_GROUP CG WHERE CG.SN = CV.SN AND CG.INSTT_FORM_SN = CV.INSTT_FORM_SN AND CG.SUBJECT_NO = CV.SUBJECT_NO AND CG.VISIT_SN = CV.VISIT_SN AND CG.STRE_CODE IN ('01','02')) || '/' || 
+       (SELECT COUNT(VISIT_GROUP_SN) FROM EDC_CR_VISIT_GROUP CVG WHERE CVG.TASK_SN = #TASK_SN# AND EDC_VER= #EDC_VERSION# AND CVG.VISIT_SN = CV.VISIT_SN) AS NOT_SAVE,
+       (SELECT	COUNT(CQ.QUERY_SN)
+		FROM 	EDC_CF_VISIT SCV
+       	LEFT JOIN EDC_CF_GROUP CG
+       	ON 		SCV.INSTT_FORM_SN = CG.INSTT_FORM_SN
+       	AND 	SCV.SUBJECT_NO = CG.SUBJECT_NO
+       	AND 	SCV.VISIT_SN = CG.VISIT_SN
+       	LEFT JOIN EDC_CF_VRIABL CVR
+       	ON 		CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+       	AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+       	AND 	CG.VISIT_SN = CVR.VISIT_SN
+       	AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+       	LEFT JOIN (SELECT CQ.QUERY_SN,
+		                  CQ.VISIT_GROUP_SN,
+		                  CQ.SUBJECT_NO,
+		                  CQ.SET_VRIABL_SN,
+		                  CQ.INSTT_FORM_SN,
+		                  CQ.SET_ROW_SN,
+		                  QM.QUERY_STTUS_CODE
+                  FROM EDC_CF_QUERY CQ
+                  JOIN CM_QUERY QM
+                  ON CQ.QUERY_SN = QM.QUERY_SN) CQ
+       	ON 		CVR.SUBJECT_NO = CQ.SUBJECT_NO
+       	AND 	CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+       	AND 	CVR.SET_ROW_SN = CQ.SET_ROW_SN
+        WHERE 	CQ.QUERY_STTUS_CODE = '01'
+        AND		SCV.VISIT_SN = CV.VISIT_SN
+        AND		SCV.SUBJECT_NO = CV.SUBJECT_NO
+       ) AS OPEN_QUERY,
+       (SELECT	COUNT(CQ.QUERY_SN)
+        FROM 	EDC_CF_VISIT SCV
+       	LEFT JOIN EDC_CF_GROUP CG
+       	ON 		SCV.INSTT_FORM_SN = CG.INSTT_FORM_SN
+       	AND 	SCV.SUBJECT_NO = CG.SUBJECT_NO
+       	AND 	SCV.VISIT_SN = CG.VISIT_SN
+       	LEFT JOIN EDC_CF_VRIABL CVR
+       	ON 		CG.INSTT_FORM_SN = CVR.INSTT_FORM_SN
+       	AND 	CG.SUBJECT_NO = CVR.SUBJECT_NO
+       	AND 	CG.VISIT_SN = CVR.VISIT_SN
+       	AND 	CG.VISIT_GROUP_SN = CVR.VISIT_GROUP_SN
+       	LEFT JOIN (SELECT CQ.QUERY_SN,
+                  CQ.VISIT_GROUP_SN,
+                  CQ.SUBJECT_NO,
+                  CQ.SET_VRIABL_SN,
+                  CQ.INSTT_FORM_SN,
+                  CQ.SET_ROW_SN,
+                  QM.QUERY_STTUS_CODE
+                  FROM EDC_CF_QUERY CQ
+                  JOIN CM_QUERY QM
+                  ON CQ.QUERY_SN = QM.QUERY_SN) CQ
+       	ON 		CVR.SUBJECT_NO = CQ.SUBJECT_NO
+       	AND 	CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+       	AND 	CVR.SET_ROW_SN = CQ.SET_ROW_SN
+        WHERE 	CQ.QUERY_STTUS_CODE IN ('02','04')
+        AND		SCV.VISIT_SN = CV.VISIT_SN
+        AND		SCV.SUBJECT_NO = CV.SUBJECT_NO
+       ) AS QUERY_END,
+	   (SELECT CMMN_CODE_NM 
+	   	FROM CM_CMMNCODE 
+	   	WHERE CMMN_CLCODE = 'EDC045' 
+	   	AND CMMN_CODE =  CV.ELTSGN_STTUS_CODE) AS ELTSGN_STTUS_CODE,
+       (SELECT CMMN_CODE_NM 
+       	FROM CM_CMMNCODE 
+       	WHERE CMMN_CLCODE = 'EDC047' 
+       	AND CMMN_CODE =  
+				        (SELECT CASE WHEN A.VAR2 = 0 AND A.VAR3 = 0 THEN '01'
+				                WHEN A.VAR1 = 0 AND A.VAR2 = 0 THEN '03'
+				                ELSE '02'
+				                END AS SDV_STTUS_CODE
+				                FROM (
+				                SELECT SUM(DECODE(CG.SDV_STTUS_CODE, '01', 1,0)) VAR1,
+				                SUM(DECODE(CG.SDV_STTUS_CODE, '02', 1,0)) VAR2,
+				                SUM(DECODE(CG.SDV_STTUS_CODE, '03', 1,0)) VAR3
+				                FROM EDC_CF_VISIT CV
+				                LEFT JOIN EDC_CF_GROUP CG
+				                ON CG.SN = CV.SN 
+				                AND CG.INSTT_FORM_SN = CV.INSTT_FORM_SN 
+				                AND CG.SUBJECT_NO = CV.SUBJECT_NO 
+				                AND CG.VISIT_SN = CV.VISIT_SN )  A )) AS SDV_STTUS_CODE,
+        (SELECT CMMN_CODE_NM 
+         FROM CM_CMMNCODE 
+         WHERE CMMN_CLCODE = 'EDC049' 
+         AND CMMN_CODE =         
+				        (SELECT CASE WHEN A.VAR2 = 0 AND A.VAR3 = 0 THEN '01'
+				                WHEN A.VAR1 = 0 AND A.VAR2 = 0 THEN '03'
+				                ELSE '02'
+				                END AS SDV_COMPT_STTUS_CODE
+				                FROM (
+				                SELECT SUM(DECODE(CG.SDV_COMPT_STTUS_CODE, '01', 1,0)) VAR1,
+				                SUM(DECODE(CG.SDV_COMPT_STTUS_CODE, '02', 1,0)) VAR2,
+				                SUM(DECODE(CG.SDV_COMPT_STTUS_CODE, '03', 1,0)) VAR3
+				                FROM EDC_CF_VISIT CV
+				                LEFT JOIN EDC_CF_GROUP CG
+				                ON CG.SN = CV.SN 
+				                AND CG.INSTT_FORM_SN = CV.INSTT_FORM_SN 
+				                AND CG.SUBJECT_NO = CV.SUBJECT_NO 
+				                AND CG.VISIT_SN = CV.VISIT_SN )  A )) AS SDV_COMPT_STTUS_CODE
+	    FROM	EDC_CF_VISIT CV
+	    WHERE	CV.SUBJECT_NO = #subjectNo#
+	    ORDER BY CV.SN
+		) AA
+	)
+	WHERE PAGE = #PAGE#
+	</select>
+	
+	<select id="selectVisitListCount" parameterClass="hashMap" resultClass="string">
+		SELECT
+		COUNT(*) AS COUNT
+		FROM	EDC_CF_VISIT CV
+	    WHERE	CV.SUBJECT_NO = #subjectNo#
+	</select>
+	
+	<!-- Subject Visit View 목록 List -->
+	<select id="selectVisitViewList" parameterClass="hashMap" resultClass="hashMap" remapResults="true" >
+	    SELECT * 
+	    FROM (
+		        SELECT CV.VISIT_SN, CVG.GROUP_LBL,
+		        CASE WHEN CIF.FREEZING_STTUS_CODE = '03' THEN '12'
+	            ELSE 
+	                 CASE WHEN CS.FREEZING_STTUS_CODE = '03' THEN '12'
+	                 ELSE
+	                      CASE WHEN CG.SDV_COMPT_STTUS_CODE = '03' THEN '11'
+	                      ELSE
+	                           CASE WHEN CG.SDV_STTUS_CODE = '03' THEN '08'
+	                           ELSE
+	                                CASE WHEN CV.ELTSGN_STTUS_CODE = '03' THEN '10'
+	                                ELSE 
+	                                     CASE WHEN CQ.SDV_STTUS_CODE = '04' THEN '04' 
+	                                          WHEN CQ.SDV_STTUS_CODE = '05' THEN '05' 
+	                                          WHEN CQ.SDV_STTUS_CODE = '06' THEN '06' 
+	                                          WHEN CQ.SDV_STTUS_CODE = '13' THEN '13' 
+	                                     ELSE
+	                                          CASE WHEN STRE_CODE = '02' THEN '03'
+	                                               WHEN STRE_CODE = '01' THEN '01'
+	                                          ELSE '01'
+	                                          END
+	                                     END
+	                                END
+	                           END
+	                      END
+	                 END
+		        END AS ICON
+		        FROM (SELECT CVG.VISIT_GROUP_SN
+		                          ,ECG.GROUP_LBL
+		                      FROM EDC_CR_VISIT_GROUP CVG
+		                 	  JOIN EDC_CR_GROUP ECG 
+		                  	  ON  ECG.GROUP_SN = CVG.GROUP_SN
+		                  	  WHERE CVG.TASK_SN = #TASK_SN:VARCHAR:NO_ENTRY#
+            				  AND CVG.EDC_VER = #EDC_VERSION:VARCHAR:NO_ENTRY#) CVG
+		        LEFT JOIN EDC_CF_GROUP CG
+		        ON CG.VISIT_GROUP_SN = CVG.VISIT_GROUP_SN
+		        AND CG.SUBJECT_NO = #subjectNo:VARCHAR:NO_ENTRY#
+		        LEFT JOIN EDC_CF_VISIT CV
+		        ON CV.INSTT_FORM_SN = CG.INSTT_FORM_SN
+		        AND CV.VISIT_SN = CG.VISIT_SN
+		        AND CV.SUBJECT_NO = CG.SUBJECT_NO
+		        AND CV.SN = CG.SN
+		        LEFT JOIN EDC_CF_SUBJECT  CS
+		        ON CS.INSTT_FORM_SN = CV.INSTT_FORM_SN
+		        AND CS.SUBJECT_NO = CV.SUBJECT_NO
+		        LEFT JOIN EDC_CR_INSTT_FORM CIF
+		        ON CIF.INSTT_FORM_SN = CS.INSTT_FORM_SN 
+		        LEFT JOIN EDC_CF_VRIABL CVR
+		        ON CVR.INSTT_FORM_SN = CG.INSTT_FORM_SN
+		        AND CVR.VISIT_SN = CG.VISIT_SN
+		        AND CVR.SUBJECT_NO = CG.SUBJECT_NO
+		        AND CVR.SN = CG.SN
+		        AND CVR.VISIT_GROUP_SN = CG.VISIT_GROUP_SN
+		        LEFT JOIN EDC_CR_VISIT_GROUP CVG
+		        ON CG.VISIT_GROUP_SN = CVG.VISIT_GROUP_SN
+		        LEFT JOIN EDC_CR_GROUP ECG
+		        ON ECG.GROUP_SN = CVG.GROUP_SN
+		        LEFT JOIN
+		        (SELECT	CASE WHEN A.VAR1 = 0 AND A.VAR2 > 0 THEN '06'
+						     WHEN A.VAR1 = 0 AND A.VAR2 = 0 THEN '04'
+		                     WHEN A.VAR1 > 0 AND A.VAR2 = 0 THEN '05'
+		                     WHEN A.VAR1 > 0 AND A.VAR2 > 0 THEN '13'
+						     ELSE '00'
+						     END AS SDV_STTUS_CODE,
+                        A.VISIT_GROUP_SN,
+                        A.SN,
+                        A.SUBJECT_NO,
+                        A.VISIT_SN,
+                        A.INSTT_FORM_SN,
+		                A.SET_ROW_SN,
+		                A.SET_VRIABL_SN
+			  	FROM 
+		        (SELECT 
+			          	SUM(DECODE(QUERY_STTUS_CODE, '01', 1,0)) VAR1,
+			        	SUM(DECODE(QUERY_STTUS_CODE, '02', 1,0)) VAR2,
+				        CQ.VISIT_GROUP_SN,
+				        CQ.SN,
+				        CQ.SUBJECT_NO,
+				        CQ.VISIT_SN,
+				        CQ.INSTT_FORM_SN,
+		                CQ.SET_ROW_SN,
+		                CQ.SET_VRIABL_SN
+				        
+		        FROM EDC_CF_QUERY CQ
+		        JOIN CM_QUERY QM
+		        ON CQ.QUERY_SN = QM.QUERY_SN
+		        GROUP BY CQ.VISIT_GROUP_SN,
+		        CQ.SN,
+		        CQ.SUBJECT_NO,
+		        CQ.VISIT_SN,
+		        CQ.INSTT_FORM_SN,
+                CQ.SET_ROW_SN,
+                CQ.SET_VRIABL_SN) A 
+		        ) CQ
+		        ON CVR.INSTT_FORM_SN = CQ.INSTT_FORM_SN
+		        AND CVR.VISIT_SN = CQ.VISIT_SN
+		        AND CVR.SUBJECT_NO = CQ.SUBJECT_NO
+		        AND CVR.SN = CQ.SN
+		        AND CVR.VISIT_GROUP_SN = CQ.VISIT_GROUP_SN
+            	AND CVR.SET_ROW_SN = CQ.SET_ROW_SN
+            	AND CVR.SET_VRIABL_SN = CQ.SET_VRIABL_SN
+		        ) A
+        PIVOT (MAX(A.ICON) FOR VISIT_SN IN ($sqlList$) )
+	</select>
+	
+	<select id="selectCRFVisitList" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+		SELECT A.SUBJECT_NO,
+		  A.INSTT_FORM_SN,
+		  A.VISIT_SN,
+		  A.SN,
+		  A.VISIT_TY,
+		  DECODE(A.VISIT_TY , '07', A.VISIT_LBL || ' - ' || A.RANK, A.VISIT_LBL ) VISIT_LBL 
+		  FROM
+		  (SELECT CFV.SUBJECT_NO,
+		    CFV.INSTT_FORM_SN,
+		    CFV.VISIT_SN,
+		    CFV.SN,
+		    CRVS.VISIT_LBL,
+		    CRVS.VISIT_TY,
+		    RANK()OVER( PARTITION BY CFV.SUBJECT_NO, CFV.VISIT_SN ORDER BY CFV.SUBJECT_NO, CFV.VISIT_SN, CFV.SN ) RANK
+		  FROM EDC_CF_VISIT CFV
+		  INNER JOIN EDC_CR_VISIT_SCHDUL CRVS
+		  ON CRVS.VISIT_SN   = CFV.VISIT_SN
+		  WHERE CRVS.TASK_SN = #TASK_SN#
+		  AND EDC_VER =
+		    (SELECT EDC_VER
+		    FROM EDC_CR_FORM
+		    WHERE TASK_SN = #TASK_SN#
+		    AND CRF_ACTVTY_AT = 'Y'
+		    )
+		  AND CFV.SUBJECT_NO    = #SUBJECT_NO#
+		  AND CFV.INSTT_FORM_SN = #INSTT_FORM_SN#
+		  )A
+		]]>
+	</select>
+
+	<select id="selectCRFGroupList" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+		SELECT CRG.GROUP_LBL,
+		CFV.SUBJECT_NO,
+		CFV.INSTT_FORM_SN,
+		CFV.VISIT_SN,
+		CFV.SN,
+		CRVG.VISIT_GROUP_SN 
+		FROM EDC_CF_VISIT CFV
+		INNER JOIN EDC_CR_VISIT_GROUP CRVG 
+		ON CRVG.VISIT_SN = CFV.VISIT_SN AND CRVG.USE_AT = 'Y'
+		INNER JOIN EDC_CR_GROUP CRG 
+		ON CRVG.GROUP_SN = CRG.GROUP_SN AND CRVG.TASK_SN = CRG.TASK_SN
+		AND CRVG.EDC_VER = CRG.EDC_VER
+		WHERE CFV.SUBJECT_NO = #SUBJECT_NO#
+		AND CFV.INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND CRVG.TASK_SN = #TASK_SN#
+		AND CRVG.EDC_VER = (
+		SELECT EDC_VER
+		FROM EDC_CR_FORM
+		WHERE TASK_SN = #TASK_SN#
+		AND CRF_ACTVTY_AT = 'Y')
+		ORDER BY SUBJECT_NO, VISIT_SN, SN, CRVG.GROUP_ORDR
+		]]>
+	</select>
+	
+	<select id="selectCRFLayoutList" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+	SELECT A.*
+		, CFV.STRE_VALUE  
+	FROM(SELECT
+         #INSTT_FORM_SN# INSTT_FORM_SN ,
+         #SUBJECT_NO# SUBJECT_NO ,
+         #VISIT_SN# VISIT_SN ,
+         #SN# SN ,
+        SEV.VISIT_GROUP_SN   ,
+        SE.SET_SN   ,
+        SER.SET_ROW_SN   ,
+        DECODE( CFR.VRIABL_ROW_SN,
+        NULL,
+        DENSE_RANK() OVER (PARTITION 
+    BY
+        SE.SET_SN 
+    ORDER BY
+        SER.SET_ROW_SN ,
+        CFR.VRIABL_ROW_SN),
+        CFR.VRIABL_ROW_SN ) VRIABL_ROW_SN ,
+        SEV.SET_VRIABL_SN   ,
+        SEV.GROUP_SN   ,
+        SEV.VRIABL_SN   ,
+        SEV.VRIABL_SE_CODE   ,
+        SE.SET_ORDR   ,
+        SE.SET_TY_CODE   ,
+        SER.SET_ROW_ORDR   ,
+        SEV.SET_VRIABL_ORDR   ,
+        DV.VRIABL_NM   ,
+        DV.CRF_LBL_ONE   ,
+        DV.CRF_LBL_TWO   ,
+        V.DOMN_VRIABL_SN   ,
+        V.CL_CODE_SN   ,
+        CC2.CDISC_SUBMIT_VALUE CDISC_SUBMIT_VALUE   ,
+        DC.DC_CN   ,
+        DC.DC_FONT_CODE   ,
+        FN_GET_COMMONCODE('EDC043',
+        DC.DC_FONT_CODE,
+        #LOCALE#) DC_FONT_CODE_VALUE   ,
+        DC.DC_FONT_COLLR   ,
+        DC.DC_FONT_MG   ,
+        FN_GET_COMMONCODE('EDC044',
+        DC.DC_FONT_MG,
+         #LOCALE#) DC_FONT_MG_VALUE   ,
+        DC.DC_LINK_CODE   ,
+        NVL(CFR.VRIABL_ROW_ORDR,
+        '1') VRIABL_ROW_ORDR ,
+        
+        ROWNUM RN      
+    FROM
+        EDC_CR_SET SE         
+    INNER JOIN
+        EDC_CR_SET_ROW SER            
+            ON SE.VISIT_GROUP_SN = SER.VISIT_GROUP_SN           
+            AND SE.SET_SN = SER.SET_SN              
+            AND SE.TASK_SN = SER.TASK_SN           
+            AND SE.EDC_VER = SER.EDC_VER         
+    INNER JOIN
+        EDC_CR_SET_VRIABL SEV               
+            ON SEV.VISIT_GROUP_SN = SER.VISIT_GROUP_SN           
+            AND SEV.SET_ROW_SN = SER.SET_ROW_SN              
+            AND SEV.TASK_SN = SER.TASK_SN           
+            AND SEV.EDC_VER = SER.EDC_VER         
+    LEFT OUTER JOIN
+        EDC_CR_VRIABL V               
+            ON SEV.GROUP_SN = V.GROUP_SN           
+            AND SEV.VRIABL_SN = V.VRIABL_SN              
+            AND SEV.TASK_SN = V.TASK_SN           
+            AND SEV.EDC_VER = V.EDC_VER         
+    LEFT OUTER JOIN
+        CDISC_CL_CODE CC2           
+            ON CC2.CL_CODE_SN = V.CL_CODE_SN         
+    LEFT OUTER JOIN
+        CDISC_DOMN_VRIABL DV           
+            ON V.DOMN_VRIABL_SN = DV.DOMN_VRIABL_SN         
+    LEFT OUTER JOIN
+        EDC_CR_DC DC               
+            ON DC.VISIT_GROUP_SN = SEV.VISIT_GROUP_SN           
+            AND DC.SET_VRIABL_SN = SEV.SET_VRIABL_SN           
+            AND DC.USE_AT = 'Y'              
+            AND DC.TASK_SN = SEV.TASK_SN           
+            AND DC.EDC_VER = SEV.EDC_VER         
+    LEFT OUTER JOIN
+        EDC_CF_GROUP CFG               
+            ON SEV.VISIT_GROUP_SN = CFG.VISIT_GROUP_SN              
+            AND CFG.INSTT_FORM_SN =  #INSTT_FORM_SN#       
+            AND CFG.SUBJECT_NO =  #SUBJECT_NO#           
+            AND CFG.VISIT_SN =  #VISIT_SN#        
+            AND CFG.SN =   #SN#       
+    LEFT OUTER JOIN
+        EDC_CF_ROW CFR                              
+            ON SEV.VISIT_GROUP_SN = CFG.VISIT_GROUP_SN                             
+            AND CFR.INSTT_FORM_SN =  CFG.INSTT_FORM_SN                       
+            AND CFR.SUBJECT_NO =  CFG.SUBJECT_NO                       
+            AND CFR.VISIT_SN =   CFG.VISIT_SN                        
+            AND CFR.SN =   CFG.SN                         
+            AND CFR.SET_ROW_SN = SER.SET_ROW_SN              
+    WHERE
+        SEV.USE_AT = 'Y'             
+        AND SE.TASK_SN =  #TASK_SN#        
+        AND SE.EDC_VER = (
+            SELECT
+                EDC_VER                 
+            FROM
+                EDC_CR_FORM                 
+            WHERE
+                TASK_SN =  #TASK_SN#                
+                AND CRF_ACTVTY_AT = 'Y'          
+        )             
+        AND SE.VISIT_GROUP_SN =  #VISIT_GROUP_SN#      
+        )A
+        LEFT OUTER JOIN
+        EDC_CF_VRIABL CFV                              
+            ON CFV.VISIT_GROUP_SN = A.VISIT_GROUP_SN                          
+            AND CFV.SET_VRIABL_SN = A.SET_VRIABL_SN                             
+            AND CFV.INSTT_FORM_SN =   A.INSTT_FORM_SN                      
+            AND CFV.SUBJECT_NO =   A.SUBJECT_NO                        
+            AND CFV.VISIT_SN =  A.VISIT_SN                         
+            AND CFV.SN =    A.SN                         
+            AND CFV.SET_ROW_SN = A.SET_ROW_SN                         
+            AND CFV.VRIABL_ROW_SN = A.VRIABL_ROW_SN      
+        
+    ORDER BY
+        A.SET_ORDR,
+        A.SET_ROW_ORDR,
+        A.VRIABL_ROW_ORDR,
+        A.SET_VRIABL_ORDR        
+        
+	]]>
+	</select>
+	
+	<!-- Subject Visit View 순번 목록 List -->
+	<select id="selectVisitViewSnList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT VMODE_SN FROM EDC_CF_VISIT WHERE SUBJECT_NO = #subjectNo#
+	</select>
+	
+	<!-- Subject Visit View 헤더 목록 List -->
+	<select id="selectVisitViewHeaderList" parameterClass="hashMap" resultClass="hashMap">
+        SELECT 	CASE WHEN SN = 1 THEN (SELECT VISIT_LBL FROM EDC_CR_VISIT_SCHDUL CVS WHERE VISIT_SN = CV.VISIT_SN AND CVS.TASK_SN = #TASK_SN# AND CVS.EDC_VER= #EDC_VERSION#)
+      		 		 WHEN SN != 1 THEN (SELECT VISIT_LBL FROM EDC_CR_VISIT_SCHDUL CVS WHERE VISIT_SN = CV.VISIT_SN AND CVS.TASK_SN = #TASK_SN# AND CVS.EDC_VER= #EDC_VERSION#)||SN END AS VISIT_LBL
+        FROM	EDC_CF_VISIT CV
+        WHERE 	CV.SUBJECT_NO = #subjectNo#
+	</select>
+	
+	<select id="selectCRFCommentList" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+		SELECT
+		INSTT_FORM_SN
+		, SUBJECT_NO
+		, VISIT_SN
+		, SN
+		, VISIT_GROUP_SN
+		, SET_ROW_SN
+		, VRIABL_ROW_SN
+		, ATRAIL_SN
+		, CM_MSSAGE
+		, ROWNUM RN
+		FROM EDC_CF_CM_ATRAIL
+		WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND SUBJECT_NO = #SUBJECT_NO#
+		AND VISIT_SN = #VISIT_SN#
+		AND SN = #SN#
+		AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND USE_AT = 'Y'
+		]]>
+	</select>
+	
+	<select id="selectAtrailSn" parameterClass="hashMap" resultClass="string" >
+	SELECT NVL(MAX(ATRAIL_SN),0)+1 
+	FROM EDC_CF_CM_ATRAIL
+	WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+	AND SUBJECT_NO = #SUBJECT_NO#
+	AND VISIT_SN = #VISIT_SN#
+	AND SN = #SN#
+	AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+	AND SET_ROW_SN = #SET_ROW_SN#
+	AND VRIABL_ROW_SN = #VRIABL_ROW_SN#
+	</select>
+	<insert id="insertCRFComment" parameterClass="hashMap" >
+	<![CDATA[
+	INSERT INTO EDC_CF_CM_ATRAIL (
+		INSTT_FORM_SN
+		, SUBJECT_NO
+		, VISIT_SN
+		, SN
+		, VISIT_GROUP_SN
+		, SET_ROW_SN
+		, VRIABL_ROW_SN
+		, ATRAIL_SN
+		, CM_MSSAGE
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+	)VALUES(
+		#INSTT_FORM_SN#
+		, #SUBJECT_NO#
+		, #VISIT_SN#
+		, #SN#
+		, #VISIT_GROUP_SN#
+		, #SET_ROW_SN#
+		, #VRIABL_ROW_SN#
+		, #ATRAIL_SN#
+		, #CM_MSSAGE#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+	)
+	]]>
+	</insert>
+	<update id="updateCRFComment" parameterClass="hashMap" >
+	<![CDATA[
+		UPDATE EDC_CF_CM_ATRAIL SET
+		USE_AT = 'N' 
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND SUBJECT_NO = #SUBJECT_NO#
+		AND VISIT_SN = #VISIT_SN#
+		AND SN = #SN#
+		AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SET_ROW_SN = #SET_ROW_SN#
+		AND VRIABL_ROW_SN = #VRIABL_ROW_SN#
+	]]>
+	</update>
+	<select id="selectVriablRowSn" parameterClass="hashMap"  resultClass="string">
+	SELECT NVL(MAX(VRIABL_ROW_SN),0)+1 VRIABL_ROW_SN
+	FROM EDC_CF_ROW
+	WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+	AND SUBJECT_NO = #SUBJECT_NO#
+	AND VISIT_SN = #VISIT_SN#
+	AND SN = #SN#
+	AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+	AND SET_ROW_SN = #SET_ROW_SN#
+	</select>
+	<insert id="insertCRFRow" parameterClass="hashMap" >
+	<![CDATA[
+	INSERT INTO EDC_CF_ROW (
+		INSTT_FORM_SN
+		, SUBJECT_NO
+		, VISIT_SN
+		, SN
+		, VISIT_GROUP_SN
+		, SET_ROW_SN
+		, VRIABL_ROW_SN
+		, VRIABL_ROW_ORDR
+		, SDV_AT
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+	)VALUES(
+		#INSTT_FORM_SN#
+		, #SUBJECT_NO#
+		, #VISIT_SN#
+		, #SN#
+		, #VISIT_GROUP_SN#
+		, #SET_ROW_SN#
+		, #VRIABL_ROW_SN#
+		, #VRIABL_ROW_ORDR#
+		, 'N'
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+	)
+	]]>
+	</insert>
+	<update id="updateCRFRow" parameterClass="hashMap" >
+	<![CDATA[
+		UPDATE EDC_CF_ROW SET
+		USE_AT = #USE_AT#
+		, SDV_AT = #SDV_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND SUBJECT_NO = #SUBJECT_NO#
+		AND VISIT_SN = #VISIT_SN#
+		AND SN = #SN#
+		AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SET_ROW_SN = #SET_ROW_SN#
+		AND VRIABL_ROW_SN = #VRIABL_ROW_SN#
+	]]>
+	</update>
+	<insert id="insertCRFValue" parameterClass="hashMap" >
+	<![CDATA[
+	MERGE INTO EDC_CF_VRIABL
+	USING DUAL
+	ON(
+		INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND SUBJECT_NO = #SUBJECT_NO#
+		AND VISIT_SN = #VISIT_SN#
+		AND SN = #SN#
+		AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SET_ROW_SN = #SET_ROW_SN#
+		AND VRIABL_ROW_SN = #VRIABL_ROW_SN#
+		AND SET_VRIABL_SN = #SET_VRIABL_SN#
+	)
+	WHEN MATCHED THEN
+		UPDATE SET
+			STRE_VALUE = #STRE_VALUE#
+			, INNER_VALUE = #INNER_VALUE#
+			, PV_CNFIRM_CODE = #PV_CNFIRM_CODE#
+			, CRA_CNFIRM_CODE = #CRA_CNFIRM_CODE#
+			, LABDTA_STRE_CODE = #LABDTA_STRE_CODE#
+			, USE_AT = #USE_AT#
+			, LAST_UPDDE = SYSDATE
+			, LAST_UPDUSR = #UPDATE_ID#
+	WHEN NOT MATCHED THEN
+		INSERT (
+			INSTT_FORM_SN
+			, SUBJECT_NO
+			, VISIT_SN
+			, SN
+			, VISIT_GROUP_SN
+			, SET_ROW_SN
+			, VRIABL_ROW_SN
+			, SET_VRIABL_SN
+			, STRE_VALUE
+			, INNER_VALUE
+			, PV_CNFIRM_CODE
+			, CRA_CNFIRM_CODE
+			, LABDTA_STRE_CODE
+			, USE_AT
+			, FRST_CREDE
+			, FRST_CRTR
+			, LAST_UPDDE
+			, LAST_UPDUSR
+		)VALUES(
+			#INSTT_FORM_SN#
+			, #SUBJECT_NO#
+			, #VISIT_SN#
+			, #SN#
+			, #VISIT_GROUP_SN#
+			, #SET_ROW_SN#
+			, #VRIABL_ROW_SN#
+			, #SET_VRIABL_SN#
+			, #STRE_VALUE#
+			, #INNER_VALUE#
+			, #PV_CNFIRM_CODE#
+			, #CRA_CNFIRM_CODE#
+			, #LABDTA_STRE_CODE#
+			, 'Y'
+			, SYSDATE
+			, #UPDATE_ID#
+			, SYSDATE
+			, #UPDATE_ID#
+		)
+	]]>
+	</insert>
+	<insert id="insertCRFQuery" parameterClass="hashMap">
+	<![CDATA[
+	INSERT INTO EDC_CF_QUERY (
+		QUERY_SN
+		, INSTT_FORM_SN
+		, SUBJECT_NO
+		, VISIT_SN
+		, SN
+		, VISIT_GROUP_SN
+		, SET_ROW_SN
+		, VRIABL_ROW_SN
+		, SET_VRIABL_SN
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+	) VALUES (
+		#QUERY_SN#
+		, #INSTT_FORM_SN#
+		, #SUBJECT_NO#
+		, #VISIT_SN#
+		, #SN#
+		, #VISIT_GROUP_SN#
+		, #SET_ROW_SN#
+		, #VRIABL_ROW_SN#
+		, #SET_VRIABL_SN#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+	)
+	]]>
+	</insert>
+	
+	<insert id="insertMasterQuery" parameterClass="hashMap">
+	<![CDATA[
+	INSERT INTO CM_QUERY (
+		QUERY_SN
+		, MODULE_CODE
+		, QUERY_TY_CODE
+		, QUERY_STTUS_CODE
+		, QUERY_CN
+		, RESN
+		, QUERY_GROUP
+		, END_AT
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+	) VALUES (
+		#QUERY_SN#
+		, 'ED'
+		, #QUERY_TY_CODE#
+		, #QUERY_STTUS_CODE#
+		, #QUERY_CN#
+		, #RESN#
+		, #QUERY_GROUP#
+		, 'N'
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+	)
+	]]>
+	</insert>
+	
+	<update id="updateMasterQuery" parameterClass="hashMap">
+	UPDATE CM_QUERY SET
+	END_AT = 'Y'
+	, LAST_UPDDE = SYSDATE
+	, LAST_UPDUSR = #UPDATE_ID#
+	WHERE QUERY_GROUP = #QUERY_GROUP#
+	</update>
+	
+	<select id="selectGroupInfo" parameterClass="hashMap" resultClass="hashMap">
+	<![CDATA[
+		SELECT NVL(CFG.STRE_CODE, '01') STRE_CODE ,
+		  CFG.STRE_CRF_VER ,
+		  CFG.STRE_EDC_VER ,
+		  CFG.SDV_COMPT_STTUS_CODE ,
+		  FN_GET_COMMONCODE('EDC049', CFG.SDV_COMPT_STTUS_CODE, #LOCALE# ) SDV_COMPT_STTUS ,
+		  CFV.ELTSGN_STTUS_CODE,
+		  CRG.GROUP_SE_CODE
+		FROM EDC_CR_VISIT_GROUP CRVG
+		INNER JOIN EDC_CR_GROUP CRG
+		ON CRVG.TASK_SN   = CRG.TASK_SN
+		AND CRVG.EDC_VER  = CRG.EDC_VER
+		AND CRG.USE_AT    = 'Y'
+		AND CRVG.GROUP_SN = CRG.GROUP_SN
+		LEFT OUTER JOIN EDC_CF_GROUP CFG
+		ON CFG.INSTT_FORM_SN   = #INSTT_FORM_SN#
+		AND CFG.SUBJECT_NO     = #SUBJECT_NO#
+		AND CFG.VISIT_SN       = #VISIT_SN#
+		AND CFG.SN             = #SN#
+		AND CFG.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND CFG.USE_AT    = 'Y'
+		LEFT OUTER JOIN EDC_CF_VISIT CFV
+		ON CFG.INSTT_FORM_SN = CFG.INSTT_FORM_SN
+		AND CFG.SUBJECT_NO   = CFV.SUBJECT_NO
+		AND CFG.VISIT_SN     = CFV.VISIT_SN
+		AND CFG.SN           = CFV.SN
+		AND CFV.USE_AT    = 'Y'
+		WHERE CRVG.USE_AT    = 'Y'
+		AND CRVG.TASK_SN     = #TASK_SN#
+		AND CRVG.EDC_VER     =
+		  (SELECT EDC_VER FROM EDC_CR_FORM WHERE TASK_SN = #TASK_SN#
+		   AND CRF_ACTVTY_AT = 'Y'
+		  )
+		AND CRVG.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		]]>
+	</select>
+	
+	<insert id="insertCRFGroup" parameterClass="hashMap">
+	<![CDATA[
+	INSERT INTO EDC_CF_GROUP (
+		INSTT_FORM_SN
+		, SUBJECT_NO
+		, VISIT_SN
+		, SN
+		, VISIT_GROUP_SN
+		, STRE_CODE
+		, STRE_RESN_CODE
+		, STRE_ETC_RESN
+		, STRE_CRF_VER
+		, STRE_EDC_VER
+		, SDV_STTUS_CODE
+		, SDV_COMPT_STTUS_CODE
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+	)VALUES(
+		#INSTT_FORM_SN#
+		, #SUBJECT_NO#
+		, #VISIT_SN#
+		, #SN#
+		, #VISIT_GROUP_SN#
+		, #STRE_CODE#
+		, #STRE_RESN_CODE#
+		, #STRE_ETC_RESN#
+		, #STRE_CRF_VER#
+		, #STRE_EDC_VER#
+		, '01'
+		, '01'
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+	)
+	]]>
+	</insert>
+	<update id="updateCRFGroup" parameterClass="hashMap">
+		UPDATE EDC_CF_GROUP SET
+		LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		<isNotEmpty property="SDV_STTUS_CODE" prepend=",">
+			SDV_STTUS_CODE = #SDV_STTUS_CODE#
+		</isNotEmpty>
+		<isNotEmpty property="SDV_COMPT_STTUS_CODE" prepend=",">
+			SDV_COMPT_STTUS_CODE = #SDV_COMPT_STTUS_CODE#
+		</isNotEmpty>
+		<isNotEmpty property="STRE_CODE" prepend=",">
+			STRE_CODE = #STRE_CODE#
+			, STRE_RESN_CODE = #STRE_RESN_CODE#
+			, STRE_ETC_RESN = #STRE_ETC_RESN#
+			, STRE_CRF_VER = #STRE_CRF_VER#
+			, STRE_EDC_VER = #STRE_EDC_VER#
+		</isNotEmpty>
+		WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND SUBJECT_NO = #SUBJECT_NO#
+		AND VISIT_SN = #VISIT_SN#
+		AND SN = #SN#
+		AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+	</update>
+	<select id="selectCRFQueryList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		CFQ.INSTT_FORM_SN
+		, CFQ.SUBJECT_NO
+		, CFQ.VISIT_SN
+		, CFQ.SN
+		, CFQ.VISIT_GROUP_SN
+		, CFQ.SET_ROW_SN
+		, CFQ.VRIABL_ROW_SN
+		, CFQ.SET_VRIABL_SN
+		, CMQ.QUERY_SN
+		, CMQ.QUERY_TY_CODE
+		, FN_GET_COMMONCODE('EDC002', CMQ.QUERY_TY_CODE, #LOCALE#) QUERY_TY
+		, CMQ.QUERY_STTUS_CODE
+		, FN_GET_COMMONCODE('EDC003', CMQ.QUERY_STTUS_CODE, #LOCALE#) QUERY_STTUS
+		, CMQ.QUERY_CN
+		, CMQ.RESN
+		, CMQ.QUERY_GROUP
+		, CASE WHEN (SELECT COUNT(*) FROM CM_QUERY WHERE QUERY_GROUP = CMQ.QUERY_GROUP AND QUERY_STTUS_CODE = '02' ) > 0 THEN 'ANSWER'
+		ELSE 'OPEN' END STATUS
+		FROM EDC_CF_QUERY CFQ
+		INNER JOIN CM_QUERY CMQ
+		ON CMQ.QUERY_SN = CFQ.QUERY_SN AND CMQ.MODULE_CODE = 'ED'
+		AND CMQ.QUERY_STTUS_CODE != '03' AND CMQ.QUERY_STTUS_CODE != '04'
+		AND CMQ.END_AT = 'N' AND CMQ.USE_AT = 'Y'
+		WHERE CFQ.INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND CFQ.SUBJECT_NO = #SUBJECT_NO#
+		AND CFQ.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND CFQ.VISIT_SN = #VISIT_SN#
+		AND CFQ.SN = #SN#
+		ORDER BY CMQ.QUERY_GROUP DESC, CMQ.QUERY_SN DESC
+	</select>
+	<select id="selectCRFRow" parameterClass="hashMap" resultClass="string">
+	SELECT 	COUNT(*)
+	FROM EDC_CF_ROW
+	WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND SUBJECT_NO = #SUBJECT_NO#
+		AND VISIT_SN = #VISIT_SN#
+		AND SN = #SN#
+		AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SET_ROW_SN = #SET_ROW_SN#
+		AND VRIABL_ROW_SN = #VRIABL_ROW_SN#
+	</select>
+	<select id="selectCRFSDV" parameterClass="hashMap" resultClass="string">
+	SELECT 	COUNT(*)
+	FROM EDC_CF_ROW
+	WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+		AND SUBJECT_NO = #SUBJECT_NO#
+		AND VISIT_SN = #VISIT_SN#
+		AND SN = #SN#
+		AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SDV_AT = #SDV_AT#
+	</select>
+	<select id="selectCRFSDVList" parameterClass="hashMap" resultClass="hashMap">
+	SELECT INSTT_FORM_SN
+		, SUBJECT_NO
+		, VISIT_SN
+		, SN
+		, VISIT_GROUP_SN
+		, SET_ROW_SN
+		, VRIABL_ROW_SN
+		, SDV_AT
+		, ROWNUM RN
+	FROM EDC_CF_ROW
+	WHERE USE_AT = 'Y'
+	AND INSTT_FORM_SN = #INSTT_FORM_SN#
+	AND SUBJECT_NO = #SUBJECT_NO#
+	AND VISIT_SN = #VISIT_SN#
+	AND SN = #SN#
+	AND VISIT_GROUP_SN = #VISIT_GROUP_SN#
+	</select>
+	<update id="updateVisitSign" parameterClass="hashMap">
+	UPDATE EDC_CF_VISIT SET 
+	ELTSGN_STTUS_CODE = '03'
+	,LAST_UPDDE = SYSDATE
+	, LAST_UPDUSR = #UPDATE_ID#
+	WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+	AND SUBJECT_NO = #SUBJECT_NO#
+	AND VISIT_SN = #VISIT_SN#
+	AND SN = #SN#
+	</update>
+	<update id="updateSubjectSign" parameterClass="hashMap">
+	UPDATE EDC_CF_SUBJECT SET 
+	ELTSGN_STTUS_CODE = '03'
+	, LAST_UPDDE = SYSDATE
+	, LAST_UPDUSR = #UPDATE_ID#
+	WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+	AND SUBJECT_NO = #SUBJECT_NO#
+	</update>
+	
+	<select id="selectPatientList" parameterClass="hashMap" resultClass="hashMap">
+	SELECT CFS.SUBJECT_NO
+	, CFS.PATNT_NO
+	, TO_CHAR(CFS.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	FROM EDC_CR_INSTT_FORM CRIF
+	INNER JOIN EDC_CF_SUBJECT CFS ON CRIF.INSTT_FORM_SN = CFS.INSTT_FORM_SN  
+	WHERE TASK_SN = #TASK_SN#
+	ORDER BY CFS.SUBJECT_NO
+	</select>
+	
+	<update id="updatePatient" parameterClass="hashMap">
+	UPDATE EDC_CF_SUBJECT SET
+	PATNT_NO = #PATNT_NO#
+	, LAST_UPDDE = SYSDATE
+	, LAST_UPDUSR = #UPDATE_ID#
+	WHERE INSTT_FORM_SN = #INSTT_FORM_SN#
+	AND SUBJECT_NO = SUBJECT_NO
+	</update>
+	
+	<update id="updatePatientVariable" parameterClass="hashMap">
+	
+	</update>
+</sqlMap>

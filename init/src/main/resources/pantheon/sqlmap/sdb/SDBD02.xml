@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="SDBD02">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+	
+	<select id="SDBD02DAO.selectReportDelayCount" parameterClass="hashmap" resultClass="int">
+	    SELECT COUNT(*) CNT
+	      FROM (SELECT A.HRMFLNS_CASE_CODE
+	                  ,B.PRDUCT_CODE
+	                  ,B.PRDUCTNM
+	                  ,C.ADVERSE_EVENT
+	                  ,C.SERIUSFMNM_AT
+	                  ,A.REGIST_DTE
+	                  ,D.STDDE_TY
+	                  ,D.REPORTDE_CO
+	                  ,FN_GET_MULLANG(E.DELNGLN_NM) DELNGLN_NM
+	                  ,CASE WHEN D.STDDE_TY = '02' THEN FN_GET_WORKDATE(A.REGIST_DTE, D.REPORTDE_CO)
+	                        ELSE A.REGIST_DTE + D.REPORTDE_CO
+	                        END DELAY_DATE
+	              FROM SDB_AM_HRMFLNS_CASE_INFO A
+	         LEFT JOIN SDB_IM_PRDUCT_INFO_MANAGE B
+	                ON A.PRDUCT_CODE = B.PRDUCT_CODE
+	         LEFT JOIN SDB_AM_REPORT_ESTBS D
+	                ON A.PRDUCT_CODE = D.PRDUCT_CODE
+	         LEFT JOIN SDB_IM_DELNGLN_MANAGE E
+	                ON D.REPORT_INSTT_CODE = E.DELNGLN_CODE
+	               AND E.INSTT_SE = '02'
+	         LEFT JOIN (SELECT HRMFLNS_CASE_CODE
+	                          ,PRDUCT_CODE
+	                          ,FOLLOW_NO
+	                          ,LISTAGG(ADVERSE_EVENT, '/') WITHIN GROUP(ORDER BY AE_NO) ADVERSE_EVENT
+	                          ,MAX(SERIUSFMNM_AT) SERIUSFMNM_AT
+	                      FROM SDB_AM_AE_INFO
+	                  GROUP BY HRMFLNS_CASE_CODE
+	                          ,PRDUCT_CODE
+	                          ,FOLLOW_NO) C
+	                ON A.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+	               AND A.PRDUCT_CODE = C.PRDUCT_CODE
+	               AND A.FOLLOW_NO = C.FOLLOW_NO
+	             WHERE NOT EXISTS (SELECT *
+	                                 FROM SDB_AM_HRMFLNS_CASE_INFO A
+	                           INNER JOIN SDB_AM_EDC_TRNSMIS_INFO B
+	                                   ON A.HRMFLNS_CASE_CODE = B.HRMFLNS_CASE_CODE
+	                                  AND A.PRDUCT_CODE = B.PRDUCT_CODE
+	                                  AND A.FOLLOW_NO = B.FOLLOW_NO)) A
+	     WHERE SYSDATE > DELAY_DATE
+    <isNotEmpty property="CASE">
+ 		   AND HRMFLNS_CASE_CODE LIKE '%' || #CASE# || '%'
+    </isNotEmpty>
+    <isNotEmpty property="PRODUCT">
+ 		   AND PRDUCTNM LIKE '%' || #PRODUCT# || '%'
+    </isNotEmpty>
+    <isNotEmpty property="INSTT">
+ 		   AND DELNGLN_NM LIKE '%' || #INSTT# || '%'
+    </isNotEmpty>
+	</select>
+	
+	<select id="SDBD02DAO.selectReportDelayList" parameterClass="hashmap" resultClass='hashmap'>
+		SELECT HRMFLNS_CASE_CODE
+	          ,PRDUCT_CODE
+	          ,PRDUCTNM
+	          ,ADVERSE_EVENT
+	          , SERIUSFMNM_AT
+          	  , REGIST_DTE
+	          ,STDDE_TY
+	          ,REPORTDE_CO
+	          ,DELAY_DATE
+	          ,DELNGLN_NM
+	          ,DELAY_DATE_CO
+	      FROM (SELECT HRMFLNS_CASE_CODE
+			          ,PRDUCT_CODE
+			          ,PRDUCTNM
+			          ,ADVERSE_EVENT
+			          ,DECODE(SERIUSFMNM_AT, 'Y', 'YES', 'NO') SERIUSFMNM_AT
+		          	  ,TO_CHAR(REGIST_DTE, 'YYYYMMDDHH24MISS') REGIST_DTE
+			          ,STDDE_TY
+			          ,REPORTDE_CO
+			          ,DELAY_DATE
+			          ,DELNGLN_NM
+			          ,TO_DATE(SYSDATE, 'YYYY-MM-DD') - TO_DATE(DELAY_DATE, 'YYYY-MM-DD') DELAY_DATE_CO
+			          ,ROW_NUMBER() OVER(ORDER BY HRMFLNS_CASE_CODE) RN
+			      FROM (SELECT A.HRMFLNS_CASE_CODE
+			                  ,B.PRDUCT_CODE
+			                  ,B.PRDUCTNM
+			                  ,C.ADVERSE_EVENT
+			                  ,C.SERIUSFMNM_AT
+			                  ,A.REGIST_DTE
+			                  ,D.STDDE_TY
+			                  ,D.REPORTDE_CO
+			                  ,FN_GET_MULLANG(E.DELNGLN_NM) DELNGLN_NM
+			                  ,CASE WHEN D.STDDE_TY = '02' THEN FN_GET_WORKDATE(A.REGIST_DTE, D.REPORTDE_CO)
+			                        ELSE A.REGIST_DTE + D.REPORTDE_CO
+			                        END DELAY_DATE
+			              FROM SDB_AM_HRMFLNS_CASE_INFO A
+			         LEFT JOIN SDB_IM_PRDUCT_INFO_MANAGE B
+			                ON A.PRDUCT_CODE = B.PRDUCT_CODE
+			         LEFT JOIN SDB_AM_REPORT_ESTBS D
+			                ON A.PRDUCT_CODE = D.PRDUCT_CODE
+			         LEFT JOIN SDB_IM_DELNGLN_MANAGE E
+			                ON D.REPORT_INSTT_CODE = E.DELNGLN_CODE
+			               AND E.INSTT_SE = '02'
+			         LEFT JOIN (SELECT HRMFLNS_CASE_CODE
+			                          ,PRDUCT_CODE
+			                          ,FOLLOW_NO
+			                          ,LISTAGG(ADVERSE_EVENT, '/') WITHIN GROUP(ORDER BY AE_NO) ADVERSE_EVENT
+			                          ,MAX(SERIUSFMNM_AT) SERIUSFMNM_AT
+			                      FROM SDB_AM_AE_INFO
+			                  GROUP BY HRMFLNS_CASE_CODE
+			                          ,PRDUCT_CODE
+			                          ,FOLLOW_NO) C
+			                ON A.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+			               AND A.PRDUCT_CODE = C.PRDUCT_CODE
+			               AND A.FOLLOW_NO = C.FOLLOW_NO
+			             WHERE NOT EXISTS (SELECT *
+			                                 FROM SDB_AM_HRMFLNS_CASE_INFO A
+			                           INNER JOIN SDB_AM_EDC_TRNSMIS_INFO B
+			                                   ON A.HRMFLNS_CASE_CODE = B.HRMFLNS_CASE_CODE
+			                                  AND A.PRDUCT_CODE = B.PRDUCT_CODE
+			                                  AND A.FOLLOW_NO = B.FOLLOW_NO)) A
+			     WHERE SYSDATE > DELAY_DATE
+    <isNotEmpty property="CASE">
+ 		   AND HRMFLNS_CASE_CODE LIKE '%' || #CASE# || '%'
+    </isNotEmpty>
+    <isNotEmpty property="PRODUCT">
+ 		   AND PRDUCTNM LIKE '%' || #PRODUCT# || '%'
+    </isNotEmpty>
+    <isNotEmpty property="INSTT">
+ 		   AND DELNGLN_NM LIKE '%' || #INSTT# || '%'
+    </isNotEmpty>)
+    <![CDATA[
+	     WHERE RN > ($page$ - 1) * $count$
+      	   AND RN <= ($page$ * $count$)
+    ]]>
+	</select>
+</sqlMap>

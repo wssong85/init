@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<settings useStatementNamespaces="true" />
+	
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMA01.xml" />
+	
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMF01.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMR01.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMR02.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMB01.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMB02.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMB03.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMB04.xml" />
+	
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMC01.xml" />
+
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMG01.xml" />
+
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMI01.xml" />
+
+	<sqlMap resource="pantheon/sqlmap/ctms/CTML01.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTML02.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMH01.xml" />
+	
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMO01.xml" />
+	
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMV01.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMW02.xml" />
+	
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMZ01.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMZ02.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMZ03.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMZ04.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMZ07.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMZ08.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMZ11.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMZ13.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/CTMZ15.xml" />
+	
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ01.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ02.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ03.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ04.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ05.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ06.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ07.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ08.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ10.xml" />
+	<sqlMap resource="pantheon/sqlmap/ctms/DMCJ11.xml" />
+	
+	
+
+</sqlMapConfig>

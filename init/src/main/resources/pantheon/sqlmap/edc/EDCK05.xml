@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="EDCK05">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+	<select id="EDCK05DAO.selectIRBBasicInfoList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT    TASK_SN
+		        , TASK_NO
+		        , TASK_NM
+		        , TASK_TY_CODE
+                , FN_GET_COMMONCODE('EDC017', TASK_TY_CODE, #LOCALE#) TASK_TY_NM
+		        , PROGRS_CODE
+                , FN_GET_COMMONCODE('EDC035', PROGRS_CODE, #LOCALE#) PROGRS_NM
+		        , TASK_END_AT
+		        , TASK_END_AT TASK_END_AT_TMP
+		  FROM    EDC_CR_TASK
+		 WHERE    TASK_END_AT = 'N'
+		   AND	  FREEZING_STTUS_CODE = '03'		/* Freezing */
+	</select>
+	
+	<select id="EDCK05DAO.selectIRBBasicEndInfoList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT    TASK_SN
+		        , TASK_NO
+		        , TASK_NM
+		        , TASK_TY_CODE
+                , FN_GET_COMMONCODE('EDC017', TASK_TY_CODE, #LOCALE#) TASK_TY_NM
+		        , PROGRS_CODE
+                , FN_GET_COMMONCODE('EDC035', PROGRS_CODE, #LOCALE#) PROGRS_NM
+		        , TASK_END_AT
+		        , TASK_END_AT TASK_END_AT_TMP
+		  FROM    EDC_CR_TASK
+		 WHERE    TASK_END_AT = 'Y'
+		   AND	  FREEZING_STTUS_CODE = '03'		/* Freezing */
+	</select>
+
+	<update id="EDCK05DAO.updateIRBBasicInfo" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE EDC_CR_TASK SET
+		       TASK_END_AT = #TASK_END_AT#
+		     , LAST_UPDDE  = SYSDATE
+		     , LAST_UPDUSR = #UPDATE_ID#
+		 WHERE TASK_SN     = #TASK_SN#
+		]]>
+	</update>
+
+
+
+	<select id="EDCK05DAO.selectOldTaskByBtnList" parameterClass="hashMap" resultClass="hashMap">
+        SELECT 	  CT.TASK_SN
+        		, CT.TASK_END_AT
+          FROM 	  EDC_CR_TASK CT
+         WHERE 	  CT.TASK_SN   = #TASK_SN#
+	</select>
+
+</sqlMap>

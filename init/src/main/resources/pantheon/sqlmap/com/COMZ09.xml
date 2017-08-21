@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMZ09">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<insert id="COMZ09DAO.insertCmSanClineByPk" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_SANCLINE
+		     ( SANCLINE_SN
+	         , SANCLINE_NM
+	         , SANCLINE_DC
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	         )
+	    VALUES
+	         ( #SANCLINE_SN#
+	         , #SANCLINE_NM#
+	         , #SANCLINE_DC#
+	         , #USE_YN#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         )
+		]]>
+	</insert>
+	
+	<select id="COMZ09DAO.selectCmSanClineListByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT SANCLINE_SN
+	         , SANCLINE_NM
+	         , SANCLINE_DC
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	      FROM CM_SANCLINE
+		]]>
+	</select>
+	
+	<insert id="COMZ09DAO.insertCmSanClineDetailByPk" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_SANCLINE_DETAIL
+		     ( DETAIL_SN
+	         , SANCTN_CODE
+	         , SANCLINE_SN
+	         , USE_YN
+	         , SANCTN_ORDR
+	         , STTUS_ORDR
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	         , CONFMER_ID
+		     )
+		VALUES
+		     ( #DETAIL_SN#
+	         , #SANCTN_CODE#
+	         , #SANCLINE_SN#
+	         , #USE_YN#
+	         , #SANCTN_ORDR#
+	         , #STTUS_ORDR#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , #CONFMER_ID#
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMZ09DAO.selectCmSanClineDetailListByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.DETAIL_SN
+	         , A.SANCTN_CODE
+	         , FN_GET_COMMONCODE('COM003', A.SANCTN_CODE, #LOCALE#) AS SANCTN_CODE_NM
+	         , A.SANCLINE_SN
+	         , A.USE_YN
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , A.REGIST_ID
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE  
+	         , A.UPDATE_ID
+	         , A.CONFMER_ID
+	         , A.CONFMER_ID UNIQUE_ID
+	         , A.SANCTN_ORDR
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.CONFMER_ID) CONFMER_NM
+	         , C.DEPT_CD
+	         , C.DEPT_NM
+	      FROM CM_SANCLINE_DETAIL A
+	         , CM_JOBUSER B
+	         , CM_DEPTINFO C
+	     WHERE A.CONFMER_ID = B.USER_ID
+	       AND B.DEPT_CD = C.DEPT_CD
+	       AND A.USE_YN = 'Y'
+	       AND A.SANCLINE_SN = #SANCLINE_SN#	
+	    ORDER BY A.STTUS_ORDR, A.SANCTN_ORDR
+	    ]]>
+	</select>
+	
+	<select id="COMZ09DAO.selectCmJobUserListForAll" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.EMPL_NO
+	         , A.USER_ID
+	         , A.USER_ID UNIQUE_ID
+	         , C.USER_NM
+	         , A.COMP_CD
+	         , A.DEPT_CD
+	         , B.DEPT_NM
+	         , B.DEPT_ORDER
+	         , A.CLSF_CODE
+	      FROM CM_JOBUSER  A,
+	           CM_DEPTINFO B,
+	           CM_USER C
+	     WHERE A.COMP_CD = B.COMP_CD
+	       AND A.DEPT_CD = B.DEPT_CD
+	       AND A.USER_ID = C.USER_ID
+	       AND A.USE_YN = 'Y'
+	    ORDER BY DEPT_CD
+	    ]]>
+	</select>
+	
+	<select id="COMZ09DAO.selectCmSanClineListForComboBox" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT SANCLINE_SN
+	         , SANCLINE_NM
+	      FROM CM_SANCLINE
+	     WHERE UPDATE_ID = #UPDATE_ID#
+	  	]]>
+	</select>
+	
+	<update id="COMZ09DAO.updateCmSanClineByPk" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_SANCLINE
+		   SET SANCLINE_NM = #SANCLINE_NM#
+		 WHERE SANCLINE_SN = #SANCLINE_SN#
+		]]>
+	</update>
+	
+	<update id="COMZ09DAO.updateCmSanClineDetailByPk" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_SANCLINE_DETAIL
+		   SET DETAIL_SN = #DETAIL_SN#
+	         , SANCTN_CODE = #SANCTN_CODE#
+	         , SANCLINE_SN = #SANCLINE_SN#
+	         , USE_YN = #USE_YN#
+	         , LAST_UPDDE = SYSDATE
+	         , UPDATE_ID = #UPDATE_ID#
+	         , CONFMER_ID = #CONFMER_ID#
+	         , SANCTN_ORDR = #SANCTN_ORDR#
+	         , STTUS_ORDR = #STTUS_ORDR#
+	    WHERE DETAIL_SN = #DETAIL_SN#
+	      AND SANCLINE_SN = #SANCLINE_SN#
+		]]>
+	</update>
+	
+	<insert id="COMZ09DAO.insertCmSanctnRequstByCmSanClineDetailInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO CM_SANCTN_REQUST
+		     ( REQUST_NO
+	         , RQESTER_ID
+	         , STTUS_CODE
+	         , REQUST_COMMENT
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID	
+	         , REQUST_NM     
+		     )
+		VALUES
+		     ( #REQUST_NO#
+	         , #RQESTER_ID#
+	         , #STTUS_CODE#
+	         , #REQUST_COMMENT#
+	         , #USE_YN#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , #REQUST_NM#
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COMZ09DAO.insertCmSanctnProcessByCmSanClineDetailInfo" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_SANCTN_PROCESS
+		     ( SANCTN_CODE
+	         , SANCTN_NO
+	         , SANCTNER_ID
+	         , STTUS_CODE
+	         , REQUST_NO
+	         , SANCTN_DT
+	         , SANCTN_COMMENT
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	         , SANCTN_ORDR
+	         , STTUS_ORDR
+		     )
+		VALUES
+		     ( #SANCTN_CODE#
+	         , #SANCTN_NO#
+	         , #SANCTNER_ID#
+	         , #STTUS_CODE#
+	         , #REQUST_NO#
+	         , DECODE(#STTUS_CODE#, '02', SYSDATE, NULL)
+	         , #SANCTN_COMMENT#
+	         , #USE_YN#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , SYSDATE
+	         , #UPDATE_ID#
+	         , #SANCTN_ORDR#
+	         , #STTUS_ORDR#
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMZ09DAO.selectCmSanctnProcessListByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.SANCTN_CODE
+	         , FN_GET_COMMONCODE('COM003', A.SANCTN_CODE, #LOCALE#) AS SANCTN_CODE_NM
+	         , A.SANCTN_NO
+	         , A.SANCTNER_ID
+             , C.USER_NM SANCTNER_NM
+             , E.DEPT_NM
+	         , A.STTUS_CODE
+             , FN_GET_COMMONCODE('COM004', A.STTUS_CODE, #LOCALE#) AS STTUS_CODE_NM
+	         , A.REQUST_NO
+	         , TO_CHAR(A.SANCTN_DT, 'YYYYMMDDHH24MISS') SANCTN_DT
+	         , A.SANCTN_COMMENT
+	         , A.USE_YN
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , A.REGIST_ID
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , A.UPDATE_ID
+             , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = A.UPDATE_ID) UPDATE_NM
+	         , A.SANCTN_ORDR
+	         , A.STTUS_ORDR
+	         , B.REQUST_NM
+	         , B.STTUS_CODE REQUST_STTUS_CODE
+	         , FN_GET_COMMONCODE('COM005', B.STTUS_CODE, #LOCALE#) AS STTUS_CODE_NM
+	      FROM CM_SANCTN_PROCESS A
+	         , CM_SANCTN_REQUST B
+             , CM_USER C
+             , CM_JOBUSER D
+             , CM_DEPTINFO E
+	     WHERE A.REQUST_NO = B.REQUST_NO
+           AND A.SANCTNER_ID = C.USER_ID
+           AND C.USER_ID = D.USER_ID
+           AND D.DEPT_CD = E.DEPT_CD
+	       AND A.REQUST_NO = #REQUST_NO#
+	    ORDER BY A.STTUS_ORDR, A.SANCTN_ORDR
+		]]> 
+	</select>
+	
+	<select id="COMZ09DAO.selectCmSanctnProcessListForUpdate" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+	    SELECT A.SANCTN_CODE
+	         , A.SANCTN_NO
+	         , A.SANCTNER_ID
+	         , A.STTUS_CODE
+	         , A.REQUST_NO
+	         , A.SANCTN_DT
+	         , A.SANCTN_COMMENT
+	         , A.USE_YN
+	         , TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	         , A.REGIST_ID
+	         , TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	         , A.UPDATE_ID
+	         , A.SANCTN_ORDR
+	         , A.STTUS_ORDR
+	     FROM CM_SANCTN_PROCESS A
+	    WHERE A.REQUST_NO = #REQUST_NO#
+		]]>
+	</select>
+	
+	<update id="COMZ09DAO.updateCmSanctnProcessByPk" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_SANCTN_PROCESS
+		   SET LAST_UPDDE = SYSDATE
+		     , UPDATE_ID = #UPDATE_ID#
+		     , SANCTN_DT = SYSDATE
+		     , SANCTNER_ID = #SANCTNER_ID#
+		     , SANCTN_COMMENT = #SANCTN_COMMENT#
+		     , STTUS_CODE = #STTUS_CODE#
+		 WHERE REQUST_NO = #REQUST_NO#
+		   AND SANCTN_NO = #SANCTN_NO#
+		]]>
+	</update>
+	
+	<select id="COMZ09DAO.selectCmSanctnProcessCountByPk" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_SANCTN_PROCESS
+	     WHERE REQUST_NO = #REQUST_NO#
+		   AND STTUS_CODE = '01'
+		]]>	 
+	</select>
+	
+	<select id="COMZ09DAO.selectCmSanctnProcessCountByPk2" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_SANCTN_PROCESS
+	     WHERE REQUST_NO = #REQUST_NO#
+		   AND STTUS_CODE IN ( '02' , '03')
+		   AND SANCTN_CODE = '01'
+		]]>	 
+	</select>
+	
+	<select id="COMZ09DAO.selectCmSanctnProcessCountByPk3" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_SANCTN_PROCESS
+	     WHERE REQUST_NO = #REQUST_NO#
+	       AND SANCTN_NO = #SANCTN_NO#
+		   AND STTUS_CODE = '01'
+		]]>	 
+	</select>
+	
+	<select id="COMZ09DAO.selectCmSanctnRequstCountByPk" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_SANCTN_REQUST
+		 WHERE REQUST_NO = #REQUST_NO#
+		   AND STTUS_CODE = '01'
+		]]>
+	</select>
+	
+	<update id="COMZ09DAO.updateCmSanCtnRequstByPk" parameterClass="hashMap">
+		<![CDATA[
+		UPDATE CM_SANCTN_REQUST
+		   SET STTUS_CODE = #STTUS_CODE#
+		     , USE_YN = #USE_YN#
+		     , LAST_UPDDE = SYSDATE
+		     , UPDATE_ID = #UPDATE_ID#
+		 WHERE REQUST_NO = #REQUST_NO#
+		]]>	 
+	</update>
+	
+	<delete id="COMZ09DAO.deleteCmSanclineDetailListForInsert" parameterClass="hashMap">
+		<![CDATA[
+		DELETE FROM CM_SANCLINE_DETAIL WHERE SANCLINE_SN = #SANCLINE_SN#
+		]]> 
+	</delete>
+	
+	<select id="COMZ09DAO.selectCmSanclineDetailListForInsert" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT DETAIL_SN
+	         , SANCTN_CODE
+	         , SANCLINE_SN
+	         , USE_YN
+	         , CONFMER_ID
+	         , SANCTN_ORDR
+	         , STTUS_ORDR
+	      FROM CM_SANCLINE_DETAIL
+	     WHERE SANCLINE_SN = #SANCLINE_SN#
+		]]>
+	</select>
+</sqlMap>

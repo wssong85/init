@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="IWRF01">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+   	
+   	<select id="IWRF01DAO.selectQueryList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT A.INSTT_CODE
+	          ,D.NAME1 INSTT_NM
+	          ,A.SUBJECT_CODE
+	          ,A.VISIT_CODE
+	          ,E.VISIT_LBL
+	          ,FN_GET_COMMONCODE('IWRS014', B.DLVY_SE_CODE, #LOCALE#) DLVY_SE_CODE
+	          ,CASE WHEN B.DLVY_SE_CODE = '01' THEN FN_GET_COMMONCODE('IWRS012', B.QUERY_SE_CODE, #LOCALE#)
+	                WHEN B.DLVY_SE_CODE = '02' THEN FN_GET_COMMONCODE('IWRS013', B.QUERY_SE_CODE, #LOCALE#)
+	                ELSE ''
+	                END QUERY_SE_CODE
+	          ,CASE WHEN B.DLVY_SE_CODE = '01' AND B.QUERY_SE_CODE = '01' THEN TO_CHAR(A.RTUN_QTT)
+	                WHEN B.DLVY_SE_CODE = '01' AND B.QUERY_SE_CODE = '02' THEN TO_CHAR(A.RTUN_DT, 'YYYYMMDDHH24MISS')
+	                WHEN B.DLVY_SE_CODE = '02' AND B.QUERY_SE_CODE = '01' THEN TO_CHAR(A.TAKNG_QTT)
+	                WHEN B.DLVY_SE_CODE = '02' AND B.QUERY_SE_CODE = '02' THEN TO_CHAR(A.RTURN_QTT)
+	                WHEN B.DLVY_SE_CODE = '02' AND B.QUERY_SE_CODE = '03' THEN TO_CHAR(A.RTURN_DT, 'YYYYMMDDHH24MISS')
+	                ELSE ''
+	                END RTURN_DT
+	          ,A.IP_CODE
+	          ,FN_GET_USER_NAME(C.FRST_CRTR) PBLSHR_ID
+	          ,C.QUERY_STTUS_CODE
+	          ,FN_GET_COMMONCODE('EDC003', C.QUERY_STTUS_CODE, #LOCALE#) QUERY_STTUS_NM
+	          ,FN_GET_COMMONCODE('EDC002', C.QUERY_TY_CODE, #LOCALE#) QUERY_TY_CODE
+	          ,C.RESN END_RESN_CODE
+	          ,C.QUERY_SN
+	          ,C.QUERY_CN
+	          ,A.RTUN_NO
+	      FROM IWRS_SJ_RTUNMANAGE A
+	INNER JOIN IWRS_SJ_RTUNQUERY B
+	        ON A.RTUN_NO = B.RTUN_NO
+	INNER JOIN (
+				SELECT A.QUERY_GROUP
+			          ,(SELECT QUERY_STTUS_CODE FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_STTUS_CODE
+			          ,(SELECT FRST_CRTR FROM CM_QUERY WHERE QUERY_SN = B.MIN_QUERY_SN) FRST_CRTR
+			          ,MAX(A.QUERY_TY_CODE) QUERY_TY_CODE
+			          ,(SELECT RESN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) RESN
+			          ,B.MIN_QUERY_SN QUERY_SN
+			          ,(SELECT QUERY_CN FROM CM_QUERY WHERE QUERY_SN = B.MAX_QUERY_SN) QUERY_CN
+			          ,MAX(A.MODULE_CODE) MODULE_CODE
+			      FROM CM_QUERY A
+			INNER JOIN (SELECT QUERY_GROUP
+			                  ,MAX(QUERY_SN) MAX_QUERY_SN
+			                  ,MIN(QUERY_SN) MIN_QUERY_SN
+			              FROM CM_QUERY A
+			          GROUP BY A.QUERY_GROUP) B
+			        ON A.QUERY_GROUP = B.QUERY_GROUP
+			  GROUP BY A.QUERY_GROUP, B.MAX_QUERY_SN, B.MIN_QUERY_SN
+			  ORDER BY A.QUERY_GROUP
+				) C
+	        ON B.QUERY_MASTR_SN = C.QUERY_SN
+	       AND C.MODULE_CODE = 'IWR'
+	 LEFT JOIN (SELECT A.INSTT_CODE
+	                  ,B.NAME1
+	              FROM CM_INSTT A
+	        INNER JOIN SAP_BCNC_INFO B
+	                ON A.KUNNR = B.KUNNR) D
+	        ON A.INSTT_CODE = D.INSTT_CODE
+	 LEFT JOIN (SELECT A.VISIT_SN
+	                  ,A.VISIT_LBL
+	                  ,A.TASK_SN
+	              FROM EDC_CR_VISIT_SCHDUL A
+	        INNER JOIN EDC_CR_FORM B
+	                ON A.EDC_VER = B.EDC_VER
+	               AND A.TASK_SN = B.TASK_SN
+	               AND B.TASK_SN = #TASK_CODE#
+	               AND B.CRF_ACTVTY_AT = 'Y'
+	             WHERE A.TASK_SN = #TASK_CODE#) E
+	        ON A.VISIT_CODE = E.VISIT_SN
+	INNER JOIN IWRS_DS_INVNTRYMANAGE_DETAIL F
+	        ON A.DLVYMANAGE_CODE = F.DLVYMANAGE_CODE
+	       AND A.SN = F.SN
+	       AND A.INVNTRYMANAGE_CODE = F.INVNTRYMANAGE_CODE
+	       AND F.TASK_CODE = #TASK_CODE# 
+	  ORDER BY C.QUERY_SN DESC
+   	</select>
+   	
+   	<select id="IWRF01DAO.selectQueryCnt" parameterClass="hashmap" resultClass="int">
+   		SELECT COUNT(*) CNT
+	      FROM IWRS_SJ_RTUNMANAGE A
+	INNER JOIN IWRS_SJ_RTUNQUERY B
+	        ON A.RTUN_NO = B.RTUN_NO
+	INNER JOIN CT_QUERY_MASTR C
+	        ON B.QUERY_MASTR_SN = C.QUERY_MASTR_SN
+	INNER JOIN CT_QUERY_DETAIL D
+	        ON C.QUERY_MASTR_SN = D.QUERY_MASTR_SN
+	 LEFT JOIN (SELECT A.INSTT_CODE
+	                  ,B.NAME1
+	              FROM CM_INSTT A
+	        INNER JOIN SAP_BCNC_INFO B
+	                ON A.KUNNR = B.KUNNR) E
+	        ON A.INSTT_CODE = E.INSTT_CODE
+	 LEFT JOIN (SELECT A.VISIT_SN
+	                  ,A.VISIT_LBL
+	                  ,A.TASK_SN
+	              FROM EDC_CR_VISIT_SCHDUL A
+	        INNER JOIN EDC_CR_FORM B
+	                ON A.EDC_VER = B.EDC_VER
+	               AND A.TASK_SN = B.TASK_SN
+	               AND B.TASK_SN = #TASK_CODE#
+	               AND B.CRF_ACTVTY_AT = 'Y'
+	             WHERE A.TASK_SN = '1') F
+	         ON A.VISIT_CODE = F.VISIT_SN
+	INNER JOIN IWRS_DS_INVNTRYMANAGE_DETAIL G
+	        ON A.DLVYMANAGE_CODE = G.DLVYMANAGE_CODE
+	       AND A.SN = G.SN
+	       AND A.INVNTRYMANAGE_CODE = G.INVNTRYMANAGE_CODE
+	       AND G.TASK_CODE = #TASK_CODE#
+   	</select>
+   	
+   	<select id="IWRF01DAO.selectQueryInfo" parameterClass="hashmap" resultClass="hashmap">
+   		SELECT A.RTUN_NO
+	          ,A.DLVY_SE_CODE
+	          ,A.QUERY_SE_CODE
+	          ,B.QUERY_TY_CODE
+	          ,B.QUERY_CN
+	          ,B.QUERY_GROUP
+	      FROM IWRS_SJ_RTUNQUERY A
+	INNER JOIN CM_QUERY B
+	        ON A.QUERY_MASTR_SN = B.QUERY_SN
+	     WHERE A.QUERY_MASTR_SN = #QUERY_SN#
+	       AND B.MODULE_CODE = 'IWR'
+   	</select>
+</sqlMap>

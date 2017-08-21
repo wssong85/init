@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<!-- SOURCE TRIAL -->
+	<bean name="SDB_AM_TRIAL_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_TRIAL_INFO"/>
+	            <entry key="TABLE_PK" value="PRTCL_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="PRTCL_NO,PRDUCT_CODE,PRTCL_NM,RSRCH_KND_CODE,CLINC_TY_CODE,RSRCH_KND_ETC_MATTER_MEMO,MFDS_CONFM_AT,MFDS_CONFM_DTE,FRT_PATNT_OCCRRNCDE,LAST_PATNT_OCCRRNCDE,RYMSLMDONG_CTRL_AT,RYMSLMDONG_CTRL_CMPNYNM,RYMSLMDONG_CTRL_PRDUCTNM,RYMSLMDONG_CTRL_DATA_TRNSMIS_A,RYMSLMDONG_CTRL_DATA_TRNSMISDE,SAFEHELTH_DTA_LOCK_DTE,SAFE_POPLTN,ETC_INFO_ONE,ETC_INFO_TWO,ETC_INFO_THREE,MEDDRA_VER,KCM_VER,WHOART_VER,ATC_VER,OUTPT_AT,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="프로토콜번호,제품코드,프로토콜명,연구종류코드,임상유형코드,연구종류기타사항메모,MFDS승인여부,MFDS승인일자,첫번째환자발생일,마지막환자발생일,능동제어여부,능동제어회사명,능동제어제품명,능동제어데이터전송여부,능동제어데이터전송일,안전보건자료잠금일자,안전인구,기타정보1,기타정보2,기타정보3,MedDRA버전,KCM버전,WHOART버전,ATC버전,출력여부,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="SDB_AM_LTRTRE_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_LTRTRE_INFO"/>
+	            <entry key="TABLE_PK" value="LTRTRE_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="LTRTRE_NO,PRDUCT_CODE,LTRTRE_SJ,JRNL_INFO,AUTHR,PBLCATE_DTE,VLM_HO_CO,PGE_NO,ETC_INFO_ONE,ETC_INFO_TWO,ETC_INFO_THREE,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID,LTRTRE_FILE"/>
+	            <entry key="LABEL_NM" value="문헌번호,제품코드,문헌제목,저널이름,저자,출판일자,권/호수,페이지번호,기타정보1,기타정보2,기타정보3,사용여부,최초생성일,최초생성자,최종수정일,최종수정자,문서파일"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="ATRAIL_SDB_AM_ETC_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_ETC_INFO"/>
+	            <entry key="TABLE_PK" value="ETC_INFO_NO"/>
+	            <entry key="COLUMN_NM" value="PRDUCT_CODE,SOURC,ETC_INFO_ONE,ETC_INFO_TWO,ETC_INFO_THREE,USE_AT"/>
+	            <entry key="LABEL_NM" value="제품코드,소스,기타정보1,기타정보2,기타정보3,사용여부"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map> 
+		</property>
+	</bean>
+	
+	<bean name="ATRAIL_SDB_AM_CHANGE_RESN" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_CHANGE_RESN"/>
+	            <entry key="TABLE_PK" value="SN"/>
+	            <entry key="COLUMN_NM" value="TRGET_MODE"/>
+	            <entry key="LABEL_NM" value="수정삭제구분"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="ATRAIL_SDB_SM_LTRTRE_SEARCH_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_SM_LTRTRE_SEARCH_INFO"/>
+	            <entry key="TABLE_PK" value="LTRTRE_SEARCH_SN"/>
+	            <entry key="COLUMN_NM" value="CMPNY_NM,PRDUCT_NM,KWRD,SEARCH_SITE,SEARCH_OPERTNDE_ONE,SEARCH_OPERTNDE_TWO,EXMNT_THESIS_CO_ONE,EXMNT_THESIS_CO_TWO,REPORT_THESIS_CO_ONE,REPORT_THESIS_CO_TWO,REPORT_NUM_ONE,REPORT_NUM_TWO,THESISURL,USE_AT"/>
+	            <entry key="LABEL_NM" value="회사명,제품명,키워드,검색사이트,검색시행일1,검색시험일2,검토논문개수1,검토논문개수2,보고논문개수1,보고논문개수2,보고건수1,보고건수2,논문URL,사용유무"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="ATRAIL_SDB_IM_PRDUCT_INFO_MANAGE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_IM_PRDUCT_INFO_MANAGE"/>
+	            <entry key="TABLE_PK" value="PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="CONFM_BFE_IP_NM_MULLANG_CODE1,CONFM_BFE_IP_NM_MULLANG_CODE2,CONFM_BFE_IP_NM_MULLANG_CODE3,CONFM_DTE,PRDUCTNM_CODE,PRDUCTNM,GNRL_NM_CODE1,GNRL_NM_CODE2,GNRL_NM_CODE3,FRST_MFBIZ_CODE,COMAVA_AT,NCLINC_FILECODE,USE_AT"/>
+	            <entry key="LABEL_NM" value="승인전아이피명다국어코드1,승인전아이피명다국어코드2,승인전아이피명다국어코드3,승인일자,제품명코드,제품명,일반이름코드1,일반이름코드2,일반이름코드3,최초제조업체코드,시판여부,비임상파일코드,사용여부"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean name="ATRAIL_SDB_IM_DELNGLN_CHARGER_MANAGE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_IM_DELNGLN_CHARGER_MANAGE"/>
+	            <entry key="TABLE_PK" value="CHARGER_SN"/>
+	            <entry key="COLUMN_NM" value="DELNGLN_CODE,CHARGER_NM,CLSF,CTTPC,EMAIL,FAX,USE_AT"/>
+	            <entry key="LABEL_NM" value="거래선코드,담당자명,직급,연락처,이메일,팩스,사용여부"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_HRMFLNS_CASE_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_HRMFLNS_CASE_INFO"/>
+	            <entry key="TABLE_PK" value="HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="PRTCL_NO,SAFE_REPRT_NO,LTRTRE_NO,ETC_INFO_NO,SOURC_NO,INSTT_NO,TESTEE_NO,CLIENT_MANAGE_NO,ETC_MANAGE_NO,INITIAL_FLAG,SEXDSTN,PREGNAN_AT,PREGNAN_PD_SE,PREGNAN_PD,LAST_PYSICLG_DTE,HEIGHT,BDWGH,AGRE_DTE,REGIST_DTE,IN_OUT_SE,IN_OUT_ETC_MEMO,LIFYEAMD,AGE,AGE_GRUP,DIFR_AGE_INFO_CODE,DIFR_AGE_INFO,PREGNAN_WEEKCO,FILE_ID,MDLC_RCORD_CMMN_MEMO,TEST_RCORD_CMMN_MEMO,DEATH_AT,DEATH_DTE,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID,MAFU_NO,KIDS_NO,DMSTC_OUTNATN_SE,FRT_RCEPT_DTE,LAST_DTE,MFDS_REPORT_PD,MFDS_REPORT_DTE,KIDS_REPORT_PD,KIDS_REPORT_DTE,IRB_REPORT_PD,IRB_REPORT_DATE,DIFR_INSTT_REPORT_PD,DIFR_INSTT_REPORT_DATE,MANUFACTURER_AT,MANUFACTURER_REPORT_PD,MANUFACTURER_REPORT_PD_SE,MANUFACTURER_REPORT_DATE,LEGACY_HEALTH_ENNC,MFDS_REPORT_AT,KIDS_REPORT_AT,IRB_REPORT_AT,DIFR_INSTT_REPORT_AT,BEFORE_REPORT_MANAGENO_SJ,TRACEREPORT_RESN,TRACEREPORT_RESN_ETC_OPINION,REFERREPORT_MANAGENO_SJ,MDCNEPRFS_CNFIRMCASE_AT,REPORT_CANCL_AT,REPORT_CANCL_RESN,SAMENSSCASE_REPORT_INSTT,SAMENSSCASE_ETC_OPINION"/>
+	            <entry key="LABEL_NM" value="프로토콜번호,안전보고서번호,문헌번호,기타정보번호,소스번호,기관번호,피험자번호,의뢰자관리번호,기타관리번호,이니셜,성별,임신여부,임신기간구분,임신기간,마지막생리일자,키,몸무게,동의일자,등록일자,IN/OUT구분,IN/OUT기타메모,생년월일,연령,연령집단,다른나이정보코드,다른나이정보,임신주수,파일ID,의료기록공통메모,테스트기록공통메모,사망여부,사망일자,사용여부,최초생성일,최초생성자,최종수정일,최종수정자,MAFUNO,KIDSNO,국내/국외구분,첫번째접수일자,최종일자,MFDS보고기간,MFDS보고일자,KIDS보고기간,KIDS보고일자,IRB보고기간,IRB보고날짜,다른기관보고기간,다른기관보고날짜,Manufaturer여부,Menufaturer보고기간,Menufaturer보고기간구분,Menufaturer보고날짜,기존건강유무,MFDS보고여부,KIDS보고여부,IRB보고여부,다른기관보고여부,이전보고의관리번호/제목,추적보고사유,추적보고사유기타의견,참고보고관리번호/제목,의약전문인확인사례여부,보고취소여부,보고취소사유,동일사례보고기관,동일사례기타의견"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_AE_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_AE_INFO"/>
+	            <entry key="TABLE_PK" value="AE_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="AE_NO,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,ADVERSE_EVENT,BEGIN_DT,RESULT_KND,END_DT,ABOVE_RESPNS_PED,DOUBT_DRFSTF_MDCTN_INTRVL_DAIL,LAST_MDCTN_RESPNS_INTRVL_DAIL,SERIUSFMNM_AT,SERIUSFMNM_DETAIL_CN,SERIUSDO_SE,STEP_SE,DRFSTF_RESPNS_SE,EXPECT_POSBL_SE,WHOART_AT,WHOART_VER,WHOART_ARRN_CODE,MEDDRA_AT,MEDDRA_VER,MEDDRA_LTT_CODE,DIFR_INFO,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID,REPORTR_RELATION_ONE,REPORTR_RELATION_TWO,SPON_RELATION_ONE,SPON_RELATION_TWO,MAIN_AE_AT,HIGHLT_AT,DEATHDE,DEATH_KCD_VER,KCD_DEATH_CODE,MEMO,EMRPS_KCD_VER,KCD_EMRPS_CODE,EMRPS_RESN,ETC,EMRPS_AT,DOUBT_DRFSTF_MDCTN_INTRVL_TIME,DOUBT_DRFSTF_MDCTN_INTRVL_MNT,LAST_MDCTN_RESPNS_INTRVL_TIME,LAST_MDCTN_RESPNS_INTRVL_MNT,BEGIN_DT_TIME,END_DT_TIME,AE_DETAIL_CN"/>
+	            <entry key="LABEL_NM" value="AE번호,유해사례코드,제품코드,FOLLOW_NO,AdverseEvent,시작일시,결과종류,종료일시,이상반응기간,의심약물투여간격일일,마지막투여반응간격일일,심각성여부,심각성상세내용,심각도구분,단계구분,약물반응구분,예상가능구분,WHOART여부,WHOART버전,WHOARTARRN코드,MedDRA여부,MedDRA버전,MedDRALTT코드,다른정보,사용여부,최초생성일,최초생성자,최종수정일,최종수정자,보고자관련성1,보고자관련성2,스폰서관련성1,스폰서관련성2,주요AE여부,강조여부,사망일,사망KCD버전,KCD사망코드,메모,검시KCD버전,KCD검시코드,검시사유,기타,검시여부,의심약물투여간격시간,의심약물투여간격분,마지막투여반응간격시간,마지막투여반응간격분,시작일시시간,종료일시시간,AE상세내용"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_MEDCIN_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_MEDCIN_INFO"/>
+	            <entry key="TABLE_PK" value="MEDCIN_INFO_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="MEDCIN_INFO_NO,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,DRFSTFROLE_SE,MEDCIN_RECOED_NM,MEDCIN_NM,MFDS_BRAND_CODE,MFDS_GNRL_CODE,UNCONFM_MEDCINNM,BEGIN_DTE,CNTNC_AT,END_DTE,MDCTN_PD,RSTRCT_FORM,COURS,BATCH_LT_NO,FDQNT,UNIT,NCOUNT,INTRVL,INTRVL_UNIT,DIFR_USAGE_USER_INFO,SGN_MEMO,ABOVE_RESPNS_SE,DRFSTF_WTHDRAW___CPCTY_DCRS_SE,RECR_SE,DIFR_INFO,ATC_AT,ATC_VER,ATC_CODE,KCD_AT,KCD_VER,KCD_CODE,MEDDRA_AT,MEDDRA_VER,MEDDRA_LTT_CODE,REPORTR_DC_AT,REPORTR_DC_SE,SPON_DC_AT,SPON_DC_SE,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="약품정보번호,유해사례코드,제품코드,FOLLOW_NO,약물역할구분,약품기록된이름,약품이름,MFDS브랜드코드,MFDS일반코드,미승인약품명,시작일자,지속여부,종료일자,투여기간,제약양식,경로,배치/로트번호,정량,단위,횟수,간격,간격단위,다른용법/사용자정보,징후메모,이상반응구분,약물철회/용량감소구분,재발구분,다른정보,ATC여부,ATC버전,ATC코드,KCD여부,KCD버전,KCD코드,MedDRA여부,MedDRA버전,MedDRALTT코드,보고자설명여부,보고자설명구분,스폰서설명여부,스폰서설명구분,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_MEDCIN_RCORD_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_MEDCIN_RCORD_INFO"/>
+	            <entry key="TABLE_PK" value="MEDCIN_RCORD_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="MEDCIN_RCORD_NO,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,MEDCIN_RECOED_NM,MEDCIN_RCORD_NM,MFDS_BRAND_CODE,MFDS_GNRL_CODE,UNCONFM_MEDCINNM,BEGIN_DTE,END_DTE,SGN_MEMO,RESPNS_MEMO,ATC_AT,ATC_VER,ATC_CODE,MEDDRA_AT,MEDDRA_VER,MEDDRA_LTT_CODE,WHOART_AT,WHOART_VER,WHOART_ARRN_CODE,MEDDRAONE_AT,MEDDRAONE_VER,MEDDRAONE_LLT_CODE,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID,DETAIL_CN"/>
+	            <entry key="LABEL_NM" value="약품기록번호,유해사례코드,제품코드,FOLLOW_NO,약품기록된이름,약품기록이름,MFDS브랜드코드,MFDS일반코드,미승인약품명,시작일자,종료일자,징후메모,반응메모,ATC여부,ATC버전,ATC코드,MedDRA여부,MedDRA버전,MedDRALTT코드,WHOART여부,WHOART버전,WHOARTARRN코드,MedDRA1여부,MedDRA1버전,MedDRA1LLT코드,사용여부,최초생성일,최초생성자,최종수정일,최종수정자,상세내용"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>	
+	<bean name="ATRAIL_SDB_AM_MDLC_RCORD_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_MDLC_RCORD_INFO"/>
+	            <entry key="TABLE_PK" value="MDLC_RCORD_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="MDLC_RCORD_NO,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,MDLC_RCORD_NM,KCD_USE_AT,KCD_VER,KCD_CODE,MEDDRA_USE_AT,MEDDRA_VER,MEDDRA_LTT_CODE,BEGIN_DTE,CNTNC_AT,END_DTE,RCORD_MEMO,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="의료기록번호,유해사례코드,제품코드,FOLLOW_NO,의료기록이름,KCD사용여부,KCD버전,KCD코드,MedDRA사용여부,MedDRA버전,MedDRALTT코드,시작일자,지속여부,종료일자,기록메모,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_HRMFLNS_CASE_DC" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_HRMFLNS_CASE_DC"/>
+	            <entry key="TABLE_PK" value="CASE_DC_SN,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="CASE_DC_SN,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,HRMFLNS_CASE_DC,REPORTR_OPINION,APLCNT_OPINION,DIFR_INFO,APLCNT_SAFE_REPRT_IDNTFR,MAIN_NATION_IDNTFC,RESPNS_OCCRRNC_NATION_IDNTFC,REPRT_KND,ADIT_PAPERS_AT,APLCNT_HOLD_DOC_LIST,RPD_REPRT_AT,REGL_INSTT_REPRT_NO,ETC_REPRT_NO,REFER_LTRTRE,RSRCH_NM,SPON_RSRCH_NO,RESPNS_OBSERV_RSRCH_TY,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="사례설명순번,유해사례코드,제품코드,FOLLOW_NO,유해사례설명,보고자의견,신고자의견,다른정보,신고자안전보고서식별자,주요국가식별,반응발생국가식별,보고서종류,추가서류여부,신고자보유문서목록,신속보고서여부,규제기관보고서번호,기타보고서번호,참고문헌,연구이름,스폰서연구번호,반응관찰연구유형,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_TEST_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_TEST_INFO"/>
+	            <entry key="TABLE_PK" value="TEST_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="TEST_NO,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,TEST_DTE,TEST,UNIT,LOW_SCOPE,HIGH_SCOPE,RESULT,MEMO,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="테스트번호,유해사례코드,제품코드,FOLLOW_NO,테스트일자,테스트,단위,낮은범위,높은범위,결과,메모,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_DEATH_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_DEATH_INFO"/>
+	            <entry key="TABLE_PK" value="DEATH_CODE,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="DEATH_CODE,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,DEATHDE,KCD_VER,KCD_DEATH_CODE,MEDDRA_VER,MEDDRA_DEATH_CODE,MEMO,EMRPS_AT,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="사망코드,유해사례코드,제품코드,FOLLOW_NO,사망일,KCD버전,KCD사망코드,MedDRA버전,MedDRA사망코드,메모,검시여부,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_EMRPS_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_EMRPS_INFO"/>
+	            <entry key="TABLE_PK" value="EMRPSCODE,DEATH_CODE,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="EMRPSCODE,DEATH_CODE,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,EMRPSDE,KCD_VER,KCD_EMRPS_CODE,MEDDRA_VER,MEDDRA_EMRPS_CODE,EMRPS_RESN,ETC,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="검시코드,사망코드,유해사례코드,제품코드,FOLLOW_NO,검시일,KCD버전,KCD검시코드,MedDRA버전,MedDRA검시코드,검시사유,기타,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_PARNTS_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_PARNTS_INFO"/>
+	            <entry key="TABLE_PK" value="PARNTS_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="PARNTS_NM,PARNTS_AGRDE,PARNTS_BIRTHDE,PARNTS_AGE,PARNTS_LAST_PYSICLG_DTE,PARNTS_WEIGHT,PARNTS_HEIGHT,PARNTS_ETC,PARNTS_SEXDSTN,PREGNAN_WEEKCO,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="부모이름,부모연령대,부모출생일,부모나이,부모최종생리일자,부모체중,부모신장,부모기타,부모성별,임신주수,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_PARNTS_MDLC_RCORD" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_PARNTS_MDLC_RCORD"/>
+	            <entry key="TABLE_PK" value="PARNTS_MDLC_RCORD_NO,PARNTS_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="PARNTS_MDLC_RCORD_NO,PARNTS_NO,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,MEDDRA_VER,MEDDRA_CODE,BEGIN_DTE,CNTNC_AT,END_DTE,MEMO,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="부모의료기록번호,부모번호,유해사례코드,제품코드,FOLLOW_NO,MedDRA버전,MedDRA코드,시작일자,지속여부,종료일자,메모,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_PARNTS_PAST_DRFSTF" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_PARNTS_PAST_DRFSTF"/>
+	            <entry key="TABLE_PK" value="PARNTS_PAST_DRFSTF_NO,PARNTS_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="PARNTS_PAST_DRFSTF_NO,PARNTS_NO,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,DRFSTF_NM,BEGIN_DTE,END_DTE,SYMPTMS_MEDDRA_VER,SYMPTMS_MEDDRA_CODE,RESPNS_MEDDRA_VER,RESPNS_MEDDRA_CODE,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="부모과거약물번호,부모번호,유해사례코드,제품코드,FOLLOW_NO,약물이름,시작일자,종료일자,증상MedDRA버전,증상MedDRA코드,반응MedDRA버전,반응MedDRA코드,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_REPORTER_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_REPORTER_INFO"/>
+	            <entry key="TABLE_PK" value="REPORTER_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="INSTT_NM,INSTT_CODE,NATION_CODE,ADRES,ADRES_DSTNC,ADRES_CTY,ADRES_LCLTY,ADRES_ZIP,REPORTR,REPORTR_APPN_NM,REPORTR_MIDDLE_NM,REPORTR_FAMILY_NM,REPORTR_DEPT,QUALF,REPRT_TY,REPRT_TY_DETAIL,CLASS,MAJOR,REPRT_SJ,SPCLTYREALM,EMAIL,TELNO,FAX,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID,ENG_ADRES,REPRT_TY_ETC_OPINION,QUALF_ETC_OPINION"/>
+	            <entry key="LABEL_NM" value="기관명,기관코드,국가코드,주소,주소거리,주소도시,주소지방,주소우편번호,보고자,보고자지정이름,보고자중간이름,보고자가족이름,보고자부서,자격,보고서유형,보고서유형상세,직함,전공,보고서제목,전문분야,이메일,전화번호,팩스,사용여부,최초생성일,최초생성자,최종수정일,최종수정자,영문주소,보고서유형기타의견,자격기타의견"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_RELATE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_RELATE"/>
+	            <entry key="TABLE_PK" value="AE_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE,MEDCIN_INFO_NO"/>
+	            <entry key="COLUMN_NM" value="AE_NO,HRMFLNS_CASE_CODE,PRDUCT_CODE,FOLLOW_NO,MEDCIN_INFO_NO,DRFSTFROLE_SE,MEDCIN_RECOED_NM,REPORTR_RELATION_ONE,REPORTR_RELATION_TWO,SPON_RELATION_ONE,SPON_RELATION_TWO,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="AE번호,유해사례코드,제품코드,FOLLOW_NO,약품정보번호,약물역할구분,약품기록된이름,보고자관련성1,보고자관련성2,스폰서관련성1,스폰서관련성2,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_DMSTC_RPT_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_DMSTC_RPT_INFO"/>
+	            <entry key="TABLE_PK" value="RPT_NO,HRMFLNS_CASE_CODE,FOLLOW_NO,PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="IDNTFC_NATION_CODE,OCCRRNC_NATION_CODE,REPRT_TY,ADI_DOC_AT,DOC_LIST,RPD_STDR_SUFFCN_AT,REGL_NATION_CASE_REPRT_NO,DIFR_TRNSMISMAN_REPRT_NO,BEFORE_REPORT_MANAGENO_SJ,TRACEREPORT_RESN,TRACEREPORT_RESN_ETC_OPINION,REFERREPORT_MANAGENO_SJ,MDCNEPRFS_CNFIRMCASE_AT,REPORT_CANCL_AT,REPORT_CANCL_RESN,SAMENSSCASE_REPORT_INSTT,SAMENSSCASE_ETC_OPINION,USE_AT,FRST_CREDE,REGIST_ID,LAST_UPDDE,UPDATE_ID"/>
+	            <entry key="LABEL_NM" value="식별국가코드,발생국가코드,보고서유형,부가문서여부,문서LIST,신속기준충족여부,규제국가사례보고서번호,다른전송자보고서번호,이전보고의관리번호/제목,추적보고사유,추적보고사유기타의견,참고보고관리번호/제목,의약전문인확인사례여부,보고취소여부,보고취소사유,동일사례보고기관,동일사례기타의견,사용여부,최초생성일,최초생성자,최종수정일,최종수정자"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+</beans>	

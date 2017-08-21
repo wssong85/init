@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCG01DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="linkedHashMap" type="java.util.LinkedHashMap"/>
+   	
+   	<select id="selectEdcVer" parameterClass="hashMap" resultClass="String">
+   		SELECT    MAX(EDC_VER) EDC_VER
+		  FROM    EDC_CR_FORM
+		 WHERE    TASK_SN = #TASK_SN#  
+		   AND    USE_AT = 'Y'
+   	</select>
+   	
+	<select id="selectCsList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT		A.INSTT_FORM_SN
+				,	A.INSTT_NM
+				,	A.SUBJECT_NO
+		        , 	A.VISIT_SN
+		        , 	A.SN
+		        , 	A.VISIT_GROUP_SN
+		        , 	A.SET_ROW_SN
+		        , 	A.VRIABL_ROW_SN
+		        , 	A.SET_VRIABL_SN
+		        ,   A.STRE_VALUE
+		        , 	A.INNER_VALUE
+		        , 	A.VRIABL_SN
+		        , 	A.CODING_SN
+		        ,	A.VISIT_LBL
+		        ,   A.DICARY_SE_CODE
+		        ,	A.DICARY_SE_NM
+		        ,	A.DICARY_VER
+		        ,	A.GROUP_LBL
+		        ,	A.ABN_RCT
+		        ,	A.RUSR_CODING
+		        ,	A.INNER_CODING
+		        ,   A.PV_CNFIRM_CODE
+		        , 	A.PV_CNFIRM_NM
+		        ,   A.CRA_CNFIRM_CODE
+		        , 	A.CRA_CNFIRM_NM
+		  FROM		(
+						SELECT    CFV.INSTT_FORM_SN
+						        , (
+						              SELECT    NAME1
+						                FROM    SAP_BCNC_INFO SBI
+						                      , CM_INSTT CI
+						                      , EDC_CR_INSTT_FORM ECII
+						               WHERE    SBI.KUNNR = CI.KUNNR
+						                 AND    CI.INSTT_CODE = ECII.INSTT_CODE
+						                 AND    ECII.INSTT_FORM_SN = CFV.INSTT_FORM_SN
+						                 AND	SBI.USE_YN = 'Y'
+						                 AND	CI.USE_YN = 'Y'
+						                 AND	ECII.USE_AT = 'Y'
+						          ) INSTT_NM
+						        , CFV.SUBJECT_NO
+						        , CFV.VISIT_SN
+						        , CFV.SN
+						        , CFV.VISIT_GROUP_SN
+						        , CFV.SET_ROW_SN
+						        , CFV.VRIABL_ROW_SN
+						        , CFV.SET_VRIABL_SN
+						        , CFV.STRE_VALUE
+						        , CFV.INNER_VALUE
+						        , CRV.VRIABL_SN
+						        , CRC.CODING_SN
+						        , (
+						                SELECT    VISIT_LBL
+						                  FROM    EDC_CR_VISIT_SCHDUL ECVS
+						                 WHERE    ECVS.VISIT_SN = CFV.VISIT_SN
+						                   AND	  ECVS.USE_AT = 'Y'
+						                   AND    ECVS.TASK_SN = #TASK_SN#
+						                   AND    ECVS.EDC_VER = #EDC_VER#
+						          ) VISIT_LBL
+						        , CRC.DICARY_SE_CODE
+						        , FN_GET_COMMONCODE('EDC006', CRC.DICARY_SE_CODE, #LOCALE#) DICARY_SE_NM
+						        , CRC.DICARY_VER
+						        , (
+						              SELECT    GROUP_LBL
+						                FROM    EDC_CR_VISIT_GROUP ECVG
+						                      , EDC_CR_GROUP ECG
+						               WHERE    ECVG.GROUP_SN = ECG.GROUP_SN
+						                 AND    ECVG.TASK_SN = ECG.TASK_SN
+						                 AND    ECVG.EDC_VER = ECG.EDC_VER
+						                 AND	ECVG.USE_AT = 'Y'
+						                 AND	ECG.USE_AT = 'Y'
+						                 AND    ECG.TASK_SN = #TASK_SN#
+						                 AND    ECG.EDC_VER = #EDC_VER#
+						                 AND    ECVG.VISIT_GROUP_SN = CFV.VISIT_GROUP_SN
+						          ) GROUP_LBL
+						        , DECODE( CRC.CODING_AT, 'N', CFV.STRE_VALUE,
+						                                 'Y', (
+						                                        SELECT    X.DIC_DTA
+						                                          FROM    (
+						                                                      SELECT    '01' GBN
+						                                                              , MEDDRA_SN SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , LLT AS DIC_DTA
+						                                                        FROM    EDC_CR_MEDDRA
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '02' GBN
+						                                                              , ATC_SN  SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , EDC_CR_ATC.FIVE_T_LVL AS DIC_DTA
+						                                                        FROM    EDC_CR_ATC
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '03' GBN
+						                                                              , WHOART_SN SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , KOREAN_NM AS DIC_DTA
+						                                                        FROM    EDC_CR_WHOART
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '04' GBN
+						                                                              , KIMS_SN SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , GOODS_NM AS DIC_DTA
+						                                                        FROM    EDC_CR_KIMS
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '05' GBN
+						                                                              , KCD_SN  SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , KOREAN_NM AS DIC_DTA
+						                                                        FROM    EDC_CR_KCD
+						                                                       WHERE	USE_AT = 'Y'
+						                                                  ) X
+						                                         WHERE    X.GBN = CRC.DICARY_SE_CODE
+						                                           AND    X.SN = CFV.STRE_VALUE
+						                                           AND    X.DICARY_VER = CRC.DICARY_VER
+						                                    )
+						          )ABN_RCT
+						        , DECODE( CRC.CODING_AT, 'N', NULL,
+						                                 'Y', (
+						                                        SELECT    X.DIC_DTA
+						                                          FROM    (
+						                                                      SELECT    '01' GBN
+						                                                              , MEDDRA_SN SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , LLT AS DIC_DTA
+						                                                        FROM    EDC_CR_MEDDRA
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '02' GBN
+						                                                              , ATC_SN  SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , EDC_CR_ATC.FIVE_T_LVL AS DIC_DTA
+						                                                        FROM    EDC_CR_ATC
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '03' GBN
+						                                                              , WHOART_SN SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , KOREAN_NM AS DIC_DTA
+						                                                        FROM    EDC_CR_WHOART
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '04' GBN
+						                                                              , KIMS_SN SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , GOODS_NM AS DIC_DTA
+						                                                        FROM    EDC_CR_KIMS
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '05' GBN
+						                                                              , KCD_SN  SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , KOREAN_NM AS DIC_DTA
+						                                                        FROM    EDC_CR_KCD
+						                                                       WHERE	USE_AT = 'Y'
+						                                                  ) X
+						                                         WHERE    X.GBN = CRC.DICARY_SE_CODE
+						                                           AND    X.SN = CFV.STRE_VALUE
+						                                           AND    X.DICARY_VER = CRC.DICARY_VER
+						                                    )
+						          )RUSR_CODING
+						        , (
+						              SELECT    X.DIC_DTA
+						                FROM    (
+						                            SELECT    '01' GBN
+						                                    , MEDDRA_SN SN
+						                                    , DICARY_VER
+						                                    , DICARY_SE_CODE
+						                                    , LLT AS DIC_DTA
+						                              FROM    EDC_CR_MEDDRA
+                                                     WHERE	  USE_AT = 'Y'
+						                            UNION ALL
+						                            SELECT    '02' GBN
+						                                    , ATC_SN  SN
+						                                    , DICARY_VER
+						                                    , DICARY_SE_CODE
+						                                    , EDC_CR_ATC.FIVE_T_LVL AS DIC_DTA
+						                              FROM    EDC_CR_ATC
+                                                     WHERE	  USE_AT = 'Y'
+						                            UNION ALL
+						                            SELECT    '03' GBN
+						                                    , WHOART_SN SN
+						                                    , DICARY_VER
+						                                    , DICARY_SE_CODE
+						                                    , KOREAN_NM AS DIC_DTA
+						                              FROM    EDC_CR_WHOART
+                                                     WHERE	  USE_AT = 'Y'
+						                            UNION ALL
+						                            SELECT    '04' GBN
+						                                    , KIMS_SN SN
+						                                    , DICARY_VER
+						                                    , DICARY_SE_CODE
+						                                    , GOODS_NM AS DIC_DTA
+						                              FROM    EDC_CR_KIMS
+                                                     WHERE	  USE_AT = 'Y'
+						                            UNION ALL
+						                            SELECT    '05' GBN
+						                                    , KCD_SN  SN
+						                                    , DICARY_VER
+						                                    , DICARY_SE_CODE
+						                                    , KOREAN_NM AS DIC_DTA
+						                              FROM    EDC_CR_KCD
+                                                     WHERE	  USE_AT = 'Y'
+						                        ) X
+						               WHERE    X.GBN = CRC.DICARY_SE_CODE
+						                 AND    X.SN = CFV.INNER_VALUE
+						                 AND    X.DICARY_VER = CRC.DICARY_VER
+						          )INNER_CODING
+						        , CFV.PV_CNFIRM_CODE
+						        , FN_GET_COMMONCODE('EDC058', CFV.PV_CNFIRM_CODE, #LOCALE#) PV_CNFIRM_NM
+						        , CFV.CRA_CNFIRM_CODE
+						        , FN_GET_COMMONCODE('EDC059', CFV.CRA_CNFIRM_CODE, #LOCALE#) CRA_CNFIRM_NM 
+						  FROM    EDC_CR_INSTT_FORM CIF
+						        , EDC_CF_VRIABL CFV
+						        , EDC_CR_SET_VRIABL CRSV
+						        , EDC_CR_VRIABL CRV
+						        , EDC_CR_CODING CRC
+						 WHERE    CIF.INSTT_FORM_SN = CFV.INSTT_FORM_SN
+						   AND    CFV.SET_VRIABL_SN = CRSV.SET_VRIABL_SN
+						   AND    CFV.VISIT_GROUP_SN = CRSV.VISIT_GROUP_SN
+						   AND    CRSV.GROUP_SN = CRV.GROUP_SN
+						   AND    CRSV.VRIABL_SN = CRV.VRIABL_SN
+						   AND    CRSV.TASK_SN = CRV.TASK_SN
+						   AND    CRSV.EDC_VER = CRV.EDC_VER
+						   AND    CRV.TASK_SN = CRC.TASK_SN
+						   AND    CRV.EDC_VER = CRC.EDC_VER
+						   AND    CRV.DOMN_VRIABL_SN = CRC.DOMN_VRIABL_SN
+						   AND	  CRC.DOMN_SE_CODE = #DOMN_SE_CODE#
+						   AND	  CIF.USE_AT = 'Y'
+						   AND	  CFV.USE_AT = 'Y'
+						   AND	  CRSV.USE_AT = 'Y'
+						   AND	  CRV.USE_AT = 'Y'
+						   AND	  CRC.USE_AT = 'Y'
+						   AND    CRSV.EDC_VER = #EDC_VER#
+						   AND    CIF.TASK_SN = #TASK_SN#
+				) A
+		 WHERE	1=1
+		<isNotEmpty property="INSTT_NM" prepend="AND">
+			A.INSTT_NM LIKE '%'||#INSTT_NM#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			A.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		</isNotEmpty>
+	</select>
+	
+	<update id="updateEdcCfVriablByPvCraCnfirmCode" parameterClass="hashMap">
+			UPDATE		EDC_CF_VRIABL
+			   SET		LAST_UPDDE	= SYSDATE
+			   		,	LAST_UPDUSR = #USER_ID#
+			<isNotEmpty property="PV_CNFIRM_CODE" prepend=",">
+			   PV_CNFIRM_CODE = #PV_CNFIRM_CODE#
+			</isNotEmpty>
+			<isNotEmpty property="CRA_CNFIRM_CODE" prepend=",">
+			   CRA_CNFIRM_CODE = #CRA_CNFIRM_CODE#
+			</isNotEmpty>
+			 WHERE		INSTT_FORM_SN = #INSTT_FORM_SN# 
+			   AND		SUBJECT_NO = #SUBJECT_NO#
+			   AND		VISIT_SN = #VISIT_SN#
+			   AND		SN = #SN#
+			   AND		VISIT_GROUP_SN = #VISIT_GROUP_SN#
+			   AND		SET_ROW_SN = #SET_ROW_SN#
+			   AND		VRIABL_ROW_SN = #VRIABL_ROW_SN#
+			   AND		SET_VRIABL_SN = #SET_VRIABL_SN#
+	</update>
+	
+	<select id="selectTableInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT		TABLE_NAME 
+				,	COLUMN_NAME
+		  FROM USER_TAB_COLUMNS
+		 WHERE TABLE_NAME = 'EDC_CR_'||(
+                                      SELECT CMMN_CODE_NM
+                                        FROM CM_CMMNCODE
+                                       WHERE CMMN_CLCODE = 'EDC006'
+                                         AND CMMN_CODE = #DICARY_SE_CODE#
+                                  )
+		   AND COLUMN_NAME IN ('LLT', 'PT','HLT', 'HLGT','SOC',	/*MEDDRA*/
+		                       'ATC_CODE', 'FIVE_T_LVL', 'FOUR_T_LVL', 'THREE_T_LVL', 'TWO_T_LVL', 'ONE_T_LVL', /*ATC*/
+		                       'KOREAN_NM', 'ENG_NM', 'ARRN_CODE',	/*WHOART*/
+		                       'GOODS_NM', 'GOODS_ENG', 'SLE_CMPNY', 'SLE_CMPNY_ENG', 'ATC_CODE', 'ATC_NM',	/*KIMS*/
+		                       'DISS_CODE', 'KOREAN_NM', 'ENG_NM'	/*KCD*/)		
+	</select>
+	
+	<select id="selectDicaryInfo" remapResults="true" parameterClass="hashMap" resultClass="linkedHashMap">
+		SELECT     'CODING' AS CODING
+				,  $COLUMN_NAME1$
+		  FROM     DUAL
+		UNION ALL
+		SELECT     '연구자' AS CODING
+				,  $COLUMN_NAME2$
+		  FROM     $TABLE_NAME$
+		 WHERE     $TABLE_PK$ = #STRE_VALUE#
+		   AND     DICARY_VER = #DICARY_VER#
+		   AND     DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND	   USE_AT = 'Y'
+	    UNION ALL
+	    SELECT     '내부' AS CODING
+				,  $COLUMN_NAME2$
+		  FROM     $TABLE_NAME$
+		 WHERE     $TABLE_PK$ = #INNER_VALUE#
+		   AND     DICARY_VER = #DICARY_VER#
+		   AND     DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND	   USE_AT = 'Y'
+	</select>
+	
+	<insert id="insertEdcCfQueryByCra" parameterClass="hashMap">
+		INSERT INTO EDC_CF_QUERY(    
+		    QUERY_SN
+		  , SUBJECT_NO
+		  , FRST_CREDE
+		  , FRST_CRTR
+		  , INSTT_FORM_SN
+		  , LAST_UPDDE
+		  , LAST_UPDUSR
+		  , SET_ROW_SN
+		  , SET_VRIABL_SN
+		  , SN
+		  , USE_AT
+		  , VISIT_GROUP_SN
+		  , VISIT_SN
+		  , VRIABL_ROW_SN
+		)VALUES(
+		    #QUERY_SN#
+		  , #SUBJECT_NO#
+		  , SYSDATE
+		  , #USER_ID#
+		  , #INSTT_FORM_SN#
+		  , SYSDATE
+		  , #UPDATE_ID#
+		  , #SET_ROW_SN#
+		  , #SET_VRIABL_SN#
+		  , #SN#
+		  , #USE_AT#
+		  , #VISIT_GROUP_SN#
+		  , #VISIT_SN#
+		  , #VRIABL_ROW_SN#
+		)
+	</insert>
+	
+	<insert id="insertCmQueryByCra" parameterClass="hashMap">
+		INSERT INTO CM_QUERY(
+		    END_AT
+		  , FRST_CREDE
+		  , FRST_CRTR
+		  , LAST_UPDDE
+		  , LAST_UPDUSR
+		  , MODULE_CODE
+		  , QUERY_CN
+		  , QUERY_GROUP
+		  , QUERY_SN
+		  , QUERY_STTUS_CODE
+		  , QUERY_TY_CODE
+		  , RESN
+		  , USE_AT
+		)VALUES(
+		    #END_AT#
+		  , SYSDATE
+		  , #USER_ID#
+		  , SYSDATE
+		  , #UPDATE_ID#
+		  , #MODULE_CODE#
+		  , #QUERY_CN#
+		  , #QUERY_SN#
+		  , #QUERY_SN#
+		  , #QUERY_STTUS_CODE#
+		  , #QUERY_TY_CODE#
+		  , NULL
+		  , #USE_AT#
+		)
+	</insert>
+	
+	<select id="selectDistinctAbnRctList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT		MEDDRA_SN
+				, 	DICARY_VER
+				,	DICARY_SE_CODE
+				,	LLT
+				,	PT
+				,	HLT
+				,	HLGT
+				,	SOC
+		  FROM	EDC_CR_MEDDRA
+		 WHERE	USE_AT = 'Y'
+		   AND	LLT LIKE 'Head%'
+	</select>
+	
+	<select id="selectDistinctDAbnRct" parameterClass="hashMap" resultClass="hashMap">
+		SELECT		DISTINCT 
+					A.STRE_VALUE
+		        , 	A.DICARY_SE_CODE
+		        ,	A.DICARY_SE_NM
+		        ,	A.DICARY_VER
+		        ,	A.ABN_RCT
+		  FROM		(
+						SELECT    CFV.STRE_VALUE
+						        , CRC.DICARY_SE_CODE
+						        , FN_GET_COMMONCODE('EDC006', CRC.DICARY_SE_CODE, #LOCALE#) DICARY_SE_NM
+						        , CRC.DICARY_VER
+						        , DECODE( CRC.CODING_AT, 'N', CFV.STRE_VALUE,
+						                                 'Y', (
+						                                        SELECT    X.DIC_DTA
+						                                          FROM    (
+						                                                      SELECT    '01' GBN
+						                                                              , MEDDRA_SN SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , LLT AS DIC_DTA
+						                                                        FROM    EDC_CR_MEDDRA
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '02' GBN
+						                                                              , ATC_SN  SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , EDC_CR_ATC.FIVE_T_LVL AS DIC_DTA
+						                                                        FROM    EDC_CR_ATC
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '03' GBN
+						                                                              , WHOART_SN SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , KOREAN_NM AS DIC_DTA
+						                                                        FROM    EDC_CR_WHOART
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '04' GBN
+						                                                              , KIMS_SN SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , GOODS_NM AS DIC_DTA
+						                                                        FROM    EDC_CR_KIMS
+						                                                       WHERE	USE_AT = 'Y'
+						                                                      UNION ALL
+						                                                      SELECT    '05' GBN
+						                                                              , KCD_SN  SN
+						                                                              , DICARY_VER
+						                                                              , DICARY_SE_CODE
+						                                                              , KOREAN_NM AS DIC_DTA
+						                                                        FROM    EDC_CR_KCD
+						                                                       WHERE	USE_AT = 'Y'
+						                                                  ) X
+						                                         WHERE    X.GBN = CRC.DICARY_SE_CODE
+						                                           AND    X.SN = CFV.STRE_VALUE
+						                                           AND    X.DICARY_VER = CRC.DICARY_VER
+						                                    )
+						          )ABN_RCT
+						  FROM    EDC_CR_INSTT_FORM CIF
+						        , EDC_CF_VRIABL CFV
+						        , EDC_CR_SET_VRIABL CRSV
+						        , EDC_CR_VRIABL CRV
+						        , EDC_CR_CODING CRC
+						 WHERE    CIF.INSTT_FORM_SN = CFV.INSTT_FORM_SN
+						   AND    CFV.SET_VRIABL_SN = CRSV.SET_VRIABL_SN
+						   AND    CFV.VISIT_GROUP_SN = CRSV.VISIT_GROUP_SN
+						   AND    CRSV.GROUP_SN = CRV.GROUP_SN
+						   AND    CRSV.VRIABL_SN = CRV.VRIABL_SN
+						   AND    CRSV.TASK_SN = CRV.TASK_SN
+						   AND    CRSV.EDC_VER = CRV.EDC_VER
+						   AND    CRV.TASK_SN = CRC.TASK_SN
+						   AND    CRV.EDC_VER = CRC.EDC_VER
+						   AND    CRV.DOMN_VRIABL_SN = CRC.DOMN_VRIABL_SN
+						   AND	  CRC.DOMN_SE_CODE = #DOMN_SE_CODE#
+						   AND	  CIF.USE_AT = 'Y'
+						   AND	  CFV.USE_AT = 'Y'
+						   AND	  CRSV.USE_AT = 'Y'
+						   AND	  CRV.USE_AT = 'Y'
+						   AND	  CRC.USE_AT = 'Y'
+						   AND    CRSV.EDC_VER = #EDC_VER#
+						   AND    CIF.TASK_SN = #TASK_SN#
+				) A
+		 WHERE	1=1
+		<isNotEmpty property="INSTT_NM" prepend="AND">
+			A.INSTT_NM LIKE '%'||#INSTT_NM#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			A.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		</isNotEmpty>
+	</select>
+	
+</sqlMap>

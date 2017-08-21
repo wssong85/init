@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMC02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<insert id="COMC02DAO.insertEdcCrMdicForExcelList" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO EDC_CR_MDIC
+		     ( DICARY_SE_CODE
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , DICARY_VER
+		     )
+		VALUES
+		     ( #DICARY_SE_CODE#
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+	         , #DICARY_VER#
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COMC02DAO.insertEdcCrAtcByExcelList" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO EDC_CR_ATC
+		     ( FIVE_T_LVL
+	         , ATC_SN
+	         , FOUR_T_LVL
+	         , DICARY_SE_CODE
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , ONE_T_LVL
+	         , DICARY_VER
+	         , THREE_T_LVL
+	         , TWO_T_LVL
+	         , ATC_CODE
+		     )
+		VALUES
+		     ( #FIVE_T_LVL#
+	         , #ATC_SN#
+	         , #FOUR_T_LVL#
+	         , '02'
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+	         , #ONE_T_LVL#
+	         , #DICARY_VER#
+	         , #THREE_T_LVL#
+	         , #TWO_T_LVL#
+	         , #ATC_CODE#
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMC02DAO.selectEdcCrAtcByDicaryVer" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT RN
+		     , FIVE_T_LVL
+	         , ATC_SN
+	         , FOUR_T_LVL
+	         , DICARY_SE_CODE
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , LAST_UPDUSR_NM 
+	         , ONE_T_LVL
+	         , DICARY_VER
+	         , THREE_T_LVL
+	         , TWO_T_LVL
+	         , ATC_CODE
+	      FROM
+	    (
+		SELECT ROWNUM RN
+		     , FIVE_T_LVL
+	         , ATC_SN
+	         , FOUR_T_LVL
+	         , DICARY_SE_CODE
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = LAST_UPDUSR) LAST_UPDUSR_NM 
+	         , ONE_T_LVL
+	         , DICARY_VER
+	         , THREE_T_LVL
+	         , TWO_T_LVL
+	         , ATC_CODE
+	      FROM EDC_CR_ATC
+		 WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND DICARY_VER = #DICARY_VER#
+		)
+		]]>
+		<isNotEmpty property="page">
+		<isNotEmpty property="count">
+		<![CDATA[
+		WHERE RN > ($page$ - 1) * $count$
+		  AND RN <= ($page$ * $count$)
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>
+	
+	<select id="COMC02DAO.selectEdcCrAtcCountByDicaryVer" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM EDC_CR_ATC
+	     WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND DICARY_VER = #DICARY_VER#
+		]]>
+	</select>
+		
+	<select id="COMC02DAO.selectEdcCrWhoartByDicaryVer" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT ROWNUM RN
+		     , WHOART_SN
+             , ARRN_CODE
+             , DICARY_SE_CODE
+             , USE_AT
+             , FRST_CREDE
+             , FRST_CRTR
+             , LAST_UPDDE
+             , LAST_UPDUSR
+             , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = LAST_UPDUSR) LAST_UPDUSR_NM
+             , DICARY_VER
+             , KOREAN_NM
+             , ENG_NM
+          FROM
+        ( 	
+		SELECT ROWNUM RN
+		     , WHOART_SN
+             , ARRN_CODE
+             , DICARY_SE_CODE
+             , USE_AT
+             , FRST_CREDE
+             , FRST_CRTR
+             , LAST_UPDDE
+             , LAST_UPDUSR
+             , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = LAST_UPDUSR) LAST_UPDUSR_NM
+             , DICARY_VER
+             , KOREAN_NM
+             , ENG_NM
+	      FROM EDC_CR_WHOART
+		 WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND DICARY_VER = #DICARY_VER#
+		)
+		]]>
+		<isNotEmpty property="page">
+		<isNotEmpty property="count">
+		<![CDATA[
+		WHERE RN > ($page$ - 1) * $count$
+		  AND RN <= ($page$ * $count$)
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>	
+	
+	<select id="COMC02DAO.selectEdcCrWhoartCountByDicaryVer" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM EDC_CR_WHOART
+		 WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND DICARY_VER = #DICARY_VER#
+		]]>
+	</select>
+	
+	<insert id="COMC02DAO.insertEdcCrWhoartByExcelList" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO EDC_CR_WHOART
+		     ( WHOART_SN
+	         , ARRN_CODE
+	         , DICARY_SE_CODE
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , DICARY_VER
+	         , KOREAN_NM
+	         , ENG_NM
+		     )
+		VALUES
+		     ( #WHOART_SN#
+	         , #ARRN_CODE#
+	         , '03'
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+	         , #DICARY_VER#
+	         , #KOREAN_NM#
+	         , #ENG_NM#
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COMC02DAO.insertEdcCrMeddraByExcellList" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO EDC_CR_MEDDRA
+		     ( LLT
+	         , MEDDRA_SN
+	         , PT
+	         , DICARY_SE_CODE
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , SOC
+	         , DICARY_VER
+	         , HLT
+	         , HLGT
+	         , LLT_CODE
+		     )
+		VALUES
+		     ( #LLT#
+	         , #MEDDRA_SN#
+	         , #PT#
+	         , '01'
+	         , 'Y'
+	         , SYSDATE
+	         , #USER_ID#
+	         , SYSDATE
+	         , #USER_ID#
+	         , #SOC#
+	         , #DICARY_VER#
+	         , #HLT#
+	         , #HLGT#
+	         , #LLT_CODE#
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMC02DAO.selectEdcCrMeddraByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT ROWNUM RN
+		     , LLT
+	         , MEDDRA_SN
+	         , PT
+	         , DICARY_SE_CODE
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = LAST_UPDUSR) LAST_UPDUSR_NM
+	         , SOC
+	         , DICARY_VER
+	         , HLT
+	         , HLGT
+	         , LLT_CODE
+	      FROM
+	    ( 
+		SELECT ROWNUM RN
+		     , LLT
+	         , MEDDRA_SN
+	         , PT
+	         , DICARY_SE_CODE
+	         , USE_AT
+	         , FRST_CREDE
+	         , FRST_CRTR
+	         , LAST_UPDDE
+	         , LAST_UPDUSR
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = LAST_UPDUSR) LAST_UPDUSR_NM
+	         , SOC
+	         , DICARY_VER
+	         , HLT
+	         , HLGT
+	         , LLT_CODE
+	      FROM EDC_CR_MEDDRA
+	     WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND DICARY_VER = #DICARY_VER#
+		)
+		]]>
+		<isNotEmpty property="page">
+		<isNotEmpty property="count">
+		<![CDATA[
+		WHERE RN > ($page$ - 1) * $count$
+		  AND RN <= ($page$ * $count$)
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>
+	
+	<select id="COMC02DAO.selectEdcCrMeddraCountByPk" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM EDC_CR_MEDDRA
+		 WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND DICARY_VER = #DICARY_VER#
+		]]>
+	</select>
+	
+	<insert id="COMC02DAO.insertEdcCrKimsByExcelList" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO EDC_CR_KIMS
+		     ( DICARY_VER
+             , KIMS_SN
+             , DICARY_SE_CODE
+             , GOODS_NM
+             , GOODS_ENG
+             , SLE_CMPNY
+             , SLE_CMPNY_ENG
+             , ATC_CODE
+             , ATC_NM
+             , USE_AT
+             , FRST_CREDE
+             , FRST_CRTR
+             , LAST_UPDDE
+             , LAST_UPDUSR
+		     )
+		VALUES
+		     ( #DICARY_VER#
+             , #KIMS_SN#
+             , '04'
+             , #GOODS_NM#
+             , #GOODS_ENG#
+             , #SLE_CMPNY#
+             , #SLE_CMPNY_ENG#
+             , #ATC_CODE#
+             , #ATC_NM#
+             , 'Y'
+             , SYSDATE
+             , #USER_ID#
+             , SYSDATE
+             , #USER_ID#
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMC02DAO.selectEdcCrKimsByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT RN
+		     , DICARY_VER
+             , KIMS_SN
+             , DICARY_SE_CODE
+             , GOODS_NM
+             , GOODS_ENG
+             , SLE_CMPNY
+             , SLE_CMPNY_ENG
+             , ATC_CODE
+             , ATC_NM
+             , USE_AT
+             , FRST_CREDE
+             , FRST_CRTR
+             , LAST_UPDDE
+             , LAST_UPDUSR
+             , LAST_UPDUSR_NM
+          FROM
+        ( 
+		SELECT ROWNUM RN
+		     , DICARY_VER
+             , KIMS_SN
+             , DICARY_SE_CODE
+             , GOODS_NM
+             , GOODS_ENG
+             , SLE_CMPNY
+             , SLE_CMPNY_ENG
+             , ATC_CODE
+             , ATC_NM
+             , USE_AT
+             , FRST_CREDE
+             , FRST_CRTR
+             , LAST_UPDDE
+             , LAST_UPDUSR
+             , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = LAST_UPDUSR) LAST_UPDUSR_NM
+		  FROM EDC_CR_KIMS
+		 WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND DICARY_VER = #DICARY_VER#
+		)
+		]]>
+		<isNotEmpty property="page">
+		<isNotEmpty property="count">
+		<![CDATA[
+		WHERE RN > ($page$ - 1) * $count$
+		  AND RN <= ($page$ * $count$)
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>
+	
+	<select id="COMC02DAO.selectEdcCrKimsCountByPk" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM EDC_CR_KIMS
+		 WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		   AND DICARY_VER = #DICARY_VER#
+		]]>
+	</select>
+</sqlMap>

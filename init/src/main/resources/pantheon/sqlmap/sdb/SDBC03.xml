@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="SDBC03">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+   	
+   	<select id="SDBC03DAO.selectUploadHistory" parameterClass="hashmap" resultClass="hashmap">
+    	SELECT B.PRDUCT_CODE
+	          ,FN_GET_PRDUCT_NAME(B.PRDUCT_CODE) PRDUCT_NM
+	          ,FN_GET_COMMONCODE('SDB038', CASE WHEN NVL(C.PRTCL_NO, ' ') = ' ' THEN '02'
+			                                    WHEN NVL(C.SAFE_REPRT_NO, ' ') = ' ' THEN '03'
+			                                    WHEN NVL(C.LTRTRE_NO, ' ') = ' ' THEN '04'
+			                                    WHEN NVL(C.ETC_INFO_NO, ' ') = ' ' THEN '05'
+			                                    WHEN NVL(C.SOURC_NO, ' ') = ' ' THEN '06'
+			                                    END, #LOCALE#) SOURCE_TYPE
+	          ,CASE WHEN NVL(C.PRTCL_NO, ' ') = ' ' THEN C.PRTCL_NO
+	                WHEN NVL(C.SAFE_REPRT_NO, ' ') = ' ' THEN C.SAFE_REPRT_NO
+	                WHEN NVL(C.LTRTRE_NO, ' ') = ' ' THEN C.LTRTRE_NO
+	                WHEN NVL(C.ETC_INFO_NO, ' ') = ' ' THEN C.ETC_INFO_NO
+	                WHEN NVL(C.SOURC_NO, ' ') = ' ' THEN C.SOURC_NO
+	                END SOURCE_NO
+	          ,D.ORGINL_FILE_NM
+	          ,TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	          ,A.MESSAGE
+	          ,FN_GET_USER_NAME(A.REGIST_ID) REGIST_ID
+	      FROM SDB_AM_LQTT_UPLOAD_INFO A
+	 LEFT JOIN SDB_AM_LQTT_UPLOAD_DETAIL B
+	        ON A.LQTT_UPLOAD_NO = B.LQTT_UPLOAD_NO
+	 LEFT JOIN SDB_AM_HRMFLNS_CASE_INFO C
+	        ON B.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+	       AND B.PRDUCT_CODE = C.PRDUCT_CODE
+	       AND B.FOLLOW_NO = C.FOLLOW_NO
+	 LEFT JOIN DM_FILE_DETAIL D
+	        ON A.DETAIL_SN = D.DETAIL_SN
+	       AND A.FILE_MASTR_SN = D.FILE_MASTR_SN
+	     WHERE B.PRDUCT_CODE = #PRDUCT_CODE#
+   	</select>
+</sqlMap>

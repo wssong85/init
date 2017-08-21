@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCA01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<select id="EDCA01DAO.selectTaskList" parameterClass="hashMap" resultClass="hashMap" >
+		<![CDATA[
+        SELECT A.TASK_SN
+             , A.TASK_NO
+             , A.TASK_NM
+             , A.TASK_DC
+             , A.TASK_TY_CODE
+             , FN_GET_COMMONCODE('EDC017', A.TASK_TY_CODE, #LOCALE#) AS TASK_TY_CODE_NM
+             , FN_GET_COMMONCODE('EDC035', A.PROGRS_CODE, #LOCALE#) AS PROGRS_CODE_NM
+             , B.ROLE_ID
+             , (SELECT X.ROLE_NM  FROM CM_ROLE X WHERE X.ROLE_ID = B.ROLE_ID) ROLE_NM
+             , CASE WHEN (SELECT COUNT(*) FROM CTMS_DMC_EDC_COMPL X WHERE X.ROLE_ID = B.ROLE_ID AND X.TASK_SN = B.TASK_SN AND X.USER_ID = #USER_ID#) > 0 THEN '이수'
+               ELSE '미이수' END AS EDU_TY
+             , CASE WHEN (SELECT COUNT(*) FROM CTMS_DMC_EDC_COMPL X WHERE X.ROLE_ID = B.ROLE_ID AND X.TASK_SN = B.TASK_SN AND X.USER_ID = #USER_ID#) > 0 THEN 'Y'
+               ELSE 'N' END AS EDU_YN
+          FROM EDC_CR_TASK A,    
+		       (SELECT CT.TASK_NO,
+		               CT.TASK_SN,
+                       TUR.ROLE_ID
+		          FROM EDC_CR_TASK CT,
+                       CM_TASK_USER_ROLE TUR,
+                       CTMS_DMC_TASK_ROLE DTR
+	             WHERE CT.TASK_SN = TUR.TASK_SN
+                   AND TUR.ROLE_ID = DTR.ROLE_ID
+                   AND TUR.TASK_SN = DTR.TASK_SN   
+	               AND TUR.USER_ID = #USER_ID#
+	               AND DTR.MODULE_CODE = #MODULE_CODE#
+	    ]]>
+	    <isNotEmpty property="TASK_NO">
+	    <![CDATA[
+	    	       AND CT.TASK_NO = #TASK_NO#
+		]]>
+	    </isNotEmpty>
+	    <![CDATA[
+               GROUP BY CT.TASK_NO, CT.TASK_SN, TUR.ROLE_ID) B
+         WHERE A.TASK_SN = B.TASK_SN
+		]]>
+	</select>
+	
+	<select id="EDCA01DAO.selectCmProgrmForHomeMenu" parameterClass="hashMap" resultClass="string">
+		<![CDATA[
+		SELECT A.PROGRM_URL
+	      FROM CM_PROGRM A, 
+	           CM_MENU B
+	     WHERE A.MENU_ID = B.MENU_ID
+	       AND A.ESSNTL_AT = 'Y'
+	       AND B.MODULE_CODE = #MODULE_CODE#
+	       AND ROWNUM = 1
+		]]>
+	</select>
+	
+	<select id="EDCA01DAO.selectCtmsDmcTaskRoleForDupCheck" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CTMS_DMC_TASK_ROLE 
+		 WHERE ROLE_ID = #ROLE_ID#
+		   AND TASK_SN = #TASK_SN#
+		   AND MODULE_CODE = #MODULE_CODE#
+		]]>
+	</select>
+</sqlMap>

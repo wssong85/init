@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBB01.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBB02.xml"/>	
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBB03.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBC01.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBC02.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBC03.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBD02.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBE03.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBF01.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBF02.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBF04.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBF05.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBF06.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBF07.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBF08.xml"/>
+	<sqlMap resource="pantheon/sqlmap/sdb/SDBF09.xml"/>
+</sqlMapConfig>

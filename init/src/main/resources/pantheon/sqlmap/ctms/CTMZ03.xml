@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMZ03">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+
+<!-- 방문 몽록 조회 -->
+<select id="CTMZ03DAO.selectSiteVisitList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 RE.REPORT_SN
+		,RE.MILESTONE_SN
+		,RE.REPORT_SE
+		,RE.TASK_SN
+		,TA.TASK_NO
+		,RE.INSTT_CODE
+		,IO.NAME1
+		,TO_CHAR(RE.OPRTN_DE,'YYYYMMDDHH24MISS') AS OPRTN_DE
+		,RE.CHARGER_ID
+		,US.USER_NM
+		,TO_CHAR(RE.FRST_CREAT_DE,'YYYYMMDDHH24MISS') AS FRST_CREAT_DE
+FROM	 CTMS_ST_REPORT_MAIN RE
+		,EDC_CR_TASK TA
+		,CM_INSTT IT
+		,SAP_BCNC_INFO IO
+		,CM_USER US
+WHERE	 RE.TASK_SN = TA.TASK_SN(+)
+  AND 	 RE.INSTT_CODE = IT.INSTT_CODE(+)
+  AND 	 IT.KUNNR = IO.KUNNR
+  AND 	 RE.CHARGER_ID = US.USER_ID(+)
+  AND    RE.TASK_SN = #TASK_SN#
+]]>
+<isEqual prepend="AND" property="REPORT_SE" compareValue="Z03">
+<![CDATA[
+    RE.REPORT_SE IN ('C01','C02')
+]]>
+</isEqual>
+<isEqual prepend="AND" property="REPORT_SE" compareValue="Z05">
+<![CDATA[
+    RE.REPORT_SE = 'E00'
+]]>
+</isEqual>
+<isEqual prepend="AND" property="REPORT_SE" compareValue="Z09">
+<![CDATA[
+    RE.REPORT_SE IN ('G01','G02')
+]]>
+</isEqual>
+<isEqual prepend="AND" property="REPORT_SE" compareValue="Z12">
+<![CDATA[
+    RE.REPORT_SE = 'J00'
+]]>
+</isEqual>
+<isEqual prepend="AND" property="REPORT_SE" compareValue="Z14">
+<![CDATA[
+    RE.REPORT_SE = 'K00'
+]]>
+</isEqual>
+</select>
+
+<select id="CTMZ03DAO.selectReportCrudInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT MAX(CRUD)      AS CRUD
+         , MAX(REPORT_SN) AS REPORT_SN
+      FROM (
+            SELECT 'MAIN' AS M
+                 , DECODE(COUNT(REPORT_SN), 0, 'C', 'U') AS CRUD
+                 , '' AS REPORT_SN
+              FROM CTMS_ST_REPORT_MAIN
+             WHERE MILESTONE_SN = #MILESTONE_SN#
+               AND TASK_SN      = #TASK_SN#
+               AND REPORT_TYPE  = #REPORT_TYPE#
+               AND REPORT_SE    = #REPORT_SE#
+        UNION ALL
+            SELECT 'MAIN' AS M
+                 , ''     AS CRUD
+                 , TO_CHAR(REPORT_SN) AS REPORT_SN
+              FROM CTMS_ST_REPORT_MAIN
+             WHERE MILESTONE_SN = #MILESTONE_SN#
+               AND TASK_SN      = #TASK_SN#
+               AND REPORT_TYPE  = #REPORT_TYPE#
+               AND REPORT_SE    = #REPORT_SE#
+           )
+     GROUP BY M
+]]>
+</select>
+
+<select id="CTMZ03DAO.selectReportTitleInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT RM.RSPOFC
+         , RM.RSRCHMAN_ID
+         , CU.USER_NM    AS RSRCHMAN_NM
+         , BI.NAME1      AS INSTT_NAME
+         , RM.CHARGER_ID AS VISITOR_ID
+         , CU.USER_NM    AS VISITOR_NM
+         , CT.TASK_NM
+         , RM.OPRTN_DE
+         , TO_CHAR(RM.OPRTN_DE, 'YYYY-MM-DD') AS OPRTN_DATE
+      FROM CTMS_ST_REPORT_MAIN RM
+         , CM_INSTT            CI
+         , SAP_BCNC_INFO       BI
+         , CM_USER             CU
+         , CM_USER             CU2
+         , EDC_CR_TASK         CT
+     WHERE RM.INSTT_CODE   = CI.INSTT_CODE
+       AND CI.KUNNR        = BI.KUNNR
+       AND RM.CHARGER_ID   = CU.USER_ID
+       AND RM.RSRCHMAN_ID  = CU2.USER_ID
+       AND RM.TASK_SN      = CT.TASK_SN
+       AND RM.MILESTONE_SN = #MILESTONE_SN#
+       AND RM.TASK_SN      = #TASK_SN#
+       AND RM.REPORT_TYPE  = #REPORT_TYPE#
+       AND RM.REPORT_SE    = #REPORT_SE#
+]]>
+</select>
+
+<select id="CTMZ03DAO.selectReportMainInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           RM.REPORT_SN
+         , RM.MILESTONE_SN
+         , RM.TASK_SN
+         , RM.REPORT_TYPE
+         , RM.REPORT_SE
+         , RM.JOB_SE
+         , RM.RSRCHMAN_ID
+         , CU.USER_NM AS RSRCHMAN_NM
+         , RM.INSTT_CODE
+         , BI.NAME1 AS INSTT_NAME
+         , RM.OPRTN_DE
+         , RM.EXPECT_DE
+         , TO_CHAR(RM.OPRTN_DE , 'YYYYMMDDHH24MISS') AS OPRTN_DATE
+         , TO_CHAR(RM.EXPECT_DE, 'YYYYMMDDHH24MISS') AS EXPECT_DATE
+         , RM.PLACE
+         , RM.RSPOFC
+         , RM.CHARGER_ID
+         , MU.USER_NM AS VISITOR_NM
+         , RM.COL_A
+         , RM.COL_B
+         , RM.COL_C
+         , RM.COL_D
+         , RM.COL_E
+         , RM.COL_F
+         , RM.COL_H
+         , RM.PURPS
+         , RM.VISIT_ODR
+         , RM.ITEM_A
+         , RM.ITEM_B
+         , RM.ITEM_C
+         , RM.ITEM_D
+         , RM.ITEM_E
+         , RM.ITEM_F
+         , RM.ITEM_G
+         , RM.ITEM_H
+         , RM.ITEM_I
+         , RM.ITEM_J
+         , RM.ITEM_K
+         , RM.SETLE_NO
+         , RM.SETLE_YN
+         , RM.REMARK_A
+         , RM.REMARK_B
+         , CT.TASK_NM
+         , CT.TASK_NO
+         , CASE WHEN RM.REPORT_SE = 'G02' THEN RM.COL_B
+                ELSE RM.COL_B
+            END COL_B_DE
+         , CASE WHEN RM.REPORT_SE = 'G02' THEN RM.COL_C
+                ELSE RM.COL_C
+            END COL_C_DE
+      FROM CTMS_ST_REPORT_MAIN RM
+         , EDC_CR_TASK         CT
+         , CM_USER             CU
+         , CM_INSTT            CI
+         , SAP_BCNC_INFO       BI
+         , CM_USER             MU
+     WHERE RM.REPORT_SN   = #REPORT_SN#
+       AND RM.TASK_SN     = CT.TASK_SN
+       AND RM.RSRCHMAN_ID = CU.USER_ID
+       AND RM.INSTT_CODE  = CI.INSTT_CODE
+       AND CI.KUNNR       = BI.KUNNR
+       AND RM.CHARGER_ID  = MU.USER_ID
+]]>
+</select>
+
+<select id="CTMZ03DAO.selectReportItemList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT
+           REPORT_SN
+         , MILESTONE_SN
+         , TASK_SN
+         , REPORT_TYPE
+         , ITEM_SE
+         , ITEM_VALUE
+         , ITEM_VALUE_A
+         , CHARGER_ID
+         , RM
+         , SUBJECT_CO
+         , DTE
+         , TO_CHAR(DTE, 'YYYYMMDDHH24MISS') AS DTE_DATE
+      FROM CTMS_ST_REPORT_ITEM
+     WHERE REPORT_SN = #REPORT_SN#
+]]>
+</select>
+
+<select id="CTMZ03DAO.selectVisitInfoGrid" parameterClass="hashMap" resultClass="hashMap">
+    SELECT REPORT_SN
+         , MILESTONE_SN
+         , TASK_SN
+         , VISIT_SN
+         , NM
+         , ROLE_NM
+         , PSITN
+         , ITEM_SE
+         , REPORT_TYPE
+      FROM CTMS_ST_REPORT_VISIT
+     WHERE MILESTONE_SN = #MILESTONE_SN#
+       AND TASK_SN      = #TASK_SN#
+       AND ITEM_SE      = #ITEM_SE#
+       AND REPORT_SN    = #REPORT_SN#
+       AND USE_AT       = 'Y'
+     ORDER BY FRST_CREAT_DE DESC, PSITN ASC
+</select>
+
+<insert id="CTMZ03DAO.insertReportMain" parameterClass="hashMap">
+    INSERT INTO CTMS_ST_REPORT_MAIN(
+           REPORT_SN
+         , MILESTONE_SN
+         , TASK_SN
+         , REPORT_TYPE
+        <isNotEmpty property="REPORT_SE">
+         , REPORT_SE
+        </isNotEmpty>
+        <isNotEmpty property="JOB_SE">
+         , JOB_SE
+        </isNotEmpty>
+        <isNotEmpty property="RSRCHMAN_ID">
+         , RSRCHMAN_ID
+        </isNotEmpty>
+        <isNotEmpty property="INSTT_CODE">
+         , INSTT_CODE
+        </isNotEmpty>
+        <isNotEmpty property="OPRTN_DE">
+         , OPRTN_DE
+        </isNotEmpty>
+        <isNotEmpty property="EXPECT_DE">
+         , EXPECT_DE
+        </isNotEmpty>
+        <isNotEmpty property="PLACE">
+         , PLACE
+        </isNotEmpty>
+        <isNotEmpty property="RSPOFC">
+         , RSPOFC
+        </isNotEmpty>
+        <isNotEmpty property="CHARGER_ID">
+         , CHARGER_ID
+        </isNotEmpty>
+        <isNotEmpty property="COL_A">
+         , COL_A
+        </isNotEmpty>
+        <isNotEmpty property="COL_B">
+         , COL_B
+        </isNotEmpty>
+        <isNotEmpty property="COL_C">
+         , COL_C
+        </isNotEmpty>
+        <isNotEmpty property="COL_D">
+         , COL_D
+        </isNotEmpty>
+        <isNotEmpty property="COL_E">
+         , COL_E
+        </isNotEmpty>
+        <isNotEmpty property="COL_F">
+         , COL_F
+        </isNotEmpty>
+        <isNotEmpty property="COL_H">
+         , COL_H
+        </isNotEmpty>
+        <isNotEmpty property="PURPS">
+         , PURPS
+        </isNotEmpty>
+        <isNotEmpty property="VISIT_ODR">
+         , VISIT_ODR
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_A">
+         , ITEM_A
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_B">
+         , ITEM_B
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_C">
+         , ITEM_C
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_D">
+         , ITEM_D
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_E">
+         , ITEM_E
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_F">
+         , ITEM_F
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_G">
+         , ITEM_G
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_H">
+         , ITEM_H
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_I">
+         , ITEM_I
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_J">
+         , ITEM_J
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_K">
+         , ITEM_K
+        </isNotEmpty>
+        <isNotEmpty property="SETLE_NO">
+         , SETLE_NO
+        </isNotEmpty>
+        <isNotEmpty property="REMARK_A">
+         , REMARK_A
+        </isNotEmpty>
+        <isNotEmpty property="REMARK_B">
+         , REMARK_B
+        </isNotEmpty>
+         , USE_AT
+         , FRST_CREAT_DE
+         , FRST_CRTR
+         , LAST_UPDT_DE
+         , LAST_UPDUSR
+    )
+    VALUES(
+           #REPORT_SN#
+         , #MILESTONE_SN#
+         , #TASK_SN#
+         , #REPORT_TYPE#
+        <isNotEmpty property="REPORT_SE">
+         , #REPORT_SE#
+        </isNotEmpty>
+        <isNotEmpty property="JOB_SE">
+         , #JOB_SE#
+        </isNotEmpty>
+        <isNotEmpty property="RSRCHMAN_ID">
+         , #RSRCHMAN_ID#
+        </isNotEmpty>
+        <isNotEmpty property="INSTT_CODE">
+         , #INSTT_CODE#
+        </isNotEmpty>
+        <isNotEmpty property="OPRTN_DE">
+         , TO_DATE(#OPRTN_DE#, 'YYYYMMDDHH24MISS')
+        </isNotEmpty>
+        <isNotEmpty property="EXPECT_DE">
+         , TO_DATE(#EXPECT_DE#, 'YYYYMMDDHH24MISS')
+        </isNotEmpty>
+        <isNotEmpty property="PLACE">
+         , #PLACE#
+        </isNotEmpty>
+        <isNotEmpty property="RSPOFC">
+         , #RSPOFC#
+        </isNotEmpty>
+        <isNotEmpty property="CHARGER_ID">
+         , #CHARGER_ID#
+        </isNotEmpty>
+        <isNotEmpty property="COL_A">
+         , #COL_A#
+        </isNotEmpty>
+        <isNotEmpty property="COL_B">
+         , #COL_B#
+        </isNotEmpty>
+        <isNotEmpty property="COL_C">
+         , #COL_C#
+        </isNotEmpty>
+        <isNotEmpty property="COL_D">
+         , #COL_D#
+        </isNotEmpty>
+        <isNotEmpty property="COL_E">
+         , #COL_E#
+        </isNotEmpty>
+        <isNotEmpty property="COL_F">
+         , #COL_F#
+        </isNotEmpty>
+        <isNotEmpty property="COL_H">
+         , #COL_H#
+        </isNotEmpty>
+        <isNotEmpty property="PURPS">
+         , #PURPS#
+        </isNotEmpty>
+        <isNotEmpty property="VISIT_ODR">
+         , #VISIT_ODR#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_A">
+         , #ITEM_A#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_B">
+         , #ITEM_B#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_C">
+         , #ITEM_C#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_D">
+         , #ITEM_D#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_E">
+         , #ITEM_E#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_F">
+         , #ITEM_F#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_G">
+         , #ITEM_G#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_H">
+         , #ITEM_H#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_I">
+         , #ITEM_I#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_J">
+         , #ITEM_J#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_K">
+         , #ITEM_K#
+        </isNotEmpty>
+        <isNotEmpty property="SETLE_NO">
+         , #SETLE_NO#
+        </isNotEmpty>
+        <isNotEmpty property="REMARK_A">
+         , #REMARK_A#
+        </isNotEmpty>
+        <isNotEmpty property="REMARK_B">
+         , #REMARK_B#
+        </isNotEmpty>
+         , 'Y'
+         , SYSDATE
+         , #UPDATE_ID#
+         , SYSDATE
+         , #UPDATE_ID#
+    )
+</insert>
+
+<update id="CTMZ03DAO.updateReportMain" parameterClass="hashMap">
+    UPDATE CTMS_ST_REPORT_MAIN SET
+           REPORT_SE     = #REPORT_SE#
+        <isNotEmpty property="JOB_SE">
+         , JOB_SE        = #JOB_SE#
+        </isNotEmpty>
+        <isNotEmpty property="RSRCHMAN_ID">
+         , RSRCHMAN_ID   = #RSRCHMAN_ID#
+        </isNotEmpty>
+        <isNotEmpty property="INSTT_CODE">
+         , INSTT_CODE    = #INSTT_CODE#
+        </isNotEmpty>
+        <isNotEmpty property="OPRTN_DE">
+         , OPRTN_DE      = TO_DATE(#OPRTN_DE#, 'YYYYMMDDHH24MISS')
+        </isNotEmpty>
+        <isNotEmpty property="EXPECT_DE">
+         , EXPECT_DE     = TO_DATE(#EXPECT_DE#, 'YYYYMMDDHH24MISS')
+        </isNotEmpty>
+        <isNotEmpty property="PLACE">
+         , PLACE         = #PLACE#
+        </isNotEmpty>
+        <isNotEmpty property="RSPOFC">
+         , RSPOFC        = #RSPOFC#
+        </isNotEmpty>
+        <isNotEmpty property="CHARGER_ID">
+         , CHARGER_ID    = #CHARGER_ID#
+        </isNotEmpty>
+        <isNotEmpty property="COL_A">
+         , COL_A         = #COL_A#
+        </isNotEmpty>
+        <isNotEmpty property="COL_B">
+         , COL_B         = #COL_B#
+        </isNotEmpty>
+        <isNotEmpty property="COL_C">
+         , COL_C         = #COL_C#
+        </isNotEmpty>
+        <isNotEmpty property="COL_D">
+         , COL_D         = #COL_D#
+        </isNotEmpty>
+        <isNotEmpty property="COL_E">
+         , COL_E         = #COL_E#
+        </isNotEmpty>
+        <isNotEmpty property="COL_F">
+         , COL_F         = #COL_F#
+        </isNotEmpty>
+        <isNotEmpty property="COL_H">
+         , COL_H         = #COL_H#
+        </isNotEmpty>
+        <isNotEmpty property="PURPS">
+         , PURPS         = #PURPS#
+        </isNotEmpty>
+        <isNotEmpty property="VISIT_ODR">
+         , VISIT_ODR     = #VISIT_ODR#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_A">
+         , ITEM_A        = #ITEM_A#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_B">
+         , ITEM_B        = #ITEM_B#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_C">
+         , ITEM_C        = #ITEM_C#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_D">
+         , ITEM_D        = #ITEM_D#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_E">
+         , ITEM_E        = #ITEM_E#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_F">
+         , ITEM_F        = #ITEM_F#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_G">
+         , ITEM_G        = #ITEM_G#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_H">
+         , ITEM_H        = #ITEM_H#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_I">
+         , ITEM_I        = #ITEM_I#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_J">
+         , ITEM_J        = #ITEM_J#
+        </isNotEmpty>
+        <isNotEmpty property="ITEM_K">
+         , ITEM_K        = #ITEM_K#
+        </isNotEmpty>
+        <isNotEmpty property="SETLE_NO">
+         , SETLE_NO      = #SETLE_NO#
+        </isNotEmpty>
+        <isNotEmpty property="REMARK_A">
+         , REMARK_A      = #REMARK_A#
+        </isNotEmpty>
+        <isNotEmpty property="REMARK_B">
+         , REMARK_B      = #REMARK_B#
+        </isNotEmpty>
+         , LAST_UPDT_DE  = SYSDATE
+         , LAST_UPDUSR   = #UPDATE_ID#
+     WHERE REPORT_SN     = #REPORT_SN#
+       AND MILESTONE_SN  = #MILESTONE_SN#
+       AND TASK_SN       = #TASK_SN#
+       AND REPORT_TYPE   = #REPORT_TYPE#
+</update>
+
+<update id="CTMZ03DAO.updateReportApprovalSn" parameterClass="hashMap">
+    UPDATE CTMS_ST_REPORT_MAIN SET
+           SETLE_NO      = #SETLE_NO#
+		<isNotEmpty property="SETLE_YN">
+         , SETLE_YN      = #SETLE_YN#
+		</isNotEmpty>
+         , LAST_UPDT_DE  = SYSDATE
+         , LAST_UPDUSR   = #UPDATE_ID#
+     WHERE REPORT_SN     = #REPORT_SN#
+</update>
+
+<insert id="CTMZ03DAO.insertReportItem" parameterClass="hashMap">
+    INSERT INTO CTMS_ST_REPORT_ITEM (
+           REPORT_SN
+         , MILESTONE_SN
+         , TASK_SN
+         , REPORT_TYPE
+         , ITEM_SE
+         , ITEM_VALUE
+         , ITEM_VALUE_A
+         , CHARGER_ID
+         , RM
+         , SUBJECT_CO
+         , DTE
+         , USE_AT
+         , FRST_CREAT_DE
+         , FRST_CRTR
+         , LAST_UPDT_DE
+         , LAST_UPDUSR
+    )
+    VALUES(
+           #REPORT_SN#
+         , #MILESTONE_SN#
+         , #TASK_SN#
+         , #REPORT_TYPE#
+         , #ITEM_SE#
+         , #ITEM_VALUE#
+         , #ITEM_VALUE_A#
+         , #CHARGER_ID#
+         , #RM#
+         , #SUBJECT_CO#
+         , TO_DATE(#DTE#, 'YYYYMMDDHH24MISS')
+         , #USE_AT#
+         , SYSDATE
+         , #UPDATE_ID#
+         , SYSDATE
+         , #UPDATE_ID#
+    )
+</insert>
+
+<update id="CTMZ03DAO.updateReportItem" parameterClass="hashMap">
+	UPDATE CTMS_ST_REPORT_ITEM SET
+	       ITEM_VALUE    = #ITEM_VALUE#
+	     , ITEM_VALUE_A  = #ITEM_VALUE_A#
+	     , CHARGER_ID    = #CHARGER_ID#
+	     , RM            = #RM#
+	     , SUBJECT_CO    = #SUBJECT_CO#
+	     , DTE           = TO_DATE(#DTE#, 'YYYYMMDDHH24MISS')
+	     , USE_AT        = #USE_AT#
+	     , LAST_UPDT_DE  = SYSDATE
+	     , LAST_UPDUSR   = #UPDATE_ID#
+	 WHERE REPORT_SN     = #REPORT_SN#
+	   AND MILESTONE_SN  = #MILESTONE_SN#
+	   AND TASK_SN       = #TASK_SN#
+	   AND REPORT_TYPE   = #REPORT_TYPE#
+	   AND ITEM_SE       = #ITEM_SE#
+</update>
+
+<insert id="CTMZ03DAO.insertReportVisit" parameterClass="hashMap">
+    INSERT INTO CTMS_ST_REPORT_VISIT (
+           REPORT_SN
+         , MILESTONE_SN
+         , TASK_SN
+         , VISIT_SN
+    <isNotEmpty property="REPORT_TYPE">
+         , REPORT_TYPE
+    </isNotEmpty>
+    <isNotEmpty property="NM">
+         , NM
+    </isNotEmpty>
+    <isNotEmpty property="ROLE_NM">
+         , ROLE_NM
+    </isNotEmpty>
+    <isNotEmpty property="PSITN">
+         , PSITN
+    </isNotEmpty>
+    <isNotEmpty property="FROM_VISIT_DE">
+         , FROM_VISIT_DE
+    </isNotEmpty>
+    <isNotEmpty property="TO_VISIT_DE">
+         , TO_VISIT_DE
+    </isNotEmpty>
+    <isNotEmpty property="ITEM_SE">
+         , ITEM_SE
+    </isNotEmpty>
+         , USE_AT
+         , FRST_CREAT_DE
+         , FRST_CRTR
+         , LAST_UPDT_DE
+         , LAST_UPDUSR
+    )
+    VALUES (
+           #REPORT_SN#
+         , #MILESTONE_SN#
+         , #TASK_SN#
+         , #VISIT_SN#
+    <isNotEmpty property="REPORT_TYPE">
+         , #REPORT_TYPE#
+    </isNotEmpty>
+    <isNotEmpty property="NM">
+         , #NM#
+    </isNotEmpty>
+    <isNotEmpty property="ROLE_NM">
+         , #ROLE_NM#
+    </isNotEmpty>
+    <isNotEmpty property="PSITN">
+         , #PSITN#
+    </isNotEmpty>
+    <isNotEmpty property="FROM_VISIT_DE">
+         , TO_DATE(#FROM_VISIT_DE#, 'YYYYMMDDHH24MISS')
+    </isNotEmpty>
+    <isNotEmpty property="TO_VISIT_DE">
+         , TO_DATE(#TO_VISIT_DE#, 'YYYYMMDDHH24MISS')
+    </isNotEmpty>
+    <isNotEmpty property="ITEM_SE">
+         , #ITEM_SE#
+    </isNotEmpty>
+         , 'Y'
+         , SYSDATE
+         , #UPDATE_ID#
+         , SYSDATE
+         , #UPDATE_ID#
+    )
+</insert>
+
+<update id="CTMZ03DAO.updateReportVisit" parameterClass="hashMap">
+    UPDATE CTMS_ST_REPORT_VISIT SET
+           LAST_UPDT_DE  = SYSDATE
+         , LAST_UPDUSR   = #UPDATE_ID#
+    <isNotEmpty property="NM">
+         , NM            = #NM#
+    </isNotEmpty>
+    <isNotEmpty property="ROLE_NM">
+         , ROLE_NM       = #ROLE_NM#
+    </isNotEmpty>
+    <isNotEmpty property="PSITN">
+         , PSITN         = #PSITN#
+    </isNotEmpty>
+    <isNotEmpty property="FROM_VISIT_DE">
+         , FROM_VISIT_DE = TO_DATE(#FROM_VISIT_DE#, 'YYYYMMDDHH24MISS')
+    </isNotEmpty>
+    <isNotEmpty property="TO_VISIT_DE">
+         , TO_VISIT_DE   = TO_DATE(#TO_VISIT_DE#, 'YYYYMMDDHH24MISS')
+    </isNotEmpty>
+    <isNotEmpty property="ITEM_SE">
+         , ITEM_SE       = #ITEM_SE#
+    </isNotEmpty>
+     WHERE REPORT_SN     = #REPORT_SN#
+       AND MILESTONE_SN  = #MILESTONE_SN#
+       AND TASK_SN       = #TASK_SN#
+       AND VISIT_SN      = #VISIT_SN#
+       AND REPORT_TYPE   = #REPORT_TYPE#
+</update>
+
+<update id="CTMZ03DAO.deleteReportVisit" parameterClass="hashMap">
+    UPDATE CTMS_ST_REPORT_VISIT SET
+           USE_AT       = 'N'
+         , LAST_UPDT_DE = SYSDATE
+         , LAST_UPDUSR  = #UPDATE_ID#
+     WHERE REPORT_SN    = #REPORT_SN#
+       AND MILESTONE_SN = #MILESTONE_SN#
+       AND TASK_SN      = #TASK_SN#
+       AND VISIT_SN     = #VISIT_SN#
+       AND REPORT_TYPE  = #REPORT_TYPE#
+</update>
+
+
+</sqlMap>
+

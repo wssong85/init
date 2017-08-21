@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<sqlMap resource="pantheon/sqlmap/com/COMA01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMA02.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMB01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMB02.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMC01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMC02.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMC03.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMD01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COME01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMF04.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMF01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMF05.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMG01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMH01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMI01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMI02.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMJ01.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMZ02.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMZ03.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMZ06.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/COMZ09.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/pantheon_common.xml" />
+	<sqlMap resource="pantheon/sqlmap/com/sample_sqlmap.xml" />
+</sqlMapConfig>

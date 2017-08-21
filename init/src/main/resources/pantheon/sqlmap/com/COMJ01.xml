@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMJ01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<resultMap id="clobMap" class="java.util.HashMap">
+    	<result property="RN" column="RN"/>
+    	<result property="UPDT_DE" column="UPDT_DE"/>
+    	<result property="UPDTBFE_VALUE" column="UPDTBFE_VALUE" jdbcType="CLOB" javaType="java.lang.String"/>
+    	<result property="AFTUPD_VALUE" column="AFTUPD_VALUE" jdbcType="CLOB" javaType="java.lang.String"/>
+    	<result property="STRE_ETC_RESN" column="STRE_ETC_RESN"/>
+    	<result property="STRE_RESN_CODE_NM" column="STRE_RESN_CODE_NM"/>
+    	<result property="USER_ID" column="USER_ID"/>
+    	<result property="USER_NM" column="USER_NM"/>
+    	<result property="TABLE_NM" column="TABLE_NM"/>
+    	<result property="COLUMN_NM" column="COLUMN_NM"/>
+    	<result property="TABLE_PK" column="TABLE_PK"/>
+    	<result property="PK_NM" column="PK_NM"/>
+    	<result property="MODULE" column="MODULE"/>
+    	<result property="PROGRM_NM" column="PROGRM_NM"/>
+    	<result property="LABEL_NM" column="LABEL_NM"/>
+    	<result property="CONECT_IP" column="CONECT_IP"/>
+    	<result property="ATRAIL_SN" column="ATRAIL_SN"/>
+	</resultMap>
+	
+	<select id="COMJ01DAO.selectCmDtaAtrailListCountByPk" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_DTA_ATRAIL
+		 WHERE 1=1
+		]]>
+		
+		<isNotEmpty property="STRE_RESN_CODE" prepend="AND">
+		<![CDATA[
+		STRE_RESN_CODE = #STRE_RESN_CODE#
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="LABEL_NM" prepend="AND">
+		<![CDATA[
+		LABEL_NM LIKE #LABEL_NM# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="PROGRM_NM" prepend="AND">
+		<![CDATA[
+		PROGRM_NM LIKE #PROGRM_NM# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="CONECT_IP" prepend="AND">
+		<![CDATA[
+		CONECT_IP LIKE #IP# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="TABLE_NM" prepend="AND">
+		<![CDATA[
+		TABLE_NM = #TABLE_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="TABLE_PK" prepend="AND">
+		<![CDATA[
+		TABLE_PK = #TABLE_PK#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="COLUMN_NM" prepend="AND">
+		<![CDATA[
+		COLUMN_NM = #COLUMN_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="PK_NM" prepend="AND">
+		<![CDATA[
+		PK_NM = #PK_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="MODULE" prepend="AND">
+		<![CDATA[
+		MODULE = #MODULE#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="TASK_NO" prepend="AND">
+		<![CDATA[
+		TASK_NO = #TASK_NO#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="SDATE" prepend="AND">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		UPDT_DE BETWEEN TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>
+	
+	<select id="COMJ01DAO.selectCmDtaAtrailListCountByPkForClob" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_CLOB_ATRAIL
+		 WHERE 1=1
+		]]>
+		
+		<isNotEmpty property="STRE_RESN_CODE" prepend="AND">
+		<![CDATA[
+		STRE_RESN_CODE = #STRE_RESN_CODE#
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="LABEL_NM" prepend="AND">
+		<![CDATA[
+		LABEL_NM LIKE #LABEL_NM# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="PROGRM_NM" prepend="AND">
+		<![CDATA[
+		PROGRM_NM LIKE #PROGRM_NM# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="CONECT_IP" prepend="AND">
+		<![CDATA[
+		CONECT_IP LIKE #IP# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="TABLE_NM" prepend="AND">
+		<![CDATA[
+		TABLE_NM = #TABLE_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="TABLE_PK" prepend="AND">
+		<![CDATA[
+		TABLE_PK = #TABLE_PK#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="COLUMN_NM" prepend="AND">
+		<![CDATA[
+		COLUMN_NM = #COLUMN_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="PK_NM" prepend="AND">
+		<![CDATA[
+		PK_NM = #PK_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="MODULE" prepend="AND">
+		<![CDATA[
+		MODULE = #MODULE#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="TASK_NO" prepend="AND">
+		<![CDATA[
+		TASK_NO = #TASK_NO#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="SDATE" prepend="AND">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		UPDT_DE BETWEEN TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+	</select>
+		
+	<select id="COMJ01DAO.selectCmDtaAtrailListByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT RN
+		     , TO_CHAR(UPDT_DE, 'YYYYMMDDHH24MISS') UPDT_DE
+	         , UPDTBFE_VALUE
+	         , AFTUPD_VALUE
+	         , STRE_ETC_RESN
+	         , STRE_RESN_CODE
+	         , FN_GET_COMMONCODE('EDC001', INN_STRE_RESN_CODE, #LOCALE#) AS STRE_RESN_CODE_NM
+	         , USER_ID
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = INN_USER_ID) USER_NM
+	         , TABLE_NM
+	         , COLUMN_NM
+	         , TABLE_PK
+	         , PK_NM
+	         , MODULE
+	         , PROGRM_NM
+	         , LABEL_NM
+	         , CONECT_IP  
+	         , ATRAIL_SN
+	         , TASK_NO       
+		  FROM
+		(
+		SELECT ROW_NUMBER() OVER(ORDER BY UPDT_DE DESC, DECODE(STRE_RESN_CODE, '04', 'Z', STRE_RESN_CODE)) RN
+		     , UPDT_DE
+	         , UPDTBFE_VALUE
+	         , AFTUPD_VALUE
+	         , STRE_ETC_RESN
+	         , STRE_RESN_CODE
+	         , STRE_RESN_CODE INN_STRE_RESN_CODE
+	         , USER_ID
+	         , USER_ID INN_USER_ID
+	         , TABLE_NM
+	         , COLUMN_NM
+	         , TABLE_PK
+	         , PK_NM
+	         , MODULE
+			 , PROGRM_NM
+	         , LABEL_NM
+	         , CONECT_IP
+	         , ATRAIL_SN
+	         , TASK_NO
+	     FROM CM_DTA_ATRAIL
+	    WHERE 1=1 
+		]]>
+		
+		<isNotEmpty property="STRE_RESN_CODE" prepend="AND">
+		<![CDATA[
+		STRE_RESN_CODE = #STRE_RESN_CODE#
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="LABEL_NM" prepend="AND">
+		<![CDATA[
+		LABEL_NM LIKE #LABEL_NM# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="PROGRM_NM" prepend="AND">
+		<![CDATA[
+		PROGRM_NM LIKE #PROGRM_NM# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="CONECT_IP" prepend="AND">
+		<![CDATA[
+		CONECT_IP LIKE #IP# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="TABLE_NM" prepend="AND">
+		<![CDATA[
+		TABLE_NM = #TABLE_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="TABLE_PK" prepend="AND">
+		<![CDATA[
+		TABLE_PK = #TABLE_PK#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="COLUMN_NM" prepend="AND">
+		<![CDATA[
+		COLUMN_NM = #COLUMN_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="PK_NM" prepend="AND">
+		<![CDATA[
+		PK_NM = #PK_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="MODULE" prepend="AND">
+		<![CDATA[
+		MODULE = #MODULE#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="TASK_NO" prepend="AND">
+		<![CDATA[
+		TASK_NO = #TASK_NO#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="SDATE" prepend="AND">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		UPDT_DE BETWEEN TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS') 
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+		<![CDATA[
+		)
+		]]>
+	</select>
+	
+	<select id="COMJ01DAO.selectCmDtaAtrailListByPkForClob" parameterClass="hashMap" resultMap="clobMap">
+		<![CDATA[
+		SELECT RN
+		     , TO_CHAR(UPDT_DE, 'YYYYMMDDHH24MISS') UPDT_DE
+	         , UPDTBFE_VALUE
+	         , AFTUPD_VALUE
+	         , STRE_ETC_RESN
+	         , STRE_RESN_CODE
+	         , FN_GET_COMMONCODE('EDC001', INN_STRE_RESN_CODE, #LOCALE#) AS STRE_RESN_CODE_NM
+	         , USER_ID
+	         , (SELECT X.USER_NM FROM CM_USER X WHERE X.USER_ID = INN_USER_ID) USER_NM
+	         , TABLE_NM
+	         , COLUMN_NM
+	         , TABLE_PK
+	         , PK_NM
+	         , MODULE
+	         , PROGRM_NM
+	         , LABEL_NM
+	         , CONECT_IP 
+	         , ATRAIL_SN        
+	         , TASK_NO
+		  FROM
+		(
+		SELECT ROW_NUMBER() OVER(ORDER BY UPDT_DE DESC, DECODE(STRE_RESN_CODE, '04', 'Z', STRE_RESN_CODE)) RN
+		     , UPDT_DE
+	         , UPDTBFE_VALUE
+	         , AFTUPD_VALUE
+	         , STRE_ETC_RESN
+	         , STRE_RESN_CODE
+	         , STRE_RESN_CODE INN_STRE_RESN_CODE
+	         , USER_ID
+	         , USER_ID INN_USER_ID
+	         , TABLE_NM
+	         , COLUMN_NM
+	         , TABLE_PK
+	         , PK_NM
+	         , MODULE
+			 , PROGRM_NM
+	         , LABEL_NM
+	         , CONECT_IP
+	         , ATRAIL_SN
+	         , TASK_NO
+	     FROM CM_CLOB_ATRAIL
+	    WHERE 1=1 
+		]]>
+		
+		<isNotEmpty property="STRE_RESN_CODE" prepend="AND">
+		<![CDATA[
+		STRE_RESN_CODE = #STRE_RESN_CODE#
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="LABEL_NM" prepend="AND">
+		<![CDATA[
+		LABEL_NM LIKE #LABEL_NM# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="PROGRM_NM" prepend="AND">
+		<![CDATA[
+		PROGRM_NM LIKE #PROGRM_NM# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="CONECT_IP" prepend="AND">
+		<![CDATA[
+		CONECT_IP LIKE #IP# || '%'
+		]]> 
+		</isNotEmpty>
+		
+		<isNotEmpty property="TABLE_NM" prepend="AND">
+		<![CDATA[
+		TABLE_NM = #TABLE_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="TABLE_PK" prepend="AND">
+		<![CDATA[
+		TABLE_PK = #TABLE_PK#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="COLUMN_NM" prepend="AND">
+		<![CDATA[
+		COLUMN_NM = #COLUMN_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="PK_NM" prepend="AND">
+		<![CDATA[
+		PK_NM = #PK_NM#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="MODULE" prepend="AND">
+		<![CDATA[
+		MODULE = #MODULE#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="TASK_NO" prepend="AND">
+		<![CDATA[
+		TASK_NO = #TASK_NO#
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty property="SDATE" prepend="AND">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		UPDT_DE BETWEEN TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS') 
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+		<![CDATA[
+		)
+		]]>
+	</select>
+</sqlMap>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCH02DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	
+   	<select id="selectEdcVer" parameterClass="hashMap" resultClass="String">
+   		SELECT    MAX(EDC_VER) EDC_VER
+		  FROM    EDC_CR_FORM
+		 WHERE    TASK_SN = #TASK_SN#  
+		   AND    USE_AT = 'Y'
+   	</select>
+   	
+	<select id="selectLabSubjectList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT      DISTINCT		/* 추후 데이터 확인하고 생략 */
+					A.INSTT_NM
+		          , A.SUBJECT_NO
+		          , A.VISIT_LBL
+		          , A.VISIT_STTUS
+		          , A.GROUP_LBL
+		          , B.CDISC_SUBMIT_VALUE
+		          , B.STRE_VALUE
+		          , DECODE(D.INTRLCK_AT, 'Y', '적용', '미적용') INTRLCK_AT
+		          , TO_CHAR(D.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+		          , D.LAST_UPDUSR
+		  FROM      (
+		                SELECT      CFG.INSTT_FORM_SN
+		                          , CFG.SUBJECT_NO
+		                          , CFG.VISIT_SN
+		                          , CFG.SN
+		                          , CFG.VISIT_GROUP_SN
+		                          , (
+		                                SELECT    SBI.NAME1
+		                                  FROM    EDC_CR_INSTT_FORM CRIF
+		                                        , CM_INSTT CI
+		                                        , SAP_BCNC_INFO SBI
+		                                 WHERE    CRIF.INSTT_CODE = CI.INSTT_CODE
+		                                   AND    CI.KUNNR = SBI.KUNNR
+		                                   AND    CI.USE_YN = 'Y'
+		                                   AND    SBI.USE_YN = 'Y'
+		                                   AND    CRIF.INSTT_FORM_SN = CFG.INSTT_FORM_SN
+		                            ) INSTT_NM
+		                          , (
+		                                SELECT    CRVS.VISIT_LBL
+		                                  FROM    EDC_CR_VISIT_GROUP CRVG
+		                                        , EDC_CR_VISIT_SCHDUL CRVS
+		                                 WHERE    CRVG.VISIT_SN = CRVS.VISIT_SN
+		                                   AND    CRVG.TASK_SN = CRVS.TASK_SN
+		                                   AND    CRVG.EDC_VER = CRVS.EDC_VER
+		                                   AND    CRVG.VISIT_GROUP_SN = CFG.VISIT_GROUP_SN
+		                                   AND    CRVG.USE_AT = 'Y'
+		                                   AND    CRVS.USE_AT = 'Y'
+		                                   AND    CRVG.TASK_SN = #TASK_SN#
+		                                   AND    CRVG.EDC_VER = #EDC_VER#
+		                            ) VISIT_LBL
+		                          , NVL2((
+		                                SELECT    COUNT(1)
+		                                  FROM    EDC_CR_SET_VRIABL CRSV
+		                                        , EDC_CR_VRIABL CRV
+		                                        , CDISC_DOMN_VRIABL CDV
+		                                 WHERE    CRSV.GROUP_SN = CRV.GROUP_SN
+		                                   AND    CRSV.VRIABL_SN = CRV.VRIABL_SN
+		                                   AND    CRSV.TASK_SN = CRV.TASK_SN
+		                                   AND    CRSV.EDC_VER = CRV.EDC_VER
+		                                   AND    CRSV.USE_AT = 'Y'
+		                                   AND    CRV.USE_AT = 'Y'
+		                                   AND    CDV.USE_AT = 'Y'
+		                                   AND    CRSV.TASK_SN = #TASK_SN#
+		                                   AND    CRSV.EDC_VER = #EDC_VER#
+		                                   AND    CRSV.VISIT_GROUP_SN = CFG.VISIT_GROUP_SN
+		                                   AND    CDV.VRIABL_NM = 'SVSTDTC'
+		                            ), '방문', '미방문' ) VISIT_STTUS
+		                          , (
+		                                SELECT    CRG.GROUP_LBL
+		                                  FROM    EDC_CR_VISIT_GROUP CRVG
+		                                        , EDC_CR_GROUP CRG
+		                                 WHERE    CRVG.GROUP_SN = CRG.GROUP_SN
+		                                   AND    CRVG.TASK_SN = CRG.TASK_SN
+		                                   AND    CRVG.EDC_VER = CRG.EDC_VER
+		                                   AND    CRVG.USE_AT = 'Y'
+		                                   AND    CRG.USE_AT = 'Y'
+		                                   AND    CRVG.TASK_SN = #TASK_SN#
+		                                   AND    CRVG.EDC_VER = #EDC_VER#
+		                                   AND    CRVG.VISIT_GROUP_SN = CFG.VISIT_GROUP_SN
+		                            ) GROUP_LBL
+		                          , (
+		                                SELECT    TASK_SN
+		                                  FROM    EDC_CR_INSTT_FORM
+		                                 WHERE    INSTT_FORM_SN = CFG.INSTT_FORM_SN
+		                                   AND    USE_AT = 'Y'
+		                            ) TASK_SN
+		                  FROM      EDC_CF_GROUP CFG
+		                          , EDC_CR_SET_VRIABL CRSV
+		                 WHERE      CFG.VISIT_GROUP_SN = CRSV.VISIT_GROUP_SN
+		                   AND      CFG.USE_AT = 'Y'
+		                   AND      CRSV.USE_AT = 'Y'
+		                   AND      CRSV.VRIABL_SE_CODE = 'LAB'
+		          ) A
+		        , (
+		                SELECT      (
+		                                SELECT    CCC.CDISC_SUBMIT_VALUE
+		                                  FROM    EDC_CR_SET_VRIABL CRSV
+		                                        , EDC_CR_VRIABL CRV
+		                                        , CDISC_CL_CODE CCC
+		                                 WHERE    CRSV.GROUP_SN = CRV.GROUP_SN
+		                                   AND    CRSV.VRIABL_SN = CRV.VRIABL_SN
+		                                   AND    CRSV.TASK_SN = CRV.TASK_SN
+		                                   AND    CRSV.EDC_VER = CRV.EDC_VER
+		                                   AND    CRV.CL_CODE_SN = CCC.CL_CODE_SN
+		                                   AND    CRSV.USE_AT = 'Y'
+		                                   AND    CRV.USE_AT = 'Y'
+		                                   AND    CCC.USE_AT = 'Y'
+		                                   AND    CRSV.TASK_SN = #TASK_SN#
+		                                   AND    CRSV.EDC_VER = #EDC_VER#
+		                                   AND    CRSV.VISIT_GROUP_SN = CFV.VISIT_GROUP_SN
+		                                   AND    CRSV.SET_VRIABL_SN = CFV.SET_VRIABL_SN
+		                            ) CDISC_SUBMIT_VALUE
+		                          , CFV.STRE_VALUE
+		                          , CFV.INSTT_FORM_SN
+		                          , CFV.SUBJECT_NO
+		                          , CFV.VISIT_SN
+		                          , CFV.SN
+		                          , CFV.VISIT_GROUP_SN
+		                          , CFV.SET_ROW_SN
+		                          , CFV.VRIABL_ROW_SN
+		                          , CFV.SET_VRIABL_SN
+		                  FROM      EDC_CF_VRIABL CFV
+		          ) B
+		        , (
+		                SELECT      ELD.INSTT_FORM_SN
+		                          , ELD.SUBJECT_NO
+		                          , ELD.VISIT_SN
+		                          , ELD.SN
+		                          , ELD.VISIT_GROUP_SN
+		                          , ELD.SET_ROW_SN
+		                          , ELD.VRIABL_ROW_SN
+		                          , ELD.SET_VRIABL_SN
+		                          , MAX(ELD.FILE_MASTR_SN) KEEP(DENSE_RANK FIRST ORDER BY ELD.FRST_CREDE DESC) FILE_MASTR_SN
+		                  FROM      EDC_CF_VRIABL CFV
+		                          , EDC_CR_SET_VRIABL CRSV
+		                          , EDC_LAB_DTA ELD
+		                 WHERE      CFV.VISIT_GROUP_SN = CRSV.VISIT_GROUP_SN
+		                   AND      CFV.SET_VRIABL_SN = CRSV.SET_VRIABL_SN
+		                   AND      CFV.USE_AT = 'Y'
+		                   AND      CRSV.USE_AT = 'Y'
+		                   AND      ELD.USE_YN = 'Y'
+		                   AND      CRSV.VRIABL_SE_CODE = 'LAB'
+		                   AND      CFV.INSTT_FORM_SN = ELD.INSTT_FORM_SN
+		                   AND      CFV.SUBJECT_NO = ELD.SUBJECT_NO
+		                   AND      CFV.VISIT_SN = ELD.VISIT_SN
+		                GROUP BY    ELD.INSTT_FORM_SN
+		                          , ELD.SUBJECT_NO
+		                          , ELD.VISIT_SN
+		                          , ELD.SN
+		                          , ELD.VISIT_GROUP_SN
+		                          , ELD.SET_ROW_SN
+		                          , ELD.VRIABL_ROW_SN
+		                          , ELD.SET_VRIABL_SN
+		          ) C
+		        , (
+		              SELECT *
+		                FROM EDC_LAB_DTA_FILE
+		               WHERE INTRLCK_AT = 'Y'
+		                 AND USE_YN = 'Y'
+		          ) D
+		 WHERE    A.INSTT_FORM_SN = B.INSTT_FORM_SN(+)
+		   AND    A.SUBJECT_NO = B.SUBJECT_NO(+)
+		   AND    A.VISIT_SN = B.VISIT_SN(+)
+		   AND    A.SN = B.SN(+)
+		   AND    A.VISIT_GROUP_SN = B.VISIT_GROUP_SN(+)
+		   AND    B.INSTT_FORM_SN = C.INSTT_FORM_SN(+)
+		   AND    B.SUBJECT_NO = C.SUBJECT_NO(+)
+		   AND    B.VISIT_SN = C.VISIT_SN(+)
+		   AND    B.SN = C.SN(+)
+		   AND    B.VISIT_GROUP_SN = C.VISIT_GROUP_SN(+)
+		   AND    B.SET_ROW_SN = C.SET_ROW_SN(+)
+		   AND    B.VRIABL_ROW_SN = C.VRIABL_ROW_SN(+)
+		   AND    B.SET_VRIABL_SN = C.SET_VRIABL_SN(+)
+		   AND    C.FILE_MASTR_SN = D.FILE_MASTR_SN(+)
+		   AND    A.TASK_SN = #TASK_SN#
+		<isNotEmpty property="INSTT_NM" prepend="AND">
+			A.INSTT_NM LIKE '%'||#INSTT_NM#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="SUBJECT_NO" prepend="AND">
+			A.SUBJECT_NO LIKE '%'||#SUBJECT_NO#||'%'
+		</isNotEmpty>
+	</select>
+	
+</sqlMap>

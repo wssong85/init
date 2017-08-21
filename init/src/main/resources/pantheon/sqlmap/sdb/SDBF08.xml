@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SDBF08">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>	
+	
+	<select id="SDBF08DAO.selectReconciliationList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		   SELECT *
+			 FROM (
+			    SELECT A.HRMFLNS_CASE_CODE
+			          , A.FOLLOW_NO
+			          , A.MAFU_NO
+			          , A.PRTCL_NO
+			          , CASE WHEN B.SERIUSFMNM_AT ='Y'THEN 'SAE'
+			                 ELSE 'AE' END AS SERIUSFMNM_AT      
+			          , CASE WHEN A.MFDS_REPORT_AT ='Y' THEN 'MFDS'
+			                 WHEN A.KIDS_REPORT_AT ='Y' THEN 'KIDS'
+			                 WHEN A.IRB_REPORT_AT ='Y' THEN 'IRB'
+			                 WHEN A.DIFR_INSTT_REPORT_AT ='Y' THEN '기타'
+			                 ELSE ' ' END AS ORGAN      
+			          , CASE WHEN A.MFDS_REPORT_AT ='Y' THEN A.MFDS_REPORT_DTE
+			                 WHEN A.KIDS_REPORT_AT ='Y' THEN A.MFDS_REPORT_DTE
+			                 WHEN A.IRB_REPORT_AT ='Y' THEN A.MFDS_REPORT_DTE
+			                 WHEN A.DIFR_INSTT_REPORT_AT ='Y' THEN A.MFDS_REPORT_DTE
+			                 ELSE A.MFDS_REPORT_DTE END AS ORGAN_DATE    
+			          ,(
+			            CASE WHEN (SELECT COUNT(*)
+			                    FROM SDB_RECONCILIATION_ISESTATN
+			                    WHERE PAN_REPRT_NO = A.MAFU_NO)= 0
+			                THEN 'N'
+			                ELSE 'Y'
+			            END )AS RECON
+			    FROM SDB_AM_HRMFLNS_CASE_INFO A
+			    LEFT OUTER JOIN SDB_AM_AE_INFO B
+			    ON  A.HRMFLNS_CASE_CODE = B.HRMFLNS_CASE_CODE
+			    AND A.PRDUCT_CODE       = B.PRDUCT_CODE
+			    AND A. FOLLOW_NO        = B.FOLLOW_NO
+			    WHERE A.PRTCL_NO IS NOT NULL
+			    AND B.MAIN_AE_AT ='Y'
+			) U
+	     ]]>
+	     WHERE 1=1
+	     <isNotEmpty property="ORGAN_DATE" prepend="AND">
+	     <![CDATA[ 
+	     	    ORGAN_DATE BETWEEN  TO_DATE(#ORGAN_DATE#,'YYYYMMDDHH') AND TO_DATE(#ORGAN_DATE_END#,'YYYYMMDDHH') 
+	     ]]>
+	     </isNotEmpty>
+	</select>
+</sqlMap>
+

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCK03DAO">
+
+   	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+	
+	<select id="selectLabList" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT 	LAB_SN,
+				LAB_NM,
+				ANALS_PARAMTR,
+				UNIT,
+				SCOPE_LWLT_VALUE,
+				SCOPE_UPLMT_VALUE,
+				TO_CHAR(APPLC_BGNDE,'yyyy-mm-dd') || ' ~ ' ||TO_CHAR(APPLC_ENDDE,'yyyy-mm-dd') AS APPLC_DATE, 
+				AGE,
+				DECODE(SEXDSTN, 'F', '여자', 'M', '남자') AS SEXDSTN,
+				CI.KUNNR,
+        		SBI.NAME1,
+        		CC.CDISC_SUBMIT_VALUE
+		FROM	EDC_CF_LAB_DETAIL ECL
+        LEFT 	JOIN CDISC_CL_CODE CC
+        ON    	ECL.ANALS_PARAMTR = CC.CL_CODE_SN
+        JOIN	CDISC_RULE CR
+      	ON		CR.CDISC_RULE_SN = CC.CDISC_RULE_SN
+      	AND		CR.CDISC_RULE_SN = (SELECT MAX(CR.CDISC_RULE_SN) FROM CDISC_RULE)
+        AND		CC.CDISC_UPPER_CODE = 'C65047'
+    	JOIN	CM_INSTT CI
+        ON		ECL.INSTT_CODE = CI.INSTT_CODE
+        JOIN	SAP_BCNC_INFO SBI
+        ON		CI.KUNNR = SBI.KUNNR
+        <isNotEmpty property="INSTT_NM" prepend="WHERE">
+			SBI.NAME1 LIKE '%' || #INSTT_NM# || '%'
+		</isNotEmpty>
+		ORDER BY ECL.FRST_CREDE DESC
+	</select>
+	
+	<select id="selectLab" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT 	LAB_SN,
+				LAB_NM,
+				ANALS_PARAMTR,
+				UNIT,
+				SCOPE_LWLT_VALUE,
+				SCOPE_UPLMT_VALUE,
+				TO_CHAR(APPLC_BGNDE,'YYYYMMDDHH24MISS') AS APPLC_BGNDE,
+				TO_CHAR(APPLC_ENDDE,'YYYYMMDDHH24MISS') AS APPLC_ENDDE,
+				AGE,
+				SEXDSTN,
+				CI.KUNNR,
+        		SBI.NAME1,
+        		ECL.INSTT_CODE,
+        		CC.CDISC_SUBMIT_VALUE
+		FROM	EDC_CF_LAB_DETAIL ECL
+        LEFT 	JOIN CDISC_CL_CODE CC
+        ON    	ECL.ANALS_PARAMTR = CC.CL_CODE_SN
+        JOIN	CDISC_RULE CR
+      	ON		CR.CDISC_RULE_SN = CC.CDISC_RULE_SN
+      	AND		CR.CDISC_RULE_SN = (SELECT MAX(CR.CDISC_RULE_SN) FROM CDISC_RULE)
+        AND		CC.CDISC_UPPER_CODE = 'C65047'
+    	JOIN	CM_INSTT CI
+        ON		ECL.INSTT_CODE = CI.INSTT_CODE
+        JOIN	SAP_BCNC_INFO SBI
+        ON		CI.KUNNR = SBI.KUNNR
+		WHERE	LAB_SN = #LAB_SN#
+	</select>
+	
+	<insert id="insertLab" parameterClass="hashMap">
+		INSERT INTO EDC_CF_LAB_DETAIL(
+		LAB_SN,
+		INSTT_CODE,
+		LAB_NM,
+		ANALS_PARAMTR,
+		UNIT,
+		SCOPE_LWLT_VALUE,
+		SCOPE_UPLMT_VALUE,
+		APPLC_BGNDE,
+		APPLC_ENDDE,
+		AGE,
+		SEXDSTN,
+		FRST_CREDE,
+		FRST_CRTR,
+		LAST_UPDDE,
+		LAST_UPDUSR
+		)
+		VALUES (
+		#LAB_SN#,
+		#INSTT_CODE#,
+		#LAB_NM# ,
+		#ANALS_PARAMTR# ,
+		#UNIT# ,
+		#SCOPE_LWLT_VALUE# ,
+		#SCOPE_UPLMT_VALUE# ,
+		#APPLC_BGNDE# ,
+		#APPLC_ENDDE# ,
+		#AGE# ,
+		#SEXDSTN#,
+		SYSDATE,
+		#USER_ID#,
+		SYSDATE,
+		#USER_ID#
+		)
+	</insert>
+	
+	<update id="updateLab" parameterClass="hashMap">
+		UPDATE EDC_CF_LAB_DETAIL SET
+		  LAB_NM = #LAB_NM#
+		, INSTT_CODE = #INSTT_CODE#
+		, ANALS_PARAMTR = #ANALS_PARAMTR#
+		, UNIT = #UNIT#
+		, SCOPE_LWLT_VALUE = #SCOPE_LWLT_VALUE#
+		, SCOPE_UPLMT_VALUE = #SCOPE_UPLMT_VALUE#
+		, APPLC_BGNDE = #APPLC_BGNDE#
+		, APPLC_ENDDE = #APPLC_ENDDE#
+		, AGE = #AGE#
+		, SEXDSTN = #SEXDSTN#
+		, LAST_UPDUSR = #USER_ID#
+		, LAST_UPDDE = SYSDATE
+		WHERE LAB_SN = #LAB_SN#
+	</update>
+	
+	<select id="selectLabCount" parameterClass="hashMap" resultClass="int" >
+		SELECT COUNT(*) FROM EDC_CF_LAB WHERE LAB_NM = #LaboratoryName# AND INSTT_CODE = #INSTT_CODE#
+	</select>
+	
+	<insert id="insertCfLab" parameterClass="hashMap">
+		INSERT INTO EDC_CF_LAB(
+				INSTT_CODE,
+				LAB_NM,
+				FRST_CREDE,
+				FRST_CRTR,
+				LAST_UPDDE,
+				LAST_UPDUSR
+				)
+				VALUES(
+				#INSTT_CODE#,
+				#LaboratoryName#,
+				SYSDATE,
+				#USER_ID#,
+				SYSDATE,
+				#USER_ID#
+				)
+	
+	</insert>
+	
+</sqlMap>

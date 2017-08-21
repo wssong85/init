@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COME01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<select id="COME01DAO.selectSapBcncTmprByBatch" resultClass="hashMap">
+		<![CDATA[
+		SELECT KUNNR
+	         , NAME1
+	         , LAND1
+	         , VTWEG
+	         , PSTLZ
+	         , ORT01
+	         , REGIO
+	         , STRAS
+	         , STCD1
+	         , STCD2
+	         , J_1KFREPRE
+	         , STCD3
+	         , TELF1
+	         , TELFX
+	         , J_1KFTBUS
+	         , J_1KFTIND
+	         , VKGRP
+	         , VKBUR
+	         , CESSION_KZ
+	         , LOEVM
+	         , VKGRP_T
+	         , ZERDAT
+	         , ZERZET
+	         , EAI_TX_ID
+	         , EAI_FLAG
+	         , EAI_MESSAGE
+	         , EAI_DATE
+	         , EAI_TRANS_IP
+	         , EAI_SEQ
+	         , VKBUR_T
+	         , LANDX
+	      FROM SAP_BCNC_TMPR
+	     WHERE ROWID IN (SELECT MAX(ROWID) FROM SAP_BCNC_TMPR GROUP BY KUNNR)
+		]]>
+	</select>
+	
+	<select id="COME01DAO.selectSapBcncInfoByBatch" resultClass="hashMap">
+		<![CDATA[
+		SELECT KUNNR
+		     , NAME1
+		     , LAND1
+		     , VTWEG
+		     , PSTLZ
+		     , ORT01
+		     , REGIO
+		     , STRAS
+		     , STCD1
+		     , STCD2
+		     , J_1KFREPRE
+		     , STCD3
+		     , TELF1
+		     , TELFX
+		     , J_1KFTBUS
+		     , J_1KFTIND
+		     , VKGRP
+		     , VKGRP_T
+		     , VKBUR
+		     , VKBUR_T
+		     , CESSION_KZ
+		     , LOEVM
+		     , ZERDAT
+		     , ZERZET
+		     , USE_YN
+		     , FRST_CREDE
+		     , REGIST_ID
+		     , LAST_UPDDE
+		     , UPDATE_ID
+		     , LANDX
+		  FROM SAP_BCNC_INFO
+		 WHERE ROWID IN (SELECT MAX(ROWID) FROM SAP_BCNC_INFO GROUP BY KUNNR)
+		]]>		     
+	</select>
+	
+	<insert id="COME01DAO.insertSapBcncInfoByBatch" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO SAP_BCNC_INFO
+		     ( KUNNR
+		     , NAME1
+		     , LAND1
+		     , VTWEG
+		     , PSTLZ
+		     , ORT01
+		     , REGIO
+		     , STRAS
+		     , STCD1
+		     , STCD2
+		     , J_1KFREPRE
+		     , STCD3
+		     , TELF1
+		     , TELFX
+		     , J_1KFTBUS
+		     , J_1KFTIND
+		     , VKGRP
+		     , VKGRP_T
+		     , VKBUR
+		     , VKBUR_T
+		     , CESSION_KZ
+		     , LOEVM
+		     , ZERDAT
+		     , ZERZET
+		     , LANDX
+		     , USE_YN
+		     , FRST_CREDE
+		     , REGIST_ID
+		     , LAST_UPDDE
+		     , UPDATE_ID
+		     )
+		VALUES
+		     ( #KUNNR#
+		     , #NAME1#
+		     , #LAND1#
+		     , #VTWEG#
+		     , #PSTLZ#
+		     , #ORT01#
+		     , #REGIO#
+		     , #STRAS#
+		     , #STCD1#
+		     , #STCD2#
+		     , #J_1KFREPRE#
+		     , #STCD3#
+		     , #TELF1#
+		     , #TELFX#
+		     , #J_1KFTBUS#
+		     , #J_1KFTIND#
+		     , #VKGRP#
+		     , #VKGRP_T#
+		     , #VKBUR#
+		     , #VKBUR_T#
+		     , #CESSION_KZ#
+		     , #LOEVM#
+		     , #ZERDAT#
+		     , #ZERZET#
+		     , #LANDX#
+		     , NVL(#USE_YN#, 'Y')
+		     , SYSDATE
+		     , 'admin'
+		     , SYSDATE
+		     , 'admin'
+		     )
+		]]>
+	</insert>
+	
+	<update id="COME01DAO.updateSapBcncTmprByKnnr" parameterClass="string">
+		<![CDATA[
+			$SQL$
+		]]>
+	</update>
+	
+	<select id="COME01DAO.selectInfraDeptTmprByBatch" resultClass="hashMap">
+		<![CDATA[
+		SELECT COMP_CD
+	         , DEPT_CD
+	         , DEPT_NM
+	         , DEPT_UP
+	         , DEPT_LEVEL
+	         , DEPT_ORDER
+	         , USE_YN
+	         , EAI_TX_ID
+	         , EAI_FLAG
+	         , EAI_MESSAGE
+	         , EAI_DATE
+	         , EAI_TRANS_TP
+	         , EAI_SEQ
+	     FROM INFRA_DEPT_TMPR
+	    WHERE ROWID IN (SELECT MAX(ROWID) FROM INFRA_DEPT_TMPR GROUP BY COMP_CD, DEPT_CD)
+		]]>
+	</select>
+	
+	<select id="COME01DAO.selectCmDeptInfoByBatch" resultClass="hashMap">
+		<![CDATA[
+		SELECT COMP_CD
+	         , DEPT_CD
+	         , DEPT_NM
+	         , DEPT_UP
+	         , DEPT_LEVEL
+	         , DEPT_ORDER
+	         , USE_YN
+	         , FRST_CREDE
+	         , REGIST_ID
+	         , LAST_UPDDE
+	         , UPDATE_ID
+	     FROM CM_DEPTINFO
+	    WHERE ROWID IN (SELECT MAX(ROWID) FROM CM_DEPTINFO GROUP BY COMP_CD, DEPT_CD)
+		]]>
+	</select>
+	
+	<insert id="COME01DAO.insertCmDeptInfo" parameterClass="hashMap">
+	<![CDATA[
+	INSERT 
+	  INTO CM_DEPTINFO
+	     ( COMP_CD
+         , DEPT_CD
+         , DEPT_NM
+         , DEPT_UP
+         , DEPT_LEVEL
+         , DEPT_ORDER
+         , USE_YN
+         , FRST_CREDE
+         , REGIST_ID
+         , LAST_UPDDE
+         , UPDATE_ID
+	     )
+	VALUES
+	     ( #COMP_CD#
+         , #DEPT_CD#
+         , #DEPT_NM#
+         , #DEPT_UP#
+         , #DEPT_LEVEL#
+         , #DEPT_ORDER#
+         , #USE_YN#
+         , SYSDATE
+         , 'admin'
+         , SYSDATE
+         , 'admin'
+	     )
+	]]>
+	</insert>
+	
+	<update id="COME01DAO.updateCmDeptInfoByDeptCd" parameterClass="string">
+		<![CDATA[
+			$SQL$
+		]]>
+	</update>
+
+	<select id="COME01DAO.selectInfraUserTmprByBatch" resultClass="hashMap">
+		<![CDATA[
+		SELECT COMP_CD
+	         , EMP_NO
+	         , DEPT_CD
+	         , COST_CD
+	         , WORK_YN
+	         , POSITION_CD
+	         , INS_DT
+	         , DEL_DT
+	         , JOB_CD
+	         , CHIEF_FLAG	         
+	         , EMP_NM
+	         , EMP_ENG_NAME
+	         , 'cjp_' || CJ_ID CJ_ID
+	         , EMAIL
+	         , PHONE_NO
+	         , EAI_SEQ
+	         , EAI_TX_ID
+	         , EAI_FLAG
+	         , EAI_MESSAGE
+	         , EAI_DATE
+	         , EAI_TRANS_TP
+	      FROM INFRA_USER_TMPR
+	     WHERE ROWID IN (SELECT MAX(ROWID) FROM INFRA_USER_TMPR GROUP BY CJ_ID)
+		]]>
+	</select>
+	
+	<select id="COME01DAO.selectCmJobUserForBatch" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.USER_ID
+	         , A.COMP_CD
+	         , A.EMPL_NO
+	         , A.DEPT_CD
+	         , A.COST_CNTER
+	         , A.HFFC_AT
+	         , A.CLSF_CODE
+	         , A.ECNY_DE	         
+	         , A.RETIRE_DE
+	         , A.DTY_CODE
+	         , A.DPRLR_AT
+	         , A.USE_YN	         
+	     FROM CM_JOBUSER A
+	    WHERE ROWID IN (SELECT MAX(ROWID) FROM CM_JOBUSER GROUP BY USER_ID)
+	    ]]>
+	</select>
+	
+	<select id="COME01DAO.selectCmUserForBatch" resultClass="hashMap">
+		<![CDATA[
+		SELECT B.USER_ID
+		     , B.USER_NM
+	         , B.USER_ENGNM	         
+	         , B.EMAIL
+	         , B.TELNO
+	         , B.USE_YN
+	     FROM CM_USER B
+	    WHERE ROWID IN (SELECT MAX(ROWID) FROM CM_USER GROUP BY USER_ID)
+		]]>
+	</select>
+	
+	<update id="COME01DAO.updateCmJobUserForBatch" parameterClass="string">
+		<![CDATA[
+			$SQL$
+		]]>
+	</update>
+	
+	<update id="COME01DAO.updateCmUserForBatch" parameterClass="string">
+		<![CDATA[
+			$SQL$
+		]]>
+	</update>
+	
+	<insert id="COME01DAO.insertCmUserByBatch" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_USER
+		     ( USER_ID
+             , PASSWORD
+             , USER_NM
+             , USER_SE_CODE
+             , USER_ENGNM
+             , EMAIL
+             , TELNO
+             , LOGIN_FAILR_CO
+             , PASSWORD_CHANGE_DE
+             , SBSCRB_DE
+             , ACNT_LOCK_AT
+             , USE_YN
+             , FRST_CREDE
+             , REGIST_ID
+             , LAST_UPDDE
+             , UPDATE_ID
+             , PASSWORD1
+             , PASSWORD2
+             , PASSWORD3
+             , PASSWORD_ODR
+             , PASSWORD_CODE
+             , STD_TIME_SN
+		     )
+		VALUES
+		     ( #USER_ID#
+             , DAMO_HASH(#PASSWORD#)
+             , #USER_NM#
+             , '01'
+             , #USER_ENGNM#
+             , DAMO_ENC(#EMAIL#)
+             , DAMO_ENC(#TELNO#)
+             , NVL(#LOGIN_FAILR_CO#, 0)
+             , SYSDATE
+             , #SBSCRB_DE#
+             , 'Y'
+             , NVL(#USE_YN#, 'Y')
+             , SYSDATE
+             , 'admin'
+             , SYSDATE
+             , 'admin'
+             , DAMO_HASH(#PASSWORD#)
+             , DAMO_HASH(#PASSWORD2#)
+             , DAMO_HASH(#PASSWORD3#)
+             , '1'
+             , #PASSWORD_CODE#
+             , '304'
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COME01DAO.insertCmJobUserByBatch" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_JOBUSER
+		     ( USER_ID
+             , COMP_CD
+             , EMPL_NO
+             , DEPT_CD
+             , COST_CNTER
+             , HFFC_AT
+             , CLSF_CODE
+             , ECNY_DE
+             , RETIRE_DE
+             , DTY_CODE
+             , DPRLR_AT
+             , USE_YN
+             , FRST_CREDE
+             , REGIST_ID
+             , LAST_UPDDE
+             , UPDATE_ID
+		     )
+		VALUES
+		     ( #USER_ID#
+             , #COMP_CD#
+             , #EMPL_NO#
+             , #DEPT_CD#
+             , #COST_CNTER#
+             , #HFFC_AT#
+             , #CLSF_CODE#
+             , #ECNY_DE#
+             , #RETIRE_DE#
+             , #DTY_CODE#
+             , #DPRLR_AT#
+             , NVL(#USE_YN#, 'Y')
+             , SYSDATE
+             , 'admin'
+             , SYSDATE
+             , 'admin'
+		     )
+		]]>
+	</insert>
+	
+	<select id="COME01DAO.selectCmSysEnvrnByEnvrnSe" resultClass="string">
+		<![CDATA[
+		SELECT BATCH_AT
+		  FROM CM_SYS_ENVRN
+		 WHERE ENVRN_SE = '01'
+		]]>
+	</select>
+	
+	<delete id="COME01DAO.deleteSapBcncTmprByBatch">
+		<![CDATA[
+		DELETE FROM SAP_BCNC_TMPR
+		]]> 
+	</delete>
+	
+	<delete id="COME01DAO.deleteInfraUserTmprByBatch">
+		<![CDATA[
+		DELETE FROM INFRA_USER_TMPR
+		]]> 
+	</delete>
+	
+	<delete id="COME01DAO.deleteInfraDeptTmprByBatch">
+		<![CDATA[
+		DELETE FROM INFRA_DEPT_TMPR
+		]]> 
+	</delete>
+		
+	<insert id="NTCOME01DAO.insertCmIntrfc" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_INTRFC
+		     ( OPERT_SN
+	         , OPERT_NM
+	         , OPERT_STTUS
+	         , STTUS_RESN
+	         , OPERT_DT
+		     )
+		VALUES
+		     ( #OPERT_SN#
+	         , #OPERT_NM#
+	         , #OPERT_STTUS#
+	         , #STTUS_RESN#
+	         , SYSDATE
+		     )
+		]]>
+	</insert>
+	
+	<select id="COME01DAO.selectCmIntrfcListCountByCondition" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM CM_INTRFC
+		 WHERE 1=1
+		]]>
+		
+		<isNotEmpty property="SDATE" prepend="AND">
+	    <![CDATA[
+		OPERT_NM = #OPERT_NM#
+		]]>
+	    </isNotEmpty>
+	     
+	    <isNotEmpty property="SDATE" prepend="AND">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		OPERT_DT BETWEEN TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+	    </isNotEmpty>
+	    </isNotEmpty>
+	</select>
+	
+	<select id="COME01DAO.selectCmIntrfcListByCondition" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT RN
+		     , OPERT_SN
+	         , OPERT_NM
+	         , OPERT_STTUS
+	         , STTUS_RESN
+	         , TO_CHAR(OPERT_DT, 'YYYYMMDDHH24MISS') OPERT_DT
+	      FROM
+	    ( 
+		SELECT ROW_NUMBER() OVER(ORDER BY OPERT_SN DESC) RN
+		     , OPERT_SN
+	         , OPERT_NM
+	         , OPERT_STTUS
+	         , STTUS_RESN
+	         , OPERT_DT
+	      FROM CM_INTRFC
+	     WHERE 1=1
+	    ]]>
+	    
+	    <isNotEmpty property="SDATE" prepend="AND">
+	    <![CDATA[
+		OPERT_NM = #OPERT_NM#
+		]]>
+	    </isNotEmpty>
+	     
+	    <isNotEmpty property="SDATE" prepend="AND">
+		<isNotEmpty property="EDATE">
+		<![CDATA[
+		OPERT_DT BETWEEN TO_DATE(REPLACE(#SDATE#, '-') || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(REPLACE(#EDATE#, '-') || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+	    </isNotEmpty>
+	    </isNotEmpty>
+	    
+	    <![CDATA[
+	    )
+	   	WHERE RN > ($page$ - 1) * $count$
+      	  AND RN <= ($page$ * $count$)
+	    ]]>
+	</select>
+	
+</sqlMap>

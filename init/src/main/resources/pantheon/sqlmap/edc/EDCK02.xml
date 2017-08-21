@@ -1,0 +1,2308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="edck02DAO">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<select id="selectCRFList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		F.TASK_SN
+		, F.EDC_VER
+		, F.CRF_VER
+		, FN_GET_COMMONCODE('EDC014', F.CRF_PROGRS_CODE, #LOCALE#) CRF_PROGRS_CODE
+		, F.CHANGE_RESN
+		, TO_CHAR(F.BNDE_APPLC_DE, 'YYYYMMDDHH24MISS') BNDE_APPLC_DE
+		, FN_GET_COMMONCODE('EDC031', F.BNDE_APPLC_CODE, #LOCALE#) BNDE_APPLC_CODE
+		, T.TASK_NO
+		, T.TASK_NM
+		FROM EDC_CR_FORM F
+		INNER JOIN EDC_CR_TASK T ON F.TASK_SN = T.TASK_SN
+		WHERE F.USE_AT = 'Y'
+		AND T.USE_AT = 'Y'
+		AND F.TASK_SN = #TASK_SN#
+		ORDER BY F.EDC_VER DESC
+	</select>
+	<select id="selectCRFVersion" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		(SELECT NVL(MAX(CRF_VER), '1.0') CRF_VER
+		FROM EDC_CR_FORM
+		WHERE TASK_SN = #TASK_SN#
+		) CRF_VER ,
+		(SELECT DECODE(MAX(EDC_VER), NULL , NULL , SUBSTR( NVL(MAX(EDC_VER), '0') , INSTR( NVL(MAX(EDC_VER), '0') , '.' , -1 ) + 1 ) ) EDC_VER
+		FROM EDC_CR_FORM
+		WHERE TASK_SN = #TASK_SN#
+		AND CRF_VER =
+		(SELECT NVL(MAX(CRF_VER), '1.0') CRF_VER
+		FROM EDC_CR_FORM
+		WHERE TASK_SN = #TASK_SN#
+		)
+		) EDC_VER ,
+		(SELECT DECODE(MAX(EDC_VER), NULL , 0 , SUBSTR( NVL(MAX(EDC_VER), '0') , INSTR( NVL(MAX(EDC_VER), '0') , '.' , -1 ) + 1 )+1 ) EDC_VER
+		FROM EDC_CR_FORM
+		WHERE TASK_SN = #TASK_SN#
+		AND CRF_VER =
+		(SELECT NVL(MAX(CRF_VER), '1.0') CRF_VER
+		FROM EDC_CR_FORM
+		WHERE TASK_SN = #TASK_SN#
+		)
+		) NEW_EDC_VER ,
+		(SELECT BLIND_CODE
+		FROM EDC_CR_TASK
+		WHERE TASK_SN = #TASK_SN#
+		) BLIND_CODE,
+		#TASK_SN# TASK_SN ,
+		#CHANGE_RESN# CHANGE_RESN
+		FROM DUAL
+	</select>
+	<insert id="insertCRF" parameterClass="hashMap">
+		INSERT INTO EDC_CR_FORM(
+		TASK_SN
+		, CRF_VER
+		, EDC_VER
+		, CRF_PROGRS_CODE
+		, CHANGE_RESN
+		, CRF_ACTVTY_AT
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#TASK_SN#
+		, #CRF_VER#
+		, #EDC_VER#
+		, '01'
+		, #CHANGE_RESN#
+		,'N'
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<select id="selectGroupList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		GROUP_SN
+		, GROUP_LBL
+		, GROUP_SE_CODE
+		, GROUP_DC
+		, GROUP_ORDR
+		, TASK_SN
+		, EDC_VER
+		FROM EDC_CR_GROUP
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND USE_AT = 'Y'
+		ORDER BY GROUP_ORDR
+	</select>
+	<select id="selectGroupSn" parameterClass="hashMap" resultClass="string">
+		SELECT NVL(MAX(GROUP_SN),0)+1 GROUP_SN FROM EDC_CR_GROUP
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertGroup" parameterClass="hashMap">
+		INSERT INTO EDC_CR_GROUP (
+		GROUP_SN
+		, GROUP_LBL
+		, GROUP_SE_CODE
+		, GROUP_DC
+		, GROUP_ORDR
+		, TASK_SN
+		, EDC_VER
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		) VALUES (
+		#GROUP_SN#
+		, #GROUP_LBL#
+		, #GROUP_SE_CODE#
+		, #GROUP_DC#
+		, #GROUP_ORDR#
+		, #TASK_SN#
+		, #EDC_VER#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateGroup" parameterClass="hashMap">
+		UPDATE EDC_CR_GROUP SET
+		GROUP_LBL = #GROUP_LBL#
+		, GROUP_SE_CODE = #GROUP_SE_CODE#
+		, GROUP_DC = #GROUP_DC#
+		, GROUP_ORDR = #GROUP_ORDR#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE GROUP_SN = #GROUP_SN#
+	</update>
+	<select id="selectVariableList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		DV.DOMN_VRIABL_SN
+		, DV.VRIABL_NM
+		, DV.VRIABL_LBL
+		, DV.VRIABL_ROLE
+		, DV.VRIABL_DC
+		, DV.VRIABL_TY_CODE
+		, DV.CRF_LBL_ONE
+		, DV.CRF_LBL_TWO
+		, DV.CTRL_FOM
+		, DV.CORE_CODE
+		, D.DOMN_NM
+		, 'N' USER_DFN_AT
+		, DV.CDISC_UPPER_CODE
+		, CC.CDISC_SUBMIT_VALUE UPPER_CDISC_SUBMIT_VALUE
+		FROM CDISC_DOMN_VRIABL DV
+		INNER JOIN CDISC_DOMN D ON D.CDISC_DOMN_SN = DV.CDISC_DOMN_SN
+		LEFT OUTER JOIN CDISC_CL_CODE CC ON CC.CDISC_CODE = DV.CDISC_UPPER_CODE AND CC.CDISC_UPPER_CODE IS NULL
+		WHERE DV.USE_AT = 'Y'
+		AND D.USE_AT = 'Y'
+		AND DV.CDISC_DOMN_SN = #CDISC_DOMN_SN#
+		AND VRIABL_NM != 'SUBJID'
+		ORDER BY VRIABL_NM
+	</select>
+	<select id="selectGroupInsideList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		V.GROUP_SN
+		, V.VRIABL_SN
+		, V.DOMN_VRIABL_SN
+		, V.CL_CODE_SN
+		, V.VRIABL_ORDR
+		, DV.VRIABL_NM
+		, DV.VRIABL_LBL
+		, DV.VRIABL_ROLE
+		, DV.VRIABL_DC
+		, DV.VRIABL_TY_CODE
+		, DV.CRF_LBL_ONE
+		, DV.CRF_LBL_TWO
+		, DV.CTRL_FOM
+		, DV.CORE_CODE
+		, D.DOMN_NM
+		, 'N' USER_DFN_AT
+		, DV.CDISC_UPPER_CODE
+		, CC.CDISC_SUBMIT_VALUE UPPER_CDISC_SUBMIT_VALUE
+		, CC2.CDISC_SUBMIT_VALUE CDISC_SUBMIT_VALUE
+		, G.TASK_SN
+		, G.EDC_VER
+		FROM EDC_CR_GROUP G
+		LEFT OUTER JOIN EDC_CR_VRIABL V
+		ON V.GROUP_SN = G.GROUP_SN AND G.TASK_SN = V.TASK_SN AND G.EDC_VER = V.EDC_VER
+		INNER JOIN CDISC_DOMN_VRIABL DV
+		ON V.DOMN_VRIABL_SN = DV.DOMN_VRIABL_SN
+		INNER JOIN CDISC_DOMN D
+		ON D.CDISC_DOMN_SN = DV.CDISC_DOMN_SN
+		LEFT OUTER JOIN CDISC_CL_CODE CC ON CC.CDISC_CODE = DV.CDISC_UPPER_CODE AND CC.CDISC_UPPER_CODE IS NULL
+		LEFT OUTER JOIN CDISC_CL_CODE
+		CC2 ON CC2.CL_CODE_SN = V.CL_CODE_SN
+		WHERE V.USE_AT = 'Y'
+		AND DV.USE_AT = 'Y'
+		AND D.USE_AT = 'Y'
+		AND G.USE_AT = 'Y'
+		AND G.TASK_SN = #TASK_SN#
+		AND G.EDC_VER = #EDC_VER#
+		<isNotEmpty property="GROUP_SN" prepend="AND">
+			G.GROUP_SN = #GROUP_SN#
+		</isNotEmpty>
+		ORDER BY V.VRIABL_ORDR
+	</select>
+	<select id="selectVriablSn" parameterClass="hashMap" resultClass="string">
+		SELECT
+		CASE WHEN NVL(MAX(VRIABL_SN),100) <![CDATA[ <= ]]>
+		100 THEN 101
+		ELSE MAX(VRIABL_SN) + 1 END
+		FROM EDC_CR_VRIABL
+		WHERE GROUP_SN = #GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertGroupInside" parameterClass="hashMap">
+		INSERT INTO EDC_CR_VRIABL(
+		GROUP_SN
+		, VRIABL_SN
+		, TASK_SN
+		, EDC_VER
+		, DOMN_VRIABL_SN
+		<isNotEmpty property="CL_CODE_SN" prepend=",">
+			CL_CODE_SN
+		</isNotEmpty>
+		, USER_DFN_AT
+		, VRIABL_ORDR
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#GROUP_SN#
+		, #VRIABL_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, #DOMN_VRIABL_SN#
+		<isNotEmpty property="CL_CODE_SN" prepend=",">
+			#CL_CODE_SN#
+		</isNotEmpty>
+		, #USER_DFN_AT#
+		, #VRIABL_ORDR#
+		, #USE_AT#
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateGroupInside" parameterClass="hashMap">
+		UPDATE EDC_CR_VRIABL SET
+		CL_CODE_SN = #CL_CODE_SN#
+		, VRIABL_ORDR = #VRIABL_ORDR#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE GROUP_SN = #GROUP_SN#
+		AND VRIABL_SN = #VRIABL_SN#
+		AND TASK_SN = TASK_SN
+		AND EDC_VER = EDC_VER
+	</update>
+	<select id="selectGroupListForVisit" parameterClass="hashMap" resultClass="hashMap">
+		SELECT GROUP_SN ,
+		GROUP_LBL ,
+		GROUP_SE_CODE ,
+		GROUP_DC ,
+		GROUP_ORDR ,
+		TASK_SN ,
+		EDC_VER ,
+		ROWNUM VISIT_GROUP_SN
+		FROM EDC_CR_GROUP
+		WHERE GROUP_SN NOT IN
+		(SELECT GROUP_SN
+		FROM EDC_CR_VISIT_GROUP
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND VISIT_SN = #VISIT_SN#
+		AND USE_AT ='Y'
+		)
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND GROUP_SE_CODE != '06'
+		AND GROUP_SE_CODE != '07'
+		AND USE_AT ='Y'
+	</select>
+	<select id="selectVisitInsideList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		VG.VISIT_GROUP_SN
+		, V.TASK_SN
+		, V.EDC_VER
+		, VG.GROUP_SN
+		, VG.VISIT_SN
+		, G.GROUP_LBL
+		, G.GROUP_SE_CODE
+		, G.GROUP_DC
+		, VG.GROUP_ORDR
+		FROM EDC_CR_VISIT_GROUP VG
+		INNER JOIN EDC_CR_GROUP G
+		ON G.GROUP_SN = VG.GROUP_SN
+		AND G.TASK_SN = VG.TASK_SN AND G.EDC_VER = VG.EDC_VER
+		INNER JOIN EDC_CR_VISIT_SCHDUL V ON V.VISIT_SN = VG.VISIT_SN
+		AND V.TASK_SN = VG.TASK_SN AND V.EDC_VER = VG.EDC_VER
+		WHERE VG.USE_AT = 'Y'
+		AND G.USE_AT = 'Y'
+		AND V.USE_AT = 'Y'
+		AND G.TASK_SN = #TASK_SN#
+		AND G.EDC_VER = #EDC_VER#
+		<isNotEmpty property="VISIT_SN" prepend="AND">
+			VG.VISIT_SN = #VISIT_SN#
+		</isNotEmpty>
+		ORDER BY VG.GROUP_ORDR
+	</select>
+	<select id="selectVisitGroupSn" resultClass="string">
+		SELECT NVL(MAX(VISIT_GROUP_SN),0)+1 FROM EDC_CR_VISIT_GROUP
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertVisitInside" parameterClass="hashMap">
+		INSERT INTO EDC_CR_VISIT_GROUP(
+		VISIT_GROUP_SN
+		, VISIT_SN
+		, GROUP_SN
+		, TASK_SN
+		, EDC_VER
+		, GROUP_ORDR
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#VISIT_GROUP_SN#
+		, #VISIT_SN#
+		, #GROUP_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, #GROUP_ORDR#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateVisitInside" parameterClass="hashMap">
+		UPDATE EDC_CR_VISIT_GROUP SET
+		GROUP_ORDR = #GROUP_ORDR#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</update>
+
+	<select id="selectUserVariableList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT UD.TASK_SN
+		, UD.CDISC_DOMN_SN
+		, UD.DOMN_NM
+		, FN_GET_COMMONCODE('EDC038', UD.CDISC_SE_CODE, #LOCALE#) CDISC_SE_CODE
+		, UV.DOMN_VRIABL_SN
+		, UV.VRIABL_NM
+		, FN_GET_COMMONCODE('EDC037', UV.VRIABL_TY_CODE, #LOCALE#) VRIABL_TY_CODE
+		, UV.CRF_LBL_ONE
+		, UV.CRF_LBL_TWO
+		, UD.SUPP_DOMN
+		FROM EDC_USER_VRIABL UV
+		INNER JOIN EDC_USER_DOMN UD
+		ON UV.CDISC_DOMN_SN = UD.CDISC_DOMN_SN AND UD.TASK_SN = UV.TASK_SN
+		WHERE UD.TASK_SN = #TASK_SN#
+		AND UD.USE_AT = 'Y'
+		AND UV.USE_AT = 'Y'
+		AND UD.SUPP_DOMN = #SUPP_DOMN#
+	</select>
+	<select id="selectUserVariableDetail" parameterClass="hashMap" resultClass="hashMap">
+		SELECT UD.TASK_SN
+		, UD.CDISC_DOMN_SN
+		, UD.CDISC_SE_CODE
+		, UD.DOMN_NM
+		, UV.DOMN_VRIABL_SN
+		, UV.VRIABL_NM
+		, UV.VRIABL_TY_CODE
+		, UV.CRF_LBL_ONE
+		, UV.CRF_LBL_TWO
+		, 'U' CRUD
+		, UD.SUPP_DOMN
+		FROM EDC_USER_VRIABL UV
+		INNER JOIN EDC_USER_DOMN UD
+		ON UV.CDISC_DOMN_SN = UD.CDISC_DOMN_SN AND UV.TASK_SN = UD.TASK_SN
+		WHERE UD.TASK_SN = #TASK_SN#
+		AND UV.DOMN_VRIABL_SN = #DOMN_VRIABL_SN#
+	</select>
+
+	<select id="selectUserVariableOptionList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT TASK_SN
+		, DOMN_VRIABL_SN
+		, VRIABL_OPTN_SN
+		, VRIABL_OPTN_CODE
+		, VRIABL_OPTN_NM
+		, VRIABL_OPTN_ORDR
+		FROM EDC_USER_VRIABLOPTN
+		WHERE USE_AT='Y'
+		AND TASK_SN = #TASK_SN#
+		AND DOMN_VRIABL_SN = #DOMN_VRIABL_SN#
+		ORDER BY VRIABL_OPTN_ORDR
+	</select>
+	<select id="selectOptnSn" parameterClass="hashMap" resultClass="string">
+		SELECT
+		NVL(MAX(VRIABL_OPTN_SN),0)+1
+		FROM EDC_USER_VRIABLOPTN
+		WHERE TASK_SN = #TASK_SN#
+		AND DOMN_VRIABL_SN = #DOMN_VRIABL_SN#
+	</select>
+	<insert id="insertUserVariableOption" parameterClass="hashMap">
+		INSERT INTO EDC_USER_VRIABLOPTN(
+		TASK_SN
+		, DOMN_VRIABL_SN
+		, VRIABL_OPTN_SN
+		, VRIABL_OPTN_CODE
+		, VRIABL_OPTN_NM
+		, VRIABL_OPTN_ORDR
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#TASK_SN#
+		, #DOMN_VRIABL_SN#
+		, #VRIABL_OPTN_SN#
+		, #VRIABL_OPTN_CODE#
+		, #VRIABL_OPTN_NM#
+		, #VRIABL_OPTN_ORDR#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+
+	<update id="updateUserVariableOption" parameterClass="hashMap">
+		UPDATE EDC_USER_VRIABLOPTN SET
+		VRIABL_OPTN_CODE = #VRIABL_OPTN_CODE#
+		, VRIABL_OPTN_NM = #VRIABL_OPTN_NM#
+		, VRIABL_OPTN_ORDR = #VRIABL_OPTN_ORDR#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TASK_SN = #TASK_SN#
+		AND DOMN_VRIABL_SN = #DOMN_VRIABL_SN#
+		AND VRIABL_OPTN_SN = #VRIABL_OPTN_SN#
+	</update>
+
+	<select id="selectUserDomain" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		(
+		SELECT NVL(COUNT(*) , 0)
+		FROM EDC_USER_DOMN
+		WHERE DOMN_NM = #DOMN_NM#
+		AND TASK_SN = #TASK_SN#
+		AND USE_AT = 'Y'
+		)COUNT
+		, (
+		SELECT NVL(MAX(CDISC_DOMN_SN),0)+1
+		FROM EDC_USER_DOMN
+		WHERE TASK_SN = #TASK_SN#
+		)CDISC_DOMN_SN
+		FROM DUAL
+	</select>
+	<insert id="insertUserDomain" parameterClass="hashMap">
+		INSERT INTO EDC_USER_DOMN(
+		TASK_SN
+		, CDISC_DOMN_SN
+		, DOMN_NM
+		, CDISC_SE_CODE
+		, SUPP_DOMN
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#TASK_SN#
+		, #CDISC_DOMN_SN#
+		, #DOMN_NM#
+		, #CDISC_SE_CODE#
+		, #SUPP_DOMN#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+
+	<update id="updateUserDomain" parameterClass="hashMap">
+		UPDATE EDC_USER_DOMN SET
+		DOMN_NM = #DOMN_NM#
+		, CDISC_SE_CODE = #CDISC_SE_CODE#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TASK_SN = #TASK_SN#
+		AND CDISC_DOMN_SN = #CDISC_DOMN_SN#
+	</update>
+
+	<select id="selectUserDomnVriablSn" parameterClass="hashMap" resultClass="string">
+		SELECT NVL(MAX(DOMN_VRIABL_SN),0)+1
+		FROM EDC_USER_VRIABL
+		WHERE TASK_SN = #TASK_SN#
+	</select>
+
+	<insert id="insertUserVariable" parameterClass="hashMap">
+		INSERT INTO EDC_USER_VRIABL(
+		TASK_SN
+		, CDISC_DOMN_SN
+		, DOMN_VRIABL_SN
+		, VRIABL_NM
+		, VRIABL_TY_CODE
+		, CRF_LBL_ONE
+		, CRF_LBL_TWO
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#TASK_SN#
+		, #CDISC_DOMN_SN#
+		, #DOMN_VRIABL_SN#
+		, #VRIABL_NM#
+		, #VRIABL_TY_CODE#
+		, #CRF_LBL_ONE#
+		, #CRF_LBL_TWO#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+
+	<update id="updateUserVariable" parameterClass="hashMap">
+		UPDATE EDC_USER_VRIABL SET
+		VRIABL_NM = #VRIABL_NM#
+		, VRIABL_TY_CODE = #VRIABL_TY_CODE#
+		, CRF_LBL_ONE = #CRF_LBL_ONE#
+		, CRF_LBL_TWO = #CRF_LBL_TWO#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		, CDISC_DOMN_SN = #CDISC_DOMN_SN#
+		WHERE TASK_SN = #TASK_SN#
+		AND DOMN_VRIABL_SN = #DOMN_VRIABL_SN#
+	</update>
+
+	<select id="selectVisitInfoList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TASK_SN ,
+		EDC_VER ,
+		VISIT_SN ,
+		VISIT_LBL ,
+		VISIT_DAYCNT ,
+		VISIT_PREARNGE_CODE ,
+		VISIT_BFE_DAYCNT ,
+		VISIT_AFTER_DAYCNT ,
+		REFRN_BEGIN_AT ,
+		REFRN_END_AT ,
+		VISIT_TY ,
+		VISIT_ORDR
+		FROM EDC_CR_VISIT_SCHDUL
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND USE_AT = 'Y'
+		ORDER BY VISIT_ORDR
+	</select>
+	<select id="selectVisitSn" parameterClass="hashMap" resultClass="string">
+		SELECT
+		NVL(MAX(VISIT_SN), 0)+1
+		FROM EDC_CR_VISIT_SCHDUL
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+
+	<insert id="insertVisitInfo" parameterClass="hashMap">
+		INSERT INTO EDC_CR_VISIT_SCHDUL (
+		TASK_SN ,
+		EDC_VER ,
+		VISIT_SN ,
+		VISIT_LBL ,
+		VISIT_ORDR ,
+		USE_AT
+		<isNotEmpty property="VISIT_PREARNGE_CODE" prepend=",">
+			VISIT_PREARNGE_CODE
+		</isNotEmpty>
+		<isNotEmpty property="VISIT_DAYCNT" prepend=",">
+			VISIT_DAYCNT
+		</isNotEmpty>
+		<isNotEmpty property="VISIT_AFTER_DAYCNT" prepend=",">
+			VISIT_AFTER_DAYCNT
+		</isNotEmpty>
+		<isNotEmpty property="REFRN_BEGIN_AT" prepend=",">
+			REFRN_BEGIN_AT
+		</isNotEmpty>
+		<isNotEmpty property="REFRN_END_AT" prepend=",">
+			REFRN_END_AT
+		</isNotEmpty>
+		<isNotEmpty property="VISIT_TY" prepend=",">
+			VISIT_TY
+		</isNotEmpty>
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)
+		VALUES (
+		#TASK_SN# ,
+		#EDC_VER# ,
+		#VISIT_SN#,
+		#VISIT_LBL# ,
+		#VISIT_ORDR# ,
+		'Y'
+		<isNotEmpty property="VISIT_PREARNGE_CODE" prepend=",">
+			#VISIT_PREARNGE_CODE#
+		</isNotEmpty>
+		<isNotEmpty property="VISIT_DAYCNT" prepend=",">
+			#VISIT_DAYCNT#
+		</isNotEmpty>
+		<isNotEmpty property="VISIT_AFTER_DAYCNT" prepend=",">
+			#VISIT_AFTER_DAYCNT#
+		</isNotEmpty>
+		<isNotEmpty property="REFRN_BEGIN_AT" prepend=",">
+			#REFRN_BEGIN_AT#
+		</isNotEmpty>
+		<isNotEmpty property="REFRN_END_AT" prepend=",">
+			#REFRN_END_AT#
+		</isNotEmpty>
+		<isNotEmpty property="VISIT_TY" prepend=",">
+			#VISIT_TY#
+		</isNotEmpty>
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateVisitInfo" parameterClass="hashMap">
+		UPDATE EDC_CR_VISIT_SCHDUL SET
+		VISIT_LBL = #VISIT_LBL#
+		, USE_AT = #USE_AT#
+		, VISIT_ORDR = #VISIT_ORDR#
+		, VISIT_PREARNGE_CODE = #VISIT_PREARNGE_CODE#
+		, VISIT_DAYCNT = #VISIT_DAYCNT#
+		, VISIT_AFTER_DAYCNT = #VISIT_AFTER_DAYCNT#
+		, REFRN_BEGIN_AT = #REFRN_BEGIN_AT#
+		, REFRN_END_AT = #REFRN_END_AT#
+		, VISIT_TY = #VISIT_TY#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND VISIT_SN = #VISIT_SN#
+	</update>
+
+	<select id="selectElementList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TASK_SN
+		, EDC_VER
+		, TE_SN
+		, USE_AT
+		, TE_CODE
+		, TE_LBL
+		, TE_BEGIN_CND
+		, TE_END_CND
+		, TE_PD
+		FROM EDC_CR_TE
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND USE_AT = 'Y'
+	</select>
+	<select id="selectTeSn" parameterClass="hashMap" resultClass="string">
+		SELECT NVL(MAX(TE_SN), 0)+1 FROM EDC_CR_TE
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+
+	</select>
+	<insert id="insertElement" parameterClass="hashMap">
+		INSERT INTO EDC_CR_TE (
+		TASK_SN
+		, EDC_VER
+		, TE_SN
+		, USE_AT
+		, TE_CODE
+		, TE_LBL
+		<isNotEmpty property="TE_BEGIN_CND" prepend=",">
+			TE_BEGIN_CND
+		</isNotEmpty>
+		<isNotEmpty property="TE_END_CND" prepend=",">
+			TE_END_CND
+		</isNotEmpty>
+		<isNotEmpty property="TE_PD" prepend=",">
+			TE_PD
+		</isNotEmpty>
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		) VALUES (
+		#TASK_SN#
+		, #EDC_VER#
+		, #TE_SN#
+		, 'Y'
+		, #TE_CODE#
+		, #TE_LBL#
+		<isNotEmpty property="TE_BEGIN_CND" prepend=",">
+			#TE_BEGIN_CND#
+		</isNotEmpty>
+		<isNotEmpty property="TE_END_CND" prepend=",">
+			#TE_END_CND#
+		</isNotEmpty>
+		<isNotEmpty property="TE_PD" prepend=",">
+			#TE_PD#
+		</isNotEmpty>
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+
+	<update id="updateElement" parameterClass="hashMap">
+		UPDATE EDC_CR_TE SET
+		TASK_SN = #TASK_SN#
+		, TE_SN = #TE_SN#
+		, TE_CODE = #TE_CODE#
+		, TE_LBL = #TE_LBL#
+		, USE_AT = #USE_AT#
+		, TE_BEGIN_CND = #TE_BEGIN_CND#
+		, TE_END_CND = #TE_END_CND#
+		, TE_PD = #TE_PD#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND TE_SN = #TE_SN#
+	</update>
+
+
+	<select id="selectArmCodeList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TASK_SN ,
+		EDC_VER ,
+		TA_SN ,
+		TA_CODE ,
+		TA_LBL
+		FROM EDC_CR_TA
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<select id="selectTaSn" parameterClass="hashMap" resultClass="string">
+		SELECT NVL(MAX(TA_SN), 0)+1 FROM EDC_CR_TA
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertArmCode" parameterClass="hashMap">
+		INSERT INTO EDC_CR_TA (
+		TASK_SN ,
+		EDC_VER ,
+		TA_SN ,
+		TA_CODE ,
+		TA_LBL ,
+		USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)
+		VALUES (
+		#TASK_SN# ,
+		#EDC_VER# ,
+		#TA_SN# ,
+		#TA_CODE# ,
+		#TA_LBL# ,
+		'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateArmCode" parameterClass="hashMap">
+		UPDATE EDC_CR_TA SET
+		TA_CODE = #TA_CODE#
+		, TA_LBL = #TA_LBL#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND TA_SN = #TA_SN#
+	</update>
+	<select id="selectArmList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TA.TASK_SN
+		, TA.EDC_VER
+		, TA.TA_SN
+		, TA.TA_SN TA_CODE
+		, TA.TA_SN TA_LBL
+		, TA.TA_NO
+		, TAD.TA_DETAIL_SN
+		, TAD.TA_QU_CND
+		, TAD.TA_TRAN_RULE
+		, TAD.TA_EPOCH
+		, TAD.TE_SN
+		, TAD.TE_SN TE_CODE
+		, TAD.TE_SN TE_LBL
+		, TAD.TE_SORTORDR
+		, ROW_NUMBER() OVER(PARTITION BY TA.TA_SN ORDER BY TAD.TE_SORTORDR ) TE_NO
+		, ROWNUM RN
+		FROM
+		( SELECT
+		TA.TASK_SN
+		, TA.EDC_VER
+		, TA.TA_SN
+		, ROWNUM TA_NO
+		FROM EDC_CR_TA TA
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND TA.USE_AT = 'Y'
+		) TA
+		LEFT OUTER JOIN EDC_CR_TADETAIL TAD
+		ON TA.TA_SN = TAD.TA_SN AND TAD.USE_AT = 'Y'
+		AND TA.TASK_SN =TAD.TASK_SN AND TA.EDC_VER = TAD.EDC_VER
+		INNER JOIN EDC_CR_TE TE ON TE.TE_SN = TAD.TE_SN AND TE.USE_AT = 'Y'
+		AND TE.TASK_SN =TAD.TASK_SN AND TE.EDC_VER = TAD.EDC_VER
+	</select>
+
+	<select id="selectTaDetailSn" parameterClass="hashMap" resultClass="string">
+		SELECT NVL(MAX(TA_DETAIL_SN), 0)+1 FROM EDC_CR_TADETAIL
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertArm" parameterClass="hashMap">
+		INSERT INTO EDC_CR_TADETAIL (
+		TA_DETAIL_SN
+		, TA_SN
+		, TASK_SN
+		, EDC_VER
+		, TE_SN
+		<isNotEmpty property="TA_QU_CND" prepend=",">
+			TA_QU_CND
+		</isNotEmpty>
+		<isNotEmpty property="TA_TRAN_RULE" prepend=",">
+			TA_TRAN_RULE
+		</isNotEmpty>
+		<isNotEmpty property="TA_EPOCH" prepend=",">
+			TA_EPOCH
+		</isNotEmpty>
+		<isNotEmpty property="TE_SORTORDR" prepend=",">
+			TE_SORTORDR
+		</isNotEmpty>
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		) VALUES (
+		#TA_DETAIL_SN#
+		, #TA_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, #TE_SN#
+		<isNotEmpty property="TA_QU_CND" prepend=",">
+			#TA_QU_CND#
+		</isNotEmpty>
+		<isNotEmpty property="TA_TRAN_RULE" prepend=",">
+			#TA_TRAN_RULE#
+		</isNotEmpty>
+		<isNotEmpty property="TA_EPOCH" prepend=",">
+			#TA_EPOCH#
+		</isNotEmpty>
+		<isNotEmpty property="TE_SORTORDR" prepend=",">
+			#TE_SORTORDR#
+		</isNotEmpty>
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateArm" parameterClass="hashMap">
+		UPDATE EDC_CR_TADETAIL SET
+		TA_SN = #TA_SN#
+		, TASK_SN = #TASK_SN#
+		, EDC_VER = #EDC_VER#
+		, TE_SN = #TE_SN#
+		, TA_QU_CND = #TA_QU_CND#
+		, TA_TRAN_RULE =#TA_TRAN_RULE#
+		, TA_EPOCH = #TA_EPOCH#
+		, TE_SORTORDR = #TE_SORTORDR#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TA_DETAIL_SN = #TA_DETAIL_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</update>
+	<select id="selectInclusionList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TI.TI_SN ,
+		TI.TASK_SN ,
+		TI.TI_VER ||'.0' TI_VER ,
+		TI.TI_CODE ,
+		FN_GET_COMMONCODE('EDC032', TI.TI_SE_CODE, #LOCALE#) TI_SE_CODE,
+		TI.TI_CL ,
+		TI.TI_CN
+		FROM EDC_CR_TI TI
+		WHERE TI.TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND TI.USE_AT = 'Y'
+		ORDER BY TI.TI_VER DESC, TI.TI_SN
+	</select>
+	<select id="selectInclusionDetail" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TI_SN
+		, TASK_SN
+		, EDC_VER
+		, TI_VER ||'.0' TI_VER
+		, TI_CODE
+		, TI_SE_CODE
+		, TI_CL
+		, TI_CN
+		, #CRUD# CRUD
+		FROM EDC_CR_TI
+		WHERE TI_SN = #TI_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<select id="selectTiSn" parameterClass="hashMap" resultClass="string">
+		SELECT NVL(MAX(TI_SN), 0)+1 FROM EDC_CR_TI
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertInclusion" parameterClass="hashMap">
+		INSERT INTO EDC_CR_TI (
+		TI_SN
+		, TASK_SN
+		, EDC_VER
+		, TI_VER
+		, TI_CODE
+		, TI_SE_CODE
+		, TI_CL
+		, TI_CN
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#TI_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, (SELECT NVL(MAX(TI_VER), 1) FROM EDC_CR_TI WHERE USE_AT = 'Y')
+		, #TI_CODE#
+		, #TI_SE_CODE#
+		, #TI_CL#
+		, #TI_CN#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateInclusion" parameterClass="hashMap">
+		UPDATE EDC_CR_TI SET
+		TI_CODE = #TI_CODE#
+		, TI_SE_CODE = #TI_SE_CODE#
+		, TI_CL = #TI_CL#
+		, TI_CN = #TI_CN#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TI_SN = #TI_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</update>
+	<select id="selectNewInclusionVersion" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TI_SN + ROWNUM TI_SN ,
+		TASK_SN ,
+		EDC_VER ,
+		TI_VER ,
+		TI_CODE ,
+		TI_SE_CODE ,
+		TI_CL ,
+		TI_CN ,
+		USE_AT ,
+		#UPDATE_ID# UPDATE_ID
+		FROM
+		(SELECT
+		(SELECT NVL(MAX(TI_SN), 0) FROM EDC_CR_TI ) TI_SN ,
+		TASK_SN ,
+		EDC_VER ,
+		(TI_VER + 1) TI_VER ,
+		TI_CODE ,
+		TI_SE_CODE ,
+		TI_CL ,
+		TI_CN ,
+		USE_AT
+		FROM EDC_CR_TI
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND USE_AT ='Y'
+		AND TI_VER =
+		(SELECT NVL(MAX(TI_VER), 1)
+		FROM EDC_CR_TI
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND USE_AT ='Y'
+		)
+		)
+	</select>
+	<insert id="insertInclusionVersion" parameterClass="hashMap">
+		INSERT INTO EDC_CR_TI (
+		TI_SN
+		, TASK_SN
+		, EDC_VER
+		, TI_VER
+		, TI_CODE
+		, TI_SE_CODE
+		, TI_CL
+		, TI_CN
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#TI_SN# ,
+		#TASK_SN# ,
+		#EDC_VER# ,
+		#TI_VER# ,
+		#TI_CODE# ,
+		#TI_SE_CODE# ,
+		#TI_CL# ,
+		#TI_CN# ,
+		'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<select id="selectTrialSummaryList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TS_SN
+		, TASK_SN
+		, EDC_VER
+		, TS_NO
+		, TS_GROUP_ID
+		, TS_PARAMTR_CODE
+		, TS_PARAMTR
+		, TS_VALUE
+		, TS_NFLAVOR
+		, TS_VALUE_CODE
+		, TS_VALUE_CODE_REFRN
+		, TS_REFRN_VER
+		FROM EDC_CR_TS
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND USE_AT ='Y'
+		ORDER BY TS_NO, TS_GROUP_ID, TS_PARAMTR_CODE
+	</select>
+	<select id="selectTsSn" parameterClass="hashMap" resultClass="string">
+		SELECT NVL(MAX(TS_SN), 0)+1 FROM EDC_CR_TS
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertTrialSummary" parameterClass="hashMap">
+		INSERT INTO EDC_CR_TS (
+		TS_SN
+		, TASK_SN
+		, EDC_VER
+		<isNotEmpty property="TS_NO" prepend=",">
+			TS_NO
+		</isNotEmpty>
+		<isNotEmpty property="TS_GROUP_ID" prepend=",">
+			TS_GROUP_ID
+		</isNotEmpty>
+		<isNotEmpty property="TS_PARAMTR_CODE" prepend=",">
+			TS_PARAMTR_CODE
+		</isNotEmpty>
+		<isNotEmpty property="TS_PARAMTR" prepend=",">
+			TS_PARAMTR
+		</isNotEmpty>
+		<isNotEmpty property="TS_VALUE" prepend=",">
+			TS_VALUE
+		</isNotEmpty>
+		<isNotEmpty property="TS_NFLAVOR" prepend=",">
+			TS_NFLAVOR
+		</isNotEmpty>
+		<isNotEmpty property="TS_VALUE_CODE" prepend=",">
+			TS_VALUE_CODE
+		</isNotEmpty>
+		<isNotEmpty property="TS_VALUE_CODE_REFRN" prepend=",">
+			TS_VALUE_CODE_REFRN
+		</isNotEmpty>
+		<isNotEmpty property="TS_REFRN_VER" prepend=",">
+			TS_REFRN_VER
+		</isNotEmpty>
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		) VALUES (
+		#TS_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		<isNotEmpty property="TS_NO" prepend=",">
+			#TS_NO#
+		</isNotEmpty>
+		<isNotEmpty property="TS_GROUP_ID" prepend=",">
+			#TS_GROUP_ID#
+		</isNotEmpty>
+		<isNotEmpty property="TS_PARAMTR_CODE" prepend=",">
+			#TS_PARAMTR_CODE#
+		</isNotEmpty>
+		<isNotEmpty property="TS_PARAMTR" prepend=",">
+			#TS_PARAMTR#
+		</isNotEmpty>
+		<isNotEmpty property="TS_VALUE" prepend=",">
+			#TS_VALUE#
+		</isNotEmpty>
+		<isNotEmpty property="TS_NFLAVOR" prepend=",">
+			#TS_NFLAVOR#
+		</isNotEmpty>
+		<isNotEmpty property="TS_VALUE_CODE" prepend=",">
+			#TS_VALUE_CODE#
+		</isNotEmpty>
+		<isNotEmpty property="TS_VALUE_CODE_REFRN" prepend=",">
+			#TS_VALUE_CODE_REFRN#
+		</isNotEmpty>
+		<isNotEmpty property="TS_REFRN_VER" prepend=",">
+			#TS_REFRN_VER#
+		</isNotEmpty>
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+
+	</insert>
+	<update id="updateTrialSummary" parameterClass="hashMap">
+		UPDATE EDC_CR_TS SET
+		TS_NO = #TS_NO#
+		, TS_GROUP_ID = #TS_GROUP_ID#
+		, TS_PARAMTR_CODE = #TS_PARAMTR_CODE#
+		, TS_PARAMTR = #TS_PARAMTR#
+		, TS_VALUE = #TS_VALUE#
+		, TS_NFLAVOR = #TS_NFLAVOR#
+		, TS_VALUE_CODE = #TS_VALUE_CODE#
+		, TS_VALUE_CODE_REFRN = #TS_VALUE_CODE_REFRN#
+		, TS_REFRN_VER = #TS_REFRN_VER#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND TS_SN = #TS_SN#
+	</update>
+	<select id="selectChangeReason" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TASK_SN
+		, EDC_VER
+		, CHANGE_RESN
+		, TO_CHAR(BNDE_APPLC_DE, 'YYYYMMDDHH24MISS') BNDE_APPLC_DE
+		, BNDE_APPLC_CODE
+		FROM EDC_CR_FORM
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<update id="updateChangeReason" parameterClass="hashMap">
+		UPDATE EDC_CR_FORM SET
+		CHANGE_RESN = #CHANGE_RESN#
+		, BNDE_APPLC_DE = #BNDE_APPLC_DE#
+		, BNDE_APPLC_CODE = #BNDE_APPLC_CODE#
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</update>
+
+	<select id="selectCDISCCodeList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		CDC.CL_CODE_SN
+		, CDC.CDISC_RULE_SN
+		, CDC.CDISC_UPPER_CODE
+		, CDC.CDISC_CODE
+		, CDC.CODE_NM
+		, CDC.ESTN_POSBL_AT
+		, CDC.CDISC_SUBMIT_VALUE
+		, CDC.CDISC_SYNONM
+		, CDC.CDISC_DFN
+		, CDC.NCI_NM
+		, CDC.FRST_CREDE
+		, CDC.FRST_CRTR
+		, CDC.LAST_UPDDE
+		, CDC.LAST_UPDUSR
+		FROM CDISC_CL_CODE CDC
+		INNER JOIN EDC_CR_TASK CT ON CT.CDISC_RULE_SN = CDC.CDISC_RULE_SN
+		WHERE CT.TASK_SN = #TASK_SN#
+		AND CDC.CDISC_UPPER_CODE = #CDISC_UPPER_CODE#
+		AND CDC.USE_AT = 'Y'
+		ORDER BY CDC.CDISC_UPPER_CODE, CDC.CDISC_CODE, CDC.CODE_NM
+	</select>
+	<update id="updateCRFStatus" parameterClass="hashmap">
+		UPDATE EDC_CR_FORM SET
+		CRF_PROGRS_CODE = #CRF_PROGRS_CODE#
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</update>
+	<select id="selectDictionary" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		ROWNUM RN
+		, VG.VISIT_GROUP_SN
+		, VG.TASK_SN
+		, VG.EDC_VER
+		, VG.VISIT_SN
+		, VG.VISIT_SN || '_' || VG.GROUP_SN GROUP_SN
+		, VS.VISIT_LBL
+		, G.GROUP_LBL
+		, DV.CRF_LBL_ONE
+		, DV.CRF_LBL_TWO
+		, DV.VRIABL_ROLE
+		, DV.VRIABL_DC
+		, DV.VRIABL_NM
+		, DV.VRIABL_LBL
+		, FN_GET_COMMONCODE('EDC037', DV.VRIABL_TY_CODE, #LOCALE#) VRIABL_TY_CODE
+		, V.VRIABL_SN
+		, V.CL_CODE_SN
+		, V.DOMN_VRIABL_SN
+		, V.VRIABL_ORDR
+		, DV.CTRL_FOM
+		, FN_GET_COMMONCODE('EDC039', DV.CORE_CODE, #LOCALE#) CORE_CODE
+		, D.DOMN_NM
+		, DV.CDISC_UPPER_CODE
+		, CC.CDISC_SUBMIT_VALUE UPPER_CDISC_SUBMIT_VALUE
+		, CC2.CDISC_SUBMIT_VALUE CDISC_SUBMIT_VALUE
+		FROM EDC_CR_VISIT_GROUP VG
+		INNER JOIN EDC_CR_VISIT_SCHDUL VS
+		ON VG.VISIT_SN = VS.VISIT_SN AND VG.TASK_SN = VS.TASK_SN
+		AND VG.EDC_VER = VS.EDC_VER AND VS.USE_AT = 'Y'
+		INNER JOIN EDC_CR_GROUP G
+		ON VG.GROUP_SN = G.GROUP_SN AND VG.TASK_SN = G.TASK_SN
+		AND VG.EDC_VER = G.EDC_VER AND G.USE_AT = 'Y'
+		INNER JOIN EDC_CR_VRIABL V
+		ON G.GROUP_SN = V.GROUP_SN AND G.TASK_SN =
+		V.TASK_SN
+		AND G.EDC_VER = V.EDC_VER AND V.USE_AT = 'Y'
+		INNER JOIN CDISC_DOMN_VRIABL DV
+		ON V.DOMN_VRIABL_SN = DV.DOMN_VRIABL_SN AND DV.USE_AT = 'Y'
+		INNER JOIN CDISC_DOMN D
+		ON DV.CDISC_DOMN_SN = D.CDISC_DOMN_SN AND D.USE_AT = 'Y'
+		LEFT OUTER JOIN CDISC_CL_CODE CC
+		ON CC.CDISC_CODE = DV.CDISC_UPPER_CODE AND CC.CDISC_UPPER_CODE IS NULL
+		LEFT OUTER JOIN CDISC_CL_CODE CC2
+		ON CC2.CL_CODE_SN = V.CL_CODE_SN
+		WHERE VG.USE_AT = 'Y'
+		AND VG.TASK_SN = #TASK_SN#
+		AND VG.EDC_VER = #EDC_VER#
+		ORDER BY VS.VISIT_SN, VG.GROUP_ORDR, VG.GROUP_SN, V.VRIABL_ORDR
+	</select>
+	<select id="selectSetSn" parameterClass="hashmap" resultClass="string">
+		SELECT NVL(MAX(SET_SN), 0)+1
+		FROM EDC_CR_SET
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertSet" parameterClass="hashmap">
+		INSERT INTO EDC_CR_SET(
+		VISIT_GROUP_SN
+		, TASK_SN
+		, EDC_VER
+		, SET_SN
+		, SET_TY_CODE
+		, SET_ORDR
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#VISIT_GROUP_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, #SET_SN#
+		, #SET_TY_CODE#
+		, #SET_ORDR#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateSet" parameterClass="hashmap">
+		UPDATE EDC_CR_SET SET
+		SET_ORDR = #SET_ORDR#
+		<!-- , SET_TY_CODE = #SET_TY_CODE# -->
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SET_SN = #SET_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</update>
+	<select id="selectSetRowSn" parameterClass="hashmap" resultClass="string">
+		SELECT NVL(MAX(SET_ROW_SN), 0)+1
+		FROM EDC_CR_SET_ROW
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertSetRow" parameterClass="hashmap">
+		INSERT INTO EDC_CR_SET_ROW(
+		VISIT_GROUP_SN
+		, TASK_SN
+		, EDC_VER
+		, SET_SN
+		, SET_ROW_SN
+		, SET_ROW_ORDR
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#VISIT_GROUP_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, #SET_SN#
+		, #SET_ROW_SN#
+		, #SET_ROW_ORDR#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateSetRow" parameterClass="hashmap">
+		UPDATE EDC_CR_SET_ROW SET
+		SET_ROW_ORDR = #SET_ROW_ORDR#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND SET_ROW_SN = #SET_ROW_SN#
+	</update>
+	<select id="selectSetVriablSn" parameterClass="hashmap" resultClass="string">
+		SELECT NVL(MAX(SET_VRIABL_SN), 0)+1
+		FROM EDC_CR_SET_VRIABL
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertSetVariable" parameterClass="hashmap">
+		INSERT INTO EDC_CR_SET_VRIABL(
+		VISIT_GROUP_SN
+		, TASK_SN
+		, EDC_VER
+		, SET_SN
+		, SET_ROW_SN
+		, SET_VRIABL_SN
+		, GROUP_SN
+		, VRIABL_SN
+		, SET_VRIABL_ORDR
+		, VRIABL_SE_CODE
+		, NOMFRM_NM
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#VISIT_GROUP_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, #SET_SN#
+		, #SET_ROW_SN#
+		, #SET_VRIABL_SN#
+		, #GROUP_SN#
+		, #VRIABL_SN#
+		, #SET_VRIABL_ORDR#
+		, #VRIABL_SE_CODE#
+		, (
+		SELECT
+		NVL(MAX(NOMFRM_NM), 0)+1
+		FROM EDC_CR_SET_VRIABL WHERE TASK_SN = #TASK_SN# AND EDC_VER = #EDC_VER#
+		)
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateSetVariable" parameterClass="hashmap">
+		UPDATE EDC_CR_SET_VRIABL SET
+		GROUP_SN = #GROUP_SN#
+		, VRIABL_SN = #VRIABL_SN#
+		, SET_VRIABL_ORDR = #SET_VRIABL_ORDR#
+		, VRIABL_SE_CODE = #VRIABL_SE_CODE#
+		, DICARY_USE_AT = #DICARY_USE_AT#
+		, DICARY_VER = #DICARY_VER#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND SET_VRIABL_SN =#SET_VRIABL_SN#
+	</update>
+	<select id="selectDescription" parameterClass="hashmap" resultClass="hashmap">
+		SELECT
+		TASK_SN
+		, EDC_VER
+		, VISIT_GROUP_SN
+		, SET_VRIABL_SN
+		, DC_CN
+		, DC_FONT_CODE
+		, DC_FONT_MG
+		, DC_LINK_CODE
+		, DC_FONT_COLLR
+		FROM EDC_CR_DC DC
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SET_VRIABL_SN = #SET_VRIABL_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertDescription" parameterClass="hashmap">
+		INSERT INTO EDC_CR_DC(
+		VISIT_GROUP_SN
+		, TASK_SN
+		, EDC_VER
+		, SET_VRIABL_SN
+		, DC_CN
+		, DC_FONT_CODE
+		, DC_FONT_MG
+		, DC_LINK_CODE
+		, DC_FONT_COLLR
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#VISIT_GROUP_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, #SET_VRIABL_SN#
+		, #DC_CN#
+		, #DC_FONT_CODE#
+		, #DC_FONT_MG#
+		, #DC_LINK_CODE#
+		, #DC_FONT_COLLR#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateDescription" parameterClass="hashmap">
+		UPDATE EDC_CR_DC SET
+		DC_CN = #DC_CN#
+		, DC_FONT_CODE = #DC_FONT_CODE#
+		, DC_FONT_MG = #DC_FONT_MG#
+		, DC_LINK_CODE = #DC_LINK_CODE#
+		, DC_FONT_COLLR = #DC_FONT_COLLR#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND SET_VRIABL_SN = #SET_VRIABL_SN#
+	</update>
+
+	<select id="selectGroupListForLayout" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		V.GROUP_SN
+		, V.VRIABL_SN
+		, V.DOMN_VRIABL_SN
+		, V.CL_CODE_SN
+		, V.VRIABL_ORDR
+		, DV.VRIABL_NM
+		, DV.VRIABL_LBL
+		, DV.CRF_LBL_ONE
+		, DV.CRF_LBL_TWO
+		, D.DOMN_NM
+		, VG.TASK_SN
+		, VG.EDC_VER
+		, DV.CDISC_UPPER_CODE
+		, CC.CDISC_SUBMIT_VALUE UPPER_CDISC_SUBMIT_VALUE
+		, CC2.CDISC_SUBMIT_VALUE CDISC_SUBMIT_VALUE
+		, VG.VISIT_GROUP_SN
+		, CRC.CODING_AT
+		, COUNT(*) OVER (PARTITION BY V.DOMN_VRIABL_SN) CNT
+		FROM EDC_CR_VISIT_GROUP VG
+		LEFT OUTER JOIN EDC_CR_VRIABL V
+		ON V.GROUP_SN = VG.GROUP_SN AND V.TASK_SN = VG.TASK_SN
+		AND V.EDC_VER = VG.EDC_VER
+		INNER JOIN CDISC_DOMN_VRIABL DV
+		ON V.DOMN_VRIABL_SN = DV.DOMN_VRIABL_SN
+		INNER JOIN CDISC_DOMN D
+		ON D.CDISC_DOMN_SN = DV.CDISC_DOMN_SN
+		LEFT OUTER JOIN CDISC_CL_CODE CC
+		ON CC.CDISC_CODE = DV.CDISC_UPPER_CODE AND CC.CDISC_UPPER_CODE IS NULL
+		LEFT OUTER JOIN CDISC_CL_CODE CC2
+		ON CC2.CL_CODE_SN = V.CL_CODE_SN
+		LEFT OUTER JOIN EDC_CR_CODING CRC ON CRC.TASK_SN = V.TASK_SN
+		AND CRC.EDC_VER = V.EDC_VER AND CRC.DOMN_VRIABL_SN =
+		V.DOMN_VRIABL_SN
+		AND CRC.USE_AT = 'Y'
+		WHERE V.USE_AT = 'Y'
+		AND DV.USE_AT = 'Y'
+		AND D.USE_AT = 'Y'
+		AND VG.USE_AT = 'Y'
+		AND VG.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND VG.TASK_SN = #TASK_SN#
+		AND VG.EDC_VER = #EDC_VER#
+		AND DV.VRIABL_NM != 'SUBJID'
+		ORDER BY V.VRIABL_ORDR
+	</select>
+	<select id="selectLayoutList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		SEV.TASK_SN
+		, SEV.EDC_VER
+		, SEV.VISIT_GROUP_SN
+		, SEV.SET_SN
+		, SEV.SET_ROW_SN
+		, SEV.SET_VRIABL_SN
+		, SEV.GROUP_SN
+		, SEV.VRIABL_SN
+		, SEV.VRIABL_SE_CODE
+		, SE.SET_ORDR
+		, SE.SET_TY_CODE
+		, SER.SET_ROW_ORDR
+		, SEV.SET_VRIABL_ORDR
+		, DV.VRIABL_NM
+		, DV.CRF_LBL_ONE
+		, DV.CRF_LBL_TWO
+		, V.DOMN_VRIABL_SN
+		, V.CL_CODE_SN
+		, CC2.CDISC_SUBMIT_VALUE CDISC_SUBMIT_VALUE
+		, DC.DC_CN
+		, DC.DC_FONT_CODE
+		, FN_GET_COMMONCODE('EDC043', DC.DC_FONT_CODE, #LOCALE#) DC_FONT_CODE_VALUE
+		, DC.DC_FONT_COLLR
+		, DC.DC_FONT_MG
+		, FN_GET_COMMONCODE('EDC044', DC.DC_FONT_MG, #LOCALE#) DC_FONT_MG_VALUE
+		, DC.DC_LINK_CODE
+		FROM EDC_CR_SET SE
+		INNER JOIN EDC_CR_SET_ROW SER
+		ON SE.VISIT_GROUP_SN = SER.VISIT_GROUP_SN AND SE.SET_SN = SER.SET_SN
+		AND SE.TASK_SN = SER.TASK_SN AND SE.EDC_VER = SER.EDC_VER AND SER.USE_AT = 'Y'
+		INNER JOIN EDC_CR_SET_VRIABL SEV
+		ON SEV.VISIT_GROUP_SN = SER.VISIT_GROUP_SN AND SEV.SET_ROW_SN = SER.SET_ROW_SN
+		AND SEV.TASK_SN = SER.TASK_SN AND SEV.EDC_VER = SER.EDC_VER AND
+		SEV.USE_AT = 'Y'
+		LEFT OUTER JOIN EDC_CR_VRIABL V
+		ON SEV.GROUP_SN = V.GROUP_SN AND SEV.VRIABL_SN = V.VRIABL_SN
+		AND SEV.TASK_SN = V.TASK_SN AND SEV.EDC_VER = V.EDC_VER AND V.USE_AT = 'Y'
+		LEFT OUTER JOIN CDISC_CL_CODE CC2 ON CC2.CL_CODE_SN = V.CL_CODE_SN
+		LEFT OUTER JOIN CDISC_DOMN_VRIABL DV ON V.DOMN_VRIABL_SN = DV.DOMN_VRIABL_SN
+		LEFT OUTER JOIN EDC_CR_DC DC
+		ON DC.VISIT_GROUP_SN = SEV.VISIT_GROUP_SN AND DC.SET_VRIABL_SN = SEV.SET_VRIABL_SN
+		AND DC.TASK_SN = SEV.TASK_SN AND DC.EDC_VER = SEV.EDC_VER AND DC.USE_AT = 'Y'
+		WHERE SE.USE_AT = 'Y'
+		AND SE.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SE.TASK_SN = #TASK_SN#
+		AND SE.EDC_VER = #EDC_VER#
+		ORDER BY SE.SET_ORDR, SER.SET_ROW_ORDR, SEV.SET_VRIABL_ORDR
+	</select>
+	<select id="selectSameVariable" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		V.CL_CODE_SN
+		, CC2.CDISC_SUBMIT_VALUE
+		, DV.VRIABL_NM
+		, V.GROUP_SN
+		, V.VRIABL_SN
+		, #SET_VRIABL_SN# SET_VRIABL_SN
+		FROM EDC_CR_VISIT_GROUP VG
+		LEFT OUTER JOIN EDC_CR_VRIABL V ON
+		VG.TASK_SN = V.TASK_SN AND VG.EDC_VER = V.EDC_VER AND V.GROUP_SN = VG.GROUP_SN
+		INNER JOIN CDISC_DOMN_VRIABL DV ON V.DOMN_VRIABL_SN = DV.DOMN_VRIABL_SN
+		INNER JOIN CDISC_DOMN D ON D.CDISC_DOMN_SN = DV.CDISC_DOMN_SN
+		INNER JOIN CDISC_CL_CODE CC ON CC.CDISC_CODE = DV.CDISC_UPPER_CODE AND CC.CDISC_UPPER_CODE IS NULL
+		LEFT OUTER JOIN CDISC_CL_CODE CC2 ON CC2.CL_CODE_SN = V.CL_CODE_SN
+		WHERE V.USE_AT = 'Y'
+		AND DV.USE_AT = 'Y'
+		AND D.USE_AT = 'Y'
+		AND VG.USE_AT = 'Y'
+		AND VG.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND VG.TASK_SN = #TASK_SN#
+		AND VG.EDC_VER = #EDC_VER#
+		AND DV.DOMN_VRIABL_SN = #DOMN_VRIABL_SN#
+		ORDER BY V.VRIABL_ORDR
+	</select>
+	<select id="selectAllEditCheckList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT SEV.TASK_SN,
+		SEV.EDC_VER,
+		SEV.VISIT_GROUP_SN ,
+		SEV.SET_SN ,
+		SEV.SET_ROW_SN ,
+		SEV.SET_VRIABL_SN ,
+		VS.VISIT_LBL ,
+		G.GROUP_LBL ,
+		DV.CRF_LBL_ONE ,
+		DV.CRF_LBL_TWO ,
+		FN_GET_COMMONCODE('EDC013', EC.QUERY_SE_CODE, #LOCALE#) QUERY_SE_CODE,
+		EC.QUERY_MSSAGE ,
+		EC.EDITCECK_SN ,
+		DV.VRIABL_NM ,
+		CASE WHEN SE.SET_TY_CODE = '02' OR SE.SET_TY_CODE = '04'
+		THEN SER.SET_ROW_ORDR
+		ELSE NULL
+		END SET_ROW_ORDR ,
+		<!-- DECODE(SE.SET_TY_CODE , '02', DENSE_RANK() OVER (PARTITION BY SEV.VISIT_GROUP_SN , SEV.SET_SN ORDER BY SER.SET_ROW_ORDR ) , NULL ) SET_ROW_ORDR , -->
+		(SELECT CC2.CDISC_SUBMIT_VALUE
+		FROM EDC_CR_SET_VRIABL SSV
+		INNER JOIN EDC_CR_VRIABL SSV_V
+		ON SSV.GROUP_SN = SSV_V.GROUP_SN AND SSV.VRIABL_SN = SSV_V.VRIABL_SN
+		AND SSV.TASK_SN = SSV_V.TASK_SN AND SSV.EDC_VER = SSV_V.EDC_VER AND SSV_V.USE_AT = 'Y'
+		LEFT OUTER JOIN CDISC_CL_CODE CC2 ON CC2.CL_CODE_SN = SSV_V.CL_CODE_SN
+		WHERE SEV.VISIT_GROUP_SN = VISIT_GROUP_SN AND SEV.SET_ROW_SN = SSV.SET_ROW_SN
+		AND SSV.VRIABL_SE_CODE = '08'
+		AND SSV.TASK_SN = SEV.TASK_SN
+		AND SSV.EDC_VER = SEV.EDC_VER
+		AND ROWNUM = 1
+		) CDISC_SUBMIT_VALUE,
+		RANK() OVER (PARTITION BY VG.VISIT_SN, VG.GROUP_SN ORDER BY SE.SET_ORDR, SER.SET_ROW_ORDR, SEV.SET_VRIABL_ORDR ) RANK
+		FROM EDC_CR_VISIT_GROUP VG
+		LEFT OUTER JOIN EDC_CR_SET SE
+		ON SE.VISIT_GROUP_SN = VG.VISIT_GROUP_SN AND SE.TASK_SN = VG.TASK_SN
+		AND SE.EDC_VER = VG.EDC_VER AND SE.USE_AT = 'Y'
+		LEFT OUTER JOIN EDC_CR_SET_ROW SER
+		ON SER.VISIT_GROUP_SN = VG.VISIT_GROUP_SN AND SER.SET_SN = SE.SET_SN
+		AND SER.TASK_SN = VG.TASK_SN AND SER.EDC_VER = VG.EDC_VER AND SER.USE_AT = 'Y'
+		LEFT OUTER JOIN
+		EDC_CR_SET_VRIABL SEV
+		ON SEV.VISIT_GROUP_SN = VG.VISIT_GROUP_SN AND SEV.SET_ROW_SN = SER.SET_ROW_SN
+		AND SEV.TASK_SN = VG.TASK_SN AND SEV.EDC_VER = VG.EDC_VER AND SEV.USE_AT = 'Y'
+		INNER JOIN EDC_CR_VISIT_SCHDUL VS
+		ON VG.VISIT_SN = VS.VISIT_SN AND VG.TASK_SN = VS.TASK_SN
+		AND VG.EDC_VER = VS.EDC_VER AND VS.USE_AT = 'Y'
+		INNER JOIN EDC_CR_GROUP G ON VG.GROUP_SN = G.GROUP_SN
+		AND VG.TASK_SN = G.TASK_SN AND VG.EDC_VER = G.EDC_VER AND G.USE_AT = 'Y'
+		INNER JOIN EDC_CR_VRIABL V
+		ON SEV.GROUP_SN = V.GROUP_SN AND SEV.VRIABL_SN = V.VRIABL_SN
+		AND SEV.TASK_SN = V.TASK_SN AND SEV.EDC_VER = V.EDC_VER AND V.USE_AT = 'Y'
+		INNER JOIN CDISC_DOMN_VRIABL DV ON DV.DOMN_VRIABL_SN = V.DOMN_VRIABL_SN AND DV.USE_AT = 'Y'
+		LEFT OUTER JOIN EDC_CR_EDITCECK EC
+		ON SEV.VISIT_GROUP_SN = EC.VISIT_GROUP_SN AND SEV.SET_VRIABL_SN = EC.SET_VRIABL_SN
+		AND SEV.TASK_SN = EC.TASK_SN AND SEV.EDC_VER = EC.EDC_VER AND EC.USE_AT = 'Y'
+		WHERE VG.TASK_SN = #TASK_SN#
+		AND VG.EDC_VER = #EDC_VER#
+		AND VG.USE_AT = 'Y'
+		AND SEV.VRIABL_SE_CODE IS NOT NULL
+		AND
+		SEV.VRIABL_SE_CODE NOT IN( '07' , '08' , '11' )
+		<!-- AND ((VRIABL_SE_CODE = '01' AND V.CL_CODE_SN IS NULL) OR (VRIABL_SE_CODE != '01')) -->
+
+	</select>
+	<select id="selectEditCheckDetail" parameterClass="hashMap" resultClass="hashMap" remapResults="true">
+		SELECT
+		SEV.TASK_SN ,
+		#TASK_NO# TASK_NO ,
+		SEV.EDC_VER ,
+		SEV.VISIT_GROUP_SN ,
+		SEV.SET_SN ,
+		SEV.SET_ROW_SN ,
+		SEV.SET_VRIABL_SN ,
+		VS.VISIT_LBL ,
+		G.GROUP_LBL ,
+		DV.CRF_LBL_ONE ,
+		DV.CRF_LBL_TWO ,
+		DV.VRIABL_NM ,
+		<isEqual property="CRUD" compareValue="U">
+			EC.QUERY_SE_CODE,
+			EC.QUERY_MSSAGE ,
+			EC.EDITCECK_SN ,
+			EC.CND_NOMFRM ,
+		</isEqual>
+		DECODE(SE.SET_TY_CODE , '02', SER.SET_ROW_ORDR , NULL) SET_ROW_ORDR ,
+		(SELECT CC2.CDISC_SUBMIT_VALUE
+		FROM EDC_CR_SET_VRIABL SSV
+		INNER JOIN EDC_CR_VRIABL SSV_V
+		ON SSV.GROUP_SN = SSV_V.GROUP_SN AND SSV.VRIABL_SN = SSV_V.VRIABL_SN AND SSV_V.USE_AT = 'Y'
+		LEFT OUTER JOIN CDISC_CL_CODE CC2
+		ON CC2.CL_CODE_SN = SSV_V.CL_CODE_SN
+		WHERE SEV.VISIT_GROUP_SN = VISIT_GROUP_SN AND SEV.SET_SN = SSV.SET_SN
+		AND SEV.SET_ROW_SN = SSV.SET_ROW_SN AND SSV.VRIABL_SE_CODE = '08'
+		AND SEV.TASK_SN = SSV.TASK_SN AND SEV.EDC_VER = SSV.EDC_VER
+		AND ROWNUM=1
+		) CDISC_SUBMIT_VALUE ,
+		#CRUD# CRUD
+		FROM EDC_CR_VISIT_GROUP VG
+		LEFT OUTER JOIN EDC_CR_SET SE
+		ON SE.VISIT_GROUP_SN = VG.VISIT_GROUP_SN AND SE.USE_AT = 'Y'
+		AND SE.TASK_SN = VG.TASK_SN AND SE.EDC_VER = VG.EDC_VER
+		LEFT OUTER JOIN EDC_CR_SET_ROW SER
+		ON SER.VISIT_GROUP_SN = VG.VISIT_GROUP_SN AND SER.SET_SN = SE.SET_SN AND SER.USE_AT = 'Y'
+		AND SER.TASK_SN = VG.TASK_SN AND SER.EDC_VER = VG.EDC_VER
+		LEFT OUTER JOIN EDC_CR_SET_VRIABL SEV
+		ON SEV.VISIT_GROUP_SN = VG.VISIT_GROUP_SN AND
+		SEV.SET_ROW_SN = SER.SET_ROW_SN AND SEV.USE_AT = 'Y'
+		AND SEV.TASK_SN = VG.TASK_SN AND SEV.EDC_VER = VG.EDC_VER
+		INNER JOIN EDC_CR_VISIT_SCHDUL VS ON
+		VG.VISIT_SN = VS.VISIT_SN AND VS.USE_AT = 'Y'
+		AND VS.TASK_SN = VG.TASK_SN AND VS.EDC_VER = VG.EDC_VER
+		INNER JOIN EDC_CR_GROUP G ON VG.GROUP_SN = G.GROUP_SN AND G.USE_AT = 'Y'
+		AND G.TASK_SN = VG.TASK_SN AND G.EDC_VER = VG.EDC_VER
+		INNER JOIN EDC_CR_VRIABL V
+		ON SEV.GROUP_SN = V.GROUP_SN AND SEV.VRIABL_SN = V.VRIABL_SN AND V.USE_AT = 'Y'
+		AND V.TASK_SN = VG.TASK_SN AND V.EDC_VER = VG.EDC_VER
+		INNER JOIN CDISC_DOMN_VRIABL DV
+		ON DV.DOMN_VRIABL_SN = V.DOMN_VRIABL_SN AND DV.USE_AT = 'Y'
+		<isEqual property="CRUD" compareValue="U">
+			LEFT OUTER JOIN EDC_CR_EDITCECK EC
+			ON SEV.VISIT_GROUP_SN = EC.VISIT_GROUP_SN AND SEV.SET_VRIABL_SN = EC.SET_VRIABL_SN AND EC.USE_AT = 'Y'
+			AND SEV.TASK_SN = EC.TASK_SN AND SEV.EDC_VER = EC.EDC_VER
+		</isEqual>
+		WHERE VG.USE_AT = 'Y'
+		AND SEV.TASK_SN = #TASK_SN#
+		AND SEV.EDC_VER = #EDC_VER#
+		AND SEV.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SEV.SET_VRIABL_SN = #SET_VRIABL_SN#
+		<isEqual property="CRUD" compareValue="U" prepend="AND">
+			EC.EDITCECK_SN = #EDITCECK_SN#
+		</isEqual>
+
+	</select>
+	<select id="selectDisableList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		LMTT.TASK_SN
+		, LMTT.EDC_VER
+		, LMTT.VISIT_GROUP_SN
+		, LMTT.SET_VRIABL_SN
+		, LMTT.EDITCECK_SN
+		, LMTT.INPUT_LMTT_SN
+		, VG.VISIT_SN
+		, LMTT.LMTT_VISIT_GROUP_SN
+		, LMTT.LMTT_SET_SN
+		, LMTT.LMTT_SET_ROW_SN
+		, LMTT.LMTT_SET_VRIABL_SN
+		, V.DOMN_VRIABL_SN
+		, LMTT.LMTT_SET_SN ||'@'|| LMTT.LMTT_SET_ROW_SN ||'@'|| LMTT.LMTT_SET_VRIABL_SN ||'@'|| V.DOMN_VRIABL_SN SET_ROW_ORDR
+		FROM EDC_CR_INPUTLMTT LMTT
+		INNER JOIN EDC_CR_VISIT_GROUP VG
+		ON VG.VISIT_GROUP_SN = LMTT.LMTT_VISIT_GROUP_SN AND VG.USE_AT = 'Y'
+		AND LMTT.TASK_SN = VG.TASK_SN AND LMTT.EDC_VER = VG.EDC_VER
+		LEFT OUTER JOIN EDC_CR_SET_VRIABL SEV
+		ON SEV.VISIT_GROUP_SN = LMTT.LMTT_VISIT_GROUP_SN AND SEV.SET_VRIABL_SN = LMTT.LMTT_SET_VRIABL_SN AND SEV.USE_AT = 'Y'
+		AND LMTT.TASK_SN = SEV.TASK_SN AND LMTT.EDC_VER = SEV.EDC_VER
+		LEFT OUTER JOIN EDC_CR_VRIABL V
+		ON SEV.GROUP_SN = V.GROUP_SN AND SEV.VRIABL_SN = V.VRIABL_SN AND V.USE_AT = 'Y'
+		AND LMTT.TASK_SN = V.TASK_SN AND LMTT.EDC_VER
+		= V.EDC_VER
+		WHERE LMTT.USE_AT = 'Y'
+		AND LMTT.TASK_SN = #TASK_SN#
+		AND LMTT.EDC_VER = #EDC_VER#
+		<isNotEmpty property="VISIT_GROUP_SN" prepend="AND">
+			LMTT.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		</isNotEmpty>
+		<isNotEmpty property="SET_VRIABL_SN" prepend="AND">
+			LMTT.SET_VRIABL_SN = #SET_VRIABL_SN#
+		</isNotEmpty>
+		<isNotEmpty property="EDITCECK_SN" prepend="AND">
+			LMTT.EDITCECK_SN = #EDITCECK_SN#
+		</isNotEmpty>
+	</select>
+	<select id="selectSetSnCheck" parameterClass="hashMap" resultClass="int">
+		SELECT COUNT(*)
+		FROM EDC_CR_SET
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND SET_SN = #SET_SN#
+	</select>
+	<select id="selectTaskBlindPk" parameterClass="hashMap" resultClass="hashMap">
+		SELECT SANCLINE_SN
+		FROM EDC_CR_TASK WHERE TASK_SN = #TASK_SN#
+	</select>
+	<update id="updateTaskBlindPk" parameterClass="hashMap">
+		UPDATE EDC_CR_TASK SET
+		SANCLINE_SN = #SANCLINE_SN#
+		WHERE TASK_SN = #TASK_SN#
+	</update>
+	<select id="selectEditVariableList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT DISTINCT DV.DOMN_VRIABL_SN ,
+		DV.CRF_LBL_ONE ,
+		DV.CRF_LBL_TWO ,
+		DV.VRIABL_NM
+		FROM EDC_CR_SET_VRIABL SEV
+		INNER JOIN EDC_CR_VRIABL V
+		ON SEV.GROUP_SN = V.GROUP_SN AND SEV.VRIABL_SN = V.VRIABL_SN AND V.USE_AT = 'Y'
+		AND SEV.TASK_SN = V.TASK_SN AND SEV.EDC_VER = V.EDC_VER
+		INNER JOIN CDISC_DOMN_VRIABL DV
+		ON DV.DOMN_VRIABL_SN = V.DOMN_VRIABL_SN
+		AND DV.USE_AT = 'Y'
+		WHERE SEV.TASK_SN = #TASK_SN#
+		AND SEV.EDC_VER = #EDC_VER#
+		AND SEV.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SEV.USE_AT = 'Y'
+		AND SEV.VRIABL_SE_CODE IS NOT NULL
+		AND SEV.VRIABL_SE_CODE NOT IN( '07' , '08' , '11' )
+		<!-- AND ( ( VRIABL_SE_CODE = '01' AND V.CL_CODE_SN IS NULL ) OR ( VRIABL_SE_CODE != '01' ) ) -->
+		ORDER BY DV.VRIABL_NM
+	</select>
+	<select id="selectEditSeqList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT SEV.VISIT_GROUP_SN ,
+		SEV.SET_SN ,
+		SEV.SET_ROW_SN ,
+		SEV.SET_VRIABL_SN ,
+		DV.DOMN_VRIABL_SN ,
+		SEV.SET_SN || '@' || SEV.SET_ROW_SN || '@' || SEV.SET_VRIABL_SN || '@' || DV.DOMN_VRIABL_SN CODE ,
+		CASE WHEN SE.SET_TY_CODE = '02' OR SE.SET_TY_CODE = '04'
+		THEN SER.SET_ROW_ORDR
+		ELSE NULL
+		END SET_ROW_ORDR ,
+		(
+		SELECT CC2.CDISC_SUBMIT_VALUE
+		FROM EDC_CR_SET_VRIABL SSV
+		INNER JOIN EDC_CR_VRIABL SSV_V ON SSV.GROUP_SN = SSV_V.GROUP_SN AND SSV.VRIABL_SN = SSV_V.VRIABL_SN AND SSV_V.USE_AT = 'Y'
+		LEFT OUTER JOIN CDISC_CL_CODE CC2 ON CC2.CL_CODE_SN = SSV_V.CL_CODE_SN
+		WHERE SEV.VISIT_GROUP_SN = VISIT_GROUP_SN AND SEV.SET_ROW_SN = SSV.SET_ROW_SN AND SSV.VRIABL_SE_CODE = '08'
+		AND SEV.TASK_SN = SSV.TASK_SN AND SEV.EDC_VER = SSV.EDC_VER
+		AND ROWNUM = 1
+		) CDISC_SUBMIT_VALUE
+		FROM EDC_CR_SET SE
+		LEFT OUTER JOIN EDC_CR_SET_ROW SER
+		ON SER.VISIT_GROUP_SN = SE.VISIT_GROUP_SN AND SER.SET_SN = SE.SET_SN AND SER.USE_AT = 'Y'
+		AND SER.TASK_SN = SE.TASK_SN AND SER.EDC_VER = SE.EDC_VER
+		LEFT OUTER JOIN EDC_CR_SET_VRIABL SEV
+		ON
+		SEV.VISIT_GROUP_SN = SE.VISIT_GROUP_SN AND SEV.SET_SN = SE.SET_SN AND SEV.SET_ROW_SN = SER.SET_ROW_SN AND SEV.USE_AT = 'Y'
+		AND SEV.TASK_SN = SE.TASK_SN AND SEV.EDC_VER = SE.EDC_VER
+		INNER JOIN EDC_CR_GROUP G
+		ON SEV.GROUP_SN = G.GROUP_SN AND G.USE_AT = 'Y'
+		AND SEV.TASK_SN = G.TASK_SN AND SEV.EDC_VER = G.EDC_VER
+		INNER JOIN EDC_CR_VRIABL V
+		ON SEV.GROUP_SN = V.GROUP_SN AND SEV.VRIABL_SN = V.VRIABL_SN AND V.USE_AT = 'Y'
+		AND SEV.TASK_SN = V.TASK_SN AND SEV.EDC_VER = V.EDC_VER
+		INNER JOIN CDISC_DOMN_VRIABL DV
+		ON DV.DOMN_VRIABL_SN = V.DOMN_VRIABL_SN AND DV.USE_AT = 'Y'
+		WHERE SE.TASK_SN = #TASK_SN#
+		AND SE.EDC_VER = #EDC_VER#
+		AND SE.VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SE.USE_AT = 'Y'
+		AND SEV.VRIABL_SE_CODE IS NOT NULL
+		AND SEV.VRIABL_SE_CODE NOT IN( '07' , '08' , '11')
+		<!-- AND ((VRIABL_SE_CODE = '01' AND V.CL_CODE_SN IS NULL) OR (VRIABL_SE_CODE != '01')) -->
+		AND DV.DOMN_VRIABL_SN = #DOMN_VRIABL_SN#
+		ORDER BY SE.SET_ORDR, SER.SET_ROW_ORDR, SEV.SET_VRIABL_ORDR
+	</select>
+	<select id="selectOldEDCVer" parameterClass="hashMap" resultClass="object">
+		SELECT EDC_VER
+		FROM (
+		SELECT EDC_VER , ROWNUM RN
+		FROM EDC_CR_FORM
+		WHERE TASK_SN = #TASK_SN#
+		ORDER BY EDC_VER DESC
+		) WHERE RN = 2
+	</select>
+	<select id="selectSetList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TASK_SN
+		, EDC_VER
+		, VISIT_GROUP_SN
+		, SET_SN
+		, SET_TY_CODE
+		, SET_ORDR
+		, USE_AT
+		FROM EDC_CR_SET
+		WHERE USE_AT = 'Y'
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<select id="selectSetRowList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TASK_SN
+		, EDC_VER
+		, VISIT_GROUP_SN
+		, SET_ROW_SN
+		, SET_SN
+		, SET_ROW_ORDR
+		, USE_AT
+		FROM EDC_CR_SET_ROW
+		WHERE USE_AT = 'Y'
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		<isNotEmpty property="SET_SN" prepend="AND">
+			SET_SN = #SET_SN#
+		</isNotEmpty>
+		<isNotEmpty property="VISIT_GROUP_SN" prepend="AND">
+			VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		</isNotEmpty>
+	</select>
+	<select id="selectSetVariableList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TASK_SN
+		, EDC_VER
+		, VISIT_GROUP_SN
+		, SET_VRIABL_SN
+		, SET_SN
+		, SET_ROW_SN
+		, GROUP_SN
+		, VRIABL_SN
+		, SET_VRIABL_ORDR
+		, VRIABL_SE_CODE
+		, USE_AT
+		FROM EDC_CR_SET_VRIABL
+		WHERE USE_AT = 'Y'
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		<isNotEmpty property="SET_ROW_SN" prepend="AND">
+			SET_ROW_SN = #SET_ROW_SN#
+		</isNotEmpty>
+		<isNotEmpty property="VISIT_GROUP_SN" prepend="AND">
+			VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		</isNotEmpty>
+	</select>
+	<select id="selectEditCheckSn" parameterClass="hashmap" resultClass="object">
+		SELECT NVL(MAX(EDITCECK_SN), 0)+1
+		FROM EDC_CR_EDITCECK
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND SET_VRIABL_SN = #SET_VRIABL_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertEditCheck" parameterClass="hashmap">
+		INSERT INTO EDC_CR_EDITCECK(
+		VISIT_GROUP_SN
+		, EDITCECK_SN
+		, TASK_SN
+		, EDC_VER
+		, SET_VRIABL_SN
+		, QUERY_MSSAGE
+		, QUERY_SE_CODE
+		, CND_NOMFRM
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#VISIT_GROUP_SN#
+		, #EDITCECK_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, #SET_VRIABL_SN#
+		, #QUERY_MSSAGE#
+		, #QUERY_SE_CODE#
+		, #CND_NOMFRM#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateEditCheck" parameterClass="hashmap">
+		UPDATE EDC_CR_EDITCECK SET
+		QUERY_MSSAGE = #QUERY_MSSAGE#
+		, CND_NOMFRM = #CND_NOMFRM#
+		, QUERY_SE_CODE = #QUERY_SE_CODE#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND SET_VRIABL_SN = #SET_VRIABL_SN#
+		AND EDITCECK_SN = #EDITCECK_SN#
+	</update>
+	<select id="selectInputLmttSn" parameterClass="hashmap" resultClass="object">
+		SELECT NVL(MAX(INPUT_LMTT_SN), 0)+1
+		FROM EDC_CR_INPUTLMTT
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND SET_VRIABL_SN = #SET_VRIABL_SN#
+	</select>
+	<insert id="insertDisable" parameterClass="hashmap">
+		INSERT INTO EDC_CR_INPUTLMTT(
+		VISIT_GROUP_SN
+		, INPUT_LMTT_SN
+		, TASK_SN
+		, EDC_VER
+		, SET_VRIABL_SN
+		, EDITCECK_SN
+		, LMTT_VISIT_GROUP_SN
+		, LMTT_SET_SN
+		, LMTT_SET_ROW_SN
+		, LMTT_SET_VRIABL_SN
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#VISIT_GROUP_SN#
+		, #INPUT_LMTT_SN#
+		, #TASK_SN#
+		, #EDC_VER#
+		, #SET_VRIABL_SN#
+		, #EDITCECK_SN#
+		, #LMTT_VISIT_GROUP_SN#
+		, #LMTT_SET_SN#
+		, #LMTT_SET_ROW_SN#
+		, #LMTT_SET_VRIABL_SN#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateDisable" parameterClass="hashmap">
+		UPDATE EDC_CR_INPUTLMTT SET
+		USE_AT = #USE_AT#
+		, LMTT_VISIT_GROUP_SN = #LMTT_VISIT_GROUP_SN#
+		, LMTT_SET_SN = #LMTT_SET_SN#
+		, LMTT_SET_ROW_SN = #LMTT_SET_ROW_SN#
+		, LMTT_SET_VRIABL_SN = #LMTT_SET_VRIABL_SN#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND SET_VRIABL_SN = #SET_VRIABL_SN#
+		AND EDITCECK_SN = #EDITCECK_SN#
+		AND INPUT_LMTT_SN = #INPUT_LMTT_SN#
+	</update>
+	<select id="selectEditCheckList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT TASK_SN
+		, EDC_VER
+		, VISIT_GROUP_SN
+		, SET_VRIABL_SN
+		, EDITCECK_SN
+		, QUERY_MSSAGE
+		, QUERY_SE_CODE
+		FROM EDC_CR_EDITCECK
+		WHERE USE_AT = 'Y'
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		<isNotEmpty property="VISIT_GROUP_SN" prepend="VISIT_GROUP_SN">
+			VISIT_GROUP_SN = #VISIT_GROUP_SN#
+		</isNotEmpty>
+		<isNotEmpty property="SET_VRIABL_SN" prepend="SET_VRIABL_SN">
+			SET_VRIABL_SN = #SET_VRIABL_SN#
+		</isNotEmpty>
+	</select>
+	<select id="selectCodingList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT TASK_SN
+		, EDC_VER
+		, CODING_SN
+		, DOMN_VRIABL_SN
+		, DOMN_SE_CODE
+		, CODING_AT
+		, DICARY_SE_CODE
+		, DICARY_VER
+		FROM EDC_CR_CODING
+		WHERE USE_AT = 'Y'
+		AND TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<select id="selectCodingSn" parameterClass="hashmap" resultClass="object">
+		SELECT NVL(MAX(CODING_SN), 0)+1
+		FROM EDC_CR_CODING
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+	</select>
+	<insert id="insertCoding" parameterClass="hashmap">
+		INSERT INTO EDC_CR_CODING(
+		TASK_SN
+		, EDC_VER
+		, CODING_SN
+		, DOMN_VRIABL_SN
+		, DOMN_SE_CODE
+		, CODING_AT
+		, DICARY_SE_CODE
+		, DICARY_VER
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		)VALUES(
+		#TASK_SN#
+		, #EDC_VER#
+		, #CODING_SN#
+		, #DOMN_VRIABL_SN#
+		, #DOMN_SE_CODE#
+		, #CODING_AT#
+		, #DICARY_SE_CODE#
+		, #DICARY_VER#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+	</insert>
+	<update id="updateCoding" parameterClass="hashmap">
+		UPDATE EDC_CR_CODING SET
+		DOMN_SE_CODE = #DOMN_SE_CODE#
+		, DOMN_VRIABL_SN = #DOMN_VRIABL_SN#
+		, CODING_AT = #CODING_AT#
+		, DICARY_SE_CODE = #DICARY_SE_CODE#
+		, DICARY_VER = #DICARY_VER#
+		, USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TASK_SN = #TASK_SN#
+		AND EDC_VER = #EDC_VER#
+		AND CODING_SN = #CODING_SN#
+	</update>
+	<select id="selectCodingVariableList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT DISTINCT CDV.DOMN_VRIABL_SN CODE
+		, CDV.VRIABL_NM VALUE
+		FROM EDC_CR_VRIABL CRV
+		INNER JOIN EDC_CR_TASK CRT ON CRT.TASK_SN = CRV.TASK_SN
+		INNER JOIN CDISC_DOMN CD ON CRT.CDISC_RULE_SN = CD.CDISC_RULE_SN
+		INNER JOIN CDISC_DOMN_VRIABL CDV ON CDV.CDISC_DOMN_SN = CD.CDISC_DOMN_SN AND CRV.DOMN_VRIABL_SN = CDV.DOMN_VRIABL_SN
+		WHERE CRV.USE_AT = 'Y'
+		AND CRV.TASK_SN = #TASK_SN#
+		AND CRV.EDC_VER = #EDC_VER#
+		AND CD.DOMN_NM = #DOMN_NM#
+	</select>
+	<select id="selectDictionaryVersionList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT DICARY_VER CODE
+		, DICARY_VER VALUE
+		FROM EDC_CR_MDIC
+		WHERE DICARY_SE_CODE = #DICARY_SE_CODE#
+		ORDER BY DICARY_VER DESC
+	</select>
+	<select id="selectCDISCSn" parameterClass="hashmap" resultClass="string">
+		SELECT CDV.DOMN_VRIABL_SN
+		FROM EDC_CR_TASK CT
+		INNER JOIN CDISC_RULE CR ON CR.CDISC_RULE_SN = CT.CDISC_RULE_SN
+		INNER JOIN CDISC_DOMN CD ON CD.CDISC_RULE_SN = CT.CDISC_RULE_SN
+		INNER JOIN CDISC_DOMN_VRIABL CDV ON CDV.CDISC_DOMN_SN = CD.CDISC_DOMN_SN
+		WHERE CT.TASK_SN = #TASK_SN#
+		AND CDV.VRIABL_NM = #VRIABL_NM#
+
+	</select>
+	<select id="selectTaskType" parameterClass="hashmap" resultClass="hashmap">
+		SELECT TASK_TY_CODE
+		, BLIND_CODE
+		FROM EDC_CR_TASK
+		WHERE TASK_SN = #TASK_SN#
+	</select>
+	<select id="selectAllVariableList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT SEV.TASK_SN,
+		SEV.EDC_VER,
+		SEV.VISIT_GROUP_SN ,
+		SEV.SET_SN ,
+		SEV.SET_ROW_SN ,
+		SEV.SET_VRIABL_SN ,
+		VS.VISIT_LBL ,
+		G.GROUP_LBL ,
+		DV.CRF_LBL_ONE ,
+		DV.CRF_LBL_TWO ,
+		DV.VRIABL_NM ,
+		CASE
+		WHEN SE.SET_TY_CODE = '02'
+		OR SE.SET_TY_CODE = '04'
+		THEN SER.SET_ROW_ORDR
+		ELSE NULL
+		END SET_ROW_ORDR ,
+		(SELECT CC2.CDISC_SUBMIT_VALUE
+		FROM EDC_CR_SET_VRIABL SSV
+		INNER JOIN EDC_CR_VRIABL SSV_V
+		ON SSV.GROUP_SN = SSV_V.GROUP_SN
+		AND SSV.VRIABL_SN = SSV_V.VRIABL_SN
+		AND SSV.TASK_SN = SSV_V.TASK_SN
+		AND SSV.EDC_VER = SSV_V.EDC_VER
+		AND SSV_V.USE_AT = 'Y'
+		LEFT OUTER JOIN CDISC_CL_CODE CC2
+		ON CC2.CL_CODE_SN = SSV_V.CL_CODE_SN
+		WHERE SEV.VISIT_GROUP_SN = VISIT_GROUP_SN
+		AND SEV.SET_ROW_SN = SSV.SET_ROW_SN
+		AND SSV.VRIABL_SE_CODE = '08'
+		AND SSV.TASK_SN = SEV.TASK_SN
+		AND SSV.EDC_VER = SEV.EDC_VER
+		AND ROWNUM = 1
+		) CDISC_SUBMIT_VALUE ,
+		'D'
+		|| SEV.NOMFRM_NM NOMFRM_NM ,
+		SEV.VRIABL_SE_CODE ,
+		CRC.CODING_AT ,
+		CC.CDISC_CODE UPPER_CDISC_CODE ,
+		V.DOMN_VRIABL_SN ,
+		ROWNUM RN ,
+		TO_CHAR((SELECT SUBSTR( XMLAGG( XMLELEMENT(COL , ' , ', CDISC_SUBMIT_VALUE || ' : ' || CDISC_CODE)
+		ORDER BY CDISC_CODE).EXTRACT('//text()' ).GETSTRINGVAL() , 4) CDISC_SUBMIT_VALUE
+		FROM CDISC_CL_CODE a
+		WHERE CC.CDISC_CODE = CDISC_UPPER_CODE
+		)) CODE_LIST
+		FROM EDC_CR_VISIT_GROUP VG
+		LEFT OUTER JOIN EDC_CR_SET SE
+		ON SE.VISIT_GROUP_SN = VG.VISIT_GROUP_SN
+		AND SE.TASK_SN = VG.TASK_SN
+		AND SE.EDC_VER = VG.EDC_VER
+		AND SE.USE_AT = 'Y'
+		LEFT OUTER JOIN EDC_CR_SET_ROW SER
+		ON SER.VISIT_GROUP_SN = VG.VISIT_GROUP_SN
+		AND SER.SET_SN = SE.SET_SN
+		AND SER.TASK_SN = VG.TASK_SN
+		AND SER.EDC_VER = VG.EDC_VER
+		AND SER.USE_AT = 'Y'
+		LEFT OUTER JOIN EDC_CR_SET_VRIABL SEV
+		ON SEV.VISIT_GROUP_SN = VG.VISIT_GROUP_SN
+		AND SEV.SET_ROW_SN = SER.SET_ROW_SN
+		AND SEV.TASK_SN = VG.TASK_SN
+		AND SEV.EDC_VER = VG.EDC_VER
+		AND SEV.USE_AT = 'Y'
+		INNER JOIN EDC_CR_VISIT_SCHDUL VS
+		ON VG.VISIT_SN = VS.VISIT_SN
+		AND VG.TASK_SN = VS.TASK_SN
+		AND VG.EDC_VER = VS.EDC_VER
+		AND VS.USE_AT = 'Y'
+		INNER JOIN EDC_CR_GROUP G
+		ON VG.GROUP_SN = G.GROUP_SN
+		AND VG.TASK_SN = G.TASK_SN
+		AND VG.EDC_VER = G.EDC_VER
+		AND G.USE_AT = 'Y'
+		INNER JOIN EDC_CR_VRIABL V
+		ON SEV.GROUP_SN = V.GROUP_SN
+		AND SEV.VRIABL_SN = V.VRIABL_SN
+		AND SEV.TASK_SN = V.TASK_SN
+		AND SEV.EDC_VER = V.EDC_VER
+		AND V.USE_AT = 'Y'
+		INNER JOIN CDISC_DOMN_VRIABL DV
+		ON DV.DOMN_VRIABL_SN = V.DOMN_VRIABL_SN
+		AND DV.USE_AT = 'Y'
+		LEFT OUTER JOIN CDISC_CL_CODE CC
+		ON CC.CDISC_CODE = DV.CDISC_UPPER_CODE
+		AND CC.CDISC_UPPER_CODE IS NULL
+		LEFT OUTER JOIN EDC_CR_CODING CRC
+		ON CRC.TASK_SN = V.TASK_SN
+		AND CRC.EDC_VER = V.EDC_VER
+		AND CRC.DOMN_VRIABL_SN = V.DOMN_VRIABL_SN
+		AND CRC.USE_AT = 'Y'
+		WHERE VG.TASK_SN = #TASK_SN#
+		AND VG.EDC_VER = #EDC_VER#
+		AND VG.USE_AT = 'Y'
+		AND SEV.VRIABL_SE_CODE IS NOT NULL
+		AND SEV.VRIABL_SE_CODE NOT IN( '07' , '08' , '11' )
+		ORDER BY VS.VISIT_ORDR,
+		VG.GROUP_ORDR,
+		SE.SET_ORDR,
+		SER.SET_ROW_ORDR,
+		SEV.SET_VRIABL_ORDR
+
+	</select>
+
+	<select id="selectVariableSECodeList" parameterClass="hashmap" resultClass="hashmap">
+		SELECT CMMN_CODE CODE
+		, CASE WHEN #LOCALE# = 'kr' THEN CMMN_CODE_NM
+		WHEN #LOCALE# = 'jp' THEN CMMN_CODE_JAPAN_NM
+		WHEN #LOCALE# = 'ch_1' THEN CMMN_CODE_CHINA1_NM
+		WHEN #LOCALE# = 'ch_2' THEN CMMN_CODE_CHINA2_NM
+		WHEN #LOCALE# = 'en' THEN CMMN_CODE_ENGNM
+		ELSE CMMN_CODE_NM
+		END VALUE
+		FROM CM_CMMNCODE
+		WHERE CMMN_CLCODE = 'EDC019'
+		AND USE_AT = 'Y'
+		AND CMMN_CODE != '12'
+		<isEqual property="TASK_TY_CODE" compareValue="01" prepend="AND">
+			CMMN_CODE != '13'
+		</isEqual>
+		<isEqual property="BLIND_CODE" compareValue="03" prepend="AND">
+			CMMN_CODE != '14'
+		</isEqual>
+		ORDER BY SORT_ORDR
+	</select>
+</sqlMap>

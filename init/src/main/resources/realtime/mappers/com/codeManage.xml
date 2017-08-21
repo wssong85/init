@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="realtime.com.code.mapper.CodeManageMapper">
+
+	<select id="selectTbGroupCodeList" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT 
+	GROUP_CD
+	,CD_DC
+	,USE_YN
+	,IN_DT
+	,UP_DT
+	,WRITE_ID
+	FROM TB_GROUP_CODE
+	]]>  	
+	</select>
+	
+	<insert id="insertTbGroupCode" parameterType="map">
+	<![CDATA[
+	INSERT
+	INTO 
+	TB_GROUP_CODE
+	(
+	GROUP_CD
+	,CD_DC
+	,USE_YN
+	,IN_DT
+	,UP_DT
+	,WRITE_ID
+	)
+	VALUES
+	(
+	#{GROUP_CD, jdbcType=VARCHAR}
+	,#{CD_DC   , jdbcType=VARCHAR}    
+	,#{USE_YN  , jdbcType=VARCHAR}
+	,NOW()
+	,NOW()
+	,#{WRITE_ID, jdbcType=VARCHAR}
+	)
+	]]>
+	</insert>
+	
+	<update id="updateTbGroupCode" parameterType="map">
+	<![CDATA[
+	UPDATE TB_GROUP_CODE
+	SET CD_DC = #{CD_DC, jdbcType=VARCHAR}
+	,USE_YN = #{USE_YN, jdbcType=VARCHAR}
+	,UP_DT = NOW() 
+	,WRITE_ID = #{WRITE_ID, jdbcType=VARCHAR}
+	WHERE GROUP_CD = #{GROUP_CD, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	
+	<delete id="deleteTbGroupCode" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_GROUP_CODE WHERE GROUP_CD = #{GROUP_CD, jdbcType=VARCHAR}
+	]]>
+	</delete>
+	
+	<select id="selectTbDetailCodeList" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT
+	A.GROUP_CD
+	,A.DETAIL_CD
+	,A.CD_SEQ
+	,A.CD_DC
+	,A.USE_YN
+	,A.IN_DT
+	,A.UP_DT
+	,A.WRITE_ID
+	FROM TB_DETAIL_CODE A
+	, TB_GROUP_CODE B
+	WHERE A.GROUP_CD = B.GROUP_CD
+	AND A.GROUP_CD = #{GROUP_CD, jdbcType=VARCHAR}
+	AND B.USE_YN = 'Y'
+	]]>
+	</select>
+	
+	<insert id="insertTbDetailCode" parameterType="map">
+	<![CDATA[
+	INSERT
+	INTO
+	TB_DETAIL_CODE
+	(
+	GROUP_CD
+	,DETAIL_CD
+	,CD_SEQ   
+	,CD_DC    
+	,USE_YN   
+	,IN_DT    
+	,UP_DT    
+	,WRITE_ID 
+	)
+	VALUES
+	(
+	#{GROUP_CD, jdbcType=VARCHAR}
+	,#{DETAIL_CD, jdbcType=VARCHAR}
+	,#{CD_SEQ, jdbcType=VARCHAR}   
+	,#{CD_DC, jdbcType=VARCHAR}    
+	,#{USE_YN, jdbcType=VARCHAR}   
+	,NOW()    
+	,NOW()    
+	,#{WRITE_ID, jdbcType=VARCHAR}
+	)
+	]]>
+	</insert>
+	
+	<update id="updateTbDetailCode" parameterType="map">
+	<![CDATA[
+	UPDATE TB_DETAIL_CODE
+	SET CD_SEQ = #{CD_SEQ, jdbcType=VARCHAR}
+	,CD_DC = #{CD_DC, jdbcType=VARCHAR}
+	,USE_YN = #{USE_YN, jdbcType=VARCHAR}
+	,UP_DT = NOW()
+	,WRITE_ID = #{WRITE_ID, jdbcType=VARCHAR}
+	WHERE GROUP_CD = #{GROUP_CD, jdbcType=VARCHAR}
+	AND DETAIL_CD = #{DETAIL_CD, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<delete id="deleteTbDetailCode" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_DETAIL_CODE WHERE GROUP_CD = #{GROUP_CD, jdbcType=VARCHAR} AND DETAIL_CD = #{DETAIL_CD, jdbcType=VARCHAR}
+	]]>
+	</delete>
+	
+</mapper>

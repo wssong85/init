@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean id="egov.propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:/egovframework/egovProps/globals.properties</value>
+                <!-- value>file:/product/jeus/egovProps/globals.properties</value-->
+            </list>
+        </property>
+    </bean>
+
+	<!-- DataSource -->
+	<alias name="dataSource-${Globals.DbType}" alias="egov.dataSource"/>
+    <alias name="dataSource-${Globals.DbType}" alias="dataSource"/>
+	
+	<!-- 톰캣 context.xml 설정 -->
+<!--   <Resource name="cjpandb" auth="Container" type="javax.sql.DataSource" -->
+<!--                maxActive="100" maxIdle="30" maxWait="10000" -->
+<!--                username="o_cjpan" password="o_cjpan1!" driverClassName="oracle.jdbc.driver.OracleDriver" -->
+<!--                url="jdbc:oracle:thin:@52.2.42.141:1521:cjpandev"/> -->
+
+
+	<!-- TRANSACTION DATASOURCE -->
+	<!-- 운영,개발 서버  -->
+<!-- 	<bean id="dataSource-oracle" class="org.springframework.jndi.JndiObjectFactoryBean"> -->
+		<!-- 톰캣 -->
+<!--         <property name="jndiName" value="java:comp/env/cjpandb" /> -->
+		<!-- 제우스 -->
+<!--         <property name="jndiName" value="cjpandb" /> -->
+<!--     </bean> -->
+    
+    <!-- NON TRANSACTION DATASOURCE -->
+    <!-- 운영,개발 서버 -->
+<!-- 	<bean id="dataSource-oracle2" class="org.springframework.jndi.JndiObjectFactoryBean"> -->
+		<!-- 톰캣 -->
+<!--         <property name="jndiName" value="java:comp/env/cjpandb" /> -->
+		<!-- 제우스 -->
+<!-- 		<property name="jndiName" value="cjpandb" /> -->
+<!--     </bean> -->
+
+	<!-- Maria 로컬 개발 -->
+	<bean id="dataSource-maria" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${Globals.DriverClassName}"/>
+		<property name="url" value="${Globals.Url}" />
+		<property name="username" value="${Globals.UserName}"/>
+		<property name="password" value="${Globals.Password}"/>
+		<property name="testWhileIdle" value="true" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="maxIdle" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxWait" value="1000" />
+	</bean>
+	
+	<!-- Maria2 로컬 개발 -->
+	<bean id="dataSource-maria2" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${Globals.DriverClassName}"/>
+		<property name="url" value="${Globals.Url}" />
+		<property name="username" value="${Globals.UserName}"/>
+		<property name="password" value="${Globals.Password}"/>
+		<property name="testWhileIdle" value="true" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="maxIdle" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxWait" value="1000" />
+	</bean>
+
+</beans>

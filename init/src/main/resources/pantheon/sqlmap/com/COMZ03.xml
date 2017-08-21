@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMZ03">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<insert id="COMZ03DAO.insertMmsMsgForLms" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO MMS_MSG
+		     ( MSGKEY
+		     , REQDATE
+		     , STATUS
+		     , TYPE
+		     , PHONE
+		     , CALLBACK
+		     , SUBJECT
+		     , MSG
+		     , FILE_CNT
+		     )
+		VALUES
+		     ( #MSGKEY#
+		     , SYSDATE
+		     , '1'
+		     , '0'
+		     , #PHONE#
+		     , #CALLBACK#
+		     , #SUBJECT#
+		     , #MSG#
+		     , '1'
+		     )
+		]]>
+	</insert>
+
+	<insert id="COMZ03DAO.insertComTheMailDsptchManage" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO COMTHEMAILDSPTCHMANAGE
+		     ( MSG_SN
+		     , MSG_SE
+		     , MSG_CN
+             , SNDR
+             , RCVER
+             , SJ
+             , DSPTCH_DT
+		     )
+		VALUES
+		     ( #MSG_SN#
+		     , #MSG_SE#
+		     , #MSG_CN#
+             , #SNDR#
+             , #RCVER#
+             , #SJ#
+             , SYSDATE
+		     )	 
+		]]> 
+	</insert>
+	
+	<!-- damo test -->
+	<select id="COMZ03DAO.selectComPasswordTest" parameterClass="hashMap" resultClass="integer">
+	SELECT COUNT(*)
+	  FROM CM_USER
+	 WHERE PASSWORD = DAMO_HASH(#PASSWORD#)
+	   AND USER_ID = #USER_ID#
+	</select>
+	
+	<select id="COMZ03DAO.selectComEncTest" parameterClass="hashMap" resultClass="hashMap">
+	SELECT DAMO_DEC(EMAIL) EMAIL
+	     , PASSWORD
+	  FROM CM_USER
+	 WHERE USER_ID = #USER_ID#
+	</select>
+	
+	<update id="COMZ03DAO.updateComPasswordTest" parameterClass="hashMap">
+	UPDATE CM_USER
+	   SET PASSWORD = DAMO_HASH(#PASSWORD#)
+	 WHERE USER_ID = #USER_ID#
+	</update>
+		
+	<update id="COMZ03DAO.updateComEmailTest" parameterClass="hashMap">
+	UPDATE CM_USER
+	   SET EMAIL = DAMO_ENC(#EMAIL#)
+	 WHERE USER_ID = #USER_ID#
+	</update>	
+</sqlMap>

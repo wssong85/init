@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMZ01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+    
+<select id="CTMZ01DAO.selectInsttInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[ 
+SELECT	 M.INSTT_CODE
+		,M.TASK_SN
+		,M.TASK_NO
+		,M.HSPTL_NM
+		,M.USER_ID
+		,M.USER_NM
+FROM((SELECT	IT.INSTT_CODE
+			   ,UT.TASK_SN
+			   ,UT.TASK_NO
+			   ,BC.NAME1 AS HSPTL_NM
+			   ,US.USER_ID
+			   ,US.USER_NM
+	  FROM 	    CM_INSTT IT
+			   ,CM_RSRCHUSER RS
+			   ,SAP_BCNC_INFO BC
+			   ,CM_USER US
+			   ,CM_USERTASK UT
+      WHERE     BC.KUNNR = IT.KUNNR
+        AND 	IT.INSTT_CODE = RS.INSTT_CODE
+        AND 	RS.USER_ID = US.USER_ID
+        AND 	US.USER_ID = UT.USER_ID
+        AND 	UT.TASK_SN = #TASK_SN#
+	  )UNION(
+	  SELECT    IT.INSTT_CODE
+			   ,UT.TASK_SN
+			   ,UT.TASK_NO
+			   ,BC.NAME1 AS HSPTL_NM
+			   ,US.USER_ID
+			   ,US.USER_NM
+	  FROM 	    CM_INSTT IT
+			   ,CM_RSRCHUSER RS
+			   ,SAP_BCNC_INFO BC
+			   ,CM_USER US
+			   ,CM_USERTASK UT
+    	       ,CM_TASK_USER_ROLE UR
+	  WHERE     BC.KUNNR = IT.KUNNR
+	    AND 	IT.INSTT_CODE = RS.INSTT_CODE
+	    AND 	RS.USER_ID = US.USER_ID
+	    AND 	US.USER_ID = UT.USER_ID
+	    AND     US.USER_ID = UR.USER_ID
+	    AND 	UT.TASK_SN = #TASK_SN#  
+	    AND     UR.ROLE_ID = 'ROLE_PI'
+))M
+ORDER BY INSTT_CODE
+]]>	
+</select>
+
+<select id="CTMZ01DAO.selectVisitReportInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 REPORT_SN
+		,RE.MILESTONE_SN
+		,RE.REPORT_SE
+		,RE.TASK_SN
+		,RE.OPRTN_DE
+		,RE.CHARGER_ID
+		,RE.FRST_CREAT_DE
+		,RE.JOB_SE
+		,RE.INSTT_CODE
+		,RE.TASK_SN
+		,RE.REPORT_TYPE
+		,RE.ITEM_A
+		,US.USER_NM
+FROM	 CTMS_ST_REPORT_MAIN RE
+        ,CM_USER US
+WHERE	 TASK_SN = #TASK_SN#
+  AND 	 INSTT_CODE = #INSTT_CODE#
+  AND 	 RSRCHMAN_ID = #RSRCHMAN_ID#
+  AND 	 JOB_SE = #JOB_SE#
+  AND    RE.CHARGER_ID = US.USER_ID
+  AND    REPORT_SE NOT IN('E00', 'I00')
+]]>	
+  <isEqual property="ROLE_ID" compareValue="ROLE_CRA">
+  AND    CHARGER_ID = #CHARGER_ID#
+  </isEqual>
+
+</select>
+
+<select id="CTMZ01DAO.selectComPatibilityReportInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 RE.REPORT_SN
+		,RE.MILESTONE_SN
+		,RE.REPORT_SE
+		,RE.TASK_SN
+		,RE.OPRTN_DE
+		,RE.CHARGER_ID
+		,RE.FRST_CREAT_DE
+		,RE.JOB_SE
+		,RE.INSTT_CODE
+		,RE.TASK_SN
+		,RE.REPORT_TYPE
+		,DECODE(RE.COL_A, 'Y', 'YES', 'NO') AS COL_A 
+		,RE.ITEM_A		
+		,US.USER_NM
+FROM	 CTMS_ST_REPORT_MAIN RE
+		,CM_USER US
+WHERE	 TASK_SN = #TASK_SN#
+  AND 	 INSTT_CODE = #INSTT_CODE#
+  AND 	 RSRCHMAN_ID = #RSRCHMAN_ID#
+  AND 	 JOB_SE = #JOB_SE#
+  AND    RE.CHARGER_ID = US.USER_ID
+  AND    REPORT_SE IN('E00', 'I00')
+]]>	
+  <isEqual property="ROLE_ID" compareValue="ROLE_CRA">
+  AND    CHARGER_ID = #CHARGER_ID#
+  </isEqual>
+
+</select>
+
+</sqlMap>

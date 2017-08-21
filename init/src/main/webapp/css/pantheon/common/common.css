@@ -1,0 +1,181 @@
+html, body {width:100%; height:100%; background: #e9ecf1;} body {/* overflow:auto; */ overflow-y: scroll;}
+#wrap {width: 100%; height: 100%; min-width: 1200px;}
+
+/*탑헤더*/
+#topHeader {width:100%; height:61px; display: block; background: #5570e6; position: relative; z-index: 50; }
+#logo {position: absolute; top:0; margin-top:auto; bottom:0; margin-bottom:auto; left:30px;}
+
+/*gnb*/
+.gnb {float:right; line-height: 61px; height:61px;}
+.gnb li {display: inline-block; color:#d8dbeb; margin-right:30px; font-size: 12px;  font-weight: bold; transition-duration:0.2s; /* cursor: pointer; */ cursor:default; position: relative;}
+.gnb li:hover {color:#fff; transition-duration:0.2s;}
+.gnb li span {margin-left:19px; font-family:'NanumGothicBold'; font-weight:normal;}
+.gnb li:last-of-type {margin-right:24px;}
+.gnb > a {color:#d8dbeb; transition-duration:0.2s;}
+.gnb > a:hover {color:#fff; transition-duration:0.2s;}
+
+.gnbIco {display: inline-block; transition-duration:0.2s; position: absolute; top:0; margin-top:auto; bottom:0; margin-bottom:auto;}
+.gnbIco01 {width:16px; height: 15px; background: url(../../../images/pantheon/common/gnbIco01.png);}
+.gnb li:hover .gnbIco01 {background: url(../../../images/pantheon/common/gnbIco01_on.png);}
+.gnbIco02 {width:15px; height: 15px; background: url(../../../images/pantheon/common/gnbIco02.png);}
+.gnb li:hover .gnbIco02 {background: url(../../../images/pantheon/common/gnbIco02_on.png);}
+.gnbIco02_01 {width:14px; height: 17px; background: url(../../../images/pantheon/common/gnbIco02_01.png);}
+.gnb li:hover .gnbIco02_01 {background: url(../../../images/pantheon/common/gnbIco02_01_on.png);}
+.gnbIco03 {width:16px; height: 16px; background: url(../../../images/pantheon/common/gnbIco03.png);}
+.gnb li:hover .gnbIco03 {background: url(../../../images/pantheon/common/gnbIco03_on.png);}
+.gnbIco04 {width:15px; height: 15px; background: url(../../../images/pantheon/common/gnbIco04.png);}
+.gnb li:hover .gnbIco04 {background: url(../../../images/pantheon/common/gnbIco04_on.png);}
+.gnbIco05 {width:12px; height: 13px; background: url(../../../images/pantheon/common/gnbIco05.png);}
+.gnb li:hover .gnbIco05 {background: url(../../../images/pantheon/common/gnbIco05_on.png);}
+.gnbIco06 {width:16px; height: 13px; background: url(../../../images/pantheon/common/gnbIco06.png);}
+.gnb li:hover .gnbIco06 {background: url(../../../images/pantheon/common/gnbIco06_on.png);}
+.gnbIco06_01 {width:17px; height: 17px; background: url(../../../images/pantheon/common/gnbIco06_01.png);}
+.gnb li:hover .gnbIco06_01 {background: url(../../../images/pantheon/common/gnbIco06_01_on.png);}
+
+.gnbIco07 {width:16px;  height: 17px; background: url(../../../images/pantheon/common/gnbIco07.png);}
+.gnb li:hover .gnbIco07 {background: url(../../../images/pantheon/common/gnbIco07_on.png);}
+
+.gnbIcoArrow {width:7px; height: 7px; background: url(../../../images/pantheon/common/gnbIcoArrow.png); margin-left:4px;}
+.gnb li:hover .gnbIcoArrow {width:7px; height: 7px; background: url(../../../images/pantheon/common/gnbIcoArrow_on.png);}
+
+.gnbSel {font-size: 12px; margin-right:-17px;}
+.gnbSel li span {color:#d8dbeb; transition-duration:0.2s;}
+.gnb li:hover .gnbSel li span {color:#fff; transition-duration:0.2s;}
+
+/*GNB셀렉터*/
+.gnbSel {position: relative;}
+.gnbSelLst {display: block;}
+.gnbSelSub {display: none;  box-shadow:1px 1px 1px 0px #c4c4c4; background: rgba(255,255,255,1); border:1px solid #e3e3e3; line-height: 19px; position: absolute; top:54px;}
+.gnbSelSubLst { color:#666 !important; background:url(/images/pantheon/common/arrow_01.png) no-repeat 9px 10px; background-size:3px auto; display:block !important; margin:0 !important;  padding:2px 16px 2px 16px; box-sizing:content-box; cursor: default !important;}
+.gnbSelSubLst:first-of-type{  margin-top:8px !important;}
+.gnbSelSubLst:last-child{ margin-bottom:10px !important;}
+.gnbSelSubLst:hover {background-color: #efefef; transition-duration:0s;}
+.gnbSelSubLst a{ color:#999999; font-family:'NanumGothicBold', 'NotoSansKR-Thin-Hestia';  font-size:12px; line-height:19px; display: block; font-weight:normal; }
+.gnbSelSubLst a:hover{ color:#000000;}
+
+.arrow01 {width: 0; height: 0; border-style: solid; border-width: 0 9px 9px 9px; border-color: transparent transparent #fff transparent; position: absolute; top:-7px; right:5px;}
+
+
+
+/*레프트메뉴*/
+#leftNav {width:230px; height:100%; background: #202e48; position: absolute; top:0px; left:0px; padding:61px 0 0 0; box-sizing: border-box;}
+
+/*레프트메뉴 타이틀*/
+.sstName {width:100%; height:auto; background: #051128; font-size:15px; line-height: 22px; color:#96a1b6; text-indent:0px; padding:15px 15px 15px 18px; box-sizing:border-box; word-break:break-all;}
+
+
+#lnb li.lnbLst {height:auto;line-height:19px; text-indent:0px;} 
+#lnb > li.lnbLst {width:100%; height:100%; transition-duration:0.3s; font-size:16px;/*  text-transform:uppercase; */ position: relative;}
+#lnb > li.lnbLst:hover {height:100%; background:#293956; transition-duration:0.3s;}
+#lnb .lnbLst > a {color:#9cabbc; display:block; font-size:16px; line-height:20px; padding:11px 28px 13px 13px; border-left:4px solid #202e48; word-break:break-all;}
+#lnb .lnbLst > a:hover{border-left:4px solid #293956;}
+#lnb > .lnbLst:hover > a {color:#fff !important; background: #293956; }
+
+
+.lnbMusOut {color:#9cabbc; text-indent:0px; background: #202e48;}
+.lnbMusOn {color:#fff !important; text-indent:0px; border-left:4px solid #5570e6 !important; background: #293956; }
+
+
+.lnbArrow {width:9px; height:8px; display: block; background: url(/images/pantheon/common/lnbArrow.png); position: absolute; right:16px; top:18px; transition-duration:0.3s;}
+.lnbArrow_on {width:9px; height:8px; display: block; background: url(/images/pantheon/common/lnbArrow_on.png); position: absolute; right:16px; top:18px; transition-duration:0.3s;}
+.lnbLst:hover .lnbArrow {width:9px; height:8px; display: block; background: url(/images/pantheon/common/lnbArrow_on.png); position: absolute; right:16px; top:18px; transition-duration:0.3s;}
+
+
+#lnb li.lnbSubLst {height:auto; line-height:19px; text-indent:0px;} 
+#lnb .lnbLst > ul.close {display:none;}
+#lnb .lnbSubLst {font-size:13px; background:#17243d; transition-duration:0.3s; position:relative; text-transform:none;}
+#lnb .lnbSubLst:hover {}
+
+.lnbLst ul:first-of-type li{ padding:3px 0 0 0;}
+.lnbLst ul:last-child li{padding:0 0px 14px 0;}
+
+#lnb .lnbSubLst a {color:#a5b4c5; width:auto; line-height:18px; height:auto; padding:11px 15px 0px 25px; display: inline-block; transition-duration:0.3s; box-sizing:border-box; word-break:break-all; }
+#lnb .lnbSubLst a:hover {color:#fff; transition-duration:0.3s;}
+
+.lnbSubLstMusOut {color:#a5b4c5;}
+.lnbSubLstMusOn {color:#fff !important;}
+
+
+
+
+
+/*왼쪽 메뉴 show/hide 버튼*/
+.lnb_btn_01 { position:relative; top:72px; z-index:10; }
+.lnb_btn_01 .lnb_open { position: absolute; left:230px; top:0; width:18px; height:96px; overflow:hidden;  background: url(/images/pantheon/common/left_btn_01.png) no-repeat 0px 0px; }
+.lnb_btn_01 .lnb_open:hover{ background-position:0px -104px;}
+.lnb_btn_01 .lnb_close { position: absolute; left:230px; top:0;  width:18px; height:96px; overflow:hidden;  background: url(/images/pantheon/common/left_btn_02.png) no-repeat 0px 0px; display: none; }
+.lnb_btn_01 .lnb_close:hover{ background-position:0px -104px;}
+
+
+/*퀵*/
+.top_down_area{ position:absolute; position:fixed; right:12px; top:45%; width:21px; height:49px; z-index:10; display:none; }
+.top_down_area a{ background:url(/images/pantheon/common/btn_quick_01.png) no-repeat;  width:21px;height:24px; position:absolute; display:block; text-indent:-9999em;}
+.top_down_area .btn_layer_up{background-position:0 0;overflow:hidden;}
+.top_down_area .btn_layer_down{background-position:-21px 0px;position:absolute;top:25px;overflow:hidden;}
+.top_down_area .btn_layer_up:hover{background-position:0 -24px;}
+.top_down_area .btn_layer_down:hover{background-position:-21px -24px;}
+
+
+
+/*메인컨텐츠*/
+#mainCon {width: 100%; padding-left:230px; box-sizing:border-box; min-height:850px;}
+.mainConInner {padding: 8px 12px 12px 12px; background: #e9ecf1; overflow: hidden;}
+
+.mainTitBox {padding:8px 12px 8px 12px; box-sizing:border-box; }
+
+#pathNav {height:24px; display: inline-block; float: right; position: relative; left:6px;}
+#pathNav li {display: inline-block; font-size: 12px; padding-top:9px; padding-left: 3px;}
+#pathNav li:first-of-type img {position: relative; top:1px; right:2px;}
+#pathNav li:after {content: ">"; padding-left: 5px;}
+#pathNav li:last-of-type:after {content:"" !important;}
+
+/*메인컨텐츠-컨텐츠기본*/
+.conTitBox {display: inline-block;}
+
+/*상단버튼레이아웃*/
+.conTitBtn {display: block; margin-top:15px; margin-top:5px;}
+.conTitBtnR {display: inline-block; float:right;}
+.conTitBtnL {display: inline-block; float:left;}
+
+/*메인컨텐츠-컨텐츠*/
+.conBox {height:100%; display: block; float:left; padding:12px 12px 12px 12px; box-sizing:border-box;}
+.conBox100 {width:100%;}
+.conBox90 {width:90%;}
+.conBox80 {width:80%;}
+.conBox70 {width:70%;}
+.conBox60 {width:60%;}
+.conBox50 {width:50%;}
+.conBox40 {width:40%;}
+.conBox30 {width:30%;}
+.conBox20 {width:20%;}
+.conBox10 {width:10%;}
+.conBoxInner {width:100%; height:100%; background: #fff; padding:17px 24px 24px 24px; box-sizing:border-box; position: relative; overflow: hidden;}
+
+/*메인컨텐츠-컨텐츠-내부컨텐츠사이즈조절*/
+.conSbtL {display: inline-block; float:left; box-sizing: border-box; padding-right:12px;}
+.conSbtL90 {width:90%;}
+.conSbtL80 {width:80%;}
+.conSbtL70 {width:70%;}
+.conSbtL60 {width:60%;}
+.conSbtL50 {width:50%;}
+.conSbtL40 {width:40%;}
+.conSbtL30 {width:30%;}
+.conSbtL20 {width:20%;}
+.conSbtL10 {width:10%;}
+
+.conSbtR {display: inline-block; float:left; box-sizing: border-box; padding-left:12px;}
+.conSbtR90 {width:90%;}
+.conSbtR80 {width:80%;}
+.conSbtR70 {width:70%;}
+.conSbtR60 {width:60%;}
+.conSbtR50 {width:50%;}
+.conSbtR40 {width:40%;}
+.conSbtR30 {width:30%;}
+.conSbtR20 {width:20%;}
+.conSbtR10 {width:10%;}
+.conSbtLn {border:1px solid #cbcbcb; box-sizing: border-box; padding:20px 20px 20px 20px}
+
+/*메인컨텐츠 반응형 너비 css*/
+@media (max-width:1400px) {
+/* #mainCon {padding-left:220px;} */
+}

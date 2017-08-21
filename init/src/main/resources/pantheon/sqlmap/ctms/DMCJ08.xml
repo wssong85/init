@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DMCJ08">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+
+<select id="DMCJ08DAO.selectCommonCodeList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT CMMN_CODE    AS CODE
+     , CMMN_CODE_NM AS NAME
+ FROM CM_CMMNCODE
+ WHERE CMMN_CLCODE = #CMMN_CLCODE#
+ AND     USE_AT = 'Y'
+ ORDER BY SORT_ORDR	
+]]>	
+</select> 
+	
+<select id="DMCJ08DAO.selectRoleId" parameterClass="hashMap" resultClass="hashMap">
+SELECT ROLE_ID AS CODE
+     , ROLE_NM AS NAME
+  FROM CM_ROLE
+WHERE  ROLE_ID NOT IN ('IS_AUTHENTICATED_ANONYMOUSLY', 'IS_AUTHENTICATED_REMEMBERED', 'IS_AUTHENTICATED_FULLY', 'ROLE_USER', 'ROLE_EXTENDS')
+  AND  USE_YN = 'Y'
+  AND  TASK_AT = 'Y'
+</select>
+
+<!-- 표준시간 조회 -->
+<select id="DMCJ08DAO.standardTimeList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT   STD_TIME_SN
+		,STD_TIME_NM 
+		,STD_TIME_STDR 
+FROM 
+		CM_STD_TIME
+
+]]>	
+</select> 
+
+<!-- 사용자 정보 조회 -->
+<select id="DMCJ08DAO.selectOverlapUserInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	TASK_SN
+	   ,USER_ID
+FROM    CM_USERTASK
+WHERE   USER_ID = #USER_ID#
+  AND   TASK_SN = #TASK_SN#
+
+]]>	
+</select> 
+
+<select id="DMCJ08DAO.selectTaskUserInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 DISTINCT
+		 TA.TASK_SN
+	    ,TA.TASK_NO
+		,DECODE(USER_SE_CODE, '01', 
+						(SELECT X.DEPT_NM 
+							FROM CM_JOBUSER Y, CM_DEPTINFO X
+							WHERE Y.DEPT_CD = X.DEPT_CD
+							AND Y.COMP_CD = X.COMP_CD
+							AND Y.USER_ID = US.USER_ID)
+					,'02',
+						(SELECT X.NAME1 
+		  					FROM CM_INSTT Y, SAP_BCNC_INFO X
+		  					WHERE Y.KUNNR = X.KUNNR
+		 					AND Y.INSTT_CODE = (SELECT X.INSTT_CODE FROM CM_RSRCHUSER X WHERE X.USER_ID = US.USER_ID
+		 					UNION 
+		 					SELECT X.INSTT_CODE FROM CM_BCNCUSER X WHERE X.USER_ID = US.USER_ID))
+		 ) DEPT_NM
+		,DECODE(USER_SE_CODE, '01', 
+						(SELECT X.DEPT_CD
+							FROM CM_JOBUSER Y, CM_DEPTINFO X
+							WHERE Y.DEPT_CD = X.DEPT_CD
+							AND Y.COMP_CD = X.COMP_CD
+							AND Y.USER_ID = US.USER_ID)
+					,'02',
+						(SELECT X.KUNNR 
+		  					FROM CM_INSTT Y, SAP_BCNC_INFO X
+		  					WHERE Y.KUNNR = X.KUNNR
+		 					AND Y.INSTT_CODE = (SELECT X.INSTT_CODE FROM CM_RSRCHUSER X WHERE X.USER_ID = US.USER_ID
+		 					UNION 
+		 					SELECT X.INSTT_CODE FROM CM_BCNCUSER X WHERE X.USER_ID = US.USER_ID))
+		 ) DEPT_CD
+		 ,DECODE(USER_SE_CODE, '01', 
+						'CJ 헬스케어'
+					,'02',
+						(SELECT Y.INSTT_TY 
+		  					FROM CM_INSTT Y, SAP_BCNC_INFO X
+		  					WHERE Y.KUNNR = X.KUNNR
+		 					AND Y.INSTT_CODE = (SELECT X.INSTT_CODE FROM CM_RSRCHUSER X WHERE X.USER_ID = US.USER_ID
+		 					UNION 
+		 					SELECT X.INSTT_CODE FROM CM_BCNCUSER X WHERE X.USER_ID = US.USER_ID))
+		 ) INSTT_TY
+		,US.USER_ID
+		,US.USER_NM
+		,DAMO_DEC(US.EMAIL) AS EMAIL
+		,DAMO_DEC(US.TELNO) AS TELNO		
+		,TA.FRST_CREDE
+        ,(SELECT TO_CHAR(WM_CONCAT(RO.ROLE_NM))
+       		 FROM	CM_TASK_USER_ROLE TL
+            	   ,CM_ROLE RO
+            WHERE	USER_ID = TA.USER_ID
+              AND 	TASK_SN = RU.TASK_SN
+              AND   TL.ROLE_ID = RO.ROLE_ID	) AS ROLE_NM
+		,US.USER_SE_CODE
+		,US.STD_TIME_SN
+		,DECODE(TA.USE_YN, 'Y', 'YES', 'NO') AS USE_YN
+		,US.USER_ENGNM
+FROM 
+		 CM_USER US
+		,CM_USERTASK TA
+		,CM_TASK_USER_ROLE RU
+		,CM_ROLE RM
+WHERE	 US.USER_ID = TA.USER_ID
+  AND 	 TA.USER_ID = RU.USER_ID(+)
+  AND    TA.TASK_SN = RU.TASK_SN
+  AND 	 RU.ROLE_ID = RM.ROLE_ID(+)
+  AND    TA.CONFM_SE = '03' 
+  AND    TA.TASK_NO LIKE '%'||UPPER(#TASK_NO#)||'%'
+  ORDER BY TA.FRST_CREDE DESC, TA.TASK_SN ASC
+
+]]>	
+</select> 
+
+<select id="DMCJ08DAO.selectInstt_TyBcnUser" parameterClass="hashMap" resultClass="integer">
+<![CDATA[
+SELECT   IT.INSTT_TY 
+FROM 
+		 CM_USERTASK UT 
+		,CM_BCNCUSER BC 
+		,CM_INSTT IT 
+WHERE    UT.USER_ID = BC.USER_ID 
+  AND    BC.INSTT_CODE = IT.INSTT_CODE
+]]>	
+</select> 
+
+<!-- <select id="DMCJ08DAO.selectInstt_TyRsrchUser" parameterClass="hashMap" resultClass="integer"> -->
+<!-- <![CDATA[ -->
+<!-- SELECT   IT.INSTT_TY  -->
+<!-- FROM  -->
+<!-- 		 CM_USERTASK UT  -->
+<!-- 		,CM_RSRCHUSER RS  -->
+<!-- 		,CM_INSTT IT  -->
+<!-- WHERE    UT.USER_ID = RS.USER_ID  -->
+<!--   AND    RS.INSTT_CODE = IT.INSTT_CODE -->
+<!-- ]]>	 -->
+<!-- </select>  -->
+
+<!-- DMCJ0802 사용자 role 정보조회 -->
+<select id="DMCJ08DAO.selectUserRoleId" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 ROLE_ID	    
+FROM	 CM_USER_ROLE 
+WHERE	 USER_ID = #USER_ID# 
+ 
+]]>	
+</select>
+
+
+<!-- 사용자 role 정보조회 -->
+<select id="DMCJ08DAO.selectUserRoleInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT	 TL.ROLE_ID
+	    ,RO.ROLE_NM
+FROM	 CM_TASK_USER_ROLE TL
+		,CM_ROLE RO
+WHERE	 USER_ID = #USER_ID#
+  AND 	 TASK_SN = #TASK_SN#
+  AND    TL.ROLE_ID = RO.ROLE_ID
+]]>	
+</select> 
+
+<update id="DMCJ08DAO.deleteTaskUserInfo" parameterClass="hashMap">
+<![CDATA[
+UPDATE  CM_USERTASK 
+   SET	USE_YN = 'N' 
+        ,LAST_UPDDE = SYSDATE
+        ,UPDATE_ID = #LAST_UPDUSR#
+WHERE    USER_ID = #USER_ID#
+  AND    TASK_SN = #TASK_SN#
+]]>	
+</update>
+
+<!-- 과제별사용자 저장 -->
+<insert id="DMCJ08DAO.insertTaskUser" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_USERTASK 
+USING DUAL ON( USER_ID = #USER_ID# AND TASK_SN = #TASK_SN#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+	,TASK_NO
+	,TASK_SN
+	,CONFM_SE	
+	,DSCNTC_AT
+	,DSCNTC_DE
+)VALUES(
+	 #USER_ID#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,#TASK_NO#
+	,#TASK_SN#
+	,'03'	
+	,'N'
+	,SYSDATE
+)
+]]>
+</insert>
+
+
+
+<!-- 사용자 역할 저장 -->
+<insert id="DMCJ08DAO.insertUserByRole" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_USER_ROLE 
+USING DUAL ON( USER_ID = #USER_ID# AND ROLE_ID = #ROLE_ID#)
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,ROLE_ID
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+)VALUES(
+	 #USER_ID#
+	,#ROLE_ID#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>
+</insert>
+
+<!-- 사용자 과제별 역할 저장전 삭제 -->
+<delete id="DMCJ08DAO.deleteTaskUserByRole" parameterClass="hashMap"> 
+<![CDATA[
+DELETE 
+FROM  CM_TASK_USER_ROLE 
+WHERE USER_ID = #USER_ID# 
+  AND TASK_SN = #TASK_SN#  
+]]>
+</delete>
+
+
+<!-- 사용자 과제별 역할 저장 -->
+<insert id="DMCJ08DAO.insertTaskUserByRole" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CM_TASK_USER_ROLE(
+	 ROLE_SN
+	,USER_ID
+	,ROLE_ID
+	,TASK_SN
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,FRST_UPDUSR
+)VALUES(
+	 #ROLE_SN#
+	,#USER_ID#
+	,#ROLE_ID#
+	,#TASK_SN#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>
+</insert>
+<!-- 거래처사용자 저장 -->
+
+<insert id="DMCJ08DAO.insertBcncUser" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_BCNCUSER 
+USING DUAL ON( USER_ID = #USER_ID#) 
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,INSTT_CODE
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+)VALUES(
+	 #USER_ID#
+	,#KUNNR#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>
+</insert>
+
+
+<!-- cm_user 사용자 저장 -->
+<insert id="DMCJ08DAO.insertCm_User" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_USER 
+USING DUAL ON( USER_ID = #USER_ID#) 
+WHEN MATCHED THEN
+UPDATE SET USE_YN = 'Y'
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,PASSWORD
+	,USER_NM
+	,USER_SE_CODE
+	,USER_ENGNM
+	,EMAIL
+	,TELNO
+	,LOGIN_FAILR_CO
+	,PASSWORD_CHANGE_DE
+	,SBSCRB_DE
+	,ACNT_LOCK_AT
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+	,PASSWORD1
+	,PASSWORD2
+	,PASSWORD3
+	,PASSWORD_ODR
+	,PASSWORD_CODE
+	,STD_TIME_SN
+)VALUES(
+	 #USER_ID#
+	,DAMO_HASH(#PASSWORD#)
+	,#USER_NM#
+	,#USER_SE_CODE#
+	,#USER_ENGNM#
+	,DAMO_ENC(#EMAIL#)
+	,DAMO_ENC(#TELNO#)
+	,0
+	,SYSDATE
+	,SYSDATE
+	,'N'
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,DAMO_HASH(#PASSWORD#)
+	,DAMO_HASH('')
+	,DAMO_HASH('')
+	,'1'
+	,''
+	,#STD_TIME_SN#
+)
+]]>
+</insert>
+
+<!-- cm_user 사용자 수정 -->
+<update id="DMCJ08DAO.updateCm_User" parameterClass="hashMap"> 
+<![CDATA[
+UPDATE CM_USER SET 
+	 USER_NM 		= #USER_NM# 
+	,USER_ENGNM 	= #USER_ENGNM#
+	,EMAIL 			= DAMO_ENC(#EMAIL#)
+	,TELNO 			= DAMO_ENC(#TELNO#)
+	,STD_TIME_SN    = #STD_TIME_SN#
+WHERE USER_ID = #USER_ID#
+
+]]>
+</update>
+
+<!-- cm 기관 저장 -->
+<insert id="DMCJ08DAO.insertCm_Instt" parameterClass="hashMap"> 
+<![CDATA[
+MERGE INTO CM_INSTT 
+USING DUAL ON( KUNNR = #KUNNR#) 
+WHEN MATCHED THEN
+UPDATE SET LAST_UPDDE = SYSDATE, UPDATE_ID = #LAST_UPDUSR#
+WHEN NOT MATCHED THEN
+INSERT
+(
+	 INSTT_CODE
+	,KUNNR
+	,USE_YN
+	,FRST_CREDE
+	,REGIST_ID
+	,LAST_UPDDE
+	,UPDATE_ID
+	,INSTT_TY
+)VALUES(
+	 #KUNNR#
+	,#KUNNR#
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,#INSTT_TY#
+)
+]]>
+</insert>
+</sqlMap>

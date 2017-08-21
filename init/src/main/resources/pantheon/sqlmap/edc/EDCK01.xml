@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="edck01DAO">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+
+	<select id="selectStudyList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT A.*
+		,( SELECT LAST_UPDDE FROM EDC_CR_FORM WHERE A.TASK_SN = TASK_SN AND A.CRF_VER = CRF_VER AND ROWNUM = 1
+		) CRF_LAST_UPDDE
+		,( SELECT LAST_UPDDE FROM EDC_CR_FORM WHERE A.TASK_SN = TASK_SN AND A.EDC_VER = EDC_VER
+		) EDC_LAST_UPDDE
+		,( SELECT CRF_PROGRS_CODE FROM EDC_CR_FORM WHERE A.TASK_SN = TASK_SN AND A.EDC_VER = EDC_VER
+		) CRF_PROGRS_CODE
+		FROM
+		(
+		SELECT CT.TASK_SN ,
+		CT.TASK_NO ,
+		CT.TASK_NM ,
+		FN_GET_COMMONCODE('EDC017', CT.TASK_TY_CODE, #LOCALE#		) TASK_TY_CODE ,
+		CT.TASK_END_AT,
+		CR.CDISC_VER ,
+		FN_GET_COMMONCODE('EDC051', CT.FREEZING_STTUS_CODE, #LOCALE#  ) FREEZING_STTUS_CODE
+		, (SELECT MAX(CRF_VER) FROM EDC_CR_FORM WHERE CT.TASK_SN = TASK_SN
+		) CRF_VER
+		, (SELECT MAX(EDC_VER) FROM EDC_CR_FORM WHERE CT.TASK_SN = TASK_SN
+		) EDC_VER
+		FROM EDC_CR_TASK CT
+		LEFT OUTER JOIN CDISC_RULE CR
+		ON CR.CDISC_RULE_SN = CT.CDISC_RULE_SN
+		WHERE CT.USE_AT = 'Y'
+		AND CT.TASK_END_AT ='N'
+		)A
+		<isNotEmpty property="TASK_NO" prepend="AND">
+			A.TASK_NO LIKE '%' || #TASK_NO# || '%'
+		</isNotEmpty>
+		<isNotEmpty property="TASK_NM" prepend="AND">
+			A.TASK_NM LIKE '%' || #TASK_NM# || '%'
+		</isNotEmpty>
+		ORDER BY A.TASK_SN DESC
+	</select>
+	<select id="selectStudyListCount" parameterClass="hashMap" resultClass="string">
+		SELECT
+		COUNT(*) AS COUNT
+		FROM EDC_CR_TASK T
+		WHERE T.USE_AT = 'Y'
+		AND T.TASK_END_AT ='N'
+		<isNotEmpty property="TASK_NO" prepend="AND">
+			T.TASK_NO LIKE '%' || #TASK_NO# || '%'
+		</isNotEmpty>
+		<isNotEmpty property="TASK_NM" prepend="AND">
+			T.TASK_NM LIKE '%' || #TASK_NM# || '%'
+		</isNotEmpty>
+	</select>
+	<select id="selectBaseInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		TASK_SN ,
+		TASK_NO ,
+		TASK_NM ,
+		TASK_TY_CODE ,
+		TASK_DC ,
+		PHASE_CODE ,
+		PHASE_ETC_NM ,
+		IWRS_USE_AT ,
+		RSRCH_PURPS ,
+		RRCS_CO ,
+		CTRTC_FILE_SN ,
+		(SELECT FILE_MASTR_SN FROM DM_FILE_DETAIL WHERE DETAIL_SN = CTRTC_FILE_SN) FILE_MASTR_SN ,
+		CTRTC_PDF_FILE_SN ,
+		TO_CHAR(PRMISN_DE, 'YYYYMMDDHH24MISS') PRMISN_DE ,
+		TO_CHAR(REJDGE_BEGIN, 'YYYYMMDDHH24MISS') REJDGE_BEGIN ,
+		TO_CHAR(REJDGE_END, 'YYYYMMDDHH24MISS') REJDGE_END ,
+		STUDY_NM ,
+		TRGET_DISS ,
+		BLIND_CODE ,
+		TO_CHAR(RSRCH_BEGIN, 'YYYYMMDDHH24MISS') RSRCH_BEGIN ,
+		TO_CHAR(RSRCH_END, 'YYYYMMDDHH24MISS') RSRCH_END ,
+		DOMN_URL ,
+		#CRUD# CRUD
+		FROM EDC_CR_TASK
+		WHERE USE_AT = 'Y'
+		AND TASK_SN = #TASK_SN#
+	</select>
+	<select id="selectCheckTaskNo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT
+		NVL(COUNT(*), 0) COUNT
+		FROM EDC_CR_TASK
+		WHERE TASK_NO = #TASK_NO#
+		AND USE_AT = 'Y'
+		AND ROWNUM <![CDATA[  <=  ]]>
+		10
+
+	</select>
+	<select id="selectTaskSn" resultClass="string">
+		SELECT NVL(MAX(TASK_SN), 0)+1 TASK_SN FROM EDC_CR_TASK
+	</select>
+	<insert id="insertBaseInfo" parameterClass="hashMap">
+		INSERT INTO EDC_CR_TASK (
+		TASK_SN ,
+		TASK_NO ,
+		TASK_NM ,
+		TASK_TY_CODE ,
+		PHASE_CODE ,
+		USE_AT ,
+		TASK_END_AT ,
+		CDISC_RULE_SN ,
+		FREEZING_STTUS_CODE ,
+		FRST_CREDE ,
+		FRST_CRTR ,
+		LAST_UPDDE ,
+		LAST_UPDUSR
+		<isNotEmpty property="PHASE_ETC_NM" prepend=",">
+			PHASE_ETC_NM
+		</isNotEmpty>
+		<isNotEmpty property="IWRS_USE_AT" prepend=",">
+			IWRS_USE_AT
+		</isNotEmpty>
+		<isNotEmpty property="TASK_DC" prepend=",">
+			TASK_DC
+		</isNotEmpty>
+		<isNotEmpty property="RSRCH_PURPS" prepend=",">
+			RSRCH_PURPS
+		</isNotEmpty>
+		<isNotEmpty property="RRCS_CO" prepend=",">
+			RRCS_CO
+		</isNotEmpty>
+		<isNotEmpty property="CTRTC_FILE_SN" prepend=",">
+			CTRTC_FILE_SN
+		</isNotEmpty>
+		<isNotEmpty property="CTRTC_PDF_FILE_SN" prepend=",">
+			CTRTC_PDF_FILE_SN
+		</isNotEmpty>
+		<isNotEmpty property="PRMISN_DE" prepend=",">
+			PRMISN_DE
+		</isNotEmpty>
+		<isNotEmpty property="REJDGE_BEGIN" prepend=",">
+			REJDGE_BEGIN
+		</isNotEmpty>
+		<isNotEmpty property="REJDGE_END" prepend=",">
+			REJDGE_END
+		</isNotEmpty>
+		<isNotEmpty property="TRGET_DISS" prepend=",">
+			TRGET_DISS
+		</isNotEmpty>
+		<isNotEmpty property="BLIND_CODE" prepend=",">
+			BLIND_CODE
+		</isNotEmpty>
+		<isNotEmpty property="RSRCH_BEGIN" prepend=",">
+			RSRCH_BEGIN
+		</isNotEmpty>
+		<isNotEmpty property="RSRCH_END" prepend=",">
+			RSRCH_END
+		</isNotEmpty>
+		<isNotEmpty property="DOMN_URL" prepend=",">
+			DOMN_URL
+		</isNotEmpty>
+		)
+		VALUES (
+		#TASK_SN#,
+		#TASK_NO# ,
+		#TASK_NM# ,
+		#TASK_TY_CODE# ,
+		#PHASE_CODE# ,
+		'Y' ,
+		'N' ,
+		#CDISC_RULE_SN# ,
+		'03' ,
+		SYSDATE ,
+		#UPDATE_ID# ,
+		SYSDATE ,
+		#UPDATE_ID#
+		<isNotEmpty property="PHASE_ETC_NM" prepend=",">
+			#PHASE_ETC_NM#
+		</isNotEmpty>
+		<isNotEmpty property="IWRS_USE_AT" prepend=",">
+			#IWRS_USE_AT#
+		</isNotEmpty>
+		<isNotEmpty property="TASK_DC" prepend=",">
+			#TASK_DC#
+		</isNotEmpty>
+		<isNotEmpty property="RSRCH_PURPS" prepend=",">
+			#RSRCH_PURPS#
+		</isNotEmpty>
+		<isNotEmpty property="RRCS_CO" prepend=",">
+			#RRCS_CO#
+		</isNotEmpty>
+		<isNotEmpty property="CTRTC_FILE_SN" prepend=",">
+			#CTRTC_FILE_SN#
+		</isNotEmpty>
+		<isNotEmpty property="CTRTC_PDF_FILE_SN" prepend=",">
+			#CTRTC_PDF_FILE_SN#
+		</isNotEmpty>
+		<isNotEmpty property="PRMISN_DE" prepend=",">
+			#PRMISN_DE#
+		</isNotEmpty>
+		<isNotEmpty property="REJDGE_BEGIN" prepend=",">
+			#REJDGE_BEGIN#
+		</isNotEmpty>
+		<isNotEmpty property="REJDGE_END" prepend=",">
+			#REJDGE_END#
+		</isNotEmpty>
+		<isNotEmpty property="STUDY_NM" prepend=",">
+			#STUDY_NM#
+		</isNotEmpty>
+		<isNotEmpty property="TRGET_DISS" prepend=",">
+			#TRGET_DISS#
+		</isNotEmpty>
+		<isNotEmpty property="BLIND_CODE" prepend=",">
+			#BLIND_CODE#
+		</isNotEmpty>
+		<isNotEmpty property="RSRCH_BEGIN" prepend=",">
+			#RSRCH_BEGIN#
+		</isNotEmpty>
+		<isNotEmpty property="RSRCH_END" prepend=",">
+			#RSRCH_END#
+		</isNotEmpty>
+		<isNotEmpty property="DOMN_URL" prepend=",">
+			#DOMN_URL#
+		</isNotEmpty>
+		)
+	</insert>
+	<update id="updateBaseInfo" parameterClass="hashMap">
+		UPDATE EDC_CR_TASK SET
+		TASK_NO = #TASK_NO#
+		, TASK_NM = #TASK_NM#
+		, TASK_TY_CODE = #TASK_TY_CODE#
+		, PHASE_CODE = #PHASE_CODE#
+		, PHASE_ETC_NM = #PHASE_ETC_NM#
+		, IWRS_USE_AT = #IWRS_USE_AT#
+		, TASK_DC = #TASK_DC#
+		, RSRCH_PURPS = #RSRCH_PURPS#
+		, RRCS_CO = #RRCS_CO#
+		, CTRTC_FILE_SN = #CTRTC_FILE_SN#
+		, CTRTC_PDF_FILE_SN = #CTRTC_PDF_FILE_SN#
+		, PRMISN_DE = #PRMISN_DE#
+		, REJDGE_BEGIN = #REJDGE_BEGIN#
+		, REJDGE_END = #REJDGE_END#
+		, STUDY_NM = #STUDY_NM#
+		, TRGET_DISS = #TRGET_DISS#
+		, BLIND_CODE = #BLIND_CODE#
+		, RSRCH_BEGIN = #RSRCH_BEGIN#
+		, RSRCH_END = #RSRCH_END#
+		, DOMN_URL = #DOMN_URL#
+		, LAST_UPDDE = SYSDATE
+		, LAST_UPDUSR = #UPDATE_ID#
+		WHERE TASK_SN = #TASK_SN#
+	</update>
+	<select id="selectCDISCSn" resultClass="string">
+		SELECT MAX(CDISC_RULE_SN) CDISC_RULE_SN
+		FROM CDISC_RULE
+	</select>
+	<update id="updateFileMasterUse" parameterClass="hashMap">
+		UPDATE DM_FILE_MASTR SET
+		USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, UPDATE_ID = #UPDATE_ID#
+		WHERE FILE_MASTR_SN = (
+		SELECT FILE_MASTR_SN FROM DM_FILE_DETAIL WHERE DETAIL_SN = #DETAIL_SN#
+		)
+	</update>
+	<update id="updateFileDetailUse" parameterClass="hashMap">
+		UPDATE DM_FILE_DETAIL SET
+		USE_AT = #USE_AT#
+		, LAST_UPDDE = SYSDATE
+		, UPDATE_ID = #UPDATE_ID#
+		WHERE DETAIL_SN = #DETAIL_SN#
+	</update>
+
+	<select id="selectProductList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT TASK_SN
+		, PRDUCT_SN
+		, TRGTER_CO
+		, PRDUCT_NM
+		, PRDUCT_ORDR
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		FROM EDC_CR_PRDUCT
+		WHERE USE_AT = 'Y'
+		AND TASK_SN = #TASK_SN#
+		ORDER BY PRDUCT_ORDR
+	</select>
+
+	<select id="selectProductSn" parameterClass="hashMap" resultClass="string">
+		SELECT NVL(MAX(PRDUCT_SN),0)+1 GROUP_SN FROM EDC_CR_PRDUCT
+		WHERE TASK_SN = #TASK_SN#
+	</select>
+
+	<insert id="insertProduct" parameterClass="hashMap">
+		INSERT INTO EDC_CR_PRDUCT (
+		TASK_SN
+		, PRDUCT_SN
+		, TRGTER_CO
+		, PRDUCT_NM
+		, PRDUCT_ORDR
+		, USE_AT
+		, FRST_CREDE
+		, FRST_CRTR
+		, LAST_UPDDE
+		, LAST_UPDUSR
+		) VALUES (
+		#TASK_SN#
+		, #PRDUCT_SN#
+		, #TRGTER_CO#
+		, #PRDUCT_NM#
+		, #PRDUCT_ORDR#
+		, 'Y'
+		, SYSDATE
+		, #UPDATE_ID#
+		, SYSDATE
+		, #UPDATE_ID#
+		)
+
+	</insert>
+	<update id="updateProduct" parameterClass="hashMap">
+		UPDATE EDC_CR_PRDUCT SET
+		USE_AT = #USE_AT#
+		, PRDUCT_ORDR = #PRDUCT_ORDR#
+		, PRDUCT_NM = #PRDUCT_NM#
+		, TRGTER_CO = #TRGTER_CO#
+		, LAST_UPDDE = SYSDATE
+		, UPDATE_ID = #UPDATE_ID#
+		WHERE TASK_SN = #TASK_SN#
+		AND PRDUCT_SN = #PRDUCT_SN#
+	</update>
+</sqlMap>

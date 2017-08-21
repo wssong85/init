@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMO01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+<!--  연구자정보 조회-->
+
+<select id="CTMO01DAO.selectRsrchUserInfo" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT		 TA.TASK_SN
+			,RS.INSTT_CODE
+			,CM.CNTRCT_SN
+			,RO.ROLE_ID
+			,RO.ROLE_NM
+			,TA.TASK_NO			
+			,US.USER_ID
+			,US.USER_NM
+			,DAMO_DEC(US.EMAIL) EMAIL
+			,DAMO_DEC(US.TELNO) TELNO
+			,CM.GOAL_NO
+			,ISF_PYMNT_AT			
+			,TO_CHAR(RS.ISF_PYMNT_DE,'YYYYMMDDHH24MISS') AS ISF_PYMNT_DE					
+			,RS.RM
+			,DECODE(UT.DSCNTC_AT, 'N', 'Active', 'Inactive') AS DSCNTC_AT
+            ,TO_CHAR(UT.DSCNTC_DE,'YYYYMMDDHH24MISS') AS LAST_PYMNT_DE
+FROM 		CM_USERTASK UT 
+INNER JOIN	CM_USER US 
+ON 			UT.USER_ID = US.USER_ID
+INNER JOIN 	CM_RSRCHUSER RS
+ON 			RS.USER_ID = US.USER_ID
+INNER JOIN  EDC_CR_TASK TA
+ON 			UT.TASK_SN = TA.TASK_SN
+INNER JOIN  CTMS_CO_CNTRCT_MANAGE CM
+ON 			RS.USER_ID = CM.USER_ID
+AND 		CM.TASK_SN = UT.TASK_SN
+INNER JOIN  CM_USER_ROLE UO
+ON 			US.USER_ID = UO.USER_ID
+INNER JOIN  CM_ROLE RO
+ON			UO.ROLE_ID = RO.ROLE_ID
+WHERE 1=1 
+AND 		TA.TASK_NO = #TASK_NO#
+AND         US.USER_NM LIKE '%'||#USER_NM#||'%'
+AND         UT.USE_YN = 'Y'
+ORDER BY 	CM.FRST_CREAT_DE
+]]>	
+</select>
+
+
+<!--  연구자정보 입력-->
+<update id="CTMO01DAO.updateRsrchUserInfo" parameterClass="hashMap">
+<![CDATA[
+UPDATE   CM_RSRCHUSER 
+SET		 ISF_PYMNT_AT = #ISF_PYMNT_AT#
+]]>	
+<isNotEmpty property="ISF_PYMNT_DE">
+		,ISF_PYMNT_DE = TO_DATE(REPLACE(REPLACE(#ISF_PYMNT_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+</isNotEmpty>
+<![CDATA[
+		,RM = #RM#			
+		,LAST_UPDDE = SYSDATE
+		,UPDATE_ID = #LAST_UPDUSR#
+WHERE
+		USER_ID = #USER_ID#
+]]>		
+</update>
+
+<!--  연구자 중단여부 입력-->
+<update id="CTMO01DAO.updateActive" parameterClass="hashMap">
+<![CDATA[
+UPDATE	CM_USERTASK SET 	 
+	    DSCNTC_AT  = #DSCNTC_AT#
+	   ,DSCNTC_DE  = SYSDATE
+	   ,LAST_UPDDE = SYSDATE
+	   ,UPDATE_ID  = #LAST_UPDUSR#
+WHERE   USER_ID    = #USER_ID#
+  AND   TASK_SN    = #TASK_SN#
+]]>		
+</update>
+
+<!--  조사연구기관 조회-->
+<select id="CTMO01DAO.selectRsrchInstt" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT		 RIN.SN
+			,RS.INSTT_CODE
+			,RIN.HSPTL_SE
+			,RS.IRB_AT
+			,RS.HSPTL_NM
+			,RS.ADDRONE
+			,RIN.CHRG_CRA
+FROM 
+			 CTMS_CO_RSRCH_INSTT RIN
+			,CM_RSRCHUSER RS
+
+WHERE 1=1
+AND 		 RS.USER_ID = RIN.USER_ID(+)
+AND 		 RS.USER_ID = #USER_ID#
+AND          RS.USE_YN = 'Y'
+ORDER BY RIN.FRST_CREAT_DE DESC
+]]>	
+</select>
+
+<!--  조사연구기관 입력-->
+<insert id="CTMO01DAO.insertRsrchInstt" parameterClass="hashMap">
+<![CDATA[
+MERGE INTO CTMS_CO_RSRCH_INSTT 
+USING DUAL ON(USER_ID = #USER_ID#) 
+WHEN MATCHED THEN
+UPDATE SET   HSPTL_SE	= #HSPTL_SE#
+			,LAST_UPDT_DE = SYSDATE
+			,LAST_UPDUSR = #LAST_UPDUSR#
+			,CHRG_CRA = #CHRG_CRA#
+WHEN NOT MATCHED THEN
+INSERT(
+	 USER_ID
+	,TASK_SN
+	,SN
+	,HSPTL_SE	
+	,USE_AT
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,LAST_UPDUSR
+	,CHRG_CRA
+)VALUES(
+	 #USER_ID#
+	,#TASK_SN#
+	,#SN#
+	,#HSPTL_SE#	
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,#CHRG_CRA#
+)
+]]>		
+</insert>
+
+<!--  계약관리 조회-->
+<select id="CTMO01DAO.selectCntrctManage" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT		 MA.USER_ID
+			,MA.STTUS
+			,TO_CHAR(MA.EXMNT_REQUST_DE,'YYYYMMDDHH24MISS') AS EXMNT_REQUST_DE
+			,TO_CHAR(MA.FRST_CREAT_DE,'YYYYMMDDHH24MISS') AS FRST_CREAT_DE
+			,MA.CNTRCT_SN
+			,TO_CHAR(MA.CNTRCT_DE,'YYYYMMDDHH24MISS') AS CNTRCT_DE
+			,DECODE(MA.ATCH_FILE, '', '0', (SELECT COUNT(1)	FROM DM_FILE_DETAIL	WHERE FILE_MASTR_SN = MA.ATCH_FILE)) AS ATCH_FILE
+			,DECODE(MA.ATCH_FILE, '', 'NO', 'YES') AS ATCH_FILE_SE
+			,MA.PYMNT_PLAN_CNT
+			,MA.PYMNT_CNT
+FROM 
+			 CM_RSRCHUSER RS
+			,CM_USER US
+			,CM_USERTASK UT
+			,EDC_CR_TASK TA
+			,CTMS_CO_CNTRCT_MANAGE MA
+WHERE 1=1
+AND 		 RS.USER_ID = US.USER_ID
+AND 		 US.USER_ID = UT.USER_ID
+AND 		 UT.TASK_SN = TA.TASK_SN
+AND 		 TA.TASK_SN = MA.TASK_SN
+AND 		 RS.USER_ID = MA.USER_ID
+AND 		 RS.USER_ID = #USER_ID#
+AND			 TA.TASK_SN = #TASK_SN#
+AND          MA.USE_AT = 'Y'
+ORDER BY MA.FRST_CREAT_DE DESC
+]]>	
+</select>
+
+<!--  계약관리 저장-->
+<update id="CTMO01DAO.updateCntrctManage" parameterClass="hashMap">
+<![CDATA[
+UPDATE   	 CTMS_CO_CNTRCT_MANAGE 
+SET
+]]>	
+<isNotEmpty property="EXMNT_REQUST_DE">
+			 EXMNT_REQUST_DE = TO_DATE(REPLACE(REPLACE(#EXMNT_REQUST_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')	
+</isNotEmpty>	
+<isNotEmpty property="CNTRCT_DE">	
+			,CNTRCT_DE		 = TO_DATE(REPLACE(REPLACE(#CNTRCT_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')	
+</isNotEmpty>
+<![CDATA[		
+			,PYMNT_PLAN_CNT  = #PYMNT_PLAN_CNT#
+			,PYMNT_CNT 		 = #PYMNT_CNT#
+			,LAST_UPDT_DE 	 = SYSDATE
+			,LAST_UPDUSR 	 = #LAST_UPDUSR#
+WHERE 1=1
+AND			 CNTRCT_SN 		 = #CNTRCT_SN#
+AND			 TASK_SN		 = #TASK_SN#
+]]>		
+</update>
+
+<!--  계약관리 분할지급횟수 저장-->
+<update id="CTMO01DAO.updatePymntCnt" parameterClass="hashMap">
+<![CDATA[
+UPDATE   	 CTMS_CO_CNTRCT_MANAGE 
+SET			
+			 PYMNT_CNT 		 = #PYMNT_CNT#
+			,LAST_UPDT_DE 	 = SYSDATE
+			,LAST_UPDUSR 	 = #LAST_UPDUSR#
+WHERE 1=1
+AND			 CNTRCT_SN 		 = #CNTRCT_SN#
+AND			 TASK_SN		 = #TASK_SN#
+]]>		
+</update>
+
+<!--  연구비 조회-->
+<select id="CTMO01DAO.selectResearchFunds" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT		 SN
+			,ODR
+			,USER_ID 
+			,TO_CHAR(RCPMNY_DE,'YYYYMMDDHH24MISS') AS RCPMNY_DE
+			,RCPMNY_AM
+			,TO_CHAR(LAST_PYMNT_DE,'YYYYMMDDHH24MISS') AS LAST_PYMNT_DE
+			,LAST_PYMNT_AT
+			,RSRCCT_SUM
+FROM     	 CTMS_CO_RSRCH_RSRCCT 
+WHERE 1=1 
+AND 		 USER_ID = #USER_ID#
+AND 		 TASK_SN = #TASK_SN#
+AND          USE_AT = 'Y'
+ORDER BY ODR DESC
+]]>	
+</select>
+
+
+<!--  연구비 저장-->
+<insert id="CTMO01DAO.insertResearchFunds" parameterClass="hashMap">
+<![CDATA[
+INSERT INTO CTMS_CO_RSRCH_RSRCCT (
+	 USER_ID
+	,TASK_SN
+	,SN
+	,ODR
+	,RCPMNY_DE
+	,RCPMNY_AM
+]]>	
+	<isNotEmpty property="LAST_PYMNT_DE">
+	,LAST_PYMNT_DE
+	</isNotEmpty>
+<![CDATA[
+	,LAST_PYMNT_AT
+	,RSRCCT_SUM
+	,USE_AT
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,LAST_UPDUSR
+)VALUES(
+	 #USER_ID#
+	,#TASK_SN#
+	,#SN#
+	,#ODR#
+	,TO_DATE(REPLACE(REPLACE(#RCPMNY_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS') 
+	,#RCPMNY_AM#	
+]]>	
+	<isNotEmpty property="LAST_PYMNT_DE">
+	,TO_DATE(REPLACE(REPLACE(#LAST_PYMNT_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+<![CDATA[
+	,#LAST_PYMNT_AT#
+	,#RSRCCT_SUM#
+	,#USE_AT#
+	,SYSDATE
+	,#FRST_CRTR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>		
+</insert>
+
+<!--  연구비 수정-->
+<update id="CTMO01DAO.updateResearchFunds" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_CO_RSRCH_RSRCCT 
+SET		 ODR = #ODR#
+		,RCPMNY_DE = TO_DATE(REPLACE(REPLACE(#RCPMNY_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS') 
+		,RCPMNY_AM = #RCPMNY_AM#
+]]>	
+		<isNotEmpty property="LAST_PYMNT_DE">
+		,LAST_PYMNT_DE = TO_DATE(REPLACE(REPLACE(#LAST_PYMNT_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+		</isNotEmpty>
+<![CDATA[
+		,LAST_PYMNT_AT = #LAST_PYMNT_AT#
+		,RSRCCT_SUM = #RSRCCT_SUM#
+		,LAST_UPDT_DE = SYSDATE
+		,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE 1=1
+AND     SN = #SN#
+]]>	
+</update>
+
+
+<!--  연구비 삭제-->
+<update id="CTMO01DAO.deleteResearchFunds" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_CO_RSRCH_RSRCCT 
+SET		 USE_AT = 'N'
+		,LAST_UPDT_DE = SYSDATE
+		,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE 1=1
+AND     SN = #SN#
+]]>		
+</update>
+
+<!--  IRB심의 조회-->
+<select id="CTMO01DAO.selectRsrchDlbrt" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT		 SN
+			,DLBRT_KND
+			,TO_CHAR(PRESENTN_DE,'YYYYMMDDHH24MISS') AS PRESENTN_DE
+			,TO_CHAR(DLBRT_DE,'YYYYMMDDHH24MISS') AS DLBRT_DE
+			,DLBRT_RESULT
+			,TO_CHAR(DLBRT_RESULT_DE,'YYYYMMDDHH24MISS') AS DLBRT_RESULT_DE
+			,TO_CHAR(DLBRTCT_RCPMNY_DE,'YYYYMMDDHH24MISS') AS DLBRTCT_RCPMNY_DE
+			,DLBRTCT_RCPMNY_AM
+			,CONFM_NTC_DOC
+FROM 
+			 CTMS_CO_RSRCH_DLBRT
+WHERE 1=1
+AND TASK_SN = #TASK_SN#
+AND USER_ID = #USER_ID#
+AND USE_AT = 'Y'
+ORDER BY FRST_CREAT_DE DESC
+]]>	
+</select>
+
+<!--  IRB심의 저장-->
+<insert id="CTMO01DAO.insertRsrchDlbrt" parameterClass="hashMap">
+<![CDATA[
+INSERT INTO CTMS_CO_RSRCH_DLBRT(
+	 USER_ID
+	,TASK_SN
+	,SN
+	,DLBRT_KND
+	,PRESENTN_DE
+	]]>		 
+	<isNotEmpty property="DLBRT_DE">
+	,DLBRT_DE
+	</isNotEmpty>
+<![CDATA[
+	,DLBRT_RESULT
+]]>	
+	<isNotEmpty property="DLBRT_RESULT_DE">
+	,DLBRT_RESULT_DE
+	</isNotEmpty>
+	<isNotEmpty property="DLBRTCT_RCPMNY_DE">
+	,DLBRTCT_RCPMNY_DE
+	</isNotEmpty>
+<![CDATA[
+	,DLBRTCT_RCPMNY_AM
+	,CONFM_NTC_DOC
+	,USE_AT
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,LAST_UPDUSR
+)VALUES(
+	 #USER_ID#
+	,#TASK_SN#
+	,#SN#
+	,#DLBRT_KND#
+	,TO_DATE(REPLACE(REPLACE(#PRESENTN_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+]]>		 
+	<isNotEmpty property="DLBRT_DE">
+	,TO_DATE(REPLACE(REPLACE(#DLBRT_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+<![CDATA[
+	,#DLBRT_RESULT#
+]]>	
+	<isNotEmpty property="DLBRT_RESULT_DE">
+	,TO_DATE(REPLACE(REPLACE(#DLBRT_RESULT_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+	<isNotEmpty property="DLBRTCT_RCPMNY_DE">
+	,TO_DATE(REPLACE(REPLACE(#DLBRTCT_RCPMNY_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+<![CDATA[
+	,#DLBRTCT_RCPMNY_AM#
+	,#CONFM_NTC_DOC#
+	,'Y'
+	,SYSDATE
+	,#FRST_CRTR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>		
+</insert>
+
+<!--  IRB 심의 수정-->
+<update id="CTMO01DAO.updateRsrchDlbrt" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_CO_RSRCH_DLBRT 
+SET	 DLBRT_KND = #DLBRT_KND#	
+	,PRESENTN_DE = TO_DATE(REPLACE(REPLACE(#PRESENTN_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+]]>	
+	<isNotEmpty property="DLBRT_DE">
+	,DLBRT_DE =	TO_DATE(REPLACE(REPLACE(#DLBRT_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>	
+<![CDATA[
+	,DLBRT_RESULT =	#DLBRT_RESULT#
+]]>		
+	<isNotEmpty property="DLBRT_RESULT_DE">
+	,DLBRT_RESULT_DE = TO_DATE(REPLACE(REPLACE(#DLBRT_RESULT_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+	<isNotEmpty property="DLBRTCT_RCPMNY_DE">
+	,DLBRTCT_RCPMNY_DE = TO_DATE(REPLACE(REPLACE(#DLBRTCT_RCPMNY_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+<![CDATA[
+	,DLBRTCT_RCPMNY_AM = #DLBRTCT_RCPMNY_AM#
+	,CONFM_NTC_DOC = #CONFM_NTC_DOC#
+	,LAST_UPDT_DE =	SYSDATE
+	,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE SN = #SN#
+
+]]>		
+</update>
+
+<!--  IRB 심의 삭제-->
+<update id="CTMO01DAO.deleteRsrchDlbrt" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_CO_RSRCH_DLBRT 
+SET	 USE_AT = 'N'
+	,LAST_UPDT_DE =	SYSDATE
+	,LAST_UPDUSR =	#LAST_UPDUSR#
+]]>		
+</update>
+
+<!--  동의서 조회-->
+<select id="CTMO01DAO.selectRsrchWrtcns" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT		 USER_ID
+			,TASK_SN
+			,SN
+			,AT
+			,DLIV_AT
+			,TO_CHAR(VALID_DE,'YYYYMMDDHH24MISS') AS VALID_DE
+			,VER
+			,RM
+FROM 
+			CTMS_CO_RSRCH_WRTCNS
+WHERE 1=1
+AND 		USER_ID = #USER_ID#
+AND 		TASK_SN = #TASK_SN#
+AND 		USE_AT = 'Y'
+ORDER BY FRST_CREAT_DE DESC
+]]>	
+</select>
+
+<!--  동의서 저장-->
+<insert id="CTMO01DAO.insertRsrchWrtcns" parameterClass="hashMap">
+<![CDATA[
+INSERT INTO CTMS_CO_RSRCH_WRTCNS(
+	 USER_ID
+	,TASK_SN
+	,SN
+	,AT
+	,DLIV_AT
+]]>	
+	<isNotEmpty property="VALID_DE">
+	,VALID_DE
+	</isNotEmpty>
+<![CDATA[
+	,VER
+	,RM
+	,USE_AT
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,LAST_UPDUSR
+)VALUES(
+	 #USER_ID#
+	,#TASK_SN#
+	,#SN#
+	,#AT#
+	,#DLIV_AT#
+]]>	
+	<isNotEmpty property="VALID_DE">
+	,TO_DATE(REPLACE(REPLACE(#VALID_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+<![CDATA[
+	,#VER#
+	,#RM#
+	,'Y'
+	,SYSDATE
+	,#FRST_CRTR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>		
+</insert>
+
+<!--  동의서 수정 -->
+<update id="CTMO01DAO.updateRsrchWrtcns" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_CO_RSRCH_WRTCNS
+SET		 AT = #AT#
+		,DLIV_AT = #DLIV_AT#
+]]>	
+	<isNotEmpty property="VALID_DE">
+		,VALID_DE = TO_DATE(REPLACE(REPLACE(#VALID_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+<![CDATA[
+		,VER = #VER#
+		,RM = #RM#
+		,LAST_UPDT_DE = SYSDATE
+		,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE    SN = #SN#
+]]>		
+</update>
+
+<!--  동의서 삭제 -->
+<update id="CTMO01DAO.deleteRsrchWrtcns" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_CO_RSRCH_WRTCNS
+SET		 USE_AT = 'N'
+		,LAST_UPDT_DE = SYSDATE
+		,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE    SN = #SN#
+]]>		
+</update>
+
+<!--  버전관리 조회-->
+<select id="CTMO01DAO.selectRsrchVer" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT		 USER_ID
+			,TASK_SN
+			,SN
+			,IEM
+			,KND
+			,VER
+			,DLBRT_KND
+			,TO_CHAR(CONFM_DE,'YYYYMMDDHH24MISS') AS CONFM_DE
+FROM 
+			CTMS_CO_RSRCH_VER
+WHERE 1=1
+AND 		USER_ID = #USER_ID#
+AND 		TASK_SN = #TASK_SN#
+AND 		USE_AT = 'Y'
+ORDER BY KND DESC, VER DESC ,FRST_CREAT_DE DESC
+]]>	
+</select>
+
+<!--  버전관리 저장-->
+<insert id="CTMO01DAO.insertRsrchVer" parameterClass="hashMap">
+<![CDATA[
+INSERT INTO CTMS_CO_RSRCH_VER(
+	 USER_ID
+	,TASK_SN
+	,SN
+	,IEM
+	,KND
+	,VER
+	,DLBRT_KND
+]]>	
+	<isNotEmpty property="CONFM_DE">
+	,CONFM_DE
+	</isNotEmpty>
+<![CDATA[
+	,USE_AT
+	,FRST_CREAT_DE
+	,FRST_CRTR
+	,LAST_UPDT_DE
+	,LAST_UPDUSR
+)VALUES(
+	 #USER_ID#
+	,#TASK_SN#
+	,#SN#
+	,#IEM#
+	,#KND#
+	,#VER#
+	,#DLBRT_KND#
+]]>	
+	<isNotEmpty property="CONFM_DE">
+	,TO_DATE(REPLACE(REPLACE(#CONFM_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+	</isNotEmpty>
+<![CDATA[
+	,'Y'
+	,SYSDATE
+	,#LAST_UPDUSR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>		
+</insert>
+
+<!--  버전관리 수정 -->
+<update id="CTMO01DAO.updateRsrchVer" parameterClass="hashMap">
+<![CDATA[
+UPDATE  CTMS_CO_RSRCH_VER 
+SET		 IEM = #IEM#
+		,KND = #KND#
+		,VER = #VER#
+		,DLBRT_KND = #DLBRT_KND#
+]]>		
+		<isNotEmpty property="CONFM_DE">
+		,CONFM_DE = TO_DATE(REPLACE(REPLACE(#CONFM_DE#, '-'),'/') || '000000', 'YYYYMMDDHH24MISS')
+		</isNotEmpty>
+<![CDATA[
+		,LAST_UPDT_DE = SYSDATE
+		,LAST_UPDUSR = #LAST_UPDUSR# 
+WHERE SN = #SN#
+]]>		
+</update>
+
+<!--  버전관리 삭제 -->
+<update id="CTMO01DAO.deleteRsrchVer" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_CO_RSRCH_VER
+SET		 USE_AT = 'N'
+		,LAST_UPDT_DE = SYSDATE
+		,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE    SN = #SN#
+]]>		
+</update>
+</sqlMap>

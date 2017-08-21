@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<!-- SOURCE TRIAL -->
+	<bean name="SDB_AM_TRIAL_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_TRIAL_INFO"/>
+	            <entry key="TABLE_PK" value="PRTCL_NO"/>
+	            <entry key="COLUMN_NM" value="PRDUCT_CODE,PRTCL_NM,RSRCH_KND_CODE,CLINC_TY_CODE,RSRCH_KND_ETC_MATTER_MEMO,MFDS_CONFM_AT,MFDS_CONFM_DTE,FRT_PATNT_OCCRRNCDE,LAST_PATNT_OCCRRNCDE,RYMSLMDONG_CTRL_AT,RYMSLMDONG_CTRL_CMPNYNM,RYMSLMDONG_CTRL_PRDUCTNM,RYMSLMDONG_CTRL_DATA_TRNSMIS_A,RYMSLMDONG_CTRL_DATA_TRNSMISDE,SAFEHELTH_DTA_LOCK_DTE,SAFE_POPLTN,MEDDRA_VER,KCM_VER,WHOART_VER,ATC_VER,ETC_INFO_ONE,ETC_INFO_TWO,ETC_INFO_THREE,USE_AT"/>
+	            <entry key="LABEL_NM" value="프로토콜명,연구종류코드,임상유형코드,연구종류기타사항메모,MFDS승인여부,MFDS승인일자,첫번째환자발생일,마지막환자발생일,능동제어여부,능동제어회사명,능동제어제품명,능동제어데이터전송여부, 능동제어데이터전송일,안전보건자료잠금일자,안전인구,MedDRA버전,KCM버전,WHOART버전,ATC버전,기타정보1,기타정보2,기타정보3,사용여부"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="SDB_AM_LTRTRE_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_LTRTRE_INFO"/>
+	            <entry key="TABLE_PK" value="LTRTRE_NO"/>
+	            <entry key="COLUMN_NM" value="PRDUCT_CODE,LTRTRE_SJ,JRNL_INFO,AUTHR,PBLCATE_DTE,LTRTRE_FILE,ETC_INFO_ONE,ETC_INFO_TWO,ETC_INFO_THREE,USE_AT"/>
+	            <entry key="LABEL_NM" value="제품코드,문헌제목,저널이름권호수,저자,출판일자,첨부파일,기타정보1,기타정보2,기타정보3,사용여부"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="ATRAIL_SDB_AM_ETC_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_ETC_INFO"/>
+	            <entry key="TABLE_PK" value="ETC_INFO_NO"/>
+	            <entry key="COLUMN_NM" value="PRDUCT_CODE,SOURC,ETC_INFO_ONE,ETC_INFO_TWO,ETC_INFO_THREE,USE_AT"/>
+	            <entry key="LABEL_NM" value="제품코드,소스,기타정보1,기타정보2,기타정보3,사용여부"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="ATRAIL_SDB_IM_MULLANG_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_IM_MULLANG_INFO"/>
+	            <entry key="TABLE_PK" value="MULLANG_CODE"/>
+	            <entry key="COLUMN_NM" value="KOREAN, ENG"/>
+	            <entry key="LABEL_NM" value="한글,영문"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="ATRAIL_SDB_AM_CHANGE_RESN" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_CHANGE_RESN"/>
+	            <entry key="TABLE_PK" value="SN"/>
+	            <entry key="COLUMN_NM" value="TRGET_MODE"/>
+	            <entry key="LABEL_NM" value="수정삭제구분"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	<bean name="ATRAIL_SDB_AM_HRMFLNS_CASE_DC" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_AM_HRMFLNS_CASE_DC"/>
+	            <entry key="TABLE_PK" value="CASE_DC_SN"/>
+	            <entry key="COLUMN_NM" value="HRMFLNS_CASE_CODE,PRDUCT_CODE,HRMFLNS_CASE_DC,REPORTR_OPINION,APLCNT_OPINION,DIFR_INFO,RSRCH_NM,SPON_RSRCH_NO,RESPNS_OBSERV_RSRCH_TY"/>
+	            <entry key="LABEL_NM" value="유해 사례 코드,제품 코드,유해 사례 설명,보고자 의견,신고자 의견,다른 정보,연구 이름,스폰서 연구 번호,반응 관찰 연구 유형"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="ATRAIL_SDB_SM_LTRTRE_SEARCH_INFO" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_SM_LTRTRE_SEARCH_INFO"/>
+	            <entry key="TABLE_PK" value="LTRTRE_SEARCH_SN"/>
+	            <entry key="COLUMN_NM" value="CMPNY_NM,PRDUCT_NM,KWRD,SEARCH_SITE,SEARCH_OPERTNDE_ONE,SEARCH_OPERTNDE_TWO,EXMNT_THESIS_CO_ONE,EXMNT_THESIS_CO_TWO,REPORT_THESIS_CO_ONE,REPORT_THESIS_CO_TWO,REPORT_NUM_ONE,REPORT_NUM_TWO,THESISURL,USE_AT"/>
+	            <entry key="LABEL_NM" value="회사명,제품명,키워드,검색사이트,검색시행일1,검색시험일2,검토논문개수1,검토논문개수2,보고논문개수1,보고논문개수2,보고건수1,보고건수2,논문URL,사용유무"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+	
+	<bean name="ATRAIL_SDB_IM_PRDUCT_INFO_MANAGE" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+			<map>
+	            <entry key="TABLE_NM" value="SDB_IM_PRDUCT_INFO_MANAGE"/>
+	            <entry key="TABLE_PK" value="PRDUCT_CODE"/>
+	            <entry key="COLUMN_NM" value="CONFM_BFE_IP_NM_MULLANG_CODE1,CONFM_BFE_IP_NM_MULLANG_CODE2,CONFM_BFE_IP_NM_MULLANG_CODE3,CONFM_DTE,PRDUCTNM_CODE,PRDUCTNM,GNRL_NM_CODE1,GNRL_NM_CODE2,GNRL_NM_CODE3,FRST_MFBIZ_CODE,COMAVA_AT,NCLINC_FILECODE,USE_AT"/>
+	            <entry key="LABEL_NM" value="승인 전 아이피 명 다국어 코드1,승인 전 아이피 명 다국어 코드2,승인 전 아이피 명 다국어 코드3,승인 일자,제품명 코드,제품명,일반 이름 코드1,일반 이름 코드2,일반 이름 코드3,최초 제조업체 코드,시판 여부,비임상 파일코드,사용 여부"/>
+	            <entry key="MODULE" value="SDB"/>
+			</map>
+		</property>
+	</bean>
+</beans>	

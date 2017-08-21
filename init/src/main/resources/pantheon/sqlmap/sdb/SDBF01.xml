@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="SDBF01">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+   	
+   	<select id="SDBF01.selectQcResultReportList" parameterClass="hashmap" resultClass="hashmap">
+	    SELECT A.PRDUCT_CODE
+	          ,FN_GET_PRDUCT_NAME(A.PRDUCT_CODE) PRDUCT_NAME
+	          ,FN_GET_USER_NAME(A.SAFE_MANAGE_CHRGDEPT_CHARGER) SAFE_MANAGE_CHRGDEPT_CHARGER
+	          ,A.QLMNGMT_OPRTNDE
+	          ,FN_GET_USER_NAME(A.QLMNGMT_CHARGER) QLMNGMT_CHARGER
+	          ,TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	          ,TO_CHAR(A.SFMNGCHRG_DPRLR_SANCTNDE, 'YYYYMMDDHH24MISS') SFMNGCHRG_DPRLR_SANCTNDE
+	          ,QC_REPRT_NO
+	      FROM SDB_SM_QC_REPRT A
+	     WHERE A.FRST_CREDE BETWEEN TO_DATE(#START_DATE# || ' 000000', 'YYYYMMDD HH24MISS') AND TO_DATE(#END_DATE# || ' 235959', 'YYYYMMDD HH24MISS')
+   	</select>
+   	
+   	<select id="SDBF01.selectQcReportInfo" parameterClass="hashmap" resultClass="hashmap">
+   	    SELECT QC_REPRT_NO
+	          ,SAFE_MANAGE_CHRGDEPT_CHARGER
+	          ,FN_GET_USER_NAME(SAFE_MANAGE_CHRGDEPT_CHARGER) SAFE_MANAGE_CHARGER_NM
+	          ,TO_CHAR(QLMNGMT_OPRTNDE, 'YYYYMMDDHH24MISS') QLMNGMT_OPRTNDE 
+	          ,QLMNGMT_CHARGER
+	          ,FN_GET_USER_NAME(QLMNGMT_CHARGER) QLMNGMT_CHARGER_NM
+	          ,PRDUCT_CODE
+	          ,FN_GET_PRDUCT_NAME(PRDUCT_CODE) PRDUCT_CODE_NM
+	          ,TOT_IEM_CO
+	          ,VIOLT_IEM_CO
+	          ,SETLELN_CODE
+	          ,TO_CHAR(QLMNGMT_CHARGER_SANCTNDE, 'YYYYMMDDHH24MISS') QLMNGMT_CHARGER_SANCTNDE
+	          ,SFMNGCHRG_DPRLR
+	          ,FN_GET_USER_NAME(SFMNGCHRG_DPRLR) SFMNGCHRG_DPRLR_NM
+	          ,TO_CHAR(SFMNGCHRG_DPRLR_SANCTNDE, 'YYYYMMDDHH24MISS') SFMNGCHRG_DPRLR_SANCTNDE 
+	          ,TO_CHAR(PD_BGNDE, 'YYYYMMDDHH24MISS') PD_BGNDE 
+	          ,TO_CHAR(PD_LASTDE, 'YYYYMMDDHH24MISS') PD_LASTDE
+	          ,SFMNGCHRG_DPRLR_MEMO
+	      FROM SDB_SM_QC_REPRT
+	     WHERE QC_REPRT_NO = #QC_REPRT_NO#
+   	</select>
+   	
+   	<select id="SDBF01.selectQcSopItemCheckList" parameterClass="hashmap" resultClass="hashmap">
+   		<![CDATA[
+	    SELECT A.SN
+	          ,A.UPPER_SN
+	          ,A.QESTN_SN
+	          ,A.QESTN_SN
+	          ,A.QESTN_CN
+	          ,A.GROUP_SN
+	          ,A.GROUP_TYPE
+	          ,B.RESULT_CODE
+	          ,B.IEM_CECK_AT
+	          ,B.MEMO
+	      FROM (SELECT SN
+	                  ,NVL(UPPER_SN, ' ') UPPER_SN
+	                  ,QESTN_SN
+	                  ,QESTN_CN
+	                  ,QESTN_SN GROUP_SN
+	                  ,'1' GROUP_TYPE
+	              FROM SDB_SM_EVL_ESTBS
+	             WHERE SE_CODE = '03'
+	               AND GROUP_AT = 'Y'
+	               AND NVL(UPPER_SN, ' ') = ' '
+	               AND USE_AT = 'Y'
+	         UNION ALL
+	            SELECT SN
+	                  ,NVL(UPPER_SN, ' ') UPPER_SN
+	                  ,QESTN_SN
+	                  ,QESTN_CN
+	                  ,UPPER_SN GROUP_SN
+	                  ,'2' GROUP_TYPE
+	              FROM SDB_SM_EVL_ESTBS
+	             WHERE SE_CODE = '03'
+	               AND GROUP_AT = 'Y'
+	               AND NVL(UPPER_SN, ' ') <> ' '
+	               AND USE_AT = 'Y'
+	          ORDER BY GROUP_SN, GROUP_TYPE, QESTN_SN) A
+	 LEFT JOIN (SELECT *
+	              FROM SDB_SM_SOP_IEM_CECK
+	             WHERE NVL(UPPER_IEM_CODE, ' ') = ' '
+	               AND QC_REPRT_NO = #QC_REPRT_NO#
+	            UNION ALL
+	            SELECT *
+	              FROM SDB_SM_SOP_IEM_CECK
+	             WHERE NVL(UPPER_IEM_CODE, ' ') <> ' '
+	               AND QC_REPRT_NO = #QC_REPRT_NO#) B
+	        ON NVL(A.UPPER_SN, ' ') = NVL(B.UPPER_IEM_CODE, ' ')
+	       AND A.QESTN_SN = B.IEM_CODE
+  	  ORDER BY A.GROUP_SN, A.GROUP_TYPE, A.QESTN_SN
+   		]]>
+   	</select>
+   	
+   	<insert id="SDBF01.insertQcResultReportInfo" parameterClass="hashmap">
+   	    INSERT INTO SDB_SM_QC_REPRT
+	                (QC_REPRT_NO
+	                ,PRDUCT_CODE
+	                ,SAFE_MANAGE_CHRGDEPT_CHARGER
+	                ,QLMNGMT_OPRTNDE
+	                ,QLMNGMT_CHARGER
+	                ,QLMNGMT_CHARGER_SANCTNDE
+	                ,PD_BGNDE
+	                ,PD_LASTDE
+	                ,TOT_IEM_CO
+	                ,VIOLT_IEM_CO
+	                ,SETLELN_CODE
+	                ,SFMNGCHRG_DPRLR_MEMO
+	                ,FRST_CREDE
+	                ,REGIST_ID
+	                ,LAST_UPDDE
+	                ,UPDATE_ID
+	                )
+	         VALUES (#QC_REPRT_NO#
+	                ,#PRDUCT_CODE#
+	                ,#SAFE_MANAGE_CHRGDEPT_CHARGER#
+	                ,TO_DATE(#QLMNGMT_OPRTNDE# || '000000', 'YYYYMMDDHH24MISS')
+	                ,#QLMNGMT_CHARGER#
+	                ,SYSDATE
+	                ,TO_DATE(#PD_BGNDE# || '000000', 'YYYYMMDDHH24MISS')
+	                ,TO_DATE(#PD_LASTDE# || '000000', 'YYYYMMDDHH24MISS')
+	                ,#TOT_IEM_CO#
+	                ,#VIOLT_IEM_CO#
+	                ,#SETLELN_CODE#
+	                ,#SFMNGCHRG_DPRLR_MEMO#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                )
+   	</insert>
+   	
+   	<update id="SDBF01.updateQcResultReportInfo" parameterClass="hashmap">
+	    UPDATE SDB_SM_QC_REPRT
+	       SET SAFE_MANAGE_CHRGDEPT_CHARGER = #SAFE_MANAGE_CHRGDEPT_CHARGER#
+	          ,QLMNGMT_OPRTNDE = #QLMNGMT_OPRTNDE#
+	          ,QLMNGMT_CHARGER = #QLMNGMT_CHARGER#
+	          ,QLMNGMT_CHARGER_SANCTNDE = SYSDATE
+	          ,SFMNGCHRG_DPRLR_SANCTNDE = #SFMNGCHRG_DPRLR_SANCTNDE#
+	          ,SFMNGCHRG_DPRLR_MEMO = #SFMNGCHRG_DPRLR_MEMO#
+	          ,PD_BGNDE = #PD_BGNDE#
+	          ,PD_LASTDE = #PD_LASTDE#
+	          ,TOT_IEM_CO = #TOT_IEM_CO#
+	          ,VIOLT_IEM_CO = #VIOLT_IEM_CO#
+	          ,LAST_UPDDE = SYSDATE
+	          ,UPDATE_ID = #USER_ID#
+	     WHERE QC_REPRT_NO = #QC_REPRT_NO#
+	       AND PRDUCT_CODE = #PRDUCT_CODE#
+   	</update>
+   	
+   	<insert id="SDBF01.insertQcSopItemCheckInfo" parameterClass="hashmap">
+   	    INSERT INTO SDB_SM_SOP_IEM_CECK
+	                (CECK_LIST_SN
+	                ,PRDUCT_CODE
+	                ,QC_REPRT_NO
+	                ,IEM_CODE
+	                ,IEM_NM
+	                ,UPPER_IEM_CODE
+	                ,RESULT_CODE
+	                ,IEM_CECK_AT
+	                ,MEMO
+	                ,USE_AT
+	                ,FRST_CREDE
+	                ,REGIST_ID
+	                ,LAST_UPDDE
+	                ,UPDATE_ID
+	                )
+	         VALUES (#CECK_LIST_SN#
+	                ,#PRDUCT_CODE#
+	                ,#QC_REPRT_NO#
+	                ,#IEM_CODE#
+	                ,#IEM_NM#
+	                ,#UPPER_IEM_CODE#
+	                ,#RESULT_CODE#
+	                ,#IEM_CECK_AT#
+	                ,#MEMO#
+	                ,#USE_AT#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                )
+   	</insert>
+   	
+   	<update id="SDBF01.updateQcSopItemCheckInfo" parameterClass="hashmap">
+	    UPDATE SDB_SM_SOP_IEM_CECK
+	       SET RESULT_CODE = #RESULT_CODE#
+	          ,IEM_CECK_AT = #IEM_CECK_AT#
+	          ,MEMO = #MEMO#
+	          ,LAST_UPDDE = SYSDATE
+	          ,UPDATE_ID = #USER_ID#
+	     WHERE QC_REPRT_NO = #QC_REPRT_NO#
+	       AND IEM_CODE = #IEM_CODE#
+	       AND PRDUCT_CODE = #PRDUCT_CODE#
+		<isNotEmpty property="UPPER_IEM_CODE">
+	       AND UPPER_IEM_CODE = #UPPER_IEM_CODE#
+	   	</isNotEmpty>
+   	</update>
+   	
+   	<select id="SDBF01.selectQcReportNo" parameterClass="hashmap" resultClass="String">
+	    SELECT  'QC_' || #PRDUCT_CODE# || '_' || TO_CHAR(SYSDATE, 'YYYY_MM') || '_' || TRIM(TO_CHAR(NVL(REPLACE(MAX(QC_REPRT_NO), 'QC_' || #PRDUCT_CODE# || '_' || TO_CHAR(SYSDATE, 'YYYY_MM') || '_', '')  + 1, 1), '00'))
+	      FROM SDB_SM_QC_REPRT
+	     WHERE QC_REPRT_NO LIKE 'QC_' || #PRDUCT_CODE# || '_' || TO_CHAR(SYSDATE, 'YYYY_MM') || '_%'
+   	</select>
+   	
+   	<select id="SDBF01.selectSopItemCheckNo" parameterClass="hashmap" resultClass="int">
+   		SELECT NVL(MAX(CECK_LIST_SN), 0) + 1 SEQ
+   		  FROM SDB_SM_SOP_IEM_CECK
+   		 WHERE PRDUCT_CODE = #PRDUCT_CODE#
+   		   AND QC_REPRT_NO = #QC_REPRT_NO#
+   	</select>
+   	
+   	<select id="SDBF01.selectUserInfo" parameterClass="hashmap" resultClass="hashmap">
+	    SELECT A.USER_ID
+	          ,B.USER_NM
+	          ,B.EMAIL
+	          ,B.TELNO
+	          ,C.DEPT_CD
+	          ,D.DEPT_NM
+	      FROM CM_USER_ROLE A
+	INNER JOIN CM_USER B
+	        ON A.USER_ID = B.USER_ID
+	       AND B.USE_YN = 'Y'
+	INNER JOIN CM_JOBUSER C
+	        ON A.USER_ID = C.USER_ID
+	       AND C.USE_YN = 'Y'
+	INNER JOIN CM_DEPTINFO D
+	        ON C.COMP_CD = D.COMP_CD
+	       AND C.DEPT_CD = D.DEPT_CD
+	     WHERE A.USE_YN = 'Y'
+	     <isNotEmpty property="ROLE_ID">
+	       AND A.ROLE_ID = #ROLE_ID#
+         </isNotEmpty>
+         <isNotEmpty property="USER_NM">
+	       AND B.USER_NM = #USER_NM#
+	     </isNotEmpty>
+	     <isNotEmpty property="DEPT_NM">
+	       AND C.DEPT_NM = #DEPT_NM#
+         </isNotEmpty>
+   	</select>
+   	
+   	<select id="SDBF01.selectCaseInfo" parameterClass="hashmap" resultClass="hashmap">
+   	    SELECT HRMFLNS_CASE_CODE
+	          ,PRTCL_NO
+	          ,INSTT_NO
+	          ,TESTEE_NO
+	          ,DEATH_AT
+	          ,TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	      FROM SDB_AM_HRMFLNS_CASE_INFO
+	     WHERE PRDUCT_CODE = #PRDUCT_CODE#
+   	</select>
+   	
+   	<select id="SDBF01.selectProductCaseInfo" parameterClass="hashmap" resultClass="hashmap">
+   	    SELECT A.ABOVECASE_CODE
+   	    	  ,A.SN
+	          ,B.PRTCL_NO
+	          ,B.INSTT_NO
+	          ,B.TESTEE_NO
+	          ,B.DEATH_AT
+	          ,TO_CHAR(B.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+	      FROM SDB_SM_QCREPRT_ABOVECASE_INFO A
+	 LEFT JOIN SDB_AM_HRMFLNS_CASE_INFO B
+	        ON A.ABOVECASE_CODE = B.HRMFLNS_CASE_CODE
+	       AND A.PRDUCT_CODE = B.PRDUCT_CODE
+	     WHERE A.PRDUCT_CODE = #PRDUCT_CODE#
+	       AND A.QC_REPRT_NO = #QC_REPRT_NO#
+	       AND A.USE_AT = 'Y'
+   	</select>
+   	
+   	<insert id="SDBF01.insertAboveCaseInfo" parameterClass="hashmap">
+   	    INSERT INTO SDB_SM_QCREPRT_ABOVECASE_INFO
+	                (QC_REPRT_NO
+	                ,PRDUCT_CODE
+	                ,ABOVECASE_CODE
+	                ,SN
+	                ,USE_AT
+	                ,FRST_CREDE
+	                ,REGIST_ID
+	                ,LAST_UPDDE
+	                ,UPDATE_ID
+	                )
+	         VALUES (#QC_REPRT_NO#
+	                ,#PRDUCT_CODE#
+	                ,#ABOVECASE_CODE#
+	                ,#SN#
+	                ,#USE_AT#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                ,SYSDATE
+	                ,#USER_ID#
+	                )
+   	</insert>
+   	
+   	<update id="SDBF01.deleteAboveCaseInfo" parameterClass="hashmap">
+   	    UPDATE SDB_SM_QCREPRT_ABOVECASE_INFO
+	       SET USE_AT = #USE_AT#
+	          ,LAST_UPDDE = SYSDATE
+	          ,UPDATE_ID = #USER_ID#
+	     WHERE QC_REPRT_NO = #QC_REPRT_NO#
+	       AND PRDUCT_CODE = #PRDUCT_CODE#
+	       AND ABOVECASE_CODE = #ABOVECASE_CODE#
+	       AND SN = #SN#
+   	</update>
+   	
+   	<update id="SDBF01.updateApprovalQcInfo" parameterClass="hashmap">
+   		UPDATE SDB_SM_QC_REPRT
+   		   SET SFMNGCHRG_DPRLR = #USER_ID#
+   		   	  ,SFMNGCHRG_DPRLR_SANCTNDE = SYSDATE
+   		   	  ,LAST_UPDDE = SYSDATE
+   		   	  ,UPDATE_ID = #USER_ID#
+   		 WHERE QC_REPRT_NO = #QC_REPRT_NO#
+	       AND PRDUCT_CODE = #PRDUCT_CODE#
+   	</update>
+   	
+   	<select id="SDBF01.selectCapaListInfo" parameterClass="hashmap" resultClass="hashmap">
+   	<isEmpty property="QC_REPRT_NO">
+   		SELECT CASE WHEN B.VIOLTIEM = NULL THEN B.VIOLTIEM
+	                ELSE A.UPPER_IEM_CODE || '_' || A.IEM_CODE
+	                END VIOLTIEM
+	          ,CASE WHEN B.VIOLTCN = NULL THEN B.VIOLTCN
+	                ELSE A.MEMO
+	                END VIOLTCN
+	          ,NVL(B.SOLUTENNC, 'N') SOLUTENNC
+	          ,NVL(B.UNSOLV_RESN, ' ') UNSOLV_RESN
+	          ,NVL(B.RM, ' ') RM
+	          ,A.QC_REPRT_NO
+	          ,A.PRDUCT_CODE
+	          ,NVL(TO_CHAR(B.FLLWMANAGT_SN), ' ') FLLWMANAGT_SN
+	      FROM SDB_SM_SOP_IEM_CECK A
+	INNER JOIN SDB_SM_QC_REPRT C
+	        ON A.QC_REPRT_NO = C.QC_REPRT_NO
+	       AND A.PRDUCT_CODE = C.PRDUCT_CODE
+	       AND C.SAFE_MANAGE_CHRGDEPT_CHARGER = #SAFE_MANAGE_CHRGDEPT_CHARGER#
+	 LEFT JOIN SDB_SM_QC_FLLWMANAGT_INFO B
+	        ON A.QC_REPRT_NO = B.QC_REPRT_NO
+	       AND A.PRDUCT_CODE = B.PRDUCT_CODE
+	     WHERE A.PRDUCT_CODE = #PRDUCT_CODE#
+	       AND A.RESULT_CODE = 'N'
+	       AND A.QC_REPRT_NO = (SELECT MAX(QC_REPRT_NO)
+	                              FROM SDB_SM_QC_REPRT
+	                             WHERE PRDUCT_CODE = #PRDUCT_CODE#
+	                               AND SAFE_MANAGE_CHRGDEPT_CHARGER = #SAFE_MANAGE_CHRGDEPT_CHARGER#)
+	  ORDER BY A.UPPER_IEM_CODE, A.IEM_CODE
+   	</isEmpty>
+   	<isNotEmpty property="QC_REPRT_NO">
+   		SELECT FLLWMANAGT_SN
+	          ,QC_REPRT_NO
+	          ,PRDUCT_CODE
+	          ,VIOLTIEM
+	          ,VIOLTCN
+	          ,SOLUTENNC
+	          ,NVL(UNSOLV_RESN, ' ') UNSOLV_RESN
+	          ,NVL(RM, ' ') RM
+	      FROM SDB_SM_QC_FLLWMANAGT_INFO
+	     WHERE QC_REPRT_NO = #QC_REPRT_NO#
+	       AND PRDUCT_CODE = #PRDUCT_CODE#
+   	</isNotEmpty>
+   	</select>
+   	
+   	<insert id="SDBF01.insertCapaListInfo" parameterClass="hashmap">
+   		INSERT INTO SDB_SM_QC_FLLWMANAGT_INFO
+   					(FLLWMANAGT_SN
+   					,QC_REPRT_NO
+   					,PRDUCT_CODE
+   					,VIOLTIEM
+   					,VIOLTCN
+   					,SOLUTENNC
+   					,UNSOLV_RESN
+   					,RM
+   					,USE_AT
+   					,FRST_CREDE
+   					,REGIST_ID
+   					,LAST_UPDDE
+   					,UPDATE_ID
+   					)
+   			 VALUES (#FLLWMANAGT_SN#
+   			 		,#QC_REPRT_NO#
+   			 		,#PRDUCT_CODE#
+   			 		,#VIOLTIEM#
+   			 		,#VIOLTCN#
+   			 		,#SOLUTENNC#
+   			 		,#UNSOLV_RESN#
+   			 		,#RM#
+   			 		,#USE_AT#
+   			 		,SYSDATE
+   			 		,#USER_ID#
+   			 		,SYSDATE
+   			 		,#USER_ID#
+	 				)
+   	</insert>
+   	
+   	<update id="SDBF01.updateCapaListInfo" parameterClass="hashmap">
+   		UPDATE SDB_SM_QC_FLLWMANAGT_INFO
+   		   SET SOLUTENNC = #SOLUTENNC#
+   		   	  ,UNSOLV_RESN = #UNSOLV_RESN#
+   		   	  ,RM = #RM#
+   		   	  ,LAST_UPDDE = SYSDATE
+   		   	  ,UPDATE_ID = #USER_ID#
+   		 WHERE QC_REPRT_NO = #QC_REPRT_NO#
+   		   AND PRDUCT_CODE = #PRDUCT_CODE#
+   		   AND FLLWMANAGT_SN = #FLLWMANAGT_SN#
+   	</update>
+   	
+   	<select id="SDBF01.selectFllwmanagtSn" parameterClass="hashmap" resultClass="String">
+   		SELECT NVL(MAX(FLLWMANAGT_SN), 0) + 1
+   		  FROM SDB_SM_QC_FLLWMANAGT_INFO
+   		 WHERE QC_REPRT_NO = #QC_REPRT_NO#
+   		   AND PRDUCT_CODE = #PRDUCT_CODE#
+   	</select>
+</sqlMap>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMB03">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+<select id="CTMB03DAO.selectNISTask_NoList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT  	 TA.TASK_SN
+			,TA.TASK_NO
+FROM 
+			 EDC_CR_TASK TA
+			,CM_USERTASK US
+WHERE 1=1 
+AND 		TA.TASK_SN = US.TASK_SN
+AND 		TA.TASK_NO LIKE '%'||#TASK_NO#||'%'
+AND 		TA.TASK_TY_CODE = '02'
+AND 		TA.USE_AT = 'Y'
+AND 		US.USE_YN = 'Y'
+AND         TA.TASK_END_AT = #TASK_END_AT#
+AND 		US.USER_ID = #USER_ID#
+]]>	
+</select> 
+
+<select id="CTMB03DAO.selectAssignmentbyNisGrid" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT  TA.TASK_SN 									AS TASK_SN
+		,NIS.SN                   					AS SN
+		,TA.TASK_NO 								AS TASK_NO
+		,TA.PRODUCT_NM 								AS PRODUCT_NM
+		,TA.STUDY_NM 								AS STUDY_NM
+		,TA.TRGTER_CO 								AS TRGTER_CO
+		,NIS.COST 									AS COST
+		,NIS.VISIT_INFO 							AS VISIT_INFO
+		,NIS.FRST_CREDE
+		,DECODE(MAX(PRO.VER),'','N/A',MAX(PRO.VER)) AS VER
+FROM
+		EDC_CR_TASK TA
+		LEFT JOIN CTMS_TO_NIS_TASK NIS
+		ON TA.TASK_SN = NIS.TASK_SN AND NIS.USE_AT = 'Y'
+		LEFT JOIN CTMS_ST_PROTOCOL PRO 
+		ON TA.TASK_SN = PRO.TASK_SN AND PRO.USE_AT = 'Y'
+WHERE 1=1 
+		AND TA.TASK_NO = #TASK_NO#	
+GROUP BY  	TA.TASK_SN 
+			,NIS.SN
+			,TA.TASK_NO 
+			,TA.PRODUCT_NM 
+			,TA.STUDY_NM 
+			,TA.TRGTER_CO 
+			,NIS.COST
+			,NIS.VISIT_INFO
+			,NIS.FRST_CREDE
+ORDER BY NIS.FRST_CREDE DESC
+]]>	
+</select> 
+<!--  NIS  저장-->
+<insert id="CTMB03DAO.insertAssignmentbyNisGrid" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CTMS_TO_NIS_TASK(
+	 SN
+	,TASK_SN
+	,VISIT_INFO
+	,COST
+	,USE_AT
+	,FRST_CREDE
+	,FRST_CRTR
+	,LAST_UPDDE
+	,LAST_UPDUSR
+)VALUES(
+	 #SN#
+	,#TASK_SN#
+	,#VISIT_INFO#
+	,#COST#
+	,'Y'
+	,SYSDATE
+	,#FRST_CRTR#
+	,SYSDATE
+	,#LAST_UPDUSR#
+)
+]]>
+</insert>
+
+<!--  NIS  업데이트-->
+<update id="CTMB03DAO.updateAssignmentbyNisGrid" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_TO_NIS_TASK 
+SET	 VISIT_INFO = #VISIT_INFO#
+	,COST = #COST#	
+	,LAST_UPDDE = SYSDATE
+	,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE 1=1
+  	 AND SN = #SN#  
+]]>		
+</update>
+
+<!--  NIS  미사용 업데이트-->
+<update id="CTMB03DAO.deleteAssignmentbyNisGrid" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_TO_NIS_TASK 
+SET	 USE_AT = 'N'
+	,LAST_UPDDE = SYSDATE
+	,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE 1=1
+  	 AND SN = #SN#  
+]]>		
+</update>
+
+<select id="CTMB03DAO.selectNisStatusGrid" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT DISTINCT  TA.TASK_NO 																							
+				,TA.TASK_SN 																							
+				,TO_CHAR(RSRCH_BEGIN, 'YYYY-MM-DD')   ||' ~ '|| TO_CHAR(RSRCH_END, 'YYYY-MM-DD')  				  	    AS RSRCH_DATE
+				,DECODE(TA.TRGTER_CO, '' , 'N/A', TA.TRGTER_CO)															AS TRGTER_CO
+				,(SELECT DECODE(COUNT(1),'','N/A',COUNT(1))  
+					FROM CTMS_CO_CNTRCT_MANAGE CNT WHERE CNT.TASK_SN = TA.TASK_SN AND CNT.USE_AT='Y')					AS INSTT_CODE
+					
+        		,(SELECT DECODE(COUNT(INS.FREEZING_STTUS_CODE),'','N/A',COUNT(INS.FREEZING_STTUS_CODE))
+         		    FROM EDC_CR_INSTT_FORM INS  WHERE TASK_SN = TA.TASK_SN AND USE_AT='Y')  						    AS FREEZING_INSTT
+   		     
+       			,(SELECT DECODE(COUNT(SUB.FREEZING_STTUS_CODE),'','N/A',COUNT(SUB.FREEZING_STTUS_CODE))
+       			 	FROM EDC_CF_SUBJECT SUB, EDC_CR_INSTT_FORM INS 
+       				WHERE SUB.INSTT_FORM_SN = INS.INSTT_FORM_SN AND INS.TASK_SN = TA.TASK_SN  AND SUB.USE_AT='Y') 		AS FREEZING_SUBJECT
+   		     
+				,(SELECT DECODE(SUM(GOAL_NO),'','N/A',SUM(GOAL_NO))  
+					FROM CTMS_CO_CNTRCT_MANAGE CNT WHERE CNT.TASK_SN = TA.TASK_SN AND USE_AT='Y')						AS GOAL_CO
+					
+				,(SELECT DECODE(COUNT(1),'','N/A',COUNT(1))  
+					FROM  EDC_CF_VRIABL CVR, EDC_CR_INSTT_FORM INS  
+					WHERE VRIABL_SN = '10' AND INS.TASK_SN = TA.TASK_SN 
+					AND CVR.INSTT_FORM_SN = INS.INSTT_FORM_SN AND CVR.USE_AT='Y')										AS AE
+					
+				,(SELECT DECODE(COUNT(1),'','N/A',COUNT(1))  
+					FROM  EDC_CF_VRIABL CVR, EDC_CR_INSTT_FORM INS 
+					WHERE VRIABL_SN = '11'AND INS.TASK_SN = TA.TASK_SN 
+					AND CVR.INSTT_FORM_SN = INS.INSTT_FORM_SN AND CVR.USE_AT='Y')										AS SAE
+					
+				,(SELECT DECODE(COUNT(1),'','N/A',COUNT(1))  
+					FROM  EDC_CF_VRIABL CVR, EDC_CR_INSTT_FORM INS 
+					WHERE VRIABL_SN = '12'AND INS.TASK_SN = TA.TASK_SN 
+					AND CVR.INSTT_FORM_SN = INS.INSTT_FORM_SN AND CVR.USE_AT='Y') 										AS ADR
+FROM	 
+		 		 EDC_CR_TASK TA
+				,EDC_CR_INSTT_FORM INS
+				,EDC_CF_VRIABL CVR
+WHERE 1=1
+			 	 AND TA.TASK_NO = #TASK_NO#
+				 AND INS.TASK_SN = TA.TASK_SN
+				 AND CVR.INSTT_FORM_SN = INS.INSTT_FORM_SN
+				 AND TASK_TY_CODE = '02'
+]]>	
+</select>
+</sqlMap>

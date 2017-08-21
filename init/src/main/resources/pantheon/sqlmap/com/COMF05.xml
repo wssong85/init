@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMF05">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+
+	<select id="COMF05DAO.selectCmProgrmConectListByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT CONECT_SN
+		     , USER_ID
+		     , USER_NM
+		     , CONECT_IP
+		     , TO_CHAR(CONECT_DT, 'YYYYMMDDHH24MISS') CONECT_DT
+		     , PROGRM_ID
+		     , PROGRM_NM
+		     , PROGRM_URL
+		  FROM
+		(
+		SELECT ROW_NUMBER() OVER(ORDER BY A.CONECT_SN DESC) RN
+		     , A.CONECT_SN
+	         , A.USER_ID
+	         , A.CONECT_IP
+	         , A.CONECT_DT
+	         , A.PROGRM_ID
+	         , B.USER_NM
+	         , (SELECT X.PROGRM_NM FROM CM_PROGRM X WHERE X.PROGRM_ID = A.PROGRM_ID AND ROWNUM = 1) PROGRM_NM
+	         , (SELECT X.PROGRM_URL FROM CM_PROGRM X WHERE X.PROGRM_ID = A.PROGRM_ID AND ROWNUM = 1) PROGRM_URL
+	     FROM  CM_PROGRM_CONECT A
+	         , CM_USER B
+	    WHERE A.USER_ID = B.USER_ID
+		]]>
+		<isNotEmpty property="SDATE" prepend="AND">
+	    <isNotEmpty property="EDATE">
+		<![CDATA[
+		A.CONECT_DT BETWEEN TO_DATE(#SDATE# || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#EDATE# || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+		
+	    <isNotEmpty property="USER_NM" prepend="AND">
+	    <![CDATA[
+	    B.USER_NM LIKE #USER_NM# || '%'
+	    ]]>
+	    </isNotEmpty>
+	    
+		<isNotEmpty property="USER_SE_CODE" prepend="AND">
+	    <![CDATA[
+	    B.USER_SE_CODE = #USER_SE_CODE#
+	    ]]>
+	    </isNotEmpty>
+	    
+	    <isNotEmpty property="PROGRM_NM" prepend="AND">
+	    <![CDATA[]]>
+	    A.PROGRM_ID IN (SELECT X.PROGRM_ID FROM CM_PROGRM X WHERE PROGRM_NM LIKE #PROGRM_NM# || '%')
+	    </isNotEmpty>
+	    
+	    <![CDATA[      
+	    )
+	    WHERE RN > ($page$ - 1) * $count$
+	      AND RN <= ($page$ * $count$)
+		]]>
+	</select>
+	
+	<select id="COMF05DAO.selectCmProgrmConectListCountByPk" parameterClass="hashMap" resultClass="integer">
+		<![CDATA[
+		SELECT COUNT(*)
+	      FROM CM_PROGRM_CONECT A
+	         , CM_USER B
+	     WHERE A.USER_ID = B.USER_ID
+		]]>
+		
+		<isNotEmpty property="SDATE" prepend="AND">
+	    <isNotEmpty property="EDATE">
+	    <![CDATA[
+	       AND A.CONECT_DT BETWEEN TO_DATE(#SDATE# || '000000', 'YYYYMMDDHH24MISS') AND TO_DATE(#EDATE# || '235959', 'YYYYMMDDHH24MISS')
+		]]>
+		</isNotEmpty>
+		</isNotEmpty>
+		
+	    <isNotEmpty property="USER_NM" prepend="AND">
+	    <![CDATA[
+	    B.USER_NM LIKE #USER_NM# || '%'
+	    ]]>
+	    </isNotEmpty>
+	    
+		<isNotEmpty property="USER_SE_CODE" prepend="AND">
+	    <![CDATA[
+	    B.USER_SE_CODE = #USER_SE_CODE#
+	    ]]>
+	    </isNotEmpty>
+	    
+		<isNotEmpty property="PROGRM_NM" prepend="AND">
+	    <![CDATA[]]>
+	    A.PROGRM_ID IN (SELECT X.PROGRM_ID FROM CM_PROGRM X WHERE PROGRM_NM LIKE #PROGRM_NM# || '%')
+	    </isNotEmpty>
+	    
+    
+	</select>
+	
+	<insert id="COMF05DAO.insertCmProgrmConect" parameterClass="hashMap">
+		<![CDATA[
+		INSERT
+		  INTO CM_PROGRM_CONECT
+		     ( CONECT_SN
+	         , USER_ID
+	         , CONECT_IP
+	         , CONECT_DT
+	         , PROGRM_ID
+		     )
+		VALUES
+		     ( #CONECT_SN#
+	         , #USER_ID#
+	         , #CONECT_IP#
+	         , SYSDATE
+	         , #PROGRM_ID#
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMF05DAO.selectCmUserRoleListForAspect" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT A.ROLE_ID
+		  FROM CM_USER_ROLE A, CM_ROLE_AUTHOR B, CM_PROGRM C
+     	 WHERE A.ROLE_ID = B.ROLE_ID
+       	   AND B.PROGRM_ID = C.PROGRM_ID
+       	   AND A.USER_ID = #USER_ID#
+       	   AND C.TASK_AT = 'N'
+     	GROUP BY A.ROLE_ID		
+		]]>
+	</select>
+	    
+	<select id="COMF05DAO.selectCmRoleAuthorForAspect" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT DECODE((SELECT COUNT(*) 
+		                 FROM CM_ROLE_AUTHOR 
+		                WHERE ROLE_ID IN
+		]]>
+		                <iterate  property="ROLE_ID" open="(" close=")" conjunction=",">
+		                <![CDATA[ 
+		                	#ROLE_ID[]#
+						]]> 
+		                </iterate>
+		<![CDATA[		                 
+					      AND REDNG_AT = 'Y' 
+					      AND PROGRM_ID = #PROGRM_ID#), 0, 'N', 'Y') REDNG_AT
+			 , DECODE((SELECT COUNT(*) 
+			             FROM CM_ROLE_AUTHOR 
+			            WHERE ROLE_ID IN
+		]]> 
+		                <iterate  property="ROLE_ID" open="(" close=")" conjunction=",">
+		                <![CDATA[
+		                	#ROLE_ID[]#
+						]]> 
+		                </iterate> 
+		<![CDATA[
+			              AND WRITE_AT = 'Y' 
+			              AND PROGRM_ID = #PROGRM_ID#), 0, 'N', 'Y') WRITE_AT    
+		  FROM DUAL
+		]]>
+	</select>
+</sqlMap>

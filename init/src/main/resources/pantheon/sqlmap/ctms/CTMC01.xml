@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMC01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="CTMC01DAO.selectInvestInfoList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT ET.TASK_SN
+     , ET.TASK_NO
+     , SAP.NAME1 AS INSTT_NAME
+     , CU.USER_NM
+     , CU.USER_ID
+     , CI.INSTT_CODE
+     , ET.TASK_NM
+     , CM.CNTRCT_SN
+     , ET.DOMN_URL
+  FROM CM_USERTASK  UT
+     , EDC_CR_TASK  ET
+     , CM_USER      CU
+     , CM_RSRCHUSER CR
+     , CM_INSTT     CI
+     , SAP_BCNC_INFO SAP
+     , CTMS_CO_CNTRCT_MANAGE CM
+ WHERE UT.TASK_SN    = ET.TASK_SN
+   AND ET.USE_AT     = 'Y'
+   AND UT.USER_ID    = CU.USER_ID
+   AND CU.USER_ID    = CR.USER_ID
+   AND CR.INSTT_CODE = CI.INSTT_CODE
+   AND CI.KUNNR      = SAP.KUNNR
+   AND UT.USER_ID    = CM.USER_ID
+   AND UT.TASK_SN    = CM.TASK_SN
+
+]]>
+
+<isNotEmpty property="SEARCH_TYPE">
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="1">
+    <![CDATA[
+    SAP.NAME1 LIKE #SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+    
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="2">
+    <![CDATA[
+    CU.USER_NM LIKE #SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+    
+    <isEqual prepend="AND" property="SEARCH_TYPE" compareValue="3">
+    <![CDATA[
+    CM.CNTRCT_SN LIKE #SEARCH_COND#||'%'
+    ]]>
+    </isEqual>
+</isNotEmpty>
+
+    ORDER BY ET.TASK_SN
+</select>
+
+
+</sqlMap>

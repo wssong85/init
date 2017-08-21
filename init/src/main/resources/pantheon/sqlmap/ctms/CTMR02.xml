@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CTMR02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+    
+    
+<select id="CTMR02DAO.selectAnnualReportList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+SELECT 	 SN
+		,TASK_SN
+		,ANNUAL
+		,SUMMARY
+		,TO_CHAR(PERIOD_FROM,'YYYYMMDDHH24MISS') 				AS PERIOD_FROM
+		,TO_CHAR(PERIOD_TO,'YYYYMMDDHH24MISS') 				AS PERIOD_TO
+		,SAFETY
+		,EFFICACY
+		,TO_CHAR(FDRMREPORT_PRESENTNDE,'YYYYMMDDHH24MISS')    AS FDRMREPORT_PRESENTNDE
+		,TO_CHAR(EXAMINPD_FROM,'YYYYMMDDHH24MISS') 			AS EXAMINPD_FROM
+		,TO_CHAR(EXAMINPD_TO,'YYYYMMDDHH24MISS')  			AS EXAMINPD_TO
+		,USE_AT		
+		
+FROM 
+		CTMS_ST_YRYCREPRT 
+WHERE   USE_AT = 'Y'
+		AND TASK_SN = #TASK_SN#
+ORDER BY SN DESC
+]]>	
+</select> 
+
+<!--  pms 연차보고서 정보 저장-->
+<insert id="CTMR02DAO.insertAnnualReport" parameterClass="hashMap"> 
+<![CDATA[
+INSERT INTO CTMS_ST_YRYCREPRT(
+ SN
+,TASK_SN
+,ANNUAL
+,SUMMARY
+,PERIOD_FROM
+,PERIOD_TO
+,SAFETY
+,EFFICACY
+,FDRMREPORT_PRESENTNDE
+,EXAMINPD_FROM
+,EXAMINPD_TO
+,EXPRSE
+,USE_AT
+,FRST_CREDE
+,FRST_CRTR
+,LAST_UPDDE
+,LAST_UPDUSR
+)VALUES(
+ #SN#
+,#TASK_SN#
+,#ANNUAL#
+,#SUMMARY#
+,#PERIOD_FROM#
+,#PERIOD_TO#
+,#SAFETY#
+,#EFFICACY#
+,#FDRMREPORT_PRESENTNDE#
+,#EXAMINPD_FROM#
+,#EXAMINPD_TO#
+,#EXPRSE#
+,#USE_AT#
+,SYSDATE
+,#FRST_CRTR#
+,SYSDATE
+,#LAST_UPDUSR#
+)
+]]>
+</insert>
+
+<update id="CTMR02DAO.updateAnnualReport" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_ST_YRYCREPRT 
+SET  ANNUAL = #ANNUAL#
+	,SUMMARY = #SUMMARY#
+	,PERIOD_FROM = #PERIOD_FROM#
+	,PERIOD_TO = #PERIOD_TO#
+	,SAFETY = #SAFETY#
+	,EFFICACY = #EFFICACY#
+	,FDRMREPORT_PRESENTNDE = #FDRMREPORT_PRESENTNDE#
+	,EXAMINPD_FROM = #EXAMINPD_FROM#
+	,EXAMINPD_TO = #EXAMINPD_TO#
+	,EXPRSE = #EXPRSE#
+	,LAST_UPDDE = SYSDATE
+	,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE TASK_SN = #TASK_SN#
+AND   SN = #SN#
+]]>	
+</update>
+
+<update id="CTMR02DAO.deleteAnnualReport" parameterClass="hashMap">
+<![CDATA[
+UPDATE CTMS_ST_YRYCREPRT 
+SET  USE_AT = 'N'
+	,LAST_UPDDE = SYSDATE
+	,LAST_UPDUSR = #LAST_UPDUSR#
+WHERE TASK_SN = #TASK_SN#
+AND   SN = #SN#
+]]>	
+</update>
+</sqlMap>

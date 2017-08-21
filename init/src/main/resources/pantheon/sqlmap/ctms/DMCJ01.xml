@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DMCJ01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+    <typeAlias alias="integer" type="java.lang.Integer"/>
+
+<select id="DMCJ01DAO.selectTaskRegStatusList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT SUM(M.EDC_CNT)   AS EDC_CNT
+         , SUM(M.IWRS_CNT)  AS IWRS_CNT
+         , SUM(M.RSRCH_CNT) AS RSRCH_CNT
+         , SUM(M.INSTT_CNT) AS INSTT_CNT
+      FROM (
+            SELECT TASK_SN
+                 , COUNT(EDC_VER) EDC_CNT
+                 , 0 AS IWRS_CNT
+                 , 0 AS RSRCH_CNT
+                 , 0 AS INSTT_CNT
+              FROM EDC_CR_FORM
+             WHERE USE_AT = 'Y'
+             GROUP BY TASK_SN
+        UNION ALL
+            SELECT TASK_SN
+                 , 0  AS EDC_CNT
+                 , 0  AS IWRS_CNT
+                 , COUNT(USER_ID) AS RSRCH_CNT
+                 , 0 AS INSTT_CNT
+              FROM CM_USERTASK
+             WHERE CONFM_SE = '03'
+               AND USE_YN   = 'Y'
+             GROUP BY TASK_SN
+        UNION ALL
+            SELECT UT.TASK_SN
+                 , 0  AS EDC_CNT
+                 , 0  AS IWRS_CNT
+                 , 0 AS RSRCH_CNT
+                 , COUNT(CR.INSTT_CODE)AS INSTT_CNT
+              FROM CM_USERTASK  UT
+                 , CM_USER      CU
+                 , CM_RSRCHUSER CR
+             WHERE UT.CONFM_SE = '03'
+               AND UT.USER_ID  = CU.USER_ID
+               AND CU.USER_ID  = CR.USER_ID
+               AND UT.USE_YN   = 'Y'
+               AND CU.USE_YN   = 'Y'
+               AND CR.USE_YN   = 'Y'
+             GROUP BY UT.TASK_SN
+           ) M
+         , EDC_CR_TASK CT
+     WHERE M.TASK_SN = CT.TASK_SN
+]]>
+</select>
+
+<select id="DMCJ01DAO.selectTaskProgressList" parameterClass="hashMap" resultClass="hashMap">
+<![CDATA[
+    SELECT M.TASK_SN
+         , CT.TASK_NM
+         , CT.TASK_NO
+         , SUM(M.EDC_CNT)   AS EDC_CNT
+         , SUM(M.IWRS_CNT)  AS IWRS_CNT
+         , SUM(M.RSRCH_CNT) AS RSRCH_CNT
+         , SUM(M.INSTT_CNT) AS INSTT_CNT
+         , DECODE(CT.TASK_END_AT, 'N', '진행중', '종료') AS TASK_END_AT
+      FROM (
+            SELECT TASK_SN
+                 , COUNT(EDC_VER) EDC_CNT
+                 , 0 AS IWRS_CNT
+                 , 0 AS RSRCH_CNT
+                 , 0 AS INSTT_CNT
+              FROM EDC_CR_FORM
+             WHERE USE_AT = 'Y'
+             GROUP BY TASK_SN
+        UNION ALL
+            SELECT TASK_SN
+                 , 0  AS EDC_CNT
+                 , 0  AS IWRS_CNT
+                 , COUNT(USER_ID) AS RSRCH_CNT
+                 , 0 AS INSTT_CNT
+              FROM CM_USERTASK
+             WHERE CONFM_SE = '03'
+               AND USE_YN   = 'Y'
+             GROUP BY TASK_SN
+        UNION ALL
+            SELECT UT.TASK_SN
+                 , 0  AS EDC_CNT
+                 , 0  AS IWRS_CNT
+                 , 0 AS RSRCH_CNT
+                 , COUNT(CR.INSTT_CODE)AS INSTT_CNT
+              FROM CM_USERTASK  UT
+                 , CM_USER      CU
+                 , CM_RSRCHUSER CR
+             WHERE UT.CONFM_SE = '03'
+               AND UT.USER_ID  = CU.USER_ID
+               AND CU.USER_ID  = CR.USER_ID
+               AND UT.USE_YN   = 'Y'
+               AND CU.USE_YN   = 'Y'
+               AND CR.USE_YN   = 'Y'
+             GROUP BY UT.TASK_SN
+           ) M
+         , EDC_CR_TASK CT
+     WHERE M.TASK_SN = CT.TASK_SN
+]]>
+    <isNotEmpty property="TASK_NO" prepend="AND">
+	<![CDATA[
+	 UPPER(CT.TASK_NO) LIKE '%' || UPPER(#TASK_NO#) || '%'
+	]]>
+	</isNotEmpty>
+    <isNotEmpty property="TASK_NM" prepend="AND">
+	<![CDATA[
+	 UPPER(CT.TASK_NM) LIKE '%' || UPPER(#TASK_NM#) || '%'
+	]]>
+	</isNotEmpty>
+
+<![CDATA[
+     GROUP BY M.TASK_SN, CT.TASK_NO, CT.TASK_NM, CT.TASK_END_AT
+     ORDER BY CT.TASK_NM, CT.TASK_NO
+]]>
+</select>
+
+<select id="DMCJ01DAO.selectTaskNoticeList" parameterClass="hashMap" resultClass="hashMap">	
+<![CDATA[
+    SELECT DN.SN
+         , DN.TASK_SN
+         , DN.MODULE_SE
+         , CM.CMMN_CODE_NM AS MODULE_NM
+         , DN.NOTICE_SE
+         , DN.SJ
+         , DN.CN
+         , DN.ATCH_FILE_SN
+         , DN.USE_AT
+         , TO_CHAR(DN.FRST_CREAT_DE, 'YYYY-MM-DD') AS CREATE_DE
+         , DN.FRST_CRTR
+         , CU.USER_NM
+      FROM CTMS_DMC_NOTICE DN
+         , EDC_CR_TASK     CT
+         , CM_CMMNCODE     CM
+         , CM_USER         CU
+     WHERE DN.USE_AT      = 'Y'
+       AND DN.TASK_SN     = CT.TASK_SN(+)
+       AND DN.MODULE_SE   = CM.CMMN_CODE
+       AND CM.CMMN_CLCODE = 'DMCJ01'
+       AND DN.FRST_CRTR   = CU.USER_ID
+]]>
+</select>
+
+</sqlMap>

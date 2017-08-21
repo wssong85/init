@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ <sqlMap namespace="IWRA01">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+	
+	<select id="IWRA01DAO.selectNotification" parameterClass="hashmap" resultClass="hashmap">
+	<![CDATA[
+	    SELECT SJ
+              ,TO_CHAR(FRST_CREAT_DE, 'YYYYMMDDHH24MISS') FRST_CREAT_DE
+              ,FN_GET_USER_NAME(FRST_CRTR) || '(' || FRST_CRTR || ')' FRST_CRTR
+              ,SN
+          FROM CTMS_DMC_NOTICE
+         WHERE MODULE_SE = '03'
+      ORDER BY FRST_CREAT_DE DESC
+	]]>
+	</select>
+</sqlMap>

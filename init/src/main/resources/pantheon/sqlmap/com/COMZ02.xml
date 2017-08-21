@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="COMZ02">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+
+	<insert id="COMZ02DAO.insertDmFileMastr" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO DM_FILE_MASTR
+		  	 (  FILE_MASTR_SN      
+	          , MODULE_KND         
+	          , UPLOAD_PHYSIC_COURS
+	          , DWLD_PHYSIC_COURS  
+	          , DRM_RELIS_AT       
+	          , USE_AT             
+	          , FRST_CREDE         
+	          , REGIST_ID          
+	          , LAST_UPDDE         
+	          , UPDATE_ID          
+		  	 )
+		VALUES
+		     ( #FILE_MASTR_SN#      
+	         , #MODULE_KND#         
+	         , #UPLOAD_PHYSIC_COURS#
+	         , #DWLD_PHYSIC_COURS#  
+	         , NVL(#DRM_RELIS_AT#, 'N')       
+	         , NVL(#USE_AT#, 'Y')             
+	         , SYSDATE         
+	         , #UPDATE_ID#          
+	         , SYSDATE         
+	         , #UPDATE_ID#          
+		     )
+		]]>
+	</insert>
+	
+	<insert id="COMZ02DAO.insertDmFileDetail" parameterClass="hashMap">
+		<![CDATA[
+		INSERT 
+		  INTO DM_FILE_DETAIL
+		  	 (  DETAIL_SN       
+	          , FILE_MASTR_SN   
+	          , ORGINL_FILE_NM  
+	          , ORGINL_EXTSN_NM 
+	          , ORGINL_SIZE     
+	          , UPLOAD_FILE_NM  
+	          , USE_AT          
+	          , FRST_CREDE      
+	          , REGIST_ID       
+	          , LAST_UPDDE      
+	          , UPDATE_ID       
+		  	 )
+		VALUES
+		     ( #DETAIL_SN#      
+	         , #FILE_MASTR_SN#  
+	         , #ORGINL_FILE_NM# 
+	         , #ORGINL_EXTSN_NM#
+	         , #ORGINL_SIZE#    
+	         , #UPLOAD_FILE_NM# 
+	         , NVL(#USE_AT#, 'Y')         
+	         , SYSDATE     
+	         , #UPDATE_ID#      
+	         , SYSDATE     
+	         , #UPDATE_ID#      
+		     )
+		]]>
+	</insert>
+	
+	<select id="COMZ02DAO.selectDmFileDetailListByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT DETAIL_SN
+			 , FILE_MASTR_SN
+			 , ORGINL_FILE_NM
+			 , ORGINL_EXTSN_NM
+			 , ORGINL_SIZE
+			 , UPLOAD_FILE_NM
+			 , USE_AT
+			 , TO_CHAR(FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
+			 , REGIST_ID
+			 , TO_CHAR(LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+			 , UPDATE_ID
+			 , ORGINL_FILE_NM
+			 , ORGINL_FILE_NM || NVL2(ORGINL_EXTSN_NM, '.' || ORGINL_EXTSN_NM, ORGINL_EXTSN_NM) FILE_NAME
+		  FROM DM_FILE_DETAIL
+		 WHERE FILE_MASTR_SN = #FILE_MASTR_SN#
+		   AND USE_AT = 'Y'
+		]]>
+	</select>
+	
+	<select id="COMZ02DAO.selectDmFileDetailByPk" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+        SELECT B.DWLD_PHYSIC_COURS
+             , A.UPLOAD_FILE_NM
+		     , A.ORGINL_FILE_NM
+		     , A.ORGINL_EXTSN_NM
+		     , A.ORGINL_FILE_NM || NVL2(A.ORGINL_EXTSN_NM, '.' || A.ORGINL_EXTSN_NM, A.ORGINL_EXTSN_NM) FILE_NAME		
+		     , A.DETAIL_SN       
+		  FROM DM_FILE_DETAIL A, 
+		       DM_FILE_MASTR B
+		 WHERE A.FILE_MASTR_SN = B.FILE_MASTR_SN
+		   AND A.DETAIL_SN = #DETAIL_SN#
+		   AND A.USE_AT = 'Y'
+	    ]]>	   
+	</select>
+	
+	<select id="COMZ02DAO.selectDmFileDetailForDmDetailDelete" parameterClass="string" resultClass="hashMap">
+		<![CDATA[
+        SELECT B.DWLD_PHYSIC_COURS
+             , A.UPLOAD_FILE_NM
+		     , A.ORGINL_FILE_NM
+		     , A.ORGINL_EXTSN_NM
+		     , A.ORGINL_FILE_NM || NVL2(A.ORGINL_EXTSN_NM, '.' || A.ORGINL_EXTSN_NM, A.ORGINL_EXTSN_NM) FILE_NAME
+		     , A.DETAIL_SN		       
+		  FROM DM_FILE_DETAIL A, 
+		       DM_FILE_MASTR B
+		 WHERE A.FILE_MASTR_SN(+)= B.FILE_MASTR_SN
+		   AND B.FILE_MASTR_SN = #FILE_MASTR_SN#
+		   AND B.USE_AT = 'Y'
+		]]>
+	</select>
+	
+	<delete id="COMZ02DAO.deleteDmFileDetailByDmFileMstrSn" parameterClass="string">
+		<![CDATA[
+		DELETE FROM DM_FILE_DETAIL WHERE FILE_MASTR_SN = #str#
+		]]>
+	</delete>
+	
+	<delete id="COMZ02DAO.deleteDmFileDetailByDetailSn" parameterClass="string">
+		<![CDATA[
+		DELETE FROM DM_FILE_DETAIL WHERE DETAIL_SN = #str#
+		]]>
+	</delete>
+	
+	<select id="COMZ02DAO.selectEdcCrTaskForWord" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT FULL_PATH
+		     , UPLOAD_PHYSIC_COURS
+		     , UPLOAD_FILE_NM
+		  FROM
+		(
+		SELECT A.UPLOAD_PHYSIC_COURS || B.UPLOAD_FILE_NM FULL_PATH
+	  	     , A.UPLOAD_PHYSIC_COURS
+		     , B.UPLOAD_FILE_NM
+		  FROM DM_FILE_MASTR A
+		     , DM_FILE_DETAIL B
+			 , EDC_CR_TASK C
+		 WHERE A.FILE_MASTR_SN = B.FILE_MASTR_SN
+		   AND B.DETAIL_SN = C.CTRTC_FILE_SN
+		   AND C.TASK_NO = #TASK_NO#
+		ORDER BY C.LAST_UPDDE DESC
+		)
+		WHERE ROWNUM = 1
+		]]>
+	</select>
+	
+	<select id="COMZ02DAO.selectCmCntrctManageForWord" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT INSTT_NM
+		     , USER_NM
+		     , ADDR 
+		     , TASK_NO 
+		     , GOAL_NO 
+		  FROM 
+		(
+	    SELECT B.HSPTL_NM INSTT_NM
+    	     , A.USER_NM
+             , DAMO_DEC(B.ADDRONE) ADDR
+    		 , (SELECT X.TASK_NO FROM EDC_CR_TASK X WHERE X.TASK_SN = C.TASK_SN) TASK_NO
+    		 , C.GOAL_NO
+     	  FROM CM_USER A
+    	     , CM_RSRCHUSER B
+    		 , CTMS_CO_CNTRCT_MANAGE C
+    	 WHERE A.USER_ID = B.USER_ID
+      	   AND A.USER_ID = C.USER_ID
+      	   AND A.USER_ID = #USER_ID#
+      	ORDER BY C.LAST_UPDT_DE DESC
+      	)
+      	WHERE ROWNUM = 1  
+		]]>
+	</select>
+	
+	<select id="COMZ02DAO.selectCmRsrchuserForWord" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[
+		SELECT B.HSPTL_NM INSTT_NM
+		     , A.USER_NM
+		     , DAMO_DEC(B.ADDRONE) ADDR
+		     , '00' GOAL_NO
+		     , #TASK_NO# TASK_NO
+		  FROM CM_USER A
+		     , CM_RSRCHUSER B
+		 WHERE A.USER_ID = B.USER_ID
+	       AND A.USER_ID = #USER_ID#
+		]]>
+	</select>
+</sqlMap>

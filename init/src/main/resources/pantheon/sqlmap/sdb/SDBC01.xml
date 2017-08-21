@@ -1,0 +1,1035 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SDBC01">
+	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+	<typeAlias alias="string" type="java.lang.String"/>
+	<typeAlias alias="object" type="java.lang.Object"/>
+	<typeAlias alias="integer" type="java.lang.Integer"/>
+	
+	<select id="SDBC01DAO.selectTrialList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+		    SELECT 
+			   PRTCL_NO
+			  , FN_GET_MULLANG(PRTCL_NM) AS PRTCL_NM
+              , FN_GET_COMMONCODE('SDB004', RSRCH_KND_CODE, #LOCALE#) AS RSRCH_KND_CODE
+              , FN_GET_PRDUCT_NAME(PRDUCT_CODE) 		   AS PRDUCTNM_CODE
+			  , PRDUCT_CODE
+			  , USE_AT
+			  , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE
+			  , COUNT(AE_COUNT) AS AE_COUNT
+			  , SUM(ADR_COUNT) AS ADR_COUNT
+			  , SUM(UAE_COUNT) AS UAE_COUNT
+			  , SUM(SAE_COUNT) AS SAE_COUNT
+			  , SUM(NVL(SADR_COUNT, 0))  AS SADR_COUNT
+			  , SUM(NVL(SUSAR_COUNT, 0))  AS SUSAR_COUNT
+			FROM
+			    (SELECT A.PRTCL_NO
+			      , A.PRTCL_NM
+                  , A.RSRCH_KND_CODE                            
+			      , A.PRDUCT_CODE
+			      , A.FRST_CREDE
+			      , CASE A.USE_AT
+			            WHEN 'Y'
+			            THEN 'Actual'
+			            ELSE 'Deleted'
+			        END            AS USE_AT
+			      , C.AE_NO AS AE_COUNT
+			      , CASE C.REPORTR_RELATION_ONE
+			            WHEN '01' THEN 1
+			            WHEN '02' THEN 1
+			            WHEN '03' THEN 1
+			            WHEN '05' THEN 1
+			            WHEN '06' THEN 1
+			            WHEN '07' THEN 1
+			            ELSE 0
+			        END AS ADR_COUNT
+			      , CASE C.EXPECT_POSBL_SE
+			            WHEN '02'
+			            THEN 1
+			            ELSE 0
+			        END AS UAE_COUNT
+			      ,CASE C.SERIUSFMNM_AT
+			            WHEN 'Y'
+			            THEN 1
+			            ELSE 0
+			        END AS SAE_COUNT
+			      , SADR  AS SADR_COUNT
+			      , SUSAR AS SUSAR_COUNT
+			    FROM SDB_AM_TRIAL_INFO A
+			    LEFT JOIN SDB_AM_HRMFLNS_CASE_INFO B
+			    ON  A.PRTCL_NO = B.PRTCL_NO
+			    LEFT JOIN
+			        (SELECT AA.HRMFLNS_CASE_CODE
+			          , AA.PRDUCT_CODE
+			          , AA.AE_NO
+			          , AA.REPORTR_RELATION_ONE
+			          , AA.SERIUSFMNM_AT
+			          , AA.EXPECT_POSBL_SE
+			          , NVL(BB.SADR, 0)  AS SADR
+			          , NVL(CC.SUSAR, 0) AS SUSAR
+			        FROM SDB_AM_AE_INFO AA
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SADR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            ) BB
+			        ON  AA.AE_NO = BB.AE_NO
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SUSAR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            AND EXPECT_POSBL_SE         ='02'
+			            ) CC
+			        ON  AA.AE_NO               = CC.AE_NO
+			        ) C ON B.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+			    AND B.PRDUCT_CODE              = C.PRDUCT_CODE   
+			    )
+                WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   PRDUCT_CODE =  #PRDUCT_CODE# 
+	     ]]>
+	     </isNotEmpty>
+	     		GROUP BY PRTCL_NO
+	     		      , PRTCL_NM
+			          , RSRCH_KND_CODE                                
+			          , PRDUCT_CODE
+			          , USE_AT
+			          , FRST_CREDE
+			    ORDER BY USE_AT ASC, FRST_CREDE DESC
+	</select>
+	
+	<select id="SDBC01DAO.selectStudyInfo" parameterClass="hashMap" resultClass="hashMap">
+		SELECT PRTCL_NO
+			  , PRDUCT_CODE
+			  , FN_GET_PRDUCT_NAME(PRDUCT_CODE) 		   AS PRDUCTNM_CODE  
+			  , RSRCH_KND_CODE
+			  , CLINC_TY_CODE 
+			  , MFDS_CONFM_AT
+			  , TO_CHAR(MFDS_CONFM_DTE,'YYYYMMDDHH24MISS') AS MFDS_CONFM_DTE
+			  , TO_CHAR(FRT_PATNT_OCCRRNCDE,'YYYYMMDDHH24MISS') AS FRT_PATNT_OCCRRNCDE 
+			  , TO_CHAR(LAST_PATNT_OCCRRNCDE,'YYYYMMDDHH24MISS') AS LAST_PATNT_OCCRRNCDE 
+			  , RYMSLMDONG_CTRL_AT
+			  , RYMSLMDONG_CTRL_DATA_TRNSMIS_A
+			  , TO_CHAR(RYMSLMDONG_CTRL_DATA_TRNSMISDE,'YYYYMMDDHH24MISS') AS RYMSLMDONG_CTRL_DATA_TRNSMISDE
+			  , TO_CHAR(SAFEHELTH_DTA_LOCK_DTE,'YYYYMMDDHH24MISS') AS SAFEHELTH_DTA_LOCK_DTE 
+			  , SAFE_POPLTN
+			  , MEDDRA_VER
+			  , KCM_VER
+			  , WHOART_VER
+			  , ATC_VER
+			  , PRTCL_NM 
+			  , RSRCH_KND_ETC_MATTER_MEMO
+			  , RYMSLMDONG_CTRL_CMPNYNM
+			  , RYMSLMDONG_CTRL_PRDUCTNM
+			  , ETC_INFO_ONE 
+			  , ETC_INFO_TWO
+			  , ETC_INFO_THREE 
+			  , FN_GET_MULLANG_SELECT(PRTCL_NM,'K') AS PRTCL_NM_KOR
+			  , FN_GET_MULLANG_SELECT(PRTCL_NM,'E') AS PRTCL_NM_ENG
+			  , FN_GET_MULLANG_SELECT(RSRCH_KND_ETC_MATTER_MEMO,'K') AS RSRCH_KND_ETC_MATTER_MEMOE_KOR
+			  , FN_GET_MULLANG_SELECT(RSRCH_KND_ETC_MATTER_MEMO,'E') AS RSRCH_KND_ETC_MATTER_MEMO_ENG
+			  , FN_GET_MULLANG_SELECT(RYMSLMDONG_CTRL_CMPNYNM,'K') AS RYMSLMDONG_CTRL_CMPNYNM_KOR
+			  , FN_GET_MULLANG_SELECT(RYMSLMDONG_CTRL_CMPNYNM,'E') AS RYMSLMDONG_CTRL_CMPNYNM_ENG
+			  , FN_GET_MULLANG_SELECT(RYMSLMDONG_CTRL_PRDUCTNM,'K') AS RYMSLMDONG_CTRL_PRDUCTNM_KOR
+			  , FN_GET_MULLANG_SELECT(RYMSLMDONG_CTRL_PRDUCTNM,'E') AS RYMSLMDONG_CTRL_PRDUCTNM_ENG
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_ONE,'K') AS ETC_INFO_ONE_KOR
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_ONE,'E') AS ETC_INFO_ONE_ENG
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_TWO,'K') AS ETC_INFO_TWO_KOR
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_TWO,'E') AS ETC_INFO_TWO_ENG
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_THREE,'K') AS ETC_INFO_THREE_KOR
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_THREE,'E') AS ETC_INFO_THREE_ENG
+			FROM SDB_AM_TRIAL_INFO
+		   WHERE 1=1
+         <isNotEmpty property="PRTCL_NO" prepend="AND">
+			PRTCL_NO = #PRTCL_NO#
+		</isNotEmpty>
+		ORDER BY PRTCL_NO DESC
+	</select>
+	
+	<select id="SDBC01DAO.selectStudyList" parameterClass="hashMap" resultClass="hashMap">
+		SELECT *
+		  FROM
+		    (SELECT A.*
+		            , FLOOR(( ROWNUM - 1 ) / #COUNT# + 1 ) AS PAGE
+		       FROM
+		        (SELECT TASK_SN
+		              , TASK_NO
+		              , TASK_NM
+		              , FN_GET_COMMONCODE('EDC017', TASK_TY_CODE, #LOCALE#) AS TASK_TY_CODE
+		              , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS')    AS FRST_CREDE
+		              , ROW_NUMBER() OVER (ORDER BY TASK_SN DESC) AS RNUM
+		            FROM EDC_CR_TASK
+		            WHERE 1          =1
+		            AND TASK_NO NOT IN
+		                ( SELECT PRTCL_NO FROM SDB_AM_TRIAL_INFO WHERE PRTCL_NO IS NOT NULL
+		                ) 
+		           <isNotEmpty property="TASK_NM" prepend="AND"> 
+		           		TASK_NM LIKE '%' || #TASK_NM#  || '%' 
+		           	</isNotEmpty>
+		            ORDER BY RNUM DESC
+		        )A
+		    )
+      WHERE PAGE = #PAGE#
+            
+	</select>
+	
+	<select id="SDBC01DAO.selectStudyListCount" parameterClass="hashMap" resultClass="string">
+		 SELECT COUNT(*) AS COUNT
+          FROM EDC_CR_TASK
+         WHERE 1=1
+           AND TASK_NO NOT IN(
+		            SELECT PRTCL_NO 
+		              FROM SDB_AM_TRIAL_INFO            
+		             WHERE PRTCL_NO IS NOT NULL
+		        )
+         <isNotEmpty property="TASK_NM" prepend="AND">
+			TASK_NM LIKE '%' || #TASK_NM# || '%'
+		</isNotEmpty>
+		ORDER BY TASK_SN DESC
+	</select>
+	
+	<insert id="SDBC01DAO.insertStudyInfo" parameterClass="hashMap">
+		INSERT
+		INTO SDB_AM_TRIAL_INFO
+		    (
+		        PRTCL_NO
+		      , PRDUCT_CODE
+		      , PRTCL_NM
+		      , RSRCH_KND_CODE
+		      , CLINC_TY_CODE
+		      , RSRCH_KND_ETC_MATTER_MEMO
+		      , MFDS_CONFM_AT
+		      , MFDS_CONFM_DTE
+		      , FRT_PATNT_OCCRRNCDE
+		      , LAST_PATNT_OCCRRNCDE
+		      , RYMSLMDONG_CTRL_AT
+		      , RYMSLMDONG_CTRL_CMPNYNM
+		      , RYMSLMDONG_CTRL_PRDUCTNM
+		      , RYMSLMDONG_CTRL_DATA_TRNSMIS_A
+		      , RYMSLMDONG_CTRL_DATA_TRNSMISDE
+		      , SAFEHELTH_DTA_LOCK_DTE
+		      , SAFE_POPLTN
+		      , ETC_INFO_ONE
+		      , ETC_INFO_TWO
+		      , ETC_INFO_THREE
+		      , MEDDRA_VER
+		      , KCM_VER
+		      , WHOART_VER
+		      , ATC_VER
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (
+		        #PRTCL_NO#
+		      ,#PRDUCT_CODE#
+		      ,#PRTCL_NM#
+		      ,#RSRCH_KND_CODE#
+		      ,#CLINC_TY_CODE#
+		      ,#RSRCH_KND_ETC_MATTER_MEMO#
+		      ,#MFDS_CONFM_AT#
+		      ,#MFDS_CONFM_DTE#
+		      ,#FRT_PATNT_OCCRRNCDE#
+		      ,#LAST_PATNT_OCCRRNCDE#
+		      ,#RYMSLMDONG_CTRL_AT#
+		      ,#RYMSLMDONG_CTRL_CMPNYNM#
+		      ,#RYMSLMDONG_CTRL_PRDUCTNM#
+		      ,#RYMSLMDONG_CTRL_DATA_TRNSMIS_A#
+		      ,#RYMSLMDONG_CTRL_DATA_TRNSMISDE#
+		      ,#SAFEHELTH_DTA_LOCK_DTE#
+		      ,#SAFE_POPLTN#
+		      ,#ETC_INFO_ONE#
+		      ,#ETC_INFO_TWO#
+		      ,#ETC_INFO_THREE#
+		      ,#MEDDRA_VER#
+		      ,#KCM_VER#
+		      ,#WHOART_VER#
+		      ,#ATC_VER#
+		      ,'Y'
+		      ,sysdate
+		      ,#UPDATE_ID#
+		      ,sysdate
+		      ,#UPDATE_ID#
+		    )
+	</insert>
+	
+	<update id="SDBC01DAO.updateStudyInfo" parameterClass="hashMap" >
+	<![CDATA[
+	UPDATE SDB_AM_TRIAL_INFO
+	   SET RSRCH_KND_CODE = #RSRCH_KND_CODE# 
+	]]>
+	<isNotEmpty property="PRDUCT_CODE" prepend=",">
+    <![CDATA[ 
+    	   PRDUCT_CODE = #PRDUCT_CODE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="PRTCL_NM" prepend=",">
+    <![CDATA[ 
+    	   PRTCL_NM = #PRTCL_NM# 
+    ]]>
+    </isNotEmpty>    
+    <isNotEmpty property="CLINC_TY_CODE" prepend=",">
+    <![CDATA[ 
+    	   CLINC_TY_CODE = #CLINC_TY_CODE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="RSRCH_KND_ETC_MATTER_MEMO" prepend=",">
+    <![CDATA[ 
+    	   RSRCH_KND_ETC_MATTER_MEMO = #RSRCH_KND_ETC_MATTER_MEMO# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="MFDS_CONFM_AT" prepend=",">
+    <![CDATA[ 
+    	   MFDS_CONFM_AT = #MFDS_CONFM_AT# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="MFDS_CONFM_DTE" prepend=",">
+    <![CDATA[ 
+    	   MFDS_CONFM_DTE = #MFDS_CONFM_DTE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="FRT_PATNT_OCCRRNCDE" prepend=",">
+    <![CDATA[ 
+    	   FRT_PATNT_OCCRRNCDE = #FRT_PATNT_OCCRRNCDE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="LAST_PATNT_OCCRRNCDE" prepend=",">
+    <![CDATA[ 
+    	   LAST_PATNT_OCCRRNCDE = #LAST_PATNT_OCCRRNCDE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="RYMSLMDONG_CTRL_AT" prepend=",">
+    <![CDATA[ 
+    	   RYMSLMDONG_CTRL_AT = #RYMSLMDONG_CTRL_AT# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="RYMSLMDONG_CTRL_CMPNYNM" prepend=",">
+    <![CDATA[ 
+    	   RYMSLMDONG_CTRL_CMPNYNM = #RYMSLMDONG_CTRL_CMPNYNM# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="RYMSLMDONG_CTRL_PRDUCTNM" prepend=",">
+    <![CDATA[ 
+    	   RYMSLMDONG_CTRL_PRDUCTNM = #RYMSLMDONG_CTRL_PRDUCTNM# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="RYMSLMDONG_CTRL_DATA_TRNSMIS_A" prepend=",">
+    <![CDATA[ 
+    	   RYMSLMDONG_CTRL_DATA_TRNSMIS_A = #RYMSLMDONG_CTRL_DATA_TRNSMIS_A# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="RYMSLMDONG_CTRL_DATA_TRNSMISDE" prepend=",">
+    <![CDATA[ 
+    	   RYMSLMDONG_CTRL_DATA_TRNSMISDE = #RYMSLMDONG_CTRL_DATA_TRNSMISDE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="SAFEHELTH_DTA_LOCK_DTE" prepend=",">
+    <![CDATA[ 
+    	   SAFEHELTH_DTA_LOCK_DTE = #SAFEHELTH_DTA_LOCK_DTE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="SAFE_POPLTN" prepend=",">
+    <![CDATA[ 
+    	   SAFE_POPLTN = #SAFE_POPLTN# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="MEDDRA_VER" prepend=",">
+    <![CDATA[ 
+    	   MEDDRA_VER = #MEDDRA_VER# 
+    ]]>
+    </isNotEmpty>
+     <isNotEmpty property="KCM_VER" prepend=",">
+    <![CDATA[ 
+    	   KCM_VER = #KCM_VER# 
+    ]]>
+    </isNotEmpty>
+     <isNotEmpty property="WHOART_VER" prepend=",">
+    <![CDATA[ 
+    	   WHOART_VER = #WHOART_VER# 
+    ]]>
+    </isNotEmpty>
+     <isNotEmpty property="ATC_VER" prepend=",">
+    <![CDATA[ 
+    	   ATC_VER = #ATC_VER# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ETC_INFO_ONE" prepend=",">
+    <![CDATA[ 
+    	   ETC_INFO_ONE = #ETC_INFO_ONE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ETC_INFO_TWO" prepend=",">
+    <![CDATA[ 
+    	   ETC_INFO_TWO = #ETC_INFO_TWO# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ETC_INFO_THREE" prepend=",">
+    <![CDATA[ 
+    	   ETC_INFO_THREE = #ETC_INFO_THREE# 
+    ]]>
+    </isNotEmpty>    
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   LAST_UPDDE = SYSDATE 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE PRTCL_NO = #PRTCL_NO#
+   	]]> 
+	</update>
+	
+	<update id="SDBC01DAO.deleteStudyInfo" parameterClass="hashMap" >
+	<![CDATA[
+		UPDATE SDB_AM_TRIAL_INFO
+		   SET USE_AT = 'N'
+		  WHERE PRTCL_NO = #PRTCL_NO# 
+	]]>
+	</update>
+	
+	<select id="SDBC01DAO.selectSpontaneousList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+		  SELECT 
+			   SOURC_NO
+		      , INITIAL_EN
+		      , FN_GET_COMMONCODE('SDB007', SEXDSTN, #LOCALE#) AS SEXDSTN
+		      , AGE
+		      , FN_GET_PRDUCT_NAME(PRDUCT_CODE) 		   AS PRDUCTNM_CODE
+			  , PRDUCT_CODE
+			  , USE_AT
+			  , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE
+			  , COUNT(AE_COUNT) AS AE_COUNT
+			  , SUM(ADR_COUNT) AS ADR_COUNT
+			  , SUM(UAE_COUNT) AS UAE_COUNT
+			  , SUM(SAE_COUNT) AS SAE_COUNT
+			  , SUM(NVL(SADR_COUNT, 0))  AS SADR_COUNT
+			  , SUM(NVL(SUSAR_COUNT, 0))  AS SUSAR_COUNT
+			FROM
+			    (SELECT A.SOURC_NO
+                  , A.INITIAL_EN
+		          , A.SEXDSTN                                                            
+		          , A.AGE                              
+			      , A.PRDUCT_CODE
+			      , A.FRST_CREDE
+			      , CASE A.USE_AT
+			            WHEN 'Y'
+			            THEN 'Actual'
+			            ELSE 'Deleted'
+			        END            AS USE_AT
+			      , C.AE_NO AS AE_COUNT
+			      , CASE C.REPORTR_RELATION_ONE
+			            WHEN '01' THEN 1
+			            WHEN '02' THEN 1
+			            WHEN '03' THEN 1
+			            WHEN '05' THEN 1
+			            WHEN '06' THEN 1
+			            WHEN '07' THEN 1
+			            ELSE 0
+			        END AS ADR_COUNT
+			      , CASE C.EXPECT_POSBL_SE
+			            WHEN '02'
+			            THEN 1
+			            ELSE 0
+			        END AS UAE_COUNT
+			      ,CASE C.SERIUSFMNM_AT
+			            WHEN 'Y'
+			            THEN 1
+			            ELSE 0
+			        END AS SAE_COUNT
+			      , SADR  AS SADR_COUNT
+			      , SUSAR AS SUSAR_COUNT
+			    FROM SDB_AM_SPNTN_REPORT_INFO A
+			    LEFT JOIN SDB_AM_HRMFLNS_CASE_INFO B
+			    ON  A.SOURC_NO = B.SOURC_NO
+			    LEFT JOIN
+			        (SELECT AA.HRMFLNS_CASE_CODE
+			          , AA.PRDUCT_CODE
+			          , AA.AE_NO
+			          , AA.REPORTR_RELATION_ONE
+			          , AA.SERIUSFMNM_AT
+			          , AA.EXPECT_POSBL_SE
+			          , NVL(BB.SADR, 0)  AS SADR
+			          , NVL(CC.SUSAR, 0) AS SUSAR
+			        FROM SDB_AM_AE_INFO AA
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SADR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            ) BB
+			        ON  AA.AE_NO = BB.AE_NO
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SUSAR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            AND EXPECT_POSBL_SE         ='02'
+			            ) CC
+			        ON  AA.AE_NO               = CC.AE_NO
+			        ) C ON B.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+			    AND B.PRDUCT_CODE              = C.PRDUCT_CODE   
+			    )
+                WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   PRDUCT_CODE =  #PRDUCT_CODE# 
+	     ]]>
+	     </isNotEmpty>	
+	      GROUP BY SOURC_NO
+                      , INITIAL_EN
+                      , SEXDSTN
+                      , AGE                                 
+			          , PRDUCT_CODE
+			          , USE_AT
+			          , FRST_CREDE
+	      ORDER BY USE_AT ASC, FRST_CREDE DESC
+	</select>
+	<select id="SDBC01DAO.selectLiteratureList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+	   SELECT 
+			    LTRTRE_NO            
+	          , FN_GET_MULLANG(LTRTRE_SJ) AS LTRTRE_SJ
+	          , NVL(FOLLOW_NO, ' ') AS FOLLOW_NO
+	          , FN_GET_PRDUCT_NAME(PRDUCT_CODE) 		   AS PRDUCTNM_CODE     
+			  , PRDUCT_CODE
+			  , USE_AT
+			  , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE
+			  , COUNT(AE_COUNT) AS AE_COUNT
+			  , SUM(ADR_COUNT) AS ADR_COUNT
+			  , SUM(UAE_COUNT) AS UAE_COUNT
+			  , SUM(SAE_COUNT) AS SAE_COUNT
+			  , SUM(NVL(SADR_COUNT, 0))  AS SADR_COUNT
+			  , SUM(NVL(SUSAR_COUNT, 0))  AS SUSAR_COUNT
+			FROM
+			    (SELECT A.LTRTRE_NO            
+                  , A.LTRTRE_SJ
+			      , A.PRDUCT_CODE
+			      , A.FRST_CREDE
+			      , CASE B.FOLLOW_NO              
+		                WHEN 0 THEN 'INITIAL'                                                 
+		                ELSE TO_CHAR(B.FOLLOW_NO)          
+		            END AS FOLLOW_NO    		      
+			      , CASE A.USE_AT
+			            WHEN 'Y'
+			            THEN 'Actual'
+			            ELSE 'Deleted'
+			        END            AS USE_AT
+			      , C.AE_NO AS AE_COUNT
+			      , CASE C.REPORTR_RELATION_ONE
+			            WHEN '01' THEN 1
+			            WHEN '02' THEN 1
+			            WHEN '03' THEN 1
+			            WHEN '05' THEN 1
+			            WHEN '06' THEN 1
+			            WHEN '07' THEN 1
+			            ELSE 0
+			        END AS ADR_COUNT
+			      , CASE C.EXPECT_POSBL_SE
+			            WHEN '02'
+			            THEN 1
+			            ELSE 0
+			        END AS UAE_COUNT
+			      ,CASE C.SERIUSFMNM_AT
+			            WHEN 'Y'
+			            THEN 1
+			            ELSE 0
+			        END AS SAE_COUNT
+			      , SADR  AS SADR_COUNT
+			      , SUSAR AS SUSAR_COUNT
+			    FROM SDB_AM_LTRTRE_INFO A
+			    LEFT JOIN SDB_AM_HRMFLNS_CASE_INFO B
+			    ON  A.LTRTRE_NO = B.LTRTRE_NO
+			    LEFT JOIN
+			        (SELECT AA.HRMFLNS_CASE_CODE
+			          , AA.PRDUCT_CODE
+			          , AA.AE_NO
+			          , AA.REPORTR_RELATION_ONE
+			          , AA.SERIUSFMNM_AT
+			          , AA.EXPECT_POSBL_SE
+			          , NVL(BB.SADR, 0)  AS SADR
+			          , NVL(CC.SUSAR, 0) AS SUSAR
+			        FROM SDB_AM_AE_INFO AA
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SADR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            ) BB
+			        ON  AA.AE_NO = BB.AE_NO
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SUSAR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            AND EXPECT_POSBL_SE         ='02'
+			            ) CC
+			        ON  AA.AE_NO               = CC.AE_NO
+			        ) C ON B.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+			    AND B.PRDUCT_CODE              = C.PRDUCT_CODE   
+			    )      
+	                WHERE
+	                    1=1   
+	     ]]>
+	     <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   PRDUCT_CODE =  #PRDUCT_CODE# 
+	     ]]>
+	     </isNotEmpty>
+	     		 GROUP BY LTRTRE_NO            
+                      , LTRTRE_SJ 
+			          , PRDUCT_CODE
+			          , FOLLOW_NO
+			          , USE_AT
+			          , FRST_CREDE
+			    ORDER BY USE_AT ASC, FRST_CREDE DESC
+	</select>
+	
+	<select id="SDBC01DAO.selectLiteratureInfo" parameterClass="hashMap" resultClass="hashMap">
+		 SELECT LTRTRE_NO
+              , PBLCATE_DTE
+              , FN_GET_PRDUCT_NAME(PRDUCT_CODE) 		   AS PRDUCTNM_CODE
+              , LTRTRE_FILE
+              , LTRTRE_SJ AS LTRTRE_SJ_CODE
+		 	  , JRNL_INFO AS JRNL_INFO_CODE		
+              , AUTHR AS AUTHR_CODE
+		 	  , ETC_INFO_ONE AS ETC_INFO_ONE_CODE		 	  
+		 	  , ETC_INFO_TWO AS ETC_INFO_TWO_CODE		 	  
+		 	  , ETC_INFO_THREE AS ETC_INFO_THREE_CODE		 	  
+              , FN_GET_MULLANG_SELECT(LTRTRE_SJ,'K') AS LTRTRE_SJ
+			  , FN_GET_MULLANG_SELECT(LTRTRE_SJ,'E') AS LTRTRE_SJ_ENG
+              , FN_GET_MULLANG_SELECT(JRNL_INFO,'K') AS JRNL_INFO
+			  , FN_GET_MULLANG_SELECT(JRNL_INFO,'E') AS JRNL_INFO_ENG
+              , FN_GET_MULLANG_SELECT(AUTHR,'K') AS AUTHR
+              , FN_GET_MULLANG_SELECT(AUTHR,'E') AS AUTHR_ENG			  
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_ONE,'K') AS ETC_INFO_ONE
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_ONE,'E') AS ETC_INFO_ONE_ENG
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_TWO,'K') AS ETC_INFO_TWO
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_TWO,'E') AS ETC_INFO_TWO_ENG
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_THREE,'K') AS ETC_INFO_THREE
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_THREE,'E') AS ETC_INFO_THREE_ENG			 
+			  , PRDUCT_CODE
+              , B.ORGINL_FILE_NM AS FILE_NAME
+              , B.ORGINL_EXTSN_NM AS FILE_EXT
+              , LTRTRE_FILE AS FILE_MASTR_SN
+              , DETAIL_SN
+	       FROM SDB_AM_LTRTRE_INFO A
+           LEFT JOIN DM_FILE_DETAIL B
+           ON A.LTRTRE_FILE = B.FILE_MASTR_SN
+	      WHERE 1=1
+	     <isNotEmpty property="LTRTRE_NO" prepend="AND">
+	     <![CDATA[ 
+	     	   LTRTRE_NO =  #LTRTRE_NO# 
+	     ]]>
+	     </isNotEmpty>
+	</select>
+	
+	<insert id="SDBC01DAO.insertLiteratureInfo" parameterClass="hashMap">
+		INSERT
+		  INTO SDB_AM_LTRTRE_INFO
+		    (
+		        LTRTRE_NO
+		      , PRDUCT_CODE
+		      , PBLCATE_DTE
+		      , LTRTRE_FILE
+		      , LTRTRE_SJ
+		      , JRNL_INFO
+		      , AUTHR
+		      , ETC_INFO_ONE
+		      , ETC_INFO_TWO
+		      , ETC_INFO_THREE
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (  #LTRTRE_NO#
+		      ,#PRDUCT_CODE#
+		      ,#PBLCATE_DTE#
+		      ,#LTRTRE_FILE#
+		      ,#LTRTRE_SJ#
+		      ,#JRNL_INFO#
+		      ,#AUTHR#
+		      ,#ETC_INFO_ONE#
+		      ,#ETC_INFO_TWO#
+		      ,#ETC_INFO_THREE#
+		      ,'Y'
+			  ,sysdate
+			  ,#UPDATE_ID#
+			  ,sysdate
+			  ,#UPDATE_ID#
+		    )
+	</insert>
+	
+	<update id="SDBC01DAO.updateLiteratureInfo" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_AM_LTRTRE_INFO
+	   SET LTRTRE_SJ = #LTRTRE_SJ# 
+	]]>
+	<isNotEmpty property="PBLCATE_DTE" prepend=",">
+    <![CDATA[ 
+    	   PBLCATE_DTE = #PBLCATE_DTE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="LTRTRE_FILE" prepend=",">
+    <![CDATA[ 
+    	   LTRTRE_FILE = #LTRTRE_FILE# 
+    ]]>
+    </isNotEmpty>    
+    <isNotEmpty property="JRNL_INFO" prepend=",">
+    <![CDATA[ 
+    	   JRNL_INFO = #JRNL_INFO# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="AUTHR" prepend=",">
+    <![CDATA[ 
+    	   AUTHR = #AUTHR# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ETC_INFO_ONE" prepend=",">
+    <![CDATA[ 
+    	   ETC_INFO_ONE = #ETC_INFO_ONE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ETC_INFO_TWO" prepend=",">
+    <![CDATA[ 
+    	   ETC_INFO_TWO = #ETC_INFO_TWO# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ETC_INFO_THREE" prepend=",">
+    <![CDATA[ 
+    	   ETC_INFO_THREE = #ETC_INFO_THREE# 
+    ]]>
+    </isNotEmpty>    
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   LAST_UPDDE = SYSDATE 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE LTRTRE_NO = #LTRTRE_NO#
+   	]]> 
+	</update>
+	
+	<update id="SDBC01DAO.deleteLiteratureInfo" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_AM_LTRTRE_INFO
+	   SET USE_AT = 'N'
+	  WHERE LTRTRE_NO = #LTRTRE_NO# 
+	]]>
+	</update>	
+	
+	<select id="SDBC01DAO.selectEtcList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+		 SELECT ETC_INFO_NO
+			  , FN_GET_MULLANG(SOURC) AS SOURC
+			  , FN_GET_PRDUCT_NAME(PRDUCT_CODE) 		   AS PRDUCTNM_CODE
+			  , PRDUCT_CODE
+			  , USE_AT
+			  , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE
+			  , COUNT(AE_COUNT) AS AE_COUNT
+			  , SUM(ADR_COUNT) AS ADR_COUNT
+			  , SUM(UAE_COUNT) AS UAE_COUNT
+			  , SUM(SAE_COUNT) AS SAE_COUNT
+			  , SUM(NVL(SADR_COUNT, 0))  AS SADR_COUNT
+			  , SUM(NVL(SUSAR_COUNT, 0))  AS SUSAR_COUNT
+			FROM
+			    (SELECT A.ETC_INFO_NO
+			      , A.SOURC
+			      , A.PRDUCT_CODE
+			      , A.FRST_CREDE
+			      , CASE A.USE_AT
+			            WHEN 'Y'
+			            THEN 'Actual'
+			            ELSE 'Deleted'
+			        END            AS USE_AT
+			      , C.AE_NO AS AE_COUNT
+			      , CASE C.REPORTR_RELATION_ONE
+			            WHEN '01' THEN 1
+			            WHEN '02' THEN 1
+			            WHEN '03' THEN 1
+			            WHEN '05' THEN 1
+			            WHEN '06' THEN 1
+			            WHEN '07' THEN 1
+			            ELSE 0
+			        END AS ADR_COUNT
+			      , CASE C.EXPECT_POSBL_SE
+			            WHEN '02'
+			            THEN 1
+			            ELSE 0
+			        END AS UAE_COUNT
+			      ,CASE C.SERIUSFMNM_AT
+			            WHEN 'Y'
+			            THEN 1
+			            ELSE 0
+			        END AS SAE_COUNT
+			      , SADR  AS SADR_COUNT
+			      , SUSAR AS SUSAR_COUNT
+			    FROM SDB_AM_ETC_INFO A
+			    LEFT JOIN SDB_AM_HRMFLNS_CASE_INFO B
+			    ON  A.ETC_INFO_NO = B.ETC_INFO_NO
+			    LEFT JOIN
+			        (SELECT AA.HRMFLNS_CASE_CODE
+			          , AA.PRDUCT_CODE
+			          , AA.AE_NO
+			          , AA.REPORTR_RELATION_ONE
+			          , AA.SERIUSFMNM_AT
+			          , AA.EXPECT_POSBL_SE
+			          , NVL(BB.SADR, 0)  AS SADR
+			          , NVL(CC.SUSAR, 0) AS SUSAR
+			        FROM SDB_AM_AE_INFO AA
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SADR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            ) BB
+			        ON  AA.AE_NO = BB.AE_NO
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SUSAR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            AND EXPECT_POSBL_SE         ='02'
+			            ) CC
+			        ON  AA.AE_NO               = CC.AE_NO
+			        ) C ON B.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+			    AND B.PRDUCT_CODE              = C.PRDUCT_CODE   
+			    )			    
+			    WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   PRDUCT_CODE =  #PRDUCT_CODE# 
+	     ]]>
+	     </isNotEmpty>	      
+	     GROUP BY ETC_INFO_NO
+			          , SOURC
+			          , PRDUCT_CODE
+			          , USE_AT
+			          , FRST_CREDE
+		 ORDER BY USE_AT ASC, FRST_CREDE DESC
+	     
+	</select>
+	
+	<select id="SDBC01DAO.selectEtcInfo" parameterClass="hashMap" resultClass="hashMap">
+		 SELECT ETC_INFO_NO
+			  , SOURC                                      AS SOURC_CODE
+			  , FN_GET_PRDUCT_NAME(PRDUCT_CODE) 		   AS PRDUCTNM_CODE  
+			  , ETC_INFO_ONE                               AS ETC_INFO_ONE_CODE
+			  , ETC_INFO_TWO                               AS ETC_INFO_TWO_CODE
+			  , ETC_INFO_THREE                             AS ETC_INFO_THREE_CODE
+			  , FN_GET_MULLANG_SELECT(SOURC, 'K')          AS SOURC
+			  , FN_GET_MULLANG_SELECT(SOURC, 'E')          AS SOURC_ENG
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_ONE, 'K')   AS ETC_INFO_ONE
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_ONE, 'E')   AS ETC_INFO_ONE_ENG
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_TWO, 'K')   AS ETC_INFO_TWO
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_TWO, 'E')   AS ETC_INFO_TWO_ENG
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_THREE, 'K') AS ETC_INFO_THREE
+			  , FN_GET_MULLANG_SELECT(ETC_INFO_THREE, 'E') AS ETC_INFO_THREE_ENG
+			  , PRDUCT_CODE
+	       FROM SDB_AM_ETC_INFO
+	      WHERE 1=1
+	     <isNotEmpty property="ETC_INFO_NO" prepend="AND">
+	     <![CDATA[ 
+	     	   ETC_INFO_NO =  #ETC_INFO_NO# 
+	     ]]>
+	     </isNotEmpty>
+	</select>
+	
+	<insert id="SDBC01DAO.insertEtcInfo" parameterClass="hashMap">
+		INSERT
+		  INTO SDB_AM_ETC_INFO
+		    (
+		        ETC_INFO_NO
+		      , PRDUCT_CODE
+		      , SOURC
+		      , ETC_INFO_ONE
+		      , ETC_INFO_TWO
+		      , ETC_INFO_THREE
+		      , USE_AT
+		      , FRST_CREDE
+		      , REGIST_ID
+		      , LAST_UPDDE
+		      , UPDATE_ID
+		    )
+		    VALUES
+		    (  #ETC_INFO_NO#
+		      ,#PRDUCT_CODE#
+		      ,#SOURC#
+		      ,#ETC_INFO_ONE#
+		      ,#ETC_INFO_TWO#
+		      ,#ETC_INFO_THREE#
+		      ,'Y'
+			  ,sysdate
+			  ,#UPDATE_ID#
+			  ,sysdate
+			  ,#UPDATE_ID#
+		    )
+	</insert>
+	
+	<update id="SDBC01DAO.updateEtcInfo" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_AM_ETC_INFO
+	   SET SOURC = #SOURC# 
+	]]>
+	<isNotEmpty property="ETC_INFO_ONE" prepend=",">
+    <![CDATA[ 
+    	   ETC_INFO_ONE = #ETC_INFO_ONE# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ETC_INFO_TWO" prepend=",">
+    <![CDATA[ 
+    	   ETC_INFO_TWO = #ETC_INFO_TWO# 
+    ]]>
+    </isNotEmpty>
+    <isNotEmpty property="ETC_INFO_THREE" prepend=",">
+    <![CDATA[ 
+    	   ETC_INFO_THREE = #ETC_INFO_THREE# 
+    ]]>
+    </isNotEmpty>    
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   LAST_UPDDE = SYSDATE 
+    ]]>
+    </isNotEmpty>
+	<isNotEmpty property="UPDATE_ID" prepend=",">
+    <![CDATA[ 
+    	   UPDATE_ID = #UPDATE_ID# 
+    ]]>
+    </isNotEmpty>
+    <![CDATA[
+   	 WHERE ETC_INFO_NO = #ETC_INFO_NO#
+   	]]> 
+	</update>
+	
+	<update id="SDBC01DAO.deleteEtcInfo" parameterClass="hashMap">
+	<![CDATA[
+	UPDATE SDB_AM_ETC_INFO
+	   SET USE_AT = 'N'
+	  WHERE ETC_INFO_NO = #ETC_INFO_NO# 
+	]]>
+	</update>
+	
+	
+	<select id="SDBC01DAO.selectICSRList" parameterClass="hashMap" resultClass="hashMap">
+		<![CDATA[		   
+		 SELECT 
+			   SAFE_REPRT_NO 
+			  , PRDUCT_CODE
+			  , FN_GET_PRDUCT_NAME(PRDUCT_CODE) 		   AS PRDUCTNM_CODE
+			  , USE_AT
+			  , TO_CHAR(FRST_CREDE,'YYYYMMDDHH24MISS') AS FRST_CREDE
+			  , COUNT(AE_COUNT) AS AE_COUNT
+			  , SUM(ADR_COUNT) AS ADR_COUNT
+			  , SUM(UAE_COUNT) AS UAE_COUNT
+			  , SUM(SAE_COUNT) AS SAE_COUNT
+			  , SUM(NVL(SADR_COUNT, 0))  AS SADR_COUNT
+			  , SUM(NVL(SUSAR_COUNT, 0))  AS SUSAR_COUNT
+			FROM
+			    (SELECT A.SAFE_REPRT_NO                              
+			      , A.PRDUCT_CODE
+			      , A.FRST_CREDE
+			      , CASE A.USE_AT
+			            WHEN 'Y'
+			            THEN 'Actual'
+			            ELSE 'Deleted'
+			        END            AS USE_AT
+			      , C.AE_NO AS AE_COUNT
+			      , CASE C.REPORTR_RELATION_ONE
+			            WHEN '01' THEN 1
+			            WHEN '02' THEN 1
+			            WHEN '03' THEN 1
+			            WHEN '05' THEN 1
+			            WHEN '06' THEN 1
+			            WHEN '07' THEN 1
+			            ELSE 0
+			        END AS ADR_COUNT
+			      , CASE C.EXPECT_POSBL_SE
+			            WHEN '02'
+			            THEN 1
+			            ELSE 0
+			        END AS UAE_COUNT
+			      ,CASE C.SERIUSFMNM_AT
+			            WHEN 'Y'
+			            THEN 1
+			            ELSE 0
+			        END AS SAE_COUNT
+			      , SADR  AS SADR_COUNT
+			      , SUSAR AS SUSAR_COUNT
+			    FROM SDB_AM_INDVDLZ_CASE_SAFE_REPRT A
+			    LEFT JOIN SDB_AM_HRMFLNS_CASE_INFO B
+			    ON  A.SAFE_REPRT_NO = B.SAFE_REPRT_NO
+			    LEFT JOIN
+			        (SELECT AA.HRMFLNS_CASE_CODE
+			          , AA.PRDUCT_CODE
+			          , AA.AE_NO
+			          , AA.REPORTR_RELATION_ONE
+			          , AA.SERIUSFMNM_AT
+			          , AA.EXPECT_POSBL_SE
+			          , NVL(BB.SADR, 0)  AS SADR
+			          , NVL(CC.SUSAR, 0) AS SUSAR
+			        FROM SDB_AM_AE_INFO AA
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SADR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            ) BB
+			        ON  AA.AE_NO = BB.AE_NO
+			        LEFT JOIN
+			            (SELECT AE_NO
+			              , 1 AS SUSAR
+			            FROM SDB_AM_AE_INFO
+			            WHERE REPORTR_RELATION_ONE <>'04'
+			            AND SERIUSFMNM_AT           ='Y'
+			            AND EXPECT_POSBL_SE         ='02'
+			            ) CC
+			        ON  AA.AE_NO               = CC.AE_NO
+			        ) C ON B.HRMFLNS_CASE_CODE = C.HRMFLNS_CASE_CODE
+			    AND B.PRDUCT_CODE              = C.PRDUCT_CODE   
+			    )
+                WHERE 1=1
+	     ]]>
+	     <isNotEmpty property="PRDUCT_CODE" prepend="AND">
+	     <![CDATA[ 
+	     	   PRDUCT_CODE =  #PRDUCT_CODE# 
+	     ]]>
+	     </isNotEmpty>
+	     <![CDATA[
+	     	GROUP BY SAFE_REPRT_NO                                  
+			          , PRDUCT_CODE
+			          , USE_AT
+			          , FRST_CREDE
+			ORDER BY USE_AT ASC, FRST_CREDE DESC
+	     ]]> 	  
+	</select>
+</sqlMap>	

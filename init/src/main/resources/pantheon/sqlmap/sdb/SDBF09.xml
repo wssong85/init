@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="SDBF09">
+	<typeAlias  alias="hashmap" type="java.util.HashMap"/>
+
+	<select id="SDBF09.selectSopPart" parameterClass="hashmap" resultClass="hashmap">
+	    SELECT QESTN_SN
+	          ,QESTN_CN
+	      FROM SDB_SM_EVL_ESTBS
+	     WHERE SE_CODE = #SE_CODE#
+	       AND GROUP_AT = 'Y'
+	       AND NVL(UPPER_SN, '0') = '0'
+	       AND USE_AT = 'Y'
+	  ORDER BY QESTN_SN
+	</select>
+	
+	<select id="SDBF09.selectSopInfo" parameterClass="hashmap" resultClass="hashmap">
+	    SELECT SN
+	          ,SE_CODE
+	          ,QESTN_SN
+	          ,QESTN_CN
+	      FROM SDB_SM_EVL_ESTBS
+	     WHERE SE_CODE = #SE_CODE#
+	       AND GROUP_AT = 'Y'
+	       AND UPPER_SN = #UPPER_SN#
+	       AND USE_AT = 'Y'
+	  ORDER BY QESTN_SN
+	</select>
+	
+	<insert id="SDBF09.insertSopInfo" parameterClass="hashmap">
+	    INSERT INTO SDB_SM_EVL_ESTBS
+	                (
+	                  SN
+	                , SE_CODE
+	                , GROUP_AT
+	                , UPPER_SN
+	                , QESTN_SN
+	                , QESTN_CN
+	                , USE_AT
+	                , FRST_CREDE
+	                , REGIST_ID
+	                , LAST_UPDDE
+	                , UPDATE_ID
+	                )
+	         VALUES (
+	                  SDB_ASSESSMENT_SEQ.nextval
+	                , #SE_CODE#
+	                , #GROUP_AT#
+	                , #UPPER_SN#
+	                , #QESTN_SN#
+	                , #QESTN_CN#
+	                , #USE_AT#
+	                , SYSDATE
+	                , #USER_ID#
+	                , SYSDATE
+	                , #USER_ID#
+	                )
+	</insert>
+	
+	<update id="SDBF09.updateSopInfo" parameterClass="hashmap">
+		UPDATE SDB_SM_EVL_ESTBS
+		   SET QESTN_SN = #QESTN_SN#
+		      ,QESTN_CN = #QESTN_CN#
+		      ,LAST_UPDDE = SYSDATE
+		      ,UPDATE_ID = #USER_ID#
+		 WHERE SN = #SN#
+		   AND SE_CODE = #SE_CODE#
+		   AND UPPER_SN = #UPPER_SN#
+	</update>
+	
+	<update id="SDBF09.deleteSopInfo" parameterClass="hashmap">
+		UPDATE SDB_SM_EVL_ESTBS
+		   SET USE_AT = #USE_AT#
+		   	  ,LAST_UPDDE = SYSDATE
+		   	  ,UPDATE_ID = #USER_ID#
+		 WHERE SN = #SN#
+		   AND SE_CODE = #SE_CODE#
+		   AND UPPER_SN = #UPPER_SN#
+	</update>
+</sqlMap>

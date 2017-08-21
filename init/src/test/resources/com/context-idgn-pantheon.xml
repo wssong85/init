@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	
+	<!-- 파일 마스터 -->
+    <bean name="SDM_FILE_MASTR" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDM_FILE_MASTR.NEXTVAL FROM DUAL"/>
+    </bean>
+    <!-- 파일 상세 -->
+    <bean name="SDM_FILE_DETAIL" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDM_FILE_DETAIL.NEXTVAL FROM DUAL"/>
+    </bean>    
+    
+    <!-- 거래선 기관  seq -->
+    <bean name="SDB_DELNGLN_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDB_DELNGLN_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 발려 사유 -->
+    <bean name="DMC_RTN_RESN_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CTMS_DMC_RTN_RESN_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 접속이력 -->
+    <bean name="CM_SYS_CONECT_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CM_SYS_CONECT_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+     
+    <!-- 프로그램 접속이력 -->
+    <bean name="CM_PROGRM_CONECT_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CM_PROGRM_CONECT_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+        <!-- SDB 다국어  -->
+    <bean name="SDB_MULLANG_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDB_MULLANG_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>  
+    <!-- SOURCE 전체 SEQ  -->
+    <bean name="SDB_SOURCE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+<!--     	<property name="query" value="SELECT SDB_SOURCE_SEQ.NEXTVAL FROM DUAL"/> -->
+    	<property name="query" value="SELECT lpad(SDB_SOURCE_SEQ.NEXTVAL,9,0) FROM DUAL"/>
+    	 
+    </bean> 
+    
+    <!-- IRB info Seq -->
+    <bean name="CTMS_CO_IRB_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CTMS_CO_IRB_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 과제별 수탁기관 Seq -->
+    <bean name="CTMS_CO_TASK_TRUST_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CTMS_CO_TASK_TRUST_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 결재선 -->
+    <bean name="CM_SANCLINE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CM_SANCLINE_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 결재선 상세 -->
+    <bean name="CM_SANCLINE_DETAIL_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CM_SANCLINE_DETAIL_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 결제요청 -->
+    <bean name="CM_SANCTN_REQUST_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CM_SANCTN_REQUST_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 결제처리 -->
+    <bean name="CM_SANCTN_PROCESS_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CM_SANCTN_PROCESS_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- CASE info Seq -->
+    <bean name="SDB_CASE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDB_CASE_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- MILESTONE SEQ -->
+    <bean name="CTMS_ST_MILESTONE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CTMS_ST_MILESTONE_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- PROGRSS Note SEQ -->
+    <bean name="CTMS_ST_PROGRS_CN_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CTMS_ST_PROGRS_CN_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+	
+	<!-- Change Reason info Seq -->
+    <bean name="SDB_CHANGE_REASON_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDB_CHANGE_REASON_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+	
+	<!-- 인터페이스관리 -->    
+    <bean name="CM_INTRFC_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT CM_INTRFC_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 이상사례 Narrative Seq -->    
+    <bean name="SDB_NARRATIVE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDB_NARRATIVE_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 문자메시지(LMS) -->    
+    <bean name="MMS_MSG_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT MMS_MSG_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 발신관리  -->
+    <bean name="COMTHEMAILDSPTCHMANAGE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT COMTHEMAILDSPTCHMANAGE_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- fileImport EDC_CF_CDISC Seq -->    
+    <bean name="EDC_CF_CDISC_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_CF_CDISC_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- fileImport EDC_CF_CDISCDOMN Seq -->    
+    <bean name="EDC_CF_CDISCDOMN_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_CF_CDISCDOMN_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- fileImport EDC_CF_CDISCVRIABL Seq -->    
+    <bean name="EDC_CF_CDISCVRIABL_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_CF_CDISCVRIABL_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- fileImport EDC_CF_CDISCCODE Seq -->    
+    <bean name="EDC_CF_CDISCCODE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_CF_CDISCCODE_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- fileImport EDC_CF_VALUE Seq -->    
+    <bean name="EDC_CF_VALUE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_CF_VALUE_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 이상사례 Seq -->    
+    <bean name="SDB_DEMOGRAPHICS_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDB_DEMOGRAPHICS_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- 공지사항 -->    
+    <bean name="NOTICE_SN_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NOTICE_SN_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+     <!-- PRODUCT LABEL Seq -->    
+    <bean name="SDB_LABEL_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDB_LABEL_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+   <!-- EDC_RM_AET Seq -->    
+    <bean name="EDC_RM_AET_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_RM_AET_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- EDC_RM_DRFSTF Seq -->    
+    <bean name="EDC_RM_DRFSTF_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_RM_DRFSTF_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- EDC_RM_HSTCS Seq -->    
+    <bean name="EDC_RM_HSTCS_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_RM_HSTCS_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- EDC_RM_DRFSTF_HSTCS Seq -->    
+    <bean name="EDC_RM_DRFSTF_HSTCS_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_RM_DRFSTF_HSTCS_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- EDC_RM_INSPCT_RESULT Seq -->    
+    <bean name="EDC_RM_INSPCT_RESULT_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT EDC_RM_INSPCT_RESULT_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+       <!-- NIS SN NVL MAX -->    
+    <bean name="CTMS_NIS_MAX" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NVL(MAX(SN), 0)+1 FROM CTMS_TO_NIS_TASK"/>
+    </bean>
+    
+    <!-- Request Form NVL MAX -->    
+    <bean name="CTMS_REQUEST_FORM_MAX" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NVL(MAX(SN), 0)+1 FROM CTMS_CO_REQUEST_FORM"/>
+    </bean>
+    
+    <!-- PROTOCOL Form NVL MAX -->    
+    <bean name="CTMS_PROTOCOL_MAX" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NVL(MAX(SN), 0)+1 FROM CTMS_ST_PROTOCOL"/>
+    </bean>
+    
+    <!-- PMS YRYCREPRT Form NVL MAX -->    
+    <bean name="CTMS_PMS_YRYCREPRTL_MAX" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NVL(MAX(SN), 0)+1 FROM CTMS_ST_YRYCREPRT"/>
+    </bean>
+    
+    <!-- RSRCH_INSTT NVL MAX (연구자 Info 조사연구기관)-->    
+    <bean name="CTMS_RSRCH_INSTT_MAX" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NVL(MAX(SN), 0)+1 FROM CTMS_CO_RSRCH_INSTT"/>
+    </bean>
+    
+    <!-- RSRCH_RSRCCT NVL MAX (연구자 Info 연구비)-->    
+    <bean name="CTMS_RSRCH_RSRCCT_MAX" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NVL(MAX(SN), 0)+1 FROM CTMS_CO_RSRCH_RSRCCT"/>
+    </bean>
+    
+    <!-- RSRCH_DLBRT NVL MAX (연구자 Info IRB)-->    
+    <bean name="CTMS_RSRCH_DLBRT_MAX" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NVL(MAX(SN), 0)+1 FROM CTMS_CO_RSRCH_DLBRT"/>
+    </bean>
+    
+    <!-- RSRCH_WRTCNS NVL MAX (연구자 Info 동의서)-->    
+    <bean name="CTMS_RSRCH_WRTCNS_MAX" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NVL(MAX(SN), 0)+1 FROM CTMS_CO_RSRCH_WRTCNS"/>
+    </bean>
+    
+    <!-- RSRCH_VER NVL MAX (연구자 Info 버전관리)-->    
+    <bean name="CTMS_RSRCH_VER_MAX" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT NVL(MAX(SN), 0)+1 FROM CTMS_CO_RSRCH_VER"/>
+    </bean>
+    
+    <!-- RSRCH_WRTCNS NVL MAX -->    
+    <bean name="SDB_PRODUCT_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="SELECT SDB_PRODUCT_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- CTMS_DMC_EDC_MANAGE NVL MAX -->
+    <bean name="CTMS_DMC_EDC_MANAGE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="CTMS_DMC_EDC_MANAGE_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+    
+    <!-- CTMS_DMC_EDC_ROLE NVL MAX -->
+    <bean name="CTMS_DMC_EDC_ROLE_SEQ" class="egovframework.rte.fdl.idgnr.impl.EgovSequenceIdGnrServiceImpl" destroy-method="destroy">
+    	<property name="dataSource" ref="dataSource"/>
+    	<property name="query" value="CTMS_DMC_EDC_ROLE_SEQ.NEXTVAL FROM DUAL"/>
+    </bean>
+
+    
+
+</beans>

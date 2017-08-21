@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRA01.xml"/>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRB01.xml"/>	
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRC01.xml"/>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRC02.xml"/>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRD01.xml"/>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRD02.xml"/>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRD03.xml"/>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRD04.xml"/>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRE01.xml"/>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRF01.xml"/>
+	<sqlMap resource="pantheon/sqlmap/iwrs/IWRG01.xml"/>
+</sqlMapConfig>

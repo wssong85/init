@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ <sqlMap namespace="IWRD03">
+	<typeAlias  alias="hashMap" type="java.util.HashMap"/>
+	
+	<select id="IWRD03.selectErrorLog" parameterClass="hashMap" resultClass="hashMap">
+	    SELECT C.INSTT_CODE
+	    	  ,E.NAME1 INSTT_NM
+	          ,FN_GET_USER_NAME(A.IP_ERROR_REGISTER_ID) IP_ERROR_REGISTER_ID
+	          ,D.SUBJECT_CODE
+	          ,(SELECT VISIT_LBL FROM EDC_CR_VISIT_SCHDUL WHERE TASK_SN = E.TASK_CODE AND VISIT_SN = D.VISIT_CODE) VISIT_CODE
+	          ,A.IP_CODE
+	          ,FN_GET_COMMONCODE('IWRS002', A.IP_ERROR_CODE, #LOCALE#) IP_ERROR_CODE 
+	          ,A.IP_ERROR_COMMENT
+	          ,TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
+	          ,A.TASK_CODE
+	      FROM (SELECT A.*
+	                  ,B.TASK_CODE
+	              FROM IWRS_IP_IP_CODE A
+	        INNER JOIN IWRS_IP_CREATMASTR B
+	                ON A.CREAT_CODE = B.CREAT_CODE) A
+	 LEFT JOIN IWRS_DS_INVNTRYMANAGE_IP_INFO B
+	        ON A.IP_TYPE = B.IP_TYPE
+	       AND A.CREAT_CODE = B.CREAT_CODE
+	       AND A.IP_CODE = B.IP_CODE
+     LEFT JOIN IWRS_DS_INVNTRYMANAGE_DETAIL C
+     		ON B.DLVYMANAGE_CODE = C.DLVYMANAGE_CODE
+     	   AND B.SN = C.SN
+     	   AND B.INVNTRYMANAGE_CODE = C.INVNTRYMANAGE_CODE
+     	   AND A.IP_TYPE = C.IP_TYPE
+     	   AND A.CREAT_CODE = C.CREAT_CODE
+	 LEFT JOIN IWRS_SJ_RTUNMANAGE D
+	        ON B.INVNTRYMANAGE_CODE = D.INVNTRYMANAGE_CODE
+	       AND B.DLVYMANAGE_CODE = D.DLVYMANAGE_CODE
+	       AND B.IP_CODE = D.IP_CODE
+	 LEFT JOIN (SELECT A.TASK_SN TASK_CODE
+		              ,C.INSTT_CODE
+		              ,D.NAME1
+		          FROM EDC_CR_INSTT_FORM A
+		    INNER JOIN CM_RSRCHUSER B
+		            ON A.INSTT_CODE = B.INSTT_CODE
+		    INNER JOIN CM_INSTT C
+		            ON B.INSTT_CODE = C.INSTT_CODE
+		    INNER JOIN SAP_BCNC_INFO D
+		            ON C.KUNNR = D.KUNNR
+		         WHERE TASK_SN = #task_code#
+		      GROUP BY A.TASK_SN, C.INSTT_CODE, D.NAME1) E
+	      	ON C.TASK_CODE = E.TASK_CODE
+	       AND C.INSTT_CODE = E.INSTT_CODE
+	     WHERE A.IP_STTUS_CODE = '06'
+	       AND A.TASK_CODE = #task_code#
+	  ORDER BY A.LAST_UPDDE DESC
+	</select>
+</sqlMap>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="EDCJ03DAO">
+
+   	<typeAlias alias="hashMap" type="java.util.HashMap"/>
+   	<typeAlias alias="int" type="java.lang.Integer"/>
+	
+	<select id="selectAeList" parameterClass="hashMap" resultClass="hashMap" >
+		SELECT	TCV.NAME1, 
+				TCV.SUBJECT_NO, 
+				TCV.ROW_NO, 
+				MIN(DECODE(TCV.DOMN_VRIABL_SN, '10', TCV.STRE_VALUE)) VAR1, 
+				MIN(DECODE(TCV.DOMN_VRIABL_SN, '20', TCV.STRE_VALUE)) VAR2, 
+				MIN(DECODE(TCV.DOMN_VRIABL_SN, '30', TCV.STRE_VALUE)) VAR3,
+				MIN(DECODE(TCV.DOMN_VRIABL_SN, '40', TCV.STRE_VALUE)) VAR4, 
+				MIN(DECODE(TCV.DOMN_VRIABL_SN, '50', TCV.STRE_VALUE)) VAR5, 
+				MIN(DECODE(TCV.DOMN_VRIABL_SN, '60', TCV.STRE_VALUE)) VAR6,
+				MIN(DECODE(TCV.DOMN_VRIABL_SN, '70', TCV.STRE_VALUE)) VAR7, 
+				MIN(DECODE(TCV.DOMN_VRIABL_SN, '80', TCV.STRE_VALUE)) VAR8, 
+				MIN(DECODE(TCV.DOMN_VRIABL_SN, '90', TCV.STRE_VALUE)) VAR9
+		FROM (
+      			SELECT	SBI.NAME1, 
+      					CS.SUBJECT_NO, 
+      					CV.SET_SN, 
+      					CV.ROW_NO, 
+      					CV.STRE_VALUE, 
+      					CVR.DOMN_VRIABL_SN
+      			FROM	EDC_CR_INSTT_FORM CIF
+      			JOIN	EDC_CF_SUBJECT CS ON CIF.INSTT_FORM_SN = CS.INSTT_FORM_SN
+      			RIGHT OUTER JOIN	EDC_CF_VRIABL CV ON CS.SUBJECT_NO = CV.SUBJECT_NO
+      			LEFT OUTER JOIN		EDC_CR_VRIABL CVR	ON CV.VRIABL_SN = CVR.VRIABL_SN
+      			JOIN	CM_INSTT CI 
+           	 ON CIF.INSTT_CODE = CI.INSTT_CODE
+      			JOIN	SAP_BCNC_INFO SBI ON CI.KUNNR = SBI.KUNNR
+      			WHERE	CVR.DOMN_VRIABL_SN in ('280','259','266','287','266','35','284','36','35')
+      		  )TCV
+      	WHERE	TCV.SUBJECT_NO LIKE '%' || #subjectNo# || '%'
+        AND		TCV.NAME1 LIKE '%' || #name# || '%'
+      	GROUP BY TCV.NAME1, TCV.SUBJECT_NO, TCV.SET_SN, TCV.ROW_NO
+      	ORDER BY TCV.SUBJECT_NO
+        
+	</select>
+	
+</sqlMap>
