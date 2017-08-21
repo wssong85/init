@@ -11,7 +11,7 @@
 
 <body>
 	<div class="error_01">
-		<div class="error_02">
+		<div class="error_02"> 
 			<div class="error_img"><img src="/images/pantheon/common/img_error.png"></div>
 
 
