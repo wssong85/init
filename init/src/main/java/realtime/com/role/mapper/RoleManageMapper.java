@@ -40,5 +40,6 @@ public interface RoleManageMapper {
 
 	List<Map<String, Object>> selectTbRolesList(Map<String, Object> map);
 	
+	List<Map<String, Object>> selectTbMenuListForRoleCombine(Map<String, Object> map);
 	
 }

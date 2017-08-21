@@ -51,7 +51,7 @@
 		     , UP_DT            = #{UP_DT           , jdbcType=VARCHAR}
 		     , WRITE_ID         = #{WRITE_ID        , jdbcType=VARCHAR}
 		 WHERE PROGRAM_ID       = #{PROGRAM_ID      , jdbcType=VARCHAR}
-		   AND BOARD_MANAGE_SEQ = #{BOARD_MANAGE_SEQ, jdbdType=VARCHAR}
+		   AND BOARD_MANAGE_SEQ = #{BOARD_MANAGE_SEQ, jdbcType=VARCHAR}
 	]]>
 	</update>
 	

@@ -21,4 +21,6 @@ public interface RoleManageService {
 
 	void multiTbRoles(List<Map<String, Object>> list) throws Exception;
 
+	List<Map<String, Object>> selectTbMenuListForRoleCombine(Map<String, Object> map) throws Exception;
+
 }

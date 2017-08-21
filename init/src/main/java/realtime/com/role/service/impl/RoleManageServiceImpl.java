@@ -102,6 +102,7 @@ public class RoleManageServiceImpl implements RoleManageService{
 
 	@Override
 	public void multiTbRoles(List<Map<String, Object>> list) throws Exception {
+		
 		for(Map<String, Object> iMap : list) {
 			
 			if("C".equals(iMap.get("CRUD"))) {
@@ -119,5 +120,12 @@ public class RoleManageServiceImpl implements RoleManageService{
 			}
 			
 		}
+		
 	}
+
+	@Override
+	public List<Map<String, Object>> selectTbMenuListForRoleCombine(Map<String, Object> map) throws Exception {
+		return roleManageMapper.selectTbMenuListForRoleCombine(map);
+	}
+	
 }

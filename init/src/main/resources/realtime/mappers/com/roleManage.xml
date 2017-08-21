@@ -261,4 +261,25 @@
 	DELETE FROM TB_ROLES WHERE ROLE = #{ROLE, jdbcType=VARCHAR}
 	]]>
 	</delete>
+	
+	<select id="selectTbMenuListForRoleCombine" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT
+	B.UP_MENU_ID
+	,B.UP_MENU_NM
+	,A.MENU_ID
+	,A.PROGRAM_ID
+	,A.MENU_NM
+	,A.MENU_DC
+	,A.USE_YN
+	,A.MENU_SEQ
+	,B.UP_MENU_SEQ
+	FROM TB_MENU A
+	JOIN TB_UP_MENU B
+	ON A.UP_MENU_ID = B.UP_MENU_ID
+	WHERE 1=1
+	AND A.USE_YN = 'Y'
+	AND B.USE_YN = 'Y'
+	ORDER BY B.UP_MENU_SEQ, A.MENU_SEQ	]]>
+	</select> 
 </mapper> 

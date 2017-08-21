@@ -72,7 +72,7 @@ public class RoleManageController {
 	 */
 	@RequestMapping(value="/com/role/roleCombineManage.do")
 	public String roleCombine(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		return "realtime/com/role/roleCombine";
+		return "realtime/com/role/roleCombineManage";
 	}
 	
 	/**
@@ -286,6 +286,34 @@ public class RoleManageController {
 		
 		return result;
 		
+	}
+	
+	/**
+	 * 메뉴리스트 조회(역할결합화면)
+	 * @param request
+	 * @param response
+	 * @param map
+	 * @return 
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/com/role/selectTbMenuListForRoleCombine.do")
+	@ResponseBody 
+	public Map<String , Object> selectTbMenuListForRoleCombine(HttpServletRequest request, @RequestParam Map<String, Object> map) throws Exception {
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<Map<String, Object>> list = null;
+		
+		try {
+			
+			list = roleManageService.selectTbMenuListForRoleCombine(map);
+			
+			result.put("success", true);
+			result.put("result", list);
+		} catch (Exception e) {
+			result.put("success", false);
+			result.put("message", e.getLocalizedMessage());
+		}
+		
+		return result;
 	}
 	
 }
