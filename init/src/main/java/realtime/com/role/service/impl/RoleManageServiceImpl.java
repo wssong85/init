@@ -127,5 +127,27 @@ public class RoleManageServiceImpl implements RoleManageService{
 	public List<Map<String, Object>> selectTbMenuListForRoleCombine(Map<String, Object> map) throws Exception {
 		return roleManageMapper.selectTbMenuListForRoleCombine(map);
 	}
+
+	@Override
+	public List<Map<String, Object>> selectTbMenuProgramListByRole(Map<String, Object> map) throws Exception {
+		return roleManageMapper.selectTbMenuProgramListByRole(map);
+	}
+
+	@Override
+	public void insertTbMenuProgramForAll(List<Map<String, Object>> list) throws Exception {
+		
+		int count = 0;
+		for(Map<String, Object> iMap : list) {
+			
+			if(count == 0) {
+				roleManageMapper.deleteTbMenuProgramByRole(iMap);
+			}
+			
+			roleManageMapper.insertTbMenuProgram(iMap);
+			
+			count++;
+		}
+		
+	}
 	
 }

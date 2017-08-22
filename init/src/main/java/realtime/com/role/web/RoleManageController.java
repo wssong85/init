@@ -316,4 +316,57 @@ public class RoleManageController {
 		return result;
 	}
 	
+	/**
+	 * 역할결합화면 (권한)
+	 * @param request
+	 * @param response
+	 * @param map
+	 * @return 
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/com/role/selectTbMenuProgramListByRole.do")
+	@ResponseBody 
+	public Map<String , Object> selectTbMenuProgramListByRole(HttpServletRequest request, @RequestParam Map<String, Object> map) throws Exception {
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<Map<String, Object>> list = null;
+		
+		try {
+			
+			list = roleManageService.selectTbMenuProgramListByRole(map);
+			
+			result.put("success", true);
+			result.put("result", list);
+		} catch (Exception e) {
+			result.put("success", false);
+			result.put("message", e.getLocalizedMessage());
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 역할결합 입력
+	 * @param list
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/com/role/insertTbMenuProgramForAll.do")
+	public @ResponseBody Map<String , Object> insertTbMenuProgramForAll(@RequestBody List<Map<String, Object>> list) throws Exception {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		try {
+			
+			roleManageService.insertTbMenuProgramForAll(list);
+			
+			result.put("success", true);
+		} catch (Exception e) {
+			result.put("success", false);
+			result.put("message", e.getLocalizedMessage());
+		}
+		
+		return result;
+		
+	}
+	
 }

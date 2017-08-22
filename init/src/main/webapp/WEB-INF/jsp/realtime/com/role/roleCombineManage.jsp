@@ -5,14 +5,34 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <jsp:include page="/common/common.do" flush="false"/>
-<title>공통코드</title>
+<title>역할결합관리</title>
 
 <script type="text/javascript">
+
+function loadCombo(target, data) {
+	var dataArr = [];
+	var inx = 0;
+	target.empty();
+
+	$(data).each( function() {
+		dataArr[inx++] = "<option value=" + this.ROLE + ">" + this.ROLE_NM + "</option> ";
+	});
+
+	target.append(dataArr);
+}
 
 var grTbMenu = null;
 var grTbMenuProgram = null;
 
 $(function(){
+	
+	$.ajax({
+		url : _contextPath + "/com/role/selectTbRolesList.do",
+		success : function(data) {
+			loadCombo($("#selectRoles"), data.result);
+            $("#selectRoles").val("");
+		}
+	});
 	
 	grTbMenu = new ax5.ui.grid();
 	grTbMenu.getSelectionRowIndex = 0;
@@ -30,8 +50,6 @@ $(function(){
 						
 						grTbMenu.getSelectionRowIndex = 0;
 						grTbMenu.getSelectionItem = data.result[0];
-						
-						grTbMenuProgram.load({"GROUP_CD" : data.result[0]["GROUP_CD"]});
 						
 					}
 					
@@ -51,16 +69,39 @@ $(function(){
 		target: $('[data-ax5grid="grTbMenu"]'),
 		header: {align: 'center'},
 		
-		showLineNumber: false,
+		showLineNumber: true,
+		showRowSelector: true,
+		lineNumberColumnWidth: 40,
+		rowSelectorColumnWidth: 25,
 		
 		body: {
 			onClick: function(){
 				grTbMenu.getSelectionRowIndex = this.doindex;
 				grTbMenu.getSelectionItem = this.item;
-				grTbMenuProgram.load({"GROUP_CD" : this.item["GROUP_CD"]});
 				
 			},
 			onDBLClick: function(){
+				
+				if(!$('#selectRoles option:selected').val()) {
+	    			alert("권한을 선택해 주십시오.");
+	    			return;
+	    		}
+				
+				var vAddItem = {
+// 	            		"CRUD": "C"
+	            		"ROLE": $('#selectRoles option:selected').val()
+	            		,"MENU_ID": grTbMenu.getList()[grTbMenu.getSelectionRowIndex]["MENU_ID"]
+	            		,"MENU_NM": grTbMenu.getList()[grTbMenu.getSelectionRowIndex]["MENU_NM"]
+	            		,"UP_MENU_NM": grTbMenu.getList()[grTbMenu.getSelectionRowIndex]["UP_MENU_NM"]
+				};
+				
+				grTbMenuProgram.addRow($.extend({}, vAddItem, {__index: undefined}));
+				
+				if(!_vGrValidation.pkCheck(grTbMenuProgram, "MENU_ID")) {
+					alert("중복된 메뉴입니다.");
+					grTbMenuProgram.removeRow(0);
+					return;
+				}
 				
 			},
 			onDataChanged: function(){
@@ -107,30 +148,6 @@ $(function(){
 			}
 		},
 		columns: [{
-			key: "",
-			label: "",
-			align: "center",
-			width: 50,
-			enableFilter: true,
-            styleClass: function () {
-            	
-            	if(this.item.CRUD === "C") {
-            		return "grid-cell-green";
-            	} else if(this.item.CRUD === "U") {
-            		return "grid-cell-blue";
-            	} else if(this.item.CRUD === "D") {
-            		return "grid-cell-red";
-            	}
-            	
-            }
-		},{
-			key: "CRUD",
-			label: "",
-			align: "center",
-			width: 0,
-			enableFilter: true,
-			hidden: true
-		},{
 			key: "UP_MENU_NM",
 			label: "상위메뉴이름",
 			align: "center",
@@ -160,7 +177,7 @@ $(function(){
 	grTbMenuProgram.load = function(vParam) {
 		
 		$.ajax({
-			url : _contextPath + "/com/code/selectTbMenuProgramList.do",
+			url : _contextPath + "/com/role/selectTbMenuProgramListByRole.do",
 			type: 'post',
 			dataType: 'json',
 			data:vParam,
@@ -184,8 +201,11 @@ $(function(){
 		target: $('[data-ax5grid="grTbMenuProgram"]'),
 		header: {align: 'center'},
 		
-		showLineNumber: false,
-		
+		showLineNumber: true,
+		showRowSelector: true,
+		lineNumberColumnWidth: 40,
+		rowSelectorColumnWidth: 25,
+
 		body: {
 			onClick: function(){
 				
@@ -195,116 +215,45 @@ $(function(){
 			},
 			onDBLClick: function(){
 				
+				if(!$('#selectRoles option:selected').val()) {
+	    			alert("권한을 선택해 주십시오.");
+	    			return;
+	    		}
+				
+				grTbMenuProgram.removeRow(grTbMenuProgram.getSelectionRowIndex);
+				
 			},
 			onDataChanged: function(){
 				
 				grTbMenuProgram.getSelectionRowIndex = this.doindex;
 				grTbMenuProgram.getSelectionItem = this.item;
 				
-				if(!grTbMenuProgram.getSelectionItem["CRUD"]) {
-					grTbMenuProgram.updateRow($.extend({}, grTbMenuProgram.list[grTbMenuProgram.getSelectionRowIndex], {"CRUD": "U"}), grTbMenuProgram.getSelectionRowIndex);
-				}
-				
-				if(this.value) {
-					grTbMenuProgram.updateRow($.extend({}, grTbMenuProgram.list[grTbMenuProgram.getSelectionRowIndex], {"DETAIL_CD": this.value.toUpperCase()}), grTbMenuProgram.getSelectionRowIndex);
-				}
-				
-				//컬럼 유효성 체크
-				if(this.key == "DETAIL_CD") {
-					
-					//길이체크
-					if(_vGrValidation.lengthCheck(this.value, 3)
-							//영문자숫자체크
-							&& _vGrValidation.engNumcheck(this.value)
-							//중복체크
-							&& _vGrValidation.pkCheck(grTbMenuProgram, "DETAIL_CD")){
-						
-						grTbMenuProgram.updateRow($.extend({}, grTbMenuProgram.list[grTbMenuProgram.getSelectionRowIndex], {"DETAIL_CD": this.value.toUpperCase()}), grTbMenuProgram.getSelectionRowIndex);
-						
-					} else {
-						
-						grTbMenuProgram.updateRow($.extend({}, grTbMenuProgram.list[grTbMenuProgram.getSelectionRowIndex], {"DETAIL_CD": ""}), grTbMenuProgram.getSelectionRowIndex);
-						
-					}
-					
-				} else if(this.key == "CD_DC") {
-					
-					if(!_vGrValidation.lengthCheck(this.value, 200)) {
-						grTbMenuProgram.updateRow($.extend({}, grTbMenuProgram.list[grTbMenuProgram.getSelectionRowIndex], {"CD_DC": ""}), grTbMenuProgram.getSelectionRowIndex);
-					} 
-					
-				}
-				
 			}
 		},
 		columns: [{
-			key: "",
-			label: "",
-			align: "center",
-			width: 50,
-			enableFilter: true,
-            styleClass: function () {
-            	
-            	if(this.item.CRUD === "C") {
-            		return "grid-cell-green";
-            	} else if(this.item.CRUD === "U") {
-            		return "grid-cell-blue";
-            	} else if(this.item.CRUD === "D") {
-            		return "grid-cell-red";
-            	}
-            	
-            }
-		},{
-			key: "CRUD",
-			label: "",
-			align: "center",
-			width: 0,
-			enableFilter: true,
-			hidden: true
-		},{
-			key: "GROUP_CD",
-			label: "*그룹코드",
+			key: "ROLE",
+			label: "역할",
 			align: "center",
 			width: 100,
 			enableFilter: true
 		},{
-			key: "DETAIL_CD",
-			label: "*코드",
+			key: "MENU_ID",
+			label: "메뉴아이디",
 			align: "center",
 			width: 100,
 			enableFilter: true,
-            editor: {type:"text"}
+			hidden: true
 		},{
-			key: "CD_DC",
-			label: "코드설명",
-			align: "center",
-			width: 250,
-			enableFilter: true,
-            editor: {type:"text"}
-		},{
-			key: "CD_SEQ",
-			label: "순서",
-			align: "center",
-			width: 50,
-			enableFilter: true,
-            editor: {type:"text"}
-		},{
-			key: "USE_YN",
-			label: "사용여부",
-			type: "checkbox",
+			key: "UP_MENU_NM",
+			label: "상위메뉴이름",
 			align: "center",
 			width: 100,
-			enableFilter: true,
-			editor: {
-				type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
-			}
+			enableFilter: true
 		},{
-			key: "UP_DT", 
-			label: "수정일", 
-			formatter: "date", 
+			key: "MENU_NM",
+			label: "메뉴이름",
 			align: "center",
-			enableFilter: true,
-			width: 150,
+			width: 100,
 			enableFilter: true
 		}]
 	
@@ -316,35 +265,91 @@ $(function(){
     
     $("#btnTbMenuProgramMultiSave").click(function(){
     	
+    	if(!grTbMenuProgram.getList().length) {
+    		alert("저장할 역할이 없습니다.");
+    		return;
+    	}
+    	
     	var vValidateJson = {
-			"DETAIL_CD": "상세코드는 필수입력해주십시오."
+			"ROLE": "역할이 없습니다."
+			,"MENU_ID": "메뉴아이디가 없습니다."
 		};
     	
-    	fn_GridMultiSaveForValidateArray(
+    	fn_GridMultiSaveForValidateArray2(
 				grTbMenuProgram
-				,"/com/code/multiTbMenuProgram.do"
+				,"/com/role/insertTbMenuProgramForAll.do"
 				,vValidateJson
 				,[]
 				,""
 				,""
-				,{"GROUP_CD":grTbMenu.getSelectionItem["GROUP_CD"]});
+				,{"ROLE":$('#selectRoles option:selected').val()});
     	
     });
     
-    $("#btnSelectTbGroupCode").trigger("click");
+    $("#selectRoles").change(function(){
+    	
+		if($('#selectRoles option:selected').val()) {
+			
+			grTbMenuProgram.load({"ROLE": $('#selectRoles option:selected').val()});
+			
+		}
+    	
+    });
     
+    $('[data-grid-control]').click(function () {
+    	switch (this.getAttribute("data-grid-control")) {
+    	
+    	case "btnAddTbMenuProgram":
+    		
+    		if(!$('#selectRoles option:selected').val()) {
+    			alert("권한을 선택해 주십시오.");
+    			return;
+    		}
+    		
+    		for(var i = 0; i < grTbMenu.getList("selected").length; i++) {
+    			
+    			if(!$('#selectRoles option:selected').val()) {
+        			alert("권한을 선택해 주십시오.");
+        			return;
+        		}
+    			
+    			var vAddItem = {
+// 	            		"CRUD": "C"
+	            		"ROLE": $('#selectRoles option:selected').val()
+	            		,"MENU_ID": grTbMenu.getList("selected")[i]["MENU_ID"]
+	            		,"MENU_NM": grTbMenu.getList("selected")[i]["MENU_NM"]
+	            		,"UP_MENU_NM": grTbMenu.getList("selected")[i]["UP_MENU_NM"]
+				};
+	        	
+        		grTbMenuProgram.addRow($.extend({}, vAddItem, {__index: undefined}));
+        		
+    		}
+
+    		break;
+    		
+    	case "btnRemoveTbMenuProgram":
+    	
+    		if(!$('#selectRoles option:selected').val()) {
+    			alert("권한을 선택해 주십시오.");
+    			return;
+    		}
+
+			for(var i = 0; i < grTbMenuProgram.getList("selected").length; i++) {
+				grTbMenuProgram.removeRow(grTbMenuProgram.getList("selected")[i].__index);
+    		}
+    		
+    		break;
+    	
+    	}
+    	
+    });
+    
+    grTbMenu.load();
 });
 </script>
 </head>
 
 <body>
-
-<!-- <div style="padding: 10px;"> -->
-<!-- 	<button class="btn btn-default" id="btnSelectTbGroupCode">조회</button> -->
-<!--     <button class="btn btn-default" data-grid-control="btnAddTbGroupCode">행추가</button> -->
-<!--     <button class="btn btn-default" data-grid-control="btnRemoveTbGroupCode">행삭제</button> -->
-<!--     <button class="btn btn-default" id="btnMultiSaveTbGroupCode">저장</button> -->
-<!-- </div> -->
 
 <div data-ax5grid="grTbMenu" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
 
@@ -355,7 +360,7 @@ $(function(){
 </div>
 
 <div style="padding: 10px;">
-	권한: <select>ㅎㅎ</select> 
+	권한: <select id="selectRoles" style="width:200px;"></select> 
 </div>
 
 <div data-ax5grid="grTbMenuProgram" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>

@@ -23,4 +23,9 @@ public interface RoleManageService {
 
 	List<Map<String, Object>> selectTbMenuListForRoleCombine(Map<String, Object> map) throws Exception;
 
+	List<Map<String, Object>> selectTbMenuProgramListByRole(Map<String, Object> map) throws Exception;
+
+	void insertTbMenuProgramForAll(List<Map<String, Object>> list) throws Exception;
+	
+
 }

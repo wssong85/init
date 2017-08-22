@@ -37,7 +37,6 @@ var _vGrValidation = {
 	pkCheck: function(obj, pkKey) {
 		var vTmp = obj.list;
 		var flag = true;
-//		console.log(pkKey);
 
 		for (var i = 0; i < vTmp.length; i++) {
 			for (var j = 0; j < vTmp.length; j++) {
@@ -50,6 +49,7 @@ var _vGrValidation = {
 
 		return flag;
 	}
+
 }
 
 function fn_GridMultiSaveCallBack2(obj, url, validateJson, arParam, message1, message2, loadParam, callback) {
@@ -120,6 +120,47 @@ function fn_GridMultiSaveForValidateArray(obj, url, validateJson, arParam, messa
 			type: "post",
 			contentType: "application/json; charset=UTF-8",
 			data : JSON.stringify(obj.getList("modified")),
+			success : function(data, textStatus, jqXHR) {
+				if(data.success) {
+					if(message2) {
+						alert(message2);
+						
+						if(loadParam) {
+							obj.load(loadParam);	
+						} else {
+							obj.load();
+						}
+						
+					} else {
+						alert("저장되었습니다.");
+						
+						if(loadParam) {
+							obj.load(loadParam);	
+						} else {
+							obj.load();
+						}
+					}
+				} else {
+					alert(data.message);
+				}
+			}, 
+			error : function(jqXHR, textStatus, errorThrown){
+				alert(textStatus);
+			}
+		});
+	});
+	
+}
+
+function fn_GridMultiSaveForValidateArray2(obj, url, validateJson, arParam, message1, message2, loadParam) {
+	
+	fn_GridMultiSaveCallBack2(obj, url, validateJson, arParam, message1, message2, loadParam, function(){
+		
+		$.ajax({
+			url : _contextPath + url,
+			type: "post",
+			contentType: "application/json; charset=UTF-8",
+			data : JSON.stringify(obj.getList()),
 			success : function(data, textStatus, jqXHR) {
 				if(data.success) {
 					if(message2) {

@@ -42,4 +42,12 @@ public interface RoleManageMapper {
 	
 	List<Map<String, Object>> selectTbMenuListForRoleCombine(Map<String, Object> map);
 	
+	List<Map<String, Object>> selectTbMenuProgramByRole(Map<String, Object> map);
+
+	List<Map<String, Object>> selectTbMenuProgramListByRole(Map<String, Object> map);
+
+	void deleteTbMenuProgramByRole(Object object);
+
+	void insertTbMenuProgram(Map<String, Object> iMap);
+	
 }

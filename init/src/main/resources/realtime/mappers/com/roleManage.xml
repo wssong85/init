@@ -280,6 +280,46 @@
 	WHERE 1=1
 	AND A.USE_YN = 'Y'
 	AND B.USE_YN = 'Y'
-	ORDER BY B.UP_MENU_SEQ, A.MENU_SEQ	]]>
-	</select> 
+	ORDER BY B.UP_MENU_SEQ, A.MENU_SEQ	
+	]]>
+	</select>
+	
+	<select id="selectTbMenuProgramListByRole" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT
+	A.ROLE
+	,(SELECT X.ROLE_NM FROM TB_ROLES X WHERE X.ROLE = A.ROLE) AS ROLE_NM
+	,B.MENU_ID
+	,B.MENU_NM
+	,B.UP_MENU_ID
+	,(SELECT X.UP_MENU_NM FROM TB_UP_MENU X WHERE X.UP_MENU_ID = B.UP_MENU_ID) UP_MENU_NM 
+	FROM TB_MENU_PROGRAM A
+	JOIN TB_MENU B
+	ON A.MENU_ID = B.MENU_ID
+	WHERE A.ROLE = #{ROLE, jdbcType=VARCHAR}
+	]]>
+	</select>
+	
+	<insert id="insertTbMenuProgram" parameterType="map">
+	<![CDATA[]]>
+	INSERT
+	INTO
+	TB_MENU_PROGRAM
+	(
+	ROLE
+	,MENU_ID
+	)
+	VALUES
+	(
+	#{ROLE, jdbcType=VARCHAR}
+	,#{MENU_ID, jdbcType=VARCHAR}
+	)
+	</insert>
+	
+	<delete id="deleteTbMenuProgramByRole" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_MENU_PROGRAM WHERE ROLE = #{ROLE, jdbcType=VARCHAR}
+	]]> 
+	</delete>
+	 
 </mapper> 
