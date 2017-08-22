@@ -19,17 +19,23 @@ $(function(){
 	
 	grTbBoardManage.load = function(){
 		$.ajax({
-			url    : _contextPath + "/com/board/selectTbBoardList.do",
+			url    : _contextPath + "/com/board/selectTbBoardManageList.do",
 			type   : 'post',
 			success: function(data){
 				if(data.success){
+					
 					grTbBoardManage.setData(data.result);
+					
 				} else {
+					
 					alert(data.message);
+					
 				}
 			},
 			error : function(jqXHR, testStatus, errorThrown){
+				
 				alert(textStatus);
+				
 			}
 			
 		});
@@ -41,24 +47,56 @@ $(function(){
 		showLineNumber: false,
 		body:{
 			onClick: function(){
-				grTbBoardManage.getSelectionRowIndex = this.doindex ;
-				grTbBoardManage.getSelectionItem = this.item ;
+				
+				grTbBoardManage.getSelectionRowIndex = this.doindex;
+				grTbBoardManage.getSelectionItem = this.item;
+				
 				grTbBoardManage.focus(this.doindex);
-				grTbBoardManage.load({
-					"" : this.item[""]
-				});
+// 				grTbBoardManage.load();
+				
 			},
 			onDBLClick: function(){
 				
 			},
 			onDataChanged: function(){
 				
-				grTbBoardManage.getSElectionRowIndex = this.doindex;
-				grTbBoardManage.getSelectionItem = this.item ;
+				grTbBoardManage.getSelectionRowIndex = this.doindex;
+				grTbBoardManage.getSelectionItem = this.item;
 				
-				if(!grTbBoardManage.getSeletionItem["CRUD"]){
+				if(!grTbBoardManage.getSelectionItem["CRUD"]){
 					grTbBoardManage.updateRow($.extend({}, grTbBoardManage.list[grTbBoardManage.getSelectionRowIndex], {"CRUD": "U"}), grTbBoardManage.getSeletionRowIndex);
 				}
+				
+				/*
+				if(this.value && this.key == "BOARD_MANAGE_SEQ") {
+					grTbBoardManage.updateRow($.extend({}, grTbBoardManage.list[grTbBoardManage.getSelectionRowIndex], {"BOARD_MANAGE_SEQ": this.value}), grTbBoardManage.getSelectionRowIndex);
+				}
+				
+				if(this.key == "BOARD_MANAGE_SEQ") {
+					
+					//길이체크
+					if(_vGrValidation.lengthCheck(this.value, 3)
+							//영문자숫자체크
+							&& _vGrValidation.engNumcheck(this.value)
+							//중복체크
+							&& _vGrValidation.pkCheck(grTbBoardManage, "BOARD_MANAGE_SEQ")){
+						
+						grTbBoardManage.updateRow($.extend({}, grTbBoardManage.list[grTbBoardManage.getSelectionRowIndex], {"BOARD_MANAGE_SEQ": this.value}), grTbBoardManage.getSelectionRowIndex);
+						
+					} else {
+						
+						grTbBoardManage.updateRow($.extend({}, grTbBoardManage.list[grTbBoardManage.getSelectionRowIndex], {"BOARD_MANAGE_SEQ": ""}), grTbBoardManage.getSelectionRowIndex);
+						
+					}
+					
+				} else if(this.key == "CD_DC") {
+					
+					if(!_vGrValidation.lengthCheck(this.value, 200)) {
+						grTbBoardManage.updateRow($.extend({}, grTbBoardManage.list[grTbBoardManage.getSelectionRowIndex], {"CD_DC": ""}), grTbBoardManage.getSelectionRowIndex);
+					} 
+					
+				}
+				*/
 			}
 		},
 		columns: [{
@@ -96,7 +134,7 @@ $(function(){
 			width: 200,
 			enableFilter: true
 		},{
-			key:'BOARD_TB_NM',
+			key:'TB_BOARD_NM',
 			label: '게시판테이블이름',
 			align:'center',
 			width: 200,
@@ -105,7 +143,7 @@ $(function(){
 				type:'text'
 			}
 		},{
-			key:'COMMENT_TB_NM',
+			key:'TB_COMMENT_NM',
 			label: '댓글테이블이름',
 			align:'center',
 			width: 200,
@@ -123,7 +161,7 @@ $(function(){
 				type:'text'
 			}
 		},{
-			key:'USE_AT',
+			key:'USE_YN',
 			label: '사용여부',
 			align:'center',
 			width: 200,
@@ -135,17 +173,10 @@ $(function(){
 					trueValue : 'Y',
 					falseValue: 'N'
 				}
-		
 			}
 		},{
 			key:'UP_DT',
 			label: '수정일',
-			align:'center',
-			width: 200,
-			enableFilter: true
-		},{
-			key:'WRITE_ID',
-			label: '등록수정자',
 			align:'center',
 			width: 200,
 			enableFilter: true
@@ -154,59 +185,63 @@ $(function(){
 	
 	
 	
-	$('[data-grid-controll]').click(function(){
+	$('[data-grid-control]').click(function(){
 		switch(this.getAttribute("data-grid-control")) {
-			case "btnAddTbBoard" :
+			case "btnAddTbBoardManage" :
+				
 				var vAddItem = {
 					"CRUD"             : "C",
 					"BOARD_MANAGE_SEQ" : "",
 					"PROGRAM_ID"       : "",
-					"BOARD_TB_NM"      : "",//TB_BOARD_NM 으로 바꿔야 한다. ㅇㅋ
-					"COMMENT_TB_NM"    : "",
+					"TB_BOARD_NM"      : "",
+					"TB_COMMENT_NM"    : "",
 					"BOARD_NM"         : "",
 					"USE_YN"           : "Y"
 				};
 				
-				grTbBoardManage.addRow($.extend({}, vAddItem, {__index: undefiend}));
-			break ;
-			case "btnRemoveTbBoard" :
+				grTbBoardManage.addRow($.extend({}, vAddItem, {__index: undefined}));
+				
+				break ;
+			
+			case "btnRemoveTbBoardManage" :
+				
 				grTbBoardManage.updateRow($.extend({}, grTbBoardManage.list[grTbBoardManage.getSelectionRowIndex], {"CRUD": "D"}), grTbBoardManage.getSelectionRowIndex);
 				grTbBoardManage.list[grTbBoardManage.getSelectionRowIndex]["__modified__"] = true;
-			
-			break ;
+				break ;
+				
 		}
 	});
 	
-	$("#btnSelectTbBoard").click(function(){
+	$("#btnSelectTbBoardManage").click(function(){
 		grTbBoardManage.load();
 	});
 	
-	$("#btnMultiSaveTbBoard").click(function(){
+	$("#btnMultiSaveTbBoardManage").click(function(){
 		var vValidateJson = {
-			"PROGRAM_ID" : "프로그램 ID는 필수 입력해해주십시오."//validation 체크는 필수값 넣고
+			"TB_BOARD_NM" : "프로그램 ID는 필수 입력해해주십시오."//validation 체크는 필수값 넣고
 		};
     	
     	fn_GridMultiSaveForValidateArray(
     		grTbBoardManage
-			,"/com/board/multiTbBoard.do"
+			,"/com/board/multiTbBoardManage.do"
 			,vValidateJson
 			,[]
 		);
 	});
 	
-	
-	$("#btnSelectTbBoard").trigger("click");
+	$("#btnSelectTbBoardManage").trigger("click");
 	
 });
 </script>
 
 <html>
 <body>
+	
 	<div style="padding:10px;">
-		<button class="btn btn-default" id="btnSelectTbBoard"   >조회</button>
-		<button class="btn btn-default" id="btnAddTbBoard"      >행추가</button>
-		<button class="btn btn-default" id="btnRemoveTbBoard"   >행삭제</button>
-		<button class="btn btn-default" id="btnMultiSaveTbBoard">저장</button>
+		<button class="btn btn-default" id="btnSelectTbBoardManage">조회</button>
+		<button class="btn btn-default" data-grid-control="btnAddTbBoardManage">행추가</button>
+		<button class="btn btn-default" data-grid-control="btnRemoveTbBoardManage">행삭제</button>
+		<button class="btn btn-default" id="btnMultiSaveTbBoardManage">저장</button>
 	</div>
 	
 	<div data-ax5grid="grTbBoardManage" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>

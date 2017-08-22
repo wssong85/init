@@ -3,26 +3,28 @@
 
 <mapper namespace="realtime.com.board.mapper.BoardManageMapper">
 
-	<select id="selectTbBoardList" parameterType="map" resultType="map">
-		SELECT BOARD_MANAGE_SEQ
-		     , PROGRAM_ID
-		     , BOARD_TB_NM
-		     , COMMENT_TB_NM
-		     , BOARD_NM
-		     , USE_YN
-		     , DATE_FORMAT(IN_DT, '%Y-%m-%d') IN_DT
-		     , DATE_FORMAT(UP_DT, '%Y-%m-%d') UP_DT
-		     , WRITE_ID
-		  FROM TB_BOARD_MANAGE 
+	<select id="selectTbBoardManageList" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT BOARD_MANAGE_SEQ
+	     , PROGRAM_ID
+	     , TB_BOARD_NM
+	     , TB_COMMENT_NM
+	     , BOARD_NM
+	     , USE_YN
+	     , DATE_FORMAT(IN_DT, '%Y-%m-%d') IN_DT
+	     , DATE_FORMAT(UP_DT, '%Y-%m-%d') UP_DT
+	     , WRITE_ID
+	  FROM TB_BOARD_MANAGE
+	]]> 
 	</select>
 	
-	<insert id="insertTbBoardDetail" parameterType="map">
+	<insert id="insertTbBoardManage" parameterType="map">
 	<![CDATA[
 		INSERT INTO TB_BOARD_MANAGE (
 		                            BOARD_MANAGE_SEQ
 		                          , PROGRAM_ID
-		                          , BOARD_TB_NM
-		                          , COMMENT_TB_NM
+		                          , TB_BOARD_NM
+		                          , TB_COMMENT_NM
 		                          , BOARD_NM
 		                          , USE_YN
 		                          , IN_DT
@@ -32,8 +34,9 @@
 		                     VALUES (
 		                            #{BOARD_MANAGE_SEQ, jdbcType=VARCHAR}
 		                          , #{PROGRAM_ID, jdbcType=VARCHAR}
-		                          , #{BOARD_TB_NM, jdbcType=VARCHAR}
-		                          , #{COMMENT_TB_NM, jdbcType=VARCHAR}
+		                          , #{TB_BOARD_NM, jdbcType=VARCHAR}
+		                          , #{TB_COMMENT_NM, jdbcType=VARCHAR}
+		                          , #{BOARD_NM, jdbcType=VARCHAR}
 		                          , #{USE_YN, jdbcType=VARCHAR}
 		                          , NOW()
 		                          , NOW()
@@ -42,17 +45,47 @@
 	]]>
 	</insert>
 	
-	<update id="updateTbBoardDetail" parameterType="map">
+	<update id="updateTbBoardManage" parameterType="map">
 	<![CDATA[
+		UPDATE TB_BOARD_MANAGE
 		   SET BOARD_TB_NM      = #{BOARD_TB_NM     , jdbcType=VARCHAR}
 		     , COMMENT_TB_NM    = #{COMMENT_TB_NM   , jdbcType=VARCHAR}
-		     , BOARD_NM         = #{BOARD_NM        , jdbcType=VARCHAR}
+		     , BOARD_NM         = #{BOARD_NM, jdbcType=VARCHAR}
 		     , USE_YN           = #{USE_YN          , jdbcType=VARCHAR}		     
-		     , UP_DT            = #{UP_DT           , jdbcType=VARCHAR}
+		     , UP_DT            = NOW()
 		     , WRITE_ID         = #{WRITE_ID        , jdbcType=VARCHAR}
-		 WHERE PROGRAM_ID       = #{PROGRAM_ID      , jdbcType=VARCHAR}
-		   AND BOARD_MANAGE_SEQ = #{BOARD_MANAGE_SEQ, jdbcType=VARCHAR}
+		 WHERE BOARD_MANAGE_SEQ = #{BOARD_MANAGE_SEQ, jdbcType=VARCHAR} 
 	]]>
 	</update>
+	
+	<delete id="deleteTbBoardManage" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_BOARD_MANAGE WHERE BOARD_MANAGE_SEQ = #{BOARD_MANAGE_SEQ, jdbcType=VARCHAR}
+	]]> 
+	</delete>
+	
+	<select id="createTbBoard" parameterType="map">
+	<![CDATA[
+	${createTbBoard}
+	]]>
+	</select>
+	
+	<select id="createTbComment" parameterType="map">
+	<![CDATA[
+	${createTbComment}
+	]]>
+	</select>
+	
+	<select id="dropTbBoard" parameterType="map">
+	<![CDATA[
+	${dropTbBoard}
+	]]>
+	</select>
+	
+	<select id="dropTbComment" parameterType="map">
+	<![CDATA[
+	${dropTbComment}
+	]]>
+	</select>
 	
 </mapper>

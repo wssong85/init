@@ -7,11 +7,21 @@ import egovframework.rte.psl.dataaccess.mapper.Mapper;
 
 @Mapper("BoardManageMapper")
 public interface BoardManageMapper {
-	List<Map<String, Object>> selectTbBoardList(Map<String, Object> map) ;
+
+	List<Map<String, Object>> selectTbBoardManageList(Map<String, Object> map);
+
+	void insertTbBoardManage(Map<String, Object> iMap);
+
+	void updateTbBoardManage(Map<String, Object> iMap);
+
+	void deleteTbBoardManage(Map<String, Object> iMap);
 	
-	void insertTbBoardDetail(Map<String, Object> map);
+	void createTbBoard(Map<String, Object> map);
 	
-	void updateTbBoardDetail(Map<String, Object> map);
+	void createTbComment(Map<String, Object> map);
 	
-	void deleteTbBoardDetail(Map<String, Object> map);
+	void dropTbBoard(Map<String, Object> map);
+	
+	void dropTbComment(Map<String, Object> map);
+	
 }
