@@ -8,13 +8,21 @@ import egovframework.rte.psl.dataaccess.mapper.Mapper;
 @Mapper("UserManageMapper")
 public interface UserManageMapper {
 	
-	List<Map<String, Object>> selectTbUserList(Map<String, Object> map);
+	List<Map<String, Object>> selectTbUserMetaData();
+	
+	List<Map<String, Object>> selectTbUserDetailMetaData();
+	
+	List<Map<String, Object>> selectTbUserList(String id);
+	
+	Map<String, Object> selectTbUserDetail(String id);
 
-	void insertTbUser(Map<String, Object> map);
+	void insertTbUser(String query);
 	
-	void insertTbUserDetail(Map<String, Object> map);
+	void insertTbUserDetail(String query);
 	
-	void updateTbUserDetail(Map<String, Object> map);
+	void updateTbUser(String query);
+	
+	void updateTbUserDetail(String query);
 	
 	void deleteTbUser(Map<String, Object> map);
 	
