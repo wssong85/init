@@ -8,6 +8,9 @@
 
 <jsp:include page="/common/common.do" flush="false"/>
 
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-select/master/dist/ax5select.css">
+<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-select/master/dist/ax5select.min.js"></script>
+
 <title>사용자관리</title>
 
 <script type="text/javascript">
@@ -57,6 +60,7 @@
 			
 			body: {
 				onClick: function(){
+					
 					grTbUser.getSelectionRowIndex = this.doindex;
 					grTbUser.getSelectionItem = this.item;
 					
@@ -80,7 +84,7 @@
 					//컬럼 유효성 체크
 					if(this.key == "USER_ID") {
 						
-						if(_vGrValidation.lengthCheck(this.value, 5)
+						if(_vGrValidation.lengthCheck(this.value, 15)
 								&&_vGrValidation.engNumcheck(this.value)
 								&& _vGrValidation.pkCheck(grTbUser, "USER_ID")){
 							
@@ -89,6 +93,33 @@
 						} else {
 							
 							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"USER_ID": ""}), grTbUser.getSelectionRowIndex);
+							
+						}
+					}
+					
+					if(this.key == "USER_NAME") {
+						
+						if(_vGrValidation.lengthCheck(this.value, 10)){
+							
+							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"USER_NAME": this.value.toUpperCase()}), grTbUser.getSelectionRowIndex);
+							
+						} else {
+							
+							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"USER_NAME": ""}), grTbUser.getSelectionRowIndex);
+							
+						}
+					}
+					
+					if(this.key == "PASSWORD") {
+						
+						if(_vGrValidation.lengthCheck(this.value, 15)
+								&&_vGrValidation.engNumSpecialCheck(this.value)){
+							
+							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"PASSWORD": this.value.toUpperCase()}), grTbUser.getSelectionRowIndex);
+							
+						} else {
+							
+							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"PASSWORD": ""}), grTbUser.getSelectionRowIndex);
 							
 						}
 					}
@@ -111,9 +142,6 @@
 	            	}
 	            }
 			}
-				<%--
-					TODO: 어떤 컬럼은 수정이 안되게 필요, 유효성 체크 추가 
-				--%>
 				<c:forEach var="metaData" items="${metaDataList}" varStatus="status">
 					<c:if test="${not empty metaData.Comment}">
 						,{
@@ -133,6 +161,18 @@
 												type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
 											}
 									    </c:when>
+									    <c:when test="${metaData.Field eq 'USER_ID' || metaData.Field eq 'PASSWORD'}">
+									    	,editor: {
+									    		type:"text"
+								    			 ,disabled: function () {
+								    				if(this.item["CRUD"] && this.item["CRUD"] != "D") {
+														return false;
+													} else {
+														return true;
+													}
+												}
+									    	}
+									    </c:when>
 									    <c:otherwise>
 									   		,editor: {type:"text"}
 									    </c:otherwise>
@@ -142,6 +182,25 @@
 						}
 					</c:if>
 				</c:forEach> 
+				,{
+					key: "ROLE", 
+					label: "권한", 
+					align: "center", 
+					editor: { 
+						type: "select", 
+						config: {
+	                        columnKeys: {
+	                            optionValue: "ROLE", optionText: "ROLE_NM"
+	                        },
+	                        options: [
+								<c:forEach var="roleData" items="${roleList}" varStatus="status">
+									<c:if test="${status.index != 0}">,</c:if>
+									{ROLE: "${roleData.ROLE}", ROLE_NM: "${roleData.ROLE}"}
+								</c:forEach> 
+	                        ]
+						}
+					}
+				}
 			]
 		});
 			
@@ -193,6 +252,7 @@
 				"USER_ID": "사용자ID는 필수 입력해 주십시오."
 				,"USER_NAME": "사용자이름은 필수 입력해 주십시오."
 				,"PASSWORD": "패스워드는 필수 입력해 주십시오."
+				,"ROLE": "권한을 선택해 주십시오."
 			};
 	    	
 	    	fn_GridMultiSaveForValidateArray(

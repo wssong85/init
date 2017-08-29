@@ -14,17 +14,23 @@ public interface UserManageMapper {
 	
 	List<Map<String, Object>> selectTbUserList(String id);
 	
-	Map<String, Object> selectTbUserDetail(String id);
-
 	void insertTbUser(String query);
-	
-	void insertTbUserDetail(String query);
 	
 	void updateTbUser(String query);
 	
-	void updateTbUserDetail(String query);
-	
 	void deleteTbUser(Map<String, Object> map);
 	
+	Map<String, Object> selectTbUserDetail(String id);
+	
+	void insertTbUserDetail(String query);
+	
+	void updateTbUserDetail(String query);
+	
 	void deleteTbUserDetail(Map<String, Object> map);
+	
+	void insertTbAuth(Map<String, Object> map);
+	
+	void updateTbAuth(Map<String, Object> map);
+	
+	void deleteTbAuth(Map<String, Object> map);
 }

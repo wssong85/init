@@ -17,7 +17,6 @@ public class UserManageServiceImpl implements UserManageService {
 	@Resource(name = "UserManageMapper")
 	private UserManageMapper userManageMapper;
 	
-	// TODO: 요청이 있을 때 마다 조회함, 조회 횟수를 줄일수 있는 방법?
 	@Override
 	public List<Map<String, Object>> selectTbUserMetaData() throws Exception {
 		
@@ -29,7 +28,7 @@ public class UserManageServiceImpl implements UserManageService {
 		
 		List<Map<String, Object>> metaDataList = getTbUserMetaDataList();
 		
-		String query = getDynamicQuerySelect("TB_USERS", metaDataList, "", "");
+		String query = getDynamicQuerySelect("TB_USERS", metaDataList, "", "", "A.ROLE", "USER_ID", "JOIN TB_AUTHORITIES A ON T.USER_ID = A.USER_ID");
 		List<Map<String, Object>> userList = userManageMapper.selectTbUserList(query);
 		
 		for (Map<String, Object> user : userList) {
@@ -38,7 +37,7 @@ public class UserManageServiceImpl implements UserManageService {
 			
 			if (null != userId) {
 				
-				query = getDynamicQuerySelect("TB_USER_DETAIL", metaDataList, "USER_ID", userId);
+				query = getDynamicQuerySelect("TB_USER_DETAIL", metaDataList, "USER_ID", userId, "", "", "");
 				Map<String, Object> userDetail = userManageMapper.selectTbUserDetail(query);
 				
 				if (null != userDetail) {
@@ -51,11 +50,8 @@ public class UserManageServiceImpl implements UserManageService {
 		return userList;
 	}
 
-	// TODO: 테이블 명 설정으로?, where컬럼 여러개?
 	@Override
 	public void multiTbUser(List<Map<String, Object>> list) throws Exception {
-		
-		System.out.println(list);
 		
 		List<Map<String, Object>> metaDataList = getTbUserMetaDataList();
 		
@@ -71,6 +67,9 @@ public class UserManageServiceImpl implements UserManageService {
 				query = getDynamicQueryInsert("TB_USER_DETAIL", map, metaDataList);
 				userManageMapper.insertTbUserDetail(query);
 				
+				// 권한등록
+				userManageMapper.insertTbAuth(map);
+				
 			} else if("U".equals(map.get("CRUD"))) {
 				
 				query = getDynamicQueryUpdate("TB_USERS", "USER_ID", map, metaDataList);
@@ -79,7 +78,13 @@ public class UserManageServiceImpl implements UserManageService {
 				query = getDynamicQueryUpdate("TB_USER_DETAIL", "USER_ID", map, metaDataList);
 				userManageMapper.updateTbUserDetail(query);
 				
+				// 권한수정
+				userManageMapper.updateTbAuth(map);
+				
 			} else if("D".equals(map.get("CRUD"))) {
+				
+				// 권한삭제
+				userManageMapper.deleteTbAuth(map);
 				
 				userManageMapper.deleteTbUserDetail(map);
 				userManageMapper.deleteTbUser(map);
@@ -115,7 +120,8 @@ public class UserManageServiceImpl implements UserManageService {
 		return userMetaData;
 	}
 	
-	private String getDynamicQuerySelect(String tableName, List<Map<String, Object>> metaDataList, String whereColumn, String whereValue) {
+	// TODO: 코드개선필요
+	private String getDynamicQuerySelect(String tableName, List<Map<String, Object>> metaDataList, String whereColumn, String whereValue, String joinSelect, String joinColumn, String joinQuery) {
 			
 		StringBuilder selectBuilder = new StringBuilder();
 			
@@ -139,6 +145,11 @@ public class UserManageServiceImpl implements UserManageService {
 					
 				} else {
 					
+					if (joinColumn.equals(columnName)) {
+						
+						columnName = "T."+ columnName;
+					}
+					
 					columnName = comma + columnName;
 				}
 				
@@ -150,18 +161,22 @@ public class UserManageServiceImpl implements UserManageService {
 			}
 		}
 		
+		if (!"".equals(joinSelect)) {
+			
+			selectBuilder.append(", "+ joinSelect);
+		}
+		
 		String query = "";
 		
 		if (!isFirst) {
 			
-			query = "SELECT "+ selectBuilder.toString() + " FROM " + tableName + (("".equals(whereColumn)) ? "" : " WHERE "+ whereColumn +" = "+ whereValue);
+			query = "SELECT "+ selectBuilder.toString() + " FROM " + tableName +" T "+ joinQuery + (("".equals(whereColumn)) ? "" : " WHERE "+ whereColumn +" = "+ whereValue);
 		}
-		
-		System.out.println(query);
 		
 		return query;
 	}
 	
+	// TODO: 코드개선필요
 	private String getDynamicQueryInsert(String tableName, Map<String, Object> value, List<Map<String, Object>> metaDataList) {
 		
 		StringBuilder insertBuilder = new StringBuilder();
@@ -214,11 +229,10 @@ public class UserManageServiceImpl implements UserManageService {
 			query = "INSERT INTO "+ tableName + " (" + insertBuilder.toString() +") VALUES ("+ valuesBuilder.toString() +")";
 		}
 		
-		System.out.println(query);
-		
 		return query;
 	}
 	
+	// TODO: 코드개선필요
 	private String getDynamicQueryUpdate(String tableName, String whereColumn, Map<String, Object> value, List<Map<String, Object>> metaDataList) {
 		
 		StringBuilder updateBuilder = new StringBuilder();
@@ -276,15 +290,13 @@ public class UserManageServiceImpl implements UserManageService {
 			query = "UPDATE "+ tableName + " SET " + updateBuilder.toString() +" WHERE "+ whereColumn +" = "+ whereValue;
 		}
 		
-		System.out.println(query);
-		
 		return query;
 	}
 	
 	// TODO: 더 많은 컬럼 타입에 대한 처리가 필요
 	private String getColumnValue(String type, Object obj) {
 		
-		if (null == obj) { return null; }
+		if (null == obj && type.indexOf("datetime") == -1) { return null; }
 		
 		return String.valueOf(obj);
 	}

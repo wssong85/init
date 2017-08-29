@@ -8,23 +8,23 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import realtime.com.role.service.RoleManageService;
 import realtime.com.user.service.UserManageService;
 
 @Controller
 public class UserManageController {
 
-	private static Logger logger = LoggerFactory.getLogger(UserManageController.class);
-	
 	@Resource(name = "UserManageService")
 	private UserManageService userManageService;
+	
+	@Resource(name = "RoleManageService")
+	private RoleManageService roleManageService;
 
 	/**
 	 * 사용자관리 호출
@@ -36,16 +36,11 @@ public class UserManageController {
 	@RequestMapping(value = "/com/user/userManage.do")
 	public String userManage(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws Exception {
 		
-		try {
-			
-			List<Map<String, Object>> metaData = userManageService.selectTbUserMetaData();
-
-			model.addAttribute("metaDataList", metaData);
-			
-		} catch (Exception e) {
-			
-			logger.error(e.getLocalizedMessage());
-		}
+		List<Map<String, Object>> metaDataList = userManageService.selectTbUserMetaData();
+		List<Map<String, Object>> roleList = roleManageService.selectTbRolesList(null);
+		
+		model.addAttribute("metaDataList", metaDataList);
+		model.addAttribute("roleList", roleList);
 			
 		return "realtime/com/user/userManage";
 	}

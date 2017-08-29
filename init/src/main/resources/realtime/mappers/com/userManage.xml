@@ -21,19 +21,7 @@
 	]]>
 	</select>
 	
-	<select id="selectTbUserDetail" parameterType="string" resultType="map">
-	<![CDATA[
-		${_parameter}
-	]]>
-	</select>
-	
 	<insert id="insertTbUser" parameterType="string">
-	<![CDATA[
-		${_parameter}
-	]]>
-	</insert>
-	
-	<insert id="insertTbUserDetail" parameterType="string">
 	<![CDATA[
 		${_parameter}
 	]]>
@@ -45,21 +33,53 @@
 	]]>
 	</update>
 	
-	<update id="updateTbUserDetail" parameterType="string">
-	<![CDATA[
-		${_parameter}
-	]]>
-	</update>
-	
 	<delete id="deleteTbUser" parameterType="map">
 	<![CDATA[
 		DELETE FROM TB_USERS WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
 	]]> 
 	</delete>
 	
+	<select id="selectTbUserDetail" parameterType="string" resultType="map">
+	<![CDATA[
+		${_parameter}
+	]]>
+	</select>
+	
+	<insert id="insertTbUserDetail" parameterType="string">
+	<![CDATA[
+		${_parameter}
+	]]>
+	</insert>
+	
+	<update id="updateTbUserDetail" parameterType="string">
+	<![CDATA[
+		${_parameter}
+	]]>
+	</update>
+	
 	<delete id="deleteTbUserDetail" parameterType="map">
 	<![CDATA[
 		DELETE FROM TB_USER_DETAIL WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
+	]]> 
+	</delete>
+	
+	<insert id="insertTbAuth" parameterType="map">
+	<![CDATA[
+		INSERT INTO TB_AUTHORITIES (USER_ID, ROLE) VALUES (#{USER_ID, jdbcType=VARCHAR}, #{ROLE, jdbcType=VARCHAR})
+	]]>
+	</insert>
+	
+	<update id="updateTbAuth" parameterType="map">
+	<![CDATA[
+		UPDATE TB_AUTHORITIES SET
+		ROLE = #{ROLE, jdbcType=VARCHAR}
+		WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
+	]]>
+	</update>
+	
+	<delete id="deleteTbAuth" parameterType="map">
+	<![CDATA[
+		DELETE FROM TB_AUTHORITIES WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
 	]]> 
 	</delete>
 	
