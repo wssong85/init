@@ -4,38 +4,62 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE HTML>
+<html lang="ko">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script type="text/javascript" src="/js/realtime/com/jquery-1.11.3.min.js"></script>
-<!-- <script type="text/javascript" src="/js/realtime/com/jquery-ui.min.js"></script> -->
-<!-- <script type="text/javascript" src="/js/realtime/com/jquery.form.min.js"></script> -->
-<!-- <script type="text/javascript" src="/js/realtime/com/AUIGrid.js"></script> -->
-<script>
-/*
-$.ajax({
-	url : "/com/code/selectTbDetailCodeList.do",
-	type: 'post',
-	dataType: 'json',
-	data:{"GROUP_CD":"AAS", "vvv":"v"},
-	success : function(data) {
-		if(data.success) {
-			console.log('1');
-		} else {
-			alert(data.message);
-		}
-	},
-	error : function(jqXHR, textStatus, errorThrown){
-			alert(textStatus);
-	}
-});
-*/
-</script>
-<title>Insert title here</title>
+<meta charset="UTF-8">
+<meta name="Author" content="RyuJiHyun">
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<title>Document</title>
+<link rel="stylesheet" type="text/css" href="/css/realtime/com/main_style.css">
+<link rel="stylesheet" type="text/css" href="/css/realtime/com/reset.css">
+<link rel="stylesheet" type="text/css" href="/css/realtime/com/font-awesome.css">
+<link rel="stylesheet" type="text/css" href="/css/realtime/com/axicon.css">
+<!-- <script src="js/jquery-2.1.1.js"></script> -->
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<script src="/js/realtime/com/jquery-ui.min.js"></script>
+<script src="/js/realtime/com/main_script.js"></script>
+
+<!--[if lt IE 9]><script src="/js/html5shiv.js"></script><![endif]-->
+<!--[if lt IE 9]><script src="/js/PIE.js"></script><![endif]-->
+
 </head>
+
 <body>
-	초기화면
+	<div id="wrap">
+
+		<nav id="vertical_menu">
+			<ul class="vertical_menu">
+				<li class="vertical_menu_list"><a class="close" href="#">Home</a></li>
+				<li class="vertical_menu_list has_sub"><a class="close"
+					href="#">Products</a>
+					<ul class="vertical_menu_sub close">
+						<li class="vertical_menu_sub_list"><a href="#">Products1</a></li>
+						<li class="vertical_menu_sub_list"><a href="#">Products2</a></li>
+					</ul></li>
+				<li class="vertical_menu_list has_sub"><a class="close"
+					href="#">About</a>
+					<ul class="vertical_menu_sub close">
+						<li class="vertical_menu_sub_list"><a href="#">About1</a></li>
+						<li class="vertical_menu_sub_list"><a href="#">About2</a></li>
+					</ul></li>
+				<li class="vertical_menu_list has_sub"><a class="close"
+					href="#">Contact</a>
+					<ul class="vertical_menu_sub close">
+						<li class="vertical_menu_sub_list"><a href="#">Contact1</a></li>
+						<li class="vertical_menu_sub_list"><a href="#">Contact2</a></li>
+					</ul></li>
+			</ul>
+		</nav>
+
+	</div>
+	
+	<div>
+	${sessionScope.ROLE_MENUS}
+<%-- 	${sessionScope.loginMap} --%>
+	</div>
 </body>
 </html>

@@ -5,30 +5,40 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script type="text/javascript" src="/js/realtime/com/jquery-1.11.3.min.js"></script>
-<!-- <script type="text/javascript" src="/js/realtime/com/jquery-ui.min.js"></script> -->
-<!-- <script type="text/javascript" src="/js/realtime/com/jquery.form.min.js"></script> -->
-<!-- <script type="text/javascript" src="/js/realtime/com/AUIGrid.js"></script> -->
-<script>
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+	 <meta charset="UTF-8">
+	 <meta name="Author" content="">
+	 <meta name="Keywords" content="">
+	 <meta name="Description" content="">
+	 <title>Document</title>
+	 <link rel="stylesheet" type="text/css" href="/css/realtime/com/common.css" > 
+	 <script type="text/javascript" src="/js/realtime/com/jquery-1.11.3.min.js"></script>
+	 <!--[if lt IE 9]><script src="/js/html5shiv.js"></script><![endif]-->
+	 <!--[if lt IE 9]><script src="/js/PIE.js"></script><![endif]-->
 
-$(function() {
-	$('#loginBtn').click(function() {
-		$('#loginFrm').submit();
-	});
-});
-
-</script>
-<title>Insert title here</title>
+	<script>
+	$(function() {
+		$('#loginBtn').click(function() {
+			$('#loginFrm').submit();
+		});
+	});	
+	</script>	 
 </head>
+
 <body>
-	<form id="loginFrm" name="loginFrm" action="<c:url value='/com/login/processLoginUsr.do'/>" method="post">
-		<input type="text" id="loginId" name="loginId" >
-		<input type="password" id="loginPassword" name="loginPassword"> 
-		<input type="button" id="loginBtn"/>
-	</form>
+
+	<div class="wrapper">
+		<div class="form" id="log-in-form">
+			<form id="loginFrm" name="loginFrm" action="<c:url value='/com/login/processLoginUsr.do'/>" method="post">
+				<input type="text" id="loginId" name="loginId" class="input-std" id="id" placeholder="id">
+				<input type="password" id="loginPassword" name="loginPassword" class="input-std"  placeholder="password">
+				<button type="button" id="loginBtn" class="btn-submit" id="log-in">Log-In</button>
+			</form>
+		</div>
+	</div>
+
 </body>
+
 </html>

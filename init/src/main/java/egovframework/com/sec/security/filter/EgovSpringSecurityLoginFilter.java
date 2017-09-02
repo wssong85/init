@@ -17,7 +17,9 @@ import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import pantheon.com.i01.service.COMI01Service;
 import pantheon.com.utl.Util;
 import realtime.com.login.service.LoginService;
+import realtime.com.role.service.RoleManageService;
 
+import javax.annotation.Resource;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -89,6 +91,7 @@ public class EgovSpringSecurityLoginFilter implements Filter {
 
 		ApplicationContext act = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
 		LoginService loginService = (LoginService) act.getBean("LoginService");
+		RoleManageService roleManageService = (RoleManageService) act.getBean("RoleManageService");
 		
 //		COMI01Service loginService = (COMI01Service) act.getBean("COMI01Service");
 //		COMF04Service comf04Service = (COMF04Service) act.getBean("COMF04Service");
@@ -123,7 +126,10 @@ public class EgovSpringSecurityLoginFilter implements Filter {
 					if (mapActrionLogin != null && mapActrionLogin != null && "".equals(EgovStringUtil.isNullToString(mapActrionLogin.get("USER_ID")))) {
 						//세션 로그인
 						session.setAttribute("loginMap", mapActrionLogin);
-
+						
+						//메뉴담기
+						session.setAttribute("ROLE_MENUS", roleManageService.selectTbMenuProgramForUserMenu(EgovStringUtil.isNullToString(mapActrionLogin.get("USER_ID"))));
+						
 						//로컬 인증결과 세션에 저장
 						session.setAttribute("isLocallyAuthenticated", "true");
 
@@ -176,7 +182,8 @@ public class EgovSpringSecurityLoginFilter implements Filter {
 					
 					mapLogin.put("USER_ID", httpRequest.getParameter("loginId"));
 					mapLogin.put("PASSWORD", password);
-
+					
+					
 					try {
 
 						//사용자 입력 id, password로 DB 인증을 실행함
@@ -207,6 +214,8 @@ public class EgovSpringSecurityLoginFilter implements Filter {
 							//글로벌 세션 저장
 							EgovHttpSessionBindingListener listener = new EgovHttpSessionBindingListener();
 							session.setAttribute(EgovStringUtil.isNullToString(mapActrionLogin.get("USER_ID")), listener);
+							session.setAttribute("loginMap", mapActrionLogin);
+							session.setAttribute("ROLE_MENUS", roleManageService.selectTbMenuProgramForUserMenu(EgovStringUtil.isNullToString(mapActrionLogin.get("USER_ID"))));
 							
 //							loginMap.put("USER_ID", loginVO.getUserId());
 //							loginMap.put("USER_NM", loginVO.getUserNm());

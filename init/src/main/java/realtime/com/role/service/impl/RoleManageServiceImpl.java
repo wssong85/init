@@ -149,5 +149,10 @@ public class RoleManageServiceImpl implements RoleManageService{
 		}
 		
 	}
+
+	@Override
+	public List<Map<String, Object>> selectTbMenuProgramForUserMenu(String str) throws Exception {
+		return roleManageMapper.selectTbMenuProgramForUserMenu(str);
+	}
 	
 }

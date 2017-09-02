@@ -50,4 +50,6 @@ public interface RoleManageMapper {
 
 	void insertTbMenuProgram(Map<String, Object> iMap);
 	
+	List<Map<String, Object>> selectTbMenuProgramForUserMenu(String str);
+	
 }
