@@ -5,7 +5,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <jsp:include page="/common/common.do" flush="false"/>
-<title>공통코드</title>
 
 <script type="text/javascript">
 
@@ -427,26 +426,51 @@ $(function(){
     
 });
 </script>
+<title>공통코드 관리</title>
 </head>
 
 <body>
 
-<div style="padding: 10px;">
-	<button class="btn btn-default" id="btnSelectTbGroupCode">조회</button>
-    <button class="btn btn-default" data-grid-control="btnAddTbGroupCode">행추가</button>
-    <button class="btn btn-default" data-grid-control="btnRemoveTbGroupCode">행삭제</button>
-    <button class="btn btn-default" id="btnMultiSaveTbGroupCode">저장</button>
+<div id="wrapper">
+	<c:import url="/common/leftMenu.do" charEncoding="utf-8"/>
+	
+	<div id="page-content-wrapper">
+        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+       		<span class="hamb-top"></span>
+           	<span class="hamb-middle"></span>
+           	<span class="hamb-bottom"></span>
+         </button>
+	
+		<div class="container">
+		<div class="row">
+		<div class="col-lg-8 col-lg-offset-2">
+		
+		<!-- conetent 시작-->
+			<div style="padding: 10px;">
+				<button class="btn btn-default" id="btnSelectTbGroupCode">조회</button>
+			    <button class="btn btn-default" data-grid-control="btnAddTbGroupCode">행추가</button>
+			    <button class="btn btn-default" data-grid-control="btnRemoveTbGroupCode">행삭제</button>
+			    <button class="btn btn-default" id="btnMultiSaveTbGroupCode">저장</button>
+			</div>
+			
+			<div data-ax5grid="grTbGroupCode" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
+			
+			<div style="padding: 10px;">
+			    <button class="btn btn-default" data-grid-control="btnAddTbDetailCode">행추가</button>
+			    <button class="btn btn-default" data-grid-control="btnRemoveTbDetailCode">행삭제</button>
+			    <button class="btn btn-default" id="btnTbDetailCodeMultiSave">저장</button>
+			</div>
+			
+			<div data-ax5grid="grTbDetailCode" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
+		<!-- conetent 끝-->	
+			
+		</div>
+		</div>
+		</div>
+	</div>
 </div>
 
-<div data-ax5grid="grTbGroupCode" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
-
-<div style="padding: 10px;">
-    <button class="btn btn-default" data-grid-control="btnAddTbDetailCode">행추가</button>
-    <button class="btn btn-default" data-grid-control="btnRemoveTbDetailCode">행삭제</button>
-    <button class="btn btn-default" id="btnTbDetailCodeMultiSave">저장</button>
-</div>
-
-<div data-ax5grid="grTbDetailCode" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
 
 </body>
 </html>
+

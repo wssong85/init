@@ -89,6 +89,7 @@
 		ON A.MENU_ID = B.MENU_ID
 		JOIN TB_PROGRAM C
 		ON B.PROGRAM_ID = C.PROGRAM_ID
+		ORDER BY URL
 		"
 		sqlRolesAndMethod=
 			"SELECT 1 method, 1 authority  

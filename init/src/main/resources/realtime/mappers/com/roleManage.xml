@@ -138,7 +138,7 @@
 	
 	<delete id="deleteTbMenu" parameterType="map">
 	<![CDATA[
-	DELETE FROM TB_MENU WHERE WHERE MENU_ID = #{MENU_ID, jdbcType=VARCHAR} AND UP_MENU_ID = #{UP_MENU_ID, jdbcType=VARCHAR}
+	DELETE FROM TB_MENU WHERE MENU_ID = #{MENU_ID, jdbcType=VARCHAR} AND UP_MENU_ID = #{UP_MENU_ID, jdbcType=VARCHAR}
 	]]> 
 	</delete>
 	

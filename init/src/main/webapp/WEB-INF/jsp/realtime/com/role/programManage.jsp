@@ -58,7 +58,7 @@ $(function(){
 			onClick: function(){
 				grTbProgram.getSelectionRowIndex = this.doindex;
 				grTbProgram.getSelectionItem = this.item;
-				grTbProgram.focus(this.doindex);
+// 				grTbProgram.focus(this.doindex);
 			},
 			onDBLClick: function(){
 				
@@ -76,18 +76,25 @@ $(function(){
 					grTbProgram.updateRow($.extend({}, grTbProgram.list[grTbProgram.getSelectionRowIndex], {"PROGRAM_ID": this.value.toUpperCase()}), grTbProgram.getSelectionRowIndex);
 				}
 				
+				console.log('1');
 				//컬럼 유효성 체크
 				if(this.key == "PROGRAM_ID") {
 					
+					console.log('2');
+					
+					console.log(_vGrValidation.lengthCheck(this.value, 5));
+					console.log(_vGrValidation.engNumcheck(this.value));
+					console.log(_vGrValidation.pkCheck(grTbProgram, "PROGRAM_ID"));
 					
 					if(_vGrValidation.lengthCheck(this.value, 5)
 							&&_vGrValidation.engNumcheck(this.value)
 							&& _vGrValidation.pkCheck(grTbProgram, "PROGRAM_ID")){
 						
+						console.log('3');	
 						grTbProgram.updateRow($.extend({}, grTbProgram.list[grTbProgram.getSelectionRowIndex], {"PROGRAM_ID": this.value.toUpperCase()}), grTbProgram.getSelectionRowIndex);
 						
 					} else {
-						
+						console.log('4');
 						grTbProgram.updateRow($.extend({}, grTbProgram.list[grTbProgram.getSelectionRowIndex], {"PROGRAM_ID": ""}), grTbProgram.getSelectionRowIndex);
 						
 					}

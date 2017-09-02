@@ -40,13 +40,18 @@ var _vGrValidation = {
 
 		for (var i = 0; i < vTmp.length; i++) {
 			for (var j = 0; j < vTmp.length; j++) {
+				
+				if (!vTmp[i][pkKey] && !vTmp[j][pkKey]) {
+					continue;
+				}
+				
 				if (vTmp[i][pkKey] == vTmp[j][pkKey] && i != j) {
 					flag = false;
 					break;
 				}
 			}
 		}
-
+		
 		return flag;
 	}
 
