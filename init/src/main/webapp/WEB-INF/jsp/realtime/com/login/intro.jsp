@@ -4,62 +4,109 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<!DOCTYPE HTML>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="Author" content="RyuJiHyun">
-<meta name="Keywords" content="">
-<meta name="Description" content="">
-<title>Document</title>
-<link rel="stylesheet" type="text/css" href="/css/realtime/com/main_style.css">
-<link rel="stylesheet" type="text/css" href="/css/realtime/com/reset.css">
-<link rel="stylesheet" type="text/css" href="/css/realtime/com/font-awesome.css">
-<link rel="stylesheet" type="text/css" href="/css/realtime/com/axicon.css">
-<!-- <script src="js/jquery-2.1.1.js"></script> -->
 
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<jsp:include page="/common/common.do" flush="false"/>
 
-<script src="/js/realtime/com/jquery-ui.min.js"></script>
-<script src="/js/realtime/com/main_script.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/css/realtime/com/intro.css" >
 
-<!--[if lt IE 9]><script src="/js/html5shiv.js"></script><![endif]-->
-<!--[if lt IE 9]><script src="/js/PIE.js"></script><![endif]-->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<title>메인 화면</title>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+	  var trigger = $('.hamburger'),
+	      overlay = $('.overlay'),
+	     isClosed = false;
+
+	    trigger.click(function () {
+	      hamburger_cross();      
+	    });
+
+	    function hamburger_cross() {
+
+	      if (isClosed == true) {          
+	        overlay.hide();
+	        trigger.removeClass('is-open');
+	        trigger.addClass('is-closed');
+	        isClosed = false;
+	      } else {   
+	        overlay.show();
+	        trigger.removeClass('is-closed');
+	        trigger.addClass('is-open');
+	        isClosed = true;
+	      }
+	  }
+	  
+	  $('[data-toggle="offcanvas"]').click(function () {
+	        $('#wrapper').toggleClass('toggled');
+	  });  
+	});
+</script>
 
 </head>
 
 <body>
-	<div id="wrap">
 
-		<nav id="vertical_menu">
-			<ul class="vertical_menu">
-				<li class="vertical_menu_list"><a class="close" href="#">Home</a></li>
-				<li class="vertical_menu_list has_sub"><a class="close"
-					href="#">Products</a>
-					<ul class="vertical_menu_sub close">
-						<li class="vertical_menu_sub_list"><a href="#">Products1</a></li>
-						<li class="vertical_menu_sub_list"><a href="#">Products2</a></li>
-					</ul></li>
-				<li class="vertical_menu_list has_sub"><a class="close"
-					href="#">About</a>
-					<ul class="vertical_menu_sub close">
-						<li class="vertical_menu_sub_list"><a href="#">About1</a></li>
-						<li class="vertical_menu_sub_list"><a href="#">About2</a></li>
-					</ul></li>
-				<li class="vertical_menu_list has_sub"><a class="close"
-					href="#">Contact</a>
-					<ul class="vertical_menu_sub close">
-						<li class="vertical_menu_sub_list"><a href="#">Contact1</a></li>
-						<li class="vertical_menu_sub_list"><a href="#">Contact2</a></li>
-					</ul></li>
-			</ul>
-		</nav>
+	<!-- wrapper -->
+	<div id="wrapper">
+		<div class="overlay"></div>
+    
+        <!-- Sidebar -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+        	<ul class="nav sidebar-nav">
+        		<li class="sidebar-brand">
+                    <a href="#">Awesome realtime</a>
+                </li>
+                
+                <c:set var="isFirst" value="true" />
+                
+                <c:forEach var="menu" items="${sessionScope.ROLE_MENUS}" varStatus="status">
+                	<c:choose>
+					    <c:when test="${menu.LV eq '1'}">
+					    	<c:if test="${not isFirst}">
+					    			</ul>
+					    		</li>
+					    	</c:if>
+					    	
+					    	<li class="dropdown">
+		                    	<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-plus"></i> ${menu.MENU_NM}</a>
+		                    	<ul class="dropdown-menu" role="menu">
+		                    		<li class="dropdown-header" style="display:none">일단쓰지않음</li>
+	                    	<c:set var="isFirst" value="false" />
+					    </c:when>
+					    <c:otherwise>
+		                	<!-- <li class="dropdown-header">Dropdown heading</li> -->
+		                    <li><a href="${menu.PROGRAM_URL}">${menu.MENU_NM}</a></li>
+					    </c:otherwise>
+					</c:choose>
+                </c:forEach>
+                	</ul>
+				</li>
+            </ul>
+        </nav>
+        <!-- /#sidebar-wrapper -->
 
-	</div>
-	
-	<div>
-	${sessionScope.ROLE_MENUS}
-<%-- 	${sessionScope.loginMap} --%>
-	</div>
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+        	<button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+        		<span class="hamb-top"></span>
+            	<span class="hamb-middle"></span>
+            	<span class="hamb-bottom"></span>
+          	</button>
+          	<div class="container">
+          		<div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <p>${sessionScope.ROLE_MENUS}</p>
+                    </div>
+                </div>
+			</div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    
 </body>
 </html>
