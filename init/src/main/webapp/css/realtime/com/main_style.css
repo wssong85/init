@@ -1,0 +1,25 @@
+@charset utf-8;
+html, body {width:100%; height:100%;} body {overflow-y:auto;}
+#wrap {width:220px; height:100%; background:#3ab4a6;}
+
+#vertical_menu {width: 220px; height:100%; position:relative; font-size:13px;}
+#vertical_menu li.vertical_menu_list, li.vertical_menu_sub_list {width:220px; height:45px; line-height:45px; text-indent:10px;} 
+
+#vertical_menu li.has_sub > a.open:before {/*transform-origin:center center ; -webkit-transform-origin:center center; */ transform:rotate(45deg); -webkit-transform:rotate(45deg); transition-duration:0.5s; margin-top:-3px; position: absolute; right:11px;} 
+
+#vertical_menu li > ul > li:hover > a:before {color:#70dace; transition-duration:0.5s;}
+
+#vertical_menu > ul > li.vertical_menu_list {height:100%; background:#3ab4a6; transition-duration:0.5s;}
+#vertical_menu > ul > li.vertical_menu_list:hover {height:100%; background:#00a390; transition-duration:0.5s;}
+
+#vertical_menu > ul > li > a {color:#fff; display:block;}
+
+#vertical_menu > ul > li > ul li.vertical_menu_sub_list {background:#666; transition-duration:0.5s; position:relative;}
+#vertical_menu > ul > li > ul li.vertical_menu_sub_list:hover {/*background:#555; transition-duration:0.5s;*/}
+#vertical_menu > ul > li > ul li.vertical_menu_sub_list a {color:#fff; transition-duration:0.5s;}
+#vertical_menu > ul > li > ul li.vertical_menu_sub_list a:hover {color:#70dace; transition-duration:0.5s;}
+
+#vertical_menu > ul > li > ul.close {display:none;}
+ 
+#vertical_menu > ul > li > ul > li > a {width:220px; height:45px; display:block;}
+
