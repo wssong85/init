@@ -24,104 +24,88 @@
 <!-- 		jdbcAuthoritiesByUsernameQuery="SELECT A.SCRTY_DTRMN_TRGET_ID USER_ID, A.AUTHOR_CODE AUTHORITY -->
 <!--                                                              FROM COMTNEMPLYRSCRTYESTBS A, COMVNUSERMASTER B -->
 <!--                                                              WHERE A.SCRTY_DTRMN_TRGET_ID = B.ESNTL_ID AND B.USER_ID = ?" -->
-
-
 <!-- 		sqlHierarchicalRoles=" -->
 <!-- 			SELECT a.CHLDRN_ROLE child, a.PARNTS_ROLE parent -->
 <!-- 			FROM COMTNROLES_HIERARCHY a LEFT JOIN COMTNROLES_HIERARCHY b on (a.CHLDRN_ROLE = b.PARNTS_ROLE)" -->
 
-	<!-- 
-	<security:http pattern="/data/AUIGrid/**" security="none"/>
-	<security:http pattern="/font/**" security="none"/>
 	<security:http pattern="/css/**" security="none"/>
-	<security:http pattern="/html/**" security="none"/>
-    <security:http pattern="/images/**" security="none"/>
+	<security:http pattern="/data/**" security="none"/>
+	<security:http pattern="/dbscript/**" security="none"/>
+	<security:http pattern="/document/**" security="none"/>
+    <security:http pattern="/exerd/**" security="none"/>
+ 	<security:http pattern="/fonts/**" security="none"/>
+ 	<security:http pattern="/html/**" security="none"/>
+ 	<security:http pattern="/images/**" security="none"/>
  	<security:http pattern="/js/**" security="none"/>
+ 	<security:http pattern="/rd/**" security="none"/>
  	<security:http pattern="/resource/**" security="none"/>
- 	<security:http pattern="/data/**" security="none"/>
  	<security:http pattern="\A/WEB-INF/jsp/.*\Z" request-matcher="regex" security="none"/>
 
     <egov-security:config id="securityConfig"
-		loginUrl="/com/i01/pantheonLoginUsr.do"
-		logoutSuccessUrl="/com/i01/pantheonLoginUsr.do"
-		loginFailureUrl="/com/i01/pantheonLoginUsr.do"
+		loginUrl="/com/login/processLoginUsr.do"
+		logoutSuccessUrl="/com/login/processLoginUsr.do"
+		loginFailureUrl="/com/login/processLoginUsr.do"
 		accessDeniedUrl="/com/i01/code403.do"
 		jdbcUsersByUsernameQuery="
-			SELECT A.USER_ID
-	      		  ,A.USER_ID PASSWORD
-	      		  ,1 ENABLED
-	              ,A.USER_NM
-	              ,A.USER_SE_CODE
-	              ,A.USER_ENGNM
-	              ,A.EMAIL
-	              ,A.TELNO
-	              ,A.LOGIN_FAILR_CO
-	              ,TO_CHAR(A.PASSWORD_CHANGE_DE, 'YYYYMMDDHH24MISS') PASSWORD_CHANGE_DE
-	              ,TO_CHAR(A.SBSCRB_DE, 'YYYYMMDDHH24MISS') SBSCRB_DE
-	              ,A.ACNT_LOCK_AT
-	              ,A.USE_YN
-	              ,TO_CHAR(A.FRST_CREDE, 'YYYYMMDDHH24MISS') FRST_CREDE
-	              ,A.REGIST_ID
-	              ,TO_CHAR(A.LAST_UPDDE, 'YYYYMMDDHH24MISS') LAST_UPDDE
-	              ,A.UPDATE_ID
-	              ,(SELECT X.STD_TIME_STDR FROM CM_STD_TIME X WHERE X.STD_TIME_SN = A.STD_TIME_SN) STD_TIME_STDR
-	         FROM CM_USER A
-	        WHERE A.USER_ID = ?
-	          AND A.USE_YN = 'Y'"
-		jdbcAuthoritiesByUsernameQuery="SELECT USER_ID, ROLE_ID AS AUTHORITY FROM CM_USER_ROLE WHERE USER_ID = ? AND USE_YN ='Y'"
-		dataSource="egov.dataSource"
+			SELECT 
+			A.USER_ID
+			,A.USER_NAME
+			,A.USER_ID PASSWORD
+			,1 ENABLED
+			,B.BIRTH_DT
+			,B.AGE
+			,B.PHONE
+			,B.ADDR
+			,B.EMAIL
+			FROM TB_USERS A
+			JOIN TB_USER_DETAIL B
+			ON A.USER_ID = B.USER_ID
+			WHERE 1=1
+			AND A.USE_YN = 'Y'
+			AND A.USER_ID = ?"
+		jdbcAuthoritiesByUsernameQuery="SELECT USER_ID, ROLE AS AUTHORITY FROM TB_AUTHORITIES WHERE USER_ID = ?"
+		dataSource="dataSource-maria"
 		jdbcMapClass="egovframework.com.sec.security.common.EgovSessionMapping"
 		requestMatcherType="regex"
 		hash="plaintext"
 		hashBase64="false"
 
 		concurrentMaxSessons="1"
-		concurrentExpiredUrl="/com/i01/pantheonLoginUsr.do"
+		concurrentExpiredUrl="/com/login/loginUsr"
 
-		defaultTargetUrl="/com/i01/intro.do"
+		defaultTargetUrl="/com/login/intro.do"
 	/>
-
+<!-- roles_hierarchy -->
 	<egov-security:secured-object-config id="securedObjectConfig"
 	    sqlHierarchicalRoles="
-			SELECT CHLDRN_ROLE child, PARNTS_ROLE parent
-			FROM COMTNROLES_HIERARCHY
-    		ORDER BY DECODE (PARENT, 'ROLE_ANONYMOUS', 1, 'IS_AUTHENTICATED_ANONYMOUSLY', 2, 'IS_AUTHENTICATED_REMEMBERED', 3, 'IS_AUTHENTICATED_FULLY', 4, 'ROLE_EXTENDS', 5, 'ROLE_USER', 6)"
+			SELECT CHILD_ROLE child, PARENT_ROLE parent
+			FROM ROLES_HIERARCHY"
 		sqlRolesAndUrl="
-          SELECT URL, AUTHORITY 
-            FROM
-      	  (SELECT X.URL, X.AUTHORITY  
-            FROM COMTNROLEURL X 
-           WHERE X.AUTHORITY != 'ROLE_USER'
-           ORDER BY  DECODE(X.AUTHORITY, 'ROLE_EXTENDS', 'ROLE_BEXTENDS', X.AUTHORITY))
-          UNION ALL              
-          SELECT URL, AUTHORITY
-          FROM
-          (SELECT A.PROGRM_URL URL , B.ROLE_ID AUTHORITY
-            FROM CM_PROGRM A, CM_ROLE_AUTHOR B
-           WHERE A.PROGRM_ID = B.PROGRM_ID
-             AND A.USE_YN = 'Y'
-             AND B.USE_YN = 'Y'
-           ORDER BY URL)
-          UNION ALL
-          SELECT X.URL, X.AUTHORITY  
-            FROM COMTNROLEURL X 
-           WHERE X.AUTHORITY = 'ROLE_USER'"
+		SELECT 
+		A.ROLE AUTHORITY
+		,C.PROGRAM_URL URL
+		FROM TB_MENU_PROGRAM A
+		JOIN TB_MENU B
+		ON A.MENU_ID = B.MENU_ID
+		JOIN TB_PROGRAM C
+		ON B.PROGRAM_ID = C.PROGRAM_ID
+		"
 		sqlRolesAndMethod=
-			"SELECT URL method, AUTHORITY authority  
-            FROM COMTNROLEURL WHERE 1!=1"
+			"SELECT 1 method, 1 authority  
+            FROM DUAL WHERE 1!=1"
 		sqlRolesAndPointcut="
-			SELECT URL pointcut, AUTHORITY authority  
-            FROM COMTNROLEURL WHERE 1!=1"
+			SELECT 1 pointcut, 1 authority  
+            FROM DUAL WHERE 1!=1"
 		sqlRegexMatchedRequestMapping="
-			SELECT URL uri, AUTHORITY authority  
-            FROM COMTNROLEURL WHERE 1!=1"
+			SELECT 1 uri, 1 authority  
+            FROM DUAL WHERE 1!=1"
 	/>
 
 	<egov-security:initializer id="initializer" supportMethod="true" supportPointcut="false" />
 	
-	<beans:bean id="databaseSecurityMetadataSource2" class="pantheon.com.utl.service.impl.PantheonReloadableFilterInvocationSecurityMetadataSource">
-		<beans:constructor-arg ref="hierarchyStrings" />	
-		<beans:property name="securedObjectService" ref="securedObjectService"/>
-	</beans:bean>
-	 -->
+<!-- 	<beans:bean id="databaseSecurityMetadataSource2" class="pantheon.com.utl.service.impl.PantheonReloadableFilterInvocationSecurityMetadataSource"> -->
+<!-- 		<beans:constructor-arg ref="hierarchyStrings" />	 -->
+<!-- 		<beans:property name="securedObjectService" ref="securedObjectService"/> -->
+<!-- 	</beans:bean> -->
+	
 </beans>

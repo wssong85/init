@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import egovframework.com.utl.fcc.service.EgovStringUtil;
 import realtime.com.user.mapper.UserManageMapper;
 import realtime.com.user.service.UserManageService;
 
@@ -124,6 +125,10 @@ public class UserManageServiceImpl implements UserManageService {
 	private String getDynamicQuerySelect(String tableName, List<Map<String, Object>> metaDataList, String whereColumn, String whereValue, String joinSelect, String joinColumn, String joinQuery) {
 			
 		StringBuilder selectBuilder = new StringBuilder();
+		
+		if(!"".equals(EgovStringUtil.isNullToString(whereValue))) {
+			whereValue = "'" + whereValue + "'";
+		}
 			
 		boolean isFirst = true;
 		

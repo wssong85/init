@@ -14,28 +14,21 @@
 <!-- <script type="text/javascript" src="/js/realtime/com/jquery.form.min.js"></script> -->
 <!-- <script type="text/javascript" src="/js/realtime/com/AUIGrid.js"></script> -->
 <script>
-/*
-$.ajax({
-	url : "/com/code/selectTbDetailCodeList.do",
-	type: 'post',
-	dataType: 'json',
-	data:{"GROUP_CD":"AAS", "vvv":"v"},
-	success : function(data) {
-		if(data.success) {
-			console.log('1');
-		} else {
-			alert(data.message);
-		}
-	},
-	error : function(jqXHR, textStatus, errorThrown){
-			alert(textStatus);
-	}
+
+$(function() {
+	$('#loginBtn').click(function() {
+		$('#loginFrm').submit();
+	});
 });
-*/
+
 </script>
 <title>Insert title here</title>
 </head>
 <body>
-	login 화면
+	<form id="loginFrm" name="loginFrm" action="<c:url value='/com/login/processLoginUsr.do'/>" method="post">
+		<input type="text" id="loginId" name="loginId" >
+		<input type="password" id="loginPassword" name="loginPassword"> 
+		<input type="button" id="loginBtn"/>
+	</form>
 </body>
 </html>

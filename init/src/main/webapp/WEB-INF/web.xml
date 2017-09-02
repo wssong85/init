@@ -44,10 +44,14 @@
 	<servlet-mapping>
 		<servlet-name>action</servlet-name>
 		<url-pattern>*.do</url-pattern>
-		<url-pattern>/Contract</url-pattern>
+		<!-- <url-pattern>/Contract</url-pattern> -->
 	</servlet-mapping>
 	
-	<!-- 
+	<listener>
+		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+	</listener>
+	 
+	 
 	<filter>
 		<filter-name>springSecurityFilterChain</filter-name>
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy
@@ -57,38 +61,34 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	 -->
-	
-	<listener>
-		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
-	</listener>
 	 
-	 
-	<!-- 
-	<filter>
-		<filter-name>EgovSpringSecurityLogoutFilter</filter-name>
-		<filter-class>egovframework.com.sec.security.filter.EgovSpringSecurityLogoutFilter
-		</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>EgovSpringSecurityLogoutFilter</filter-name>
-		<url-pattern>/com/i01/pantheonLogout.do</url-pattern>
-	</filter-mapping>
+<!-- 	<filter> -->
+<!-- 		<filter-name>EgovSpringSecurityLogoutFilter</filter-name> -->
+<!-- 		<filter-class>egovframework.com.sec.security.filter.EgovSpringSecurityLogoutFilter -->
+<!-- 		</filter-class> -->
+<!-- 	</filter> -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>EgovSpringSecurityLogoutFilter</filter-name> -->
+<!-- 		<url-pattern>/com/i01/pantheonLogout.do</url-pattern> -->
+<!-- 	</filter-mapping> -->
 	
 	<filter>
 		<filter-name>EgovSpringSecurityLoginFilter</filter-name>
 		<filter-class>egovframework.com.sec.security.filter.EgovSpringSecurityLoginFilter
 		</filter-class>
+		
 		<init-param>
 			<description>로그인 실패시 반활 될 URL설정</description>
 			<param-name>loginURL</param-name>
-			<param-value>/com/i01/pantheonLoginUsr.do</param-value>
+			<param-value>/com/login/loginUsr.do</param-value>
 		</init-param>
+		
 		<init-param>
 			<description>로그인 처리 URL설정</description>
 			<param-name>loginProcessURL</param-name>
-			<param-value>/com/i01/pantheonLoginUsr</param-value>
+			<param-value>/com/login/processLoginUsr.do</param-value>
 		</init-param>
+		
 	</filter>
 	
 	<filter-mapping>
@@ -99,7 +99,6 @@
 		<listener-class>org.springframework.web.context.request.RequestContextListener
 		</listener-class>
 	</listener>
-	 -->
 	
 <!-- 	<servlet> -->
 <!-- 		<servlet-name>ajaxServlet</servlet-name> -->

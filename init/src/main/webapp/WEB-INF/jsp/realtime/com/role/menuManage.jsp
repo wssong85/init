@@ -69,7 +69,7 @@ $(function(){
 				
 			},
 			onDataChanged: function(){
-				
+				alert("전유완 시발");
 				grTbUpMenu.getSelectionRowIndex = this.doindex;
 				grTbUpMenu.getSelectionItem = this.item;
 				
