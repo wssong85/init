@@ -64,7 +64,7 @@ $(function(){
 				//컬럼 유효성 체크
 				if(this.key == "ROLE") {
 					
-					if(_vGrValidation.lengthCheck(this.value, 10)
+					if(_vGrValidation.lengthCheck(this.value, 25)
 							&& _vGrValidation.engNumSpecialCheck(this.value)
 							&& _vGrValidation.pkCheck(grTbRoles, "ROLE")){
 						

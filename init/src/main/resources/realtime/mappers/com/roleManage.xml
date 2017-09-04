@@ -138,7 +138,7 @@
 	
 	<delete id="deleteTbMenu" parameterType="map">
 	<![CDATA[
-	DELETE FROM TB_MENU WHERE WHERE MENU_ID = #{MENU_ID, jdbcType=VARCHAR} AND UP_MENU_ID = #{UP_MENU_ID, jdbcType=VARCHAR}
+	DELETE FROM TB_MENU WHERE MENU_ID = #{MENU_ID, jdbcType=VARCHAR} AND UP_MENU_ID = #{UP_MENU_ID, jdbcType=VARCHAR}
 	]]> 
 	</delete>
 	
@@ -322,4 +322,73 @@
 	]]> 
 	</delete>
 	 
+	<select id="selectTbMenuProgramForUserMenu" parameterType="string" resultType="map">
+	<![CDATA[
+	SELECT
+	X.LV
+	,X.MENU_ID
+	,X.MENU_NM
+	,X.UP_SORT
+	,X.SORT
+	,X.PROGRAM_URL 
+	FROM
+	(
+		SELECT
+		'2' LV
+		,MENU_ID
+		,MENU_NM
+		,MENU_SEQ AS SORT
+		,UP_MENU_ID
+		,(SELECT UP_MENU_SEQ FROM TB_UP_MENU U WHERE U.UP_MENU_ID = T.UP_MENU_ID)  AS UP_SORT
+		,(SELECT X.PROGRAM_URL FROM TB_PROGRAM X WHERE X.PROGRAM_ID = T.PROGRAM_ID) AS PROGRAM_URL
+		FROM TB_MENU T
+		WHERE MENU_ID
+		IN
+		(
+		SELECT  A.MENU_ID
+		FROM TB_MENU_PROGRAM A
+		WHERE ROLE = ( SELECT ROLE FROM TB_AUTHORITIES WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR} )
+		)
+		
+	) X
+	
+	UNION ALL
+	
+	SELECT
+	X.LV
+	,X.MENU_ID
+	,X.MENU_NM
+	,X.UP_SORT
+	,X.SORT
+	,'' AS PROGRAM_URL
+	FROM
+	(
+		SELECT
+		'1' LV
+		,UP_MENU_ID AS MENU_ID
+		,UP_MENU_NM AS MENU_NM
+		,UP_MENU_SEQ AS UP_SORT
+		,0 AS SORT
+		FROM TB_UP_MENU
+		WHERE UP_MENU_ID
+		IN
+		(
+			SELECT
+			UP_MENU_ID
+			FROM TB_MENU
+			WHERE MENU_ID
+			IN
+			(
+				SELECT  A.MENU_ID
+				FROM TB_MENU_PROGRAM A
+				WHERE ROLE = ( SELECT ROLE FROM TB_AUTHORITIES WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR} )
+			)
+		)
+		
+	) X
+	
+	ORDER BY UP_SORT, SORT
+	]]>
+	</select>
+	
 </mapper> 

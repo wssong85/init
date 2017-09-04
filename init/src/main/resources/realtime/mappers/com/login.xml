@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="realtime.com.login.mapper.LoginMapper">
+
+	<select id="selectTbUsersByPk" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT 
+	A.USER_ID
+	,A.USER_NAME
+	,A.PASSWORD
+	,B.BIRTH_DT
+	,B.AGE
+	,B.PHONE
+	,B.ADDR
+	,B.EMAIL
+	FROM TB_USERS A
+	JOIN TB_USER_DETAIL B
+	ON A.USER_ID = B.USER_ID
+	WHERE 1=1
+	AND A.USE_YN = 'Y'
+	AND A.USER_ID = #{USER_ID, jdbcType=VARCHAR}
+	AND A.PASSWORD = #{PASSWORD, jdbcType=VARCHAR}
+	]]>
+	</select>
+	
+</mapper>

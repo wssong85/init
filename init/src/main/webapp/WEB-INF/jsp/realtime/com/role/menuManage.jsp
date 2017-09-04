@@ -69,7 +69,7 @@ $(function(){
 				
 			},
 			onDataChanged: function(){
-				
+// 				alert("전유완 시발");
 				grTbUpMenu.getSelectionRowIndex = this.doindex;
 				grTbUpMenu.getSelectionItem = this.item;
 				
@@ -85,7 +85,7 @@ $(function(){
 				if(this.key == "UP_MENU_ID") {
 					
 					//길이체크
-					if(_vGrValidation.lengthCheck(this.value, 3)
+					if(_vGrValidation.lengthCheck(this.value, 10)
 							//영문자숫자체크
 							&& _vGrValidation.engNumcheck(this.value)
 							//중복체크
@@ -257,7 +257,7 @@ $(function(){
 				if(this.key == "MENU_ID") {
 					
 					//길이체크
-					if(_vGrValidation.lengthCheck(this.value, 3)
+					if(_vGrValidation.lengthCheck(this.value, 20)
 							//영문자숫자체크
 							&& _vGrValidation.engNumcheck(this.value)
 							//중복체크

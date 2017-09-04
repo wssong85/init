@@ -27,5 +27,5 @@ public interface RoleManageService {
 
 	void insertTbMenuProgramForAll(List<Map<String, Object>> list) throws Exception;
 	
-
+	List<Map<String, Object>> selectTbMenuProgramForUserMenu(String str) throws Exception;
 }

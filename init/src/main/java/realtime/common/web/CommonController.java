@@ -17,8 +17,20 @@ public class CommonController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value="/common/common.do")
-	public String codeManage(HttpServletRequest request, HttpServletResponse response) throws Exception{
+	public String common(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		return "realtime/common/common";
+	}
+	
+	/**
+	 * left 파일 호출
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/common/leftMenu.do")
+	public String leftMenu(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		return "realtime/common/leftMenu";
 	}
 	
 }
