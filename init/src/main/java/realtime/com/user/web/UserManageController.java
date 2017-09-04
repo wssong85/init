@@ -9,11 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import realtime.com.role.service.RoleManageService;
 import realtime.com.user.service.UserManageService;
 
 @Controller
@@ -21,6 +22,9 @@ public class UserManageController {
 
 	@Resource(name = "UserManageService")
 	private UserManageService userManageService;
+	
+	@Resource(name = "RoleManageService")
+	private RoleManageService roleManageService;
 
 	/**
 	 * 사용자관리 호출
@@ -30,8 +34,14 @@ public class UserManageController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/com/user/userManage.do")
-	public String userManage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public String userManage(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws Exception {
 		
+		List<Map<String, Object>> metaDataList = userManageService.selectTbUserMetaData();
+		List<Map<String, Object>> roleList = roleManageService.selectTbRolesList(null);
+		
+		model.addAttribute("metaDataList", metaDataList);
+		model.addAttribute("roleList", roleList);
+			
 		return "realtime/com/user/userManage";
 	}
 	
@@ -45,14 +55,14 @@ public class UserManageController {
 	 */
 	@RequestMapping(value = "/com/user/selectTbUserList.do")
 	@ResponseBody 
-	public Map<String , Object> selectTbUserList(HttpServletRequest request, @RequestParam Map<String, Object> map) throws Exception {
+	public Map<String , Object> selectTbUserList(HttpServletRequest request) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<Map<String, Object>> list = null;
 		
 		try {
 			
-			list = userManageService.selectTbUserList(map);
+			list = userManageService.selectTbUserList();
 			
 			result.put("success", true);
 			result.put("result", list);
@@ -72,14 +82,15 @@ public class UserManageController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/com/user/changeTbUser.do")
-	public @ResponseBody Map<String , Object> multiTbProgram(@RequestBody List<Map<String, Object>> list) throws Exception {
+	@RequestMapping("/com/user/multiTbUser.do")
+	@ResponseBody 
+	public Map<String , Object> multiTbProgram(@RequestBody List<Map<String, Object>> list) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		try {
 			
-			userManageService.changeTbUser(list);
+			userManageService.multiTbUser(list);
 			
 			result.put("success", true);
 			
