@@ -1,10 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.Map"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <jsp:include page="/common/common.do" flush="false"/>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/ax5ui/ax5ui-select/master/dist/ax5select.css">
+<script type="text/javascript" src="https://cdn.rawgit.com/ax5ui/ax5ui-select/master/dist/ax5select.min.js"></script>
 
 <title>사용자관리</title>
 
@@ -55,6 +60,7 @@
 			
 			body: {
 				onClick: function(){
+					
 					grTbUser.getSelectionRowIndex = this.doindex;
 					grTbUser.getSelectionItem = this.item;
 					
@@ -78,7 +84,7 @@
 					//컬럼 유효성 체크
 					if(this.key == "USER_ID") {
 						
-						if(_vGrValidation.lengthCheck(this.value, 5)
+						if(_vGrValidation.lengthCheck(this.value, 15)
 								&&_vGrValidation.engNumcheck(this.value)
 								&& _vGrValidation.pkCheck(grTbUser, "USER_ID")){
 							
@@ -87,6 +93,33 @@
 						} else {
 							
 							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"USER_ID": ""}), grTbUser.getSelectionRowIndex);
+							
+						}
+					}
+					
+					if(this.key == "USER_NAME") {
+						
+						if(_vGrValidation.lengthCheck(this.value, 10)){
+							
+							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"USER_NAME": this.value.toUpperCase()}), grTbUser.getSelectionRowIndex);
+							
+						} else {
+							
+							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"USER_NAME": ""}), grTbUser.getSelectionRowIndex);
+							
+						}
+					}
+					
+					if(this.key == "PASSWORD") {
+						
+						if(_vGrValidation.lengthCheck(this.value, 15)
+								&&_vGrValidation.engNumSpecialCheck(this.value)){
+							
+							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"PASSWORD": this.value.toUpperCase()}), grTbUser.getSelectionRowIndex);
+							
+						} else {
+							
+							grTbUser.updateRow($.extend({}, grTbUser.list[grTbUser.getSelectionRowIndex], {"PASSWORD": ""}), grTbUser.getSelectionRowIndex);
 							
 						}
 					}
@@ -108,104 +141,67 @@
 	            		return "grid-cell-red";
 	            	}
 	            }
-			},{
-				key: "CRUD",
-				label: "",
-				align: "center",
-				width: 0,
-				enableFilter: true,
-				hidden: true
-			},{
-				key: "USER_ID",
-				label: "사용자ID",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-	            editor: {type:"text"}
-			},{
-				key: "USER_NAME",
-				label: "사용자이름",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-	            editor: {type:"text"}
-			},{
-				key: "PASSWORD",
-				label: "패스워드",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-	            editor: {type:"text"}
-			},{
-				key: "USE_YN",
-				label: "사용여부",
-				type: "checkbox",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-				editor: {
-					type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
+			}
+				<c:forEach var="metaData" items="${metaDataList}" varStatus="status">
+					<c:if test="${not empty metaData.Comment}">
+						,{
+							key: "<c:out value="${metaData.Field}"/>"
+							,label: "<c:out value="${metaData.Comment}"/>"
+							,align: "center"
+							,width: 100
+							,enableFilter: true
+							<c:choose>
+							    <c:when test="${fn:contains(metaData.Type, 'datetime')}">
+							    	,formatter: "date"
+							    </c:when>
+							    <c:otherwise>
+								    <c:choose>
+									    <c:when test="${fn:contains(metaData.Type, 'varchar(1)')}">
+										    ,editor: {
+												type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
+											}
+									    </c:when>
+									    <c:when test="${metaData.Field eq 'USER_ID' || metaData.Field eq 'PASSWORD'}">
+									    	,editor: {
+									    		type:"text"
+								    			 ,disabled: function () {
+								    				if(this.item["CRUD"] && this.item["CRUD"] != "D") {
+														return false;
+													} else {
+														return true;
+													}
+												}
+									    	}
+									    </c:when>
+									    <c:otherwise>
+									   		,editor: {type:"text"}
+									    </c:otherwise>
+									</c:choose>
+							    </c:otherwise>
+							</c:choose>
+						}
+					</c:if>
+				</c:forEach> 
+				,{
+					key: "ROLE", 
+					label: "권한", 
+					align: "center", 
+					editor: { 
+						type: "select", 
+						config: {
+	                        columnKeys: {
+	                            optionValue: "ROLE", optionText: "ROLE_NM"
+	                        },
+	                        options: [
+								<c:forEach var="roleData" items="${roleList}" varStatus="status">
+									<c:if test="${status.index != 0}">,</c:if>
+									{ROLE: "${roleData.ROLE}", ROLE_NM: "${roleData.ROLE}"}
+								</c:forEach> 
+	                        ]
+						}
+					}
 				}
-			},{
-				key: "BIRTH_DT",
-				label: "생일",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-	            editor: {type:"text"}
-			},{
-				key: "AGE",
-				label: "나이",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-	            editor: {type:"text"}
-			},{
-				key: "PHONE",
-				label: "전화번호",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-	            editor: {type:"text"}
-			},{
-				key: "ADDR",
-				label: "주소",
-				align: "center",
-				width: 200,
-				enableFilter: true,
-	            editor: {type:"text"}
-			},{
-				key: "EMAIL",
-				label: "이메일",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-	            editor: {type:"text"}
-			},{
-				key: "EMAIL_YN",
-				label: "이메일 사용여부",
-				type: "checkbox",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-				editor: {
-					type: "checkbox", config: {height: 17, trueValue: "Y", falseValue: "N"}
-				}
-			},{
-				key: "FILE_ID",
-				label: "파일 아이디",
-				align: "center",
-				width: 100,
-				enableFilter: true,
-	            editor: {type:"text"}
-			},{
-				key: "UP_DT", 
-				label: "수정일", 
-				formatter: "date", 
-				align: "center",
-				enableFilter: true,
-				width: 200
-			}]
+			]
 		});
 			
 	    $('[data-grid-control]').click(function () {
@@ -215,17 +211,21 @@
 	            	
 	            	var vAddItem = {
 	            		"CRUD": "C"
-	            		,"USER_ID": ""
-	            		,"USER_NAME": ""
-	            		,"PASSWORD": ""
-            			,"USE_YN": "Y"
-	            		,"BIRTH_DT": ""
-	            		,"AGE": ""
-	            		,"PHONE": ""
-            			,"ADDR": ""
-	            		,"EMAIL": ""
-	            		,"EMAIL_YN": "Y"
-	            		,"FILE_ID": ""
+            			<c:forEach var="metaData" items="${metaDataList}" varStatus="status">
+            				<c:if test="${not empty metaData.Comment}">
+								, 
+								"<c:out value="${metaData.Field}"/>" 
+								:
+								<c:choose>
+								    <c:when test="${fn:contains(metaData.Type, 'varchar(1)')}">
+								    	"Y"
+								    </c:when>
+								    <c:otherwise>
+								   		""
+								    </c:otherwise>
+								</c:choose>
+							</c:if>
+						</c:forEach> 
 	            	};            	
 	            	
 	            	grTbUser.addRow($.extend({}, vAddItem, {__index: undefined}));
@@ -252,11 +252,12 @@
 				"USER_ID": "사용자ID는 필수 입력해 주십시오."
 				,"USER_NAME": "사용자이름은 필수 입력해 주십시오."
 				,"PASSWORD": "패스워드는 필수 입력해 주십시오."
+				,"ROLE": "권한을 선택해 주십시오."
 			};
 	    	
 	    	fn_GridMultiSaveForValidateArray(
 					grTbUser
-					,"/com/user/changeTbUser.do"
+					,"/com/user/multiTbUser.do"
 					,vValidateJson
 					,[]
 			);
