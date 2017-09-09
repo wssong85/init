@@ -44,7 +44,7 @@ INSERT INTO `tb_program` (`PROGRAM_ID`, `PROGRAM_NM`, `PROGRAM_DC`, `PROGRAM_URL
 	('COM03', '프로그램관리', '', '/com/role/programManage.do', 'Y', '2017-09-02 20:35:58', '2017-09-02 20:35:58', NULL),
 	('COM04', '메뉴관리', '', '/com/role/menuManage.do', 'Y', '2017-09-02 20:35:58', '2017-09-02 20:35:58', NULL),
 	('COM05', '권한관리', '', '/com/role/menuManage.do', 'Y', '2017-09-02 20:35:58', '2017-09-02 20:35:58', NULL),
-	('COM06', '사용자관리', '', '/com/ustb_com_seqer/userManage.do', 'Y', '2017-09-02 20:35:58', '2017-09-02 20:35:58', NULL),
+	('COM06', '사용자관리', '', '/com/user/userManage.do', 'Y', '2017-09-02 20:35:58', '2017-09-02 20:35:58', NULL),
 	('COM07', '게시판관리', '', '/com/board/boardManage.do', 'Y', '2017-09-02 20:35:58', '2017-09-02 20:35:58', NULL);
 
 INSERT INTO `tb_roles` (`ROLE`, `ROLE_NM`, `ROLE_DC`, `IN_DT`, `UP_DT`, `WRITE_ID`) VALUES
