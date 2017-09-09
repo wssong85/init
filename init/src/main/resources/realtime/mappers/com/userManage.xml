@@ -5,7 +5,7 @@
 
 	<select id="selectTbUserMetaData" resultType="map">
 	<![CDATA[
-		SHOW FULL COLUMNS FROM TB_USERS
+		SHOW FULL COLUMNS FROM TB_USER
 	]]>
 	</select>
 	
@@ -35,7 +35,7 @@
 	
 	<delete id="deleteTbUser" parameterType="map">
 	<![CDATA[
-		DELETE FROM TB_USERS WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
+		DELETE FROM TB_USER WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
 	]]> 
 	</delete>
 	

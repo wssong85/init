@@ -29,7 +29,7 @@ public class UserManageServiceImpl implements UserManageService {
 		
 		List<Map<String, Object>> metaDataList = getTbUserMetaDataList();
 		
-		String query = getDynamicQuerySelect("TB_USERS", metaDataList, "", "", "A.ROLE", "USER_ID", "JOIN TB_AUTHORITIES A ON T.USER_ID = A.USER_ID");
+		String query = getDynamicQuerySelect("TB_USER", metaDataList, "", "", "A.ROLE", "USER_ID", "JOIN TB_AUTHORITIES A ON T.USER_ID = A.USER_ID");
 		List<Map<String, Object>> userList = userManageMapper.selectTbUserList(query);
 		
 		for (Map<String, Object> user : userList) {
@@ -62,7 +62,7 @@ public class UserManageServiceImpl implements UserManageService {
 			
 			if("C".equals(map.get("CRUD"))) {
 				
-				query = getDynamicQueryInsert("TB_USERS", map, metaDataList);
+				query = getDynamicQueryInsert("TB_USER", map, metaDataList);
 				userManageMapper.insertTbUser(query);
 				
 				query = getDynamicQueryInsert("TB_USER_DETAIL", map, metaDataList);
@@ -73,7 +73,7 @@ public class UserManageServiceImpl implements UserManageService {
 				
 			} else if("U".equals(map.get("CRUD"))) {
 				
-				query = getDynamicQueryUpdate("TB_USERS", "USER_ID", map, metaDataList);
+				query = getDynamicQueryUpdate("TB_USER", "USER_ID", map, metaDataList);
 				userManageMapper.updateTbUser(query);
 				
 				query = getDynamicQueryUpdate("TB_USER_DETAIL", "USER_ID", map, metaDataList);
@@ -93,11 +93,11 @@ public class UserManageServiceImpl implements UserManageService {
 		}
 	}
 	
-	// TB_USERS, TB_USER_DETAIL의 테이블 정보를 가져옴
+	// TB_USER, TB_USER_DETAIL의 테이블 정보를 가져옴
 	// comment가 있는 컬럼만 화면에 표시 함
 	private List<Map<String, Object>> getTbUserMetaDataList() {
 
-		// TB_USERS 테이블 정보
+		// TB_USER 테이블 정보
 		List<Map<String, Object>> userMetaData = userManageMapper.selectTbUserMetaData();
 		
 		// TB_USER_DETAIL 테이블 정보
@@ -106,7 +106,7 @@ public class UserManageServiceImpl implements UserManageService {
 		for (Map<String, Object> metaData : userMetaData) {
 			
 			// 테이블 명 저장
-			metaData.put("Table", "TB_USERS");
+			metaData.put("Table", "TB_USER");
 		}
 		
 		for (Map<String, Object> metaDataDetail : userMetaDataDetail) {
@@ -114,7 +114,7 @@ public class UserManageServiceImpl implements UserManageService {
 			// 테이블 명 저장
 			metaDataDetail.put("Table", "TB_USER_DETAIL");
 			
-			// TB_USERS 테이블 정보와 합침
+			// TB_USER 테이블 정보와 합침
 			userMetaData.add(metaDataDetail);
 		}
 		
