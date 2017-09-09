@@ -607,29 +607,49 @@ $(function(){
 
 <body>
 
-<div style="padding: 10px;">
-	<button class="btn btn-default" id="btnSelectTbUpMenu">조회</button>
-    <button class="btn btn-default" data-grid-control="btnAddTbUpMenu">행추가</button>
-    <button class="btn btn-default" data-grid-control="btnRemoveTbUpMenu">행삭제</button>
-    <button class="btn btn-default" id="btnMultiSaveTbUpMenu">저장</button>
+<div id="wrapper">
+	<c:import url="/common/leftMenu.do" charEncoding="utf-8"/>
+	
+	<div id="page-content-wrapper">
+        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+       		<span class="hamb-top"></span>
+           	<span class="hamb-middle"></span>
+           	<span class="hamb-bottom"></span>
+         </button>
+	
+		<div class="container">
+		<div class="row">
+		<div class="col-lg-8 col-lg-offset-2">
+		
+		<!-- conetent 시작-->
+		<div style="padding: 10px;">
+			<button class="btn btn-default" id="btnSelectTbUpMenu">조회</button>
+		    <button class="btn btn-default" data-grid-control="btnAddTbUpMenu">행추가</button>
+		    <button class="btn btn-default" data-grid-control="btnRemoveTbUpMenu">행삭제</button>
+		    <button class="btn btn-default" id="btnMultiSaveTbUpMenu">저장</button>
+		</div>
+		
+		<div data-ax5grid="grTbUpMenu" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
+		
+		<div data-ax5grid="grTbProgram" data-ax5grid-config="{}" style="width:800px; height:200px;"></div>
+		
+		<div style="padding: 10px;">
+		</div>
+		
+		<div style="padding: 10px;">
+		    <button class="btn btn-default" data-grid-control="btnAddTbMenu">행추가</button>
+		    <button class="btn btn-default" data-grid-control="btnRemoveTbMenu">행삭제</button>
+		    <button class="btn btn-default" id="btnTbMenuMultiSave">저장</button>
+		</div>
+		
+		<div data-ax5grid="grTbMenu" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
+		<!-- conetent 끝-->	
+			
+		</div>
+		</div>
+		</div>
+	</div>
 </div>
-
-<div data-ax5grid="grTbUpMenu" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
-
-<div data-ax5grid="grTbProgram" data-ax5grid-config="{}" style="width:800px; height:200px;"></div>
-
-<div style="padding: 10px;">
-</div>
-
-<div style="padding: 10px;">
-    <button class="btn btn-default" data-grid-control="btnAddTbMenu">행추가</button>
-    <button class="btn btn-default" data-grid-control="btnRemoveTbMenu">행삭제</button>
-    <button class="btn btn-default" id="btnTbMenuMultiSave">저장</button>
-</div>
-
-<div data-ax5grid="grTbMenu" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
-
-
 
 </body>
 </html>

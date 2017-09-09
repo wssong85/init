@@ -270,14 +270,36 @@
 
 <body>
 
-	<div style="padding: 10px;">
-		<button class="btn btn-default" id="btnSelectTbUser">조회</button>
-	    <button class="btn btn-default" data-grid-control="btnAddTbUser">행추가</button>
-	    <button class="btn btn-default" data-grid-control="btnRemoveTbUser">행삭제</button>
-	    <button class="btn btn-default" id="btnMultiSaveTbUser">저장</button>
-	</div>
+<div id="wrapper">
+	<c:import url="/common/leftMenu.do" charEncoding="utf-8"/>
 	
-	<div data-ax5grid="grTbUser" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
+	<div id="page-content-wrapper">
+        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+       		<span class="hamb-top"></span>
+           	<span class="hamb-middle"></span>
+           	<span class="hamb-bottom"></span>
+         </button>
+	
+		<div class="container">
+		<div class="row">
+		<div class="col-lg-8 col-lg-offset-2">
+		
+		<!-- conetent 시작-->
+		<div style="padding: 10px;">
+			<button class="btn btn-default" id="btnSelectTbUser">조회</button>
+		    <button class="btn btn-default" data-grid-control="btnAddTbUser">행추가</button>
+		    <button class="btn btn-default" data-grid-control="btnRemoveTbUser">행삭제</button>
+		    <button class="btn btn-default" id="btnMultiSaveTbUser">저장</button>
+		</div>
+		
+		<div data-ax5grid="grTbUser" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
+		<!-- conetent 끝-->	
+			
+		</div>
+		</div>
+		</div>
+	</div>
+</div>
 
 </body>
 </html>

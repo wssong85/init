@@ -351,19 +351,42 @@ $(function(){
 
 <body>
 
-<div data-ax5grid="grTbMenu" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
 
-<div style="padding: 10px;">
-    <button class="btn btn-default" data-grid-control="btnAddTbMenuProgram">메뉴넣기</button>
-    <button class="btn btn-default" data-grid-control="btnRemoveTbMenuProgram">메뉴삭제</button>
-    <button class="btn btn-default" id="btnTbMenuProgramMultiSave">저장</button>
+<div id="wrapper">
+	<c:import url="/common/leftMenu.do" charEncoding="utf-8"/>
+	
+	<div id="page-content-wrapper">
+        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+       		<span class="hamb-top"></span>
+           	<span class="hamb-middle"></span>
+           	<span class="hamb-bottom"></span>
+         </button>
+	
+		<div class="container">
+		<div class="row">
+		<div class="col-lg-8 col-lg-offset-2">
+		
+		<!-- conetent 시작-->
+		<div data-ax5grid="grTbMenu" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
+		
+		<div style="padding: 10px;">
+		    <button class="btn btn-default" data-grid-control="btnAddTbMenuProgram">메뉴넣기</button>
+		    <button class="btn btn-default" data-grid-control="btnRemoveTbMenuProgram">메뉴삭제</button>
+		    <button class="btn btn-default" id="btnTbMenuProgramMultiSave">저장</button>
+		</div>
+		
+		<div style="padding: 10px;">
+			권한: <select id="selectRoles" style="width:200px;"></select> 
+		</div>
+		
+		<div data-ax5grid="grTbMenuProgram" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
+		<!-- conetent 끝-->	
+			
+		</div>
+		</div>
+		</div>
+	</div>
 </div>
-
-<div style="padding: 10px;">
-	권한: <select id="selectRoles" style="width:200px;"></select> 
-</div>
-
-<div data-ax5grid="grTbMenuProgram" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
 
 </body>
 </html>

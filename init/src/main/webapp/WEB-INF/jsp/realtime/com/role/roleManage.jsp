@@ -208,14 +208,36 @@ $(function(){
 
 <body>
 
-<div style="padding: 10px;">
-	<button class="btn btn-default" id="btnSelectTbRoles">조회</button>
-    <button class="btn btn-default" data-grid-control="btnAddTbRoles">행추가</button>
-    <button class="btn btn-default" data-grid-control="btnRemoveTbRoles">행삭제</button>
-    <button class="btn btn-default" id="btnMultiSaveTbRoles">저장</button>
+<div id="wrapper">
+	<c:import url="/common/leftMenu.do" charEncoding="utf-8"/>
+	
+	<div id="page-content-wrapper">
+        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+       		<span class="hamb-top"></span>
+           	<span class="hamb-middle"></span>
+           	<span class="hamb-bottom"></span>
+         </button>
+	
+		<div class="container">
+		<div class="row">
+		<div class="col-lg-8 col-lg-offset-2">
+		
+		<!-- conetent 시작-->
+		<div style="padding: 10px;">
+			<button class="btn btn-default" id="btnSelectTbRoles">조회</button>
+		    <button class="btn btn-default" data-grid-control="btnAddTbRoles">행추가</button>
+		    <button class="btn btn-default" data-grid-control="btnRemoveTbRoles">행삭제</button>
+		    <button class="btn btn-default" id="btnMultiSaveTbRoles">저장</button>
+		</div>
+		
+		<div data-ax5grid="grTbRoles" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
+		<!-- conetent 끝-->	
+			
+		</div>
+		</div>
+		</div>
+	</div>
 </div>
-
-<div data-ax5grid="grTbRoles" data-ax5grid-config="{}" style="width:800px; height:300px;"></div>
 
 </body>
 </html>
