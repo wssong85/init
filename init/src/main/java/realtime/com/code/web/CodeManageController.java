@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import realtime.com.code.service.CodeManageService;
 
 /**
@@ -35,6 +34,7 @@ public class CodeManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	
 	@RequestMapping(value="/com/code/codeManage.do")
 	public String codeManage(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		return "realtime/com/code/codeManage";
