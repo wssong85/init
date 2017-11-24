@@ -102,4 +102,33 @@ public class UserManageController {
 		
 		return result;
 	}
+	
+	@RequestMapping("/com/user/test.do")
+	@ResponseBody 
+	public Map<String , Object> Test(@RequestBody List<Map<String, Object>> list) throws Exception {
+		
+		System.out.println("call?");
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		try {
+			
+			System.out.println(list);
+			
+			for(Map<String, Object> map : list) {
+				
+				System.out.println(map.get("test1"));
+				System.out.println(map.get("test2"));
+			}
+			
+			result.put("success", true);
+			
+		} catch (Exception e) {
+			
+			result.put("success", false);
+			result.put("message", e.getLocalizedMessage());
+		}
+		
+		return result;
+	}
 }

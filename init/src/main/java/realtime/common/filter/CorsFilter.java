@@ -2,45 +2,32 @@ package realtime.common.filter;
 
 import java.io.IOException;
 
-
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-
-import javax.servlet.http.HttpServletRequest;
-
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+public class CorsFilter implements Filter {
 
-import org.springframework.web.filter.OncePerRequestFilter;
+	@Override
+	public void destroy() { }
 
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) throws IOException, ServletException {
 
-public class CorsFilter extends OncePerRequestFilter {
+		HttpServletResponse response = (HttpServletResponse) res;
 
-
-    @Override
-
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-
-            throws ServletException, IOException {
-
-        response.addHeader("Access-Control-Allow-Origin", "*");
-
-        if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.getMethod())); {
-
-            // CORS "pre-flight" request
-
-            response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-
-            response.addHeader("Access-Control-Allow-Headers", "Authorization");
-
-            response.addHeader("Access-Control-Max-Age", "1728000");
-
-        }
-
-        filterChain.doFilter(request, response);
-
-    }
-
-
+		response.setHeader("Access-Control-Allow-Origin", "*"); 
+    	response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT"); 
+    	response.setHeader("Access-Control-Max-Age", "3600"); 
+    	response.setHeader("Access-Control-Allow-Headers", "x-requested-with, origin, content-type, accept");
+    	
+    	filterChain.doFilter(req, res);
+	}
+	
+	@Override
+	public void init(FilterConfig arg0) throws ServletException { }
 }
