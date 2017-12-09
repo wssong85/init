@@ -8,7 +8,7 @@
 	<![CDATA[
 	SELECT COUNT(*)
 	FROM TB_USER
-	WHERE USER_ID = #{user_id, jdbcType=VARCHAR}
+	WHERE USER_ID = #{username, jdbcType=VARCHAR}
 	AND PASSWORD = #{password, jdbcType=VARCHAR}
 	AND USE_YN = 'Y'
 	]]> 
