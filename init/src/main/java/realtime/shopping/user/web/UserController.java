@@ -1,15 +1,13 @@
 package realtime.shopping.user.web;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import realtime.shopping.user.serice.UserService;
@@ -31,9 +29,11 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/shopping/user/apiSelectTbUserCountForCheck.do")
 	@ResponseBody 
-	public Map<String , Object> apiSelectTbUserCountForCheck(@RequestParam Map<String, Object> map) throws Exception {
+	public Map<String , Object> apiSelectTbUserCountForCheck(@RequestBody Map<String, Object> map) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
+		
+		System.out.println("파라미터 => "+ map);
 		
 		try {
 			
