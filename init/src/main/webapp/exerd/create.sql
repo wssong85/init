@@ -23,8 +23,7 @@ CREATE TABLE IF NOT EXISTS `tb_board_manage` (
 CREATE TABLE IF NOT EXISTS `tb_com_seq` (
   `TB_SEQ` bigint(20) unsigned NOT NULL DEFAULT 1 COMMENT '시퀀스 현재값',
   `TB_NM` varchar(200) COLLATE utf8_bin DEFAULT NULL,
-  `LAST_UPDATE_DATE` datetime DEFAULT current_timestamp(),
-  PRIMARY KEY (`TB_SEQ`)
+  `LAST_UPDATE_DATE` datetime DEFAULT current_timestamp()
 );
 
 CREATE TABLE IF NOT EXISTS `tb_detail_code` (

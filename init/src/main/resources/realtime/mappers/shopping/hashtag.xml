@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="realtime.shopping.hashtag.mapper.HashtagMapper">
+	
+	<select id="selectTbInterestExist" resultType="Long">
+	<![CDATA[
+		SELECT INTEREST_SEQ
+		FROM TB_INTEREST 
+		WHERE IN_ID = #{_parameter}
+	]]> 
+	</select>
+	
+	<select id="selectTbHashtagExist" resultType="Long">
+	<![CDATA[
+		SELECT HASHTAG_SEQ
+		FROM TB_HASHTAG
+		WHERE HASHTAG = #{_parameter}
+	]]> 
+	</select>
+	
+	<select id="selectTbIfHashtagInterestExist" resultType="Long">
+	<![CDATA[
+		SELECT HASHTAG_SEQ
+		FROM TB_IF_HASHTAG_INTEREST
+		WHERE HASHTAG_SEQ = #{HASHTAG_SEQ, jdbcType=DECIMAL} AND INTEREST_SEQ = #{INTEREST_SEQ, jdbcType=DECIMAL}
+	]]> 
+	</select>
+	
+	<select id="selectTbIfHashtagInterest" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT HI.INTEREST_SEQ
+		     , MIN_COST
+		     , MAX_COST
+		     , TRADE_SE
+		     , IN_ID
+		     , IN_DT
+		     , UP_ID
+		     , UP_DT
+		     , CONCAT('#', GROUP_CONCAT(H.HASHTAG SEPARATOR ' #')) AS HASHTAG
+		FROM   TB_INTEREST I
+		       JOIN TB_IF_HASHTAG_INTEREST HI
+		       ON     I.INTEREST_SEQ = HI.INTEREST_SEQ
+		       JOIN TB_HASHTAG H
+		       ON     H.HASHTAG_SEQ = HI.HASHTAG_SEQ
+		WHERE IN_ID = #{userId, jdbcType=VARCHAR}
+	]]> 	
+	</select>
+	
+	<insert id="insertTbInterest" parameterType="map">
+	<![CDATA[
+		INSERT INTO TB_INTEREST (
+			INTEREST_SEQ
+			, MIN_COST
+			, MAX_COST
+			, TRADE_SE
+			, IN_ID
+			, IN_DT
+			, UP_ID
+			, UP_DT
+		) VALUES (
+			#{INTEREST_SEQ, jdbcType=DECIMAL}
+			, #{price.lower, jdbcType=VARCHAR}
+			, #{price.upper, jdbcType=VARCHAR}
+			, #{tradeType, jdbcType=VARCHAR}
+			, #{userId, jdbcType=VARCHAR}
+			, NOW()
+			, #{userId, jdbcType=VARCHAR}
+			, NOW()
+		)
+	]]> 
+	</insert>
+	
+	<insert id="insertTbHashtag">
+	<![CDATA[
+		INSERT INTO TB_HASHTAG (HASHTAG_SEQ, HASHTAG) VALUES (#{HASHTAG_SEQ, jdbcType=DECIMAL}, #{HASHTAG, jdbcType=VARCHAR})
+	]]> 
+	</insert>
+	
+	<insert id="insertTbIfHashtagInterest" >
+	<![CDATA[
+		INSERT INTO TB_IF_HASHTAG_INTEREST (HASHTAG_SEQ, INTEREST_SEQ) VALUES (#{HASHTAG_SEQ, jdbcType=DECIMAL}, #{INTEREST_SEQ, jdbcType=DECIMAL})
+	]]> 
+	</insert>
+	
+	<update id="updateTbInterest" parameterType="map">
+	<![CDATA[
+		UPDATE TB_INTEREST 
+		SET
+			MIN_COST = #{price.lower, jdbcType=VARCHAR}
+			, MAX_COST = #{price.upper, jdbcType=VARCHAR}
+			, TRADE_SE = #{tradeType, jdbcType=VARCHAR}
+			, UP_ID = #{userId, jdbcType=VARCHAR}
+			, UP_DT = NOW()
+		WHERE IN_ID = #{userId, jdbcType=VARCHAR} 
+	]]> 
+	</update>
+	
+	<delete id="deleteTbIfHashtagInterest" parameterType="map">
+		DELETE FROM TB_IF_HASHTAG_INTEREST
+		WHERE HASHTAG_SEQ NOT IN
+		
+		<foreach item="item" index="index" collection="existList" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+</mapper>
