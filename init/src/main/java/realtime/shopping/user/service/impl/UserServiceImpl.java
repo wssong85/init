@@ -1,4 +1,4 @@
-package realtime.shopping.user.serice.impl;
+package realtime.shopping.user.service.impl;
 
 import java.util.Map;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import realtime.com.user.mapper.UserManageMapper;
 import realtime.shopping.user.mapper.UserMapper;
-import realtime.shopping.user.serice.UserService;
+import realtime.shopping.user.service.UserService;
 
 @Service("UserService")
 public class UserServiceImpl implements UserService{

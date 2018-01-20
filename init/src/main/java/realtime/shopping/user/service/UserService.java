@@ -1,4 +1,4 @@
-package realtime.shopping.user.serice;
+package realtime.shopping.user.service;
 
 import java.util.Map;
 

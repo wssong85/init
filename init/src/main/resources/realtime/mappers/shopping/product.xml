@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="realtime.shopping.product.mapper.ProductMapper">
+
+
+	<select id="selectDetail" parameterType="map" resultType="map" >
+	
+		SELECT PRODUCT_SEQ
+		     , TITLE
+		     , MIN_COST
+		     , MAX_COST
+		     , TRADE_SE
+		     , SALE_LOC
+		     , SALE_COORDINATE
+		     , DELEGATE_FILE_ID
+		     , FILE_ID
+		     , CONTENT
+		     , SALE_SE
+		     , IN_ID
+		     , IN_DT
+		     , UP_ID
+		     , UP_DT DATE
+		     , SALE_START_DATE
+		     , SALE_END_DATE
+		     , READ_CNT
+		     , INTEREST_CNT
+		     , LAST_BUYER_ID
+		FROM TB_PRODUCT
+		WHERE PRODUCT_SEQ = #{PRODUCT_SEQ}
+    
+	
+
+	</select>
+	
+	<insert id="insertProduct" parameterType="map" >
+	
+	
+	
+	  'PRODUCT_SEQ'
+	, 'TITLE'
+	, 'MIN_COST'
+	, 'MAX_COST'
+	, 'TRADE_SE'
+	, 'SALE_LOC'
+	, 'SALE_COORDINATE'
+	, 'DELEGATE_FILE_ID'
+	, 'FILE_ID'
+	, 'CONTENT'
+	, 'SALE_SE'
+	, 'IN_ID'
+	, 'IN_DT'
+	, 'UP_ID'
+	, 'UP_DT DATE'
+	, 'SALE_START_DATE'
+	, 'SALE_END_DATE'
+	, 'READ_CNT'
+	, 'INTEREST_CNT'
+	, 'LAST_BUYER_ID'
+		     
+		     
+	  #{PRODUCT_SEQ}
+	, #{TITLE}
+	, #{MIN_COST}
+	, #{MAX_COST}
+	, #{TRADE_SE}
+	, #{SALE_LOC}
+	, #{SALE_COORDINATE}
+	, #{DELEGATE_FILE_ID}
+	, #{FILE_ID}
+	, #{CONTENT}
+	, #{SALE_SE}
+	, #{IN_ID}
+	, #{IN_DT}
+	, #{UP_ID}
+	, #{UP_DT DATE}
+	, #{SALE_START_DATE}
+	, #{SALE_END_DATE}
+	, #{READ_CNT}
+	, #{INTEREST_CNT}
+	, #{LAST_BUYER_ID}
+		     
+		     
+	
+	</insert>
+
+</mapper>

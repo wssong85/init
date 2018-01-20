@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import realtime.shopping.user.serice.UserService;
+import realtime.shopping.user.service.UserService;
 
 @Controller
 public class UserController {
