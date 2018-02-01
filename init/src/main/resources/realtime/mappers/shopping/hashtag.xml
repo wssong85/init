@@ -105,4 +105,44 @@
 		</foreach>
 	</delete>
 	
+	<select id="selecTbProduct" parameterType="map" resultType="map">
+		SELECT PRODUCT_SEQ, TITLE
+			, MIN_COST, MAX_COST, TRADE_SE
+			, SALE_LOC, SALE_COORDINATE
+			, DELEGATE_FILE_ID, FILE_ID
+			, CONTENT
+			, SALE_SE
+			, IN_ID, IN_DT
+			, UP_ID, UP_DT
+			, SALE_START_DATE, SALE_END_DATE
+			, READ_CNT
+			, INTEREST_CNT
+			, LAST_BUYER_ID
+		FROM TB_PRODUCT
+		
+		<if test="!isEmpty">
+			<trim prefix="WHERE" prefixOverrides="AND | OR">
+				<if test="price.lower != null">
+					AND MIN_COST &gt;= #{price.lower, jdbcType=DECIMAL}
+				</if>
+				
+				<if test="price.upper != null">
+					AND MAX_COST &lt;= #{price.upper, jdbcType=DECIMAL}
+				</if>
+				
+				<if test="tradeType != null">
+					AND TRADE_SE = #{tradeType, jdbcType=VARCHAR}
+				</if>
+				
+				<!-- <if test="tradeStartDate != null">
+					AND SALE_START_DATE >= #{tradeStartDate, jdbcType=VARCHAR}
+				</if>
+				
+				<if test="tradeEndDate != null">
+					AND SALE_END_DATE <= #{tradeEndDate, jdbcType=VARCHAR}
+				</if> -->
+			</trim>
+		</if>
+	</select>
+	
 </mapper>

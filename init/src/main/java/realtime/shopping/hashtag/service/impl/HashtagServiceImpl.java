@@ -110,4 +110,11 @@ public class HashtagServiceImpl implements HashtagService {
 		// 최종적으로 가지고 있는 해쉬태그 목록을 제외한 나머지 해쉬태그를 삭제 처리
 		hashtagMapper.deleteTbIfHashtagInterest(map);
 	}
+
+	@Override
+	public List<Map<String, Object>> selectTbProduct(Map<String, Object> map) throws Exception {
+		
+		map.put("isEmpty", map.isEmpty());
+		return hashtagMapper.selecTbProduct(map);
+	}
 }
