@@ -121,12 +121,14 @@
 		FROM TB_PRODUCT
 
 		<where>
-			<if test="price.lower != null">
-				AND MIN_COST &gt;= #{price.lower, jdbcType=DECIMAL}
-			</if>
-			
-			<if test="price.upper != null">
-				AND MAX_COST &lt;= #{price.upper, jdbcType=DECIMAL}
+			<if test="price != null">
+				<if test="price.lower != null">
+					AND MIN_COST &gt;= #{price.lower, jdbcType=DECIMAL}
+				</if>
+				
+				<if test="price.upper != null">
+					AND MAX_COST &lt;= #{price.upper, jdbcType=DECIMAL}
+				</if>
 			</if>
 			
 			<if test="tradeType != null and tradeType != '00'">
