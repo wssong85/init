@@ -119,30 +119,28 @@
 			, INTEREST_CNT
 			, LAST_BUYER_ID
 		FROM TB_PRODUCT
-		
-		<if test="!isEmpty">
-			<trim prefix="WHERE" prefixOverrides="AND | OR">
-				<if test="price.lower != null">
-					AND MIN_COST &gt;= #{price.lower, jdbcType=DECIMAL}
-				</if>
-				
-				<if test="price.upper != null">
-					AND MAX_COST &lt;= #{price.upper, jdbcType=DECIMAL}
-				</if>
-				
-				<if test="tradeType != null">
-					AND TRADE_SE = #{tradeType, jdbcType=VARCHAR}
-				</if>
-				
-				<!-- <if test="tradeStartDate != null">
-					AND SALE_START_DATE >= #{tradeStartDate, jdbcType=VARCHAR}
-				</if>
-				
-				<if test="tradeEndDate != null">
-					AND SALE_END_DATE <= #{tradeEndDate, jdbcType=VARCHAR}
-				</if> -->
-			</trim>
-		</if>
+
+		<where>
+			<if test="price.lower != null">
+				AND MIN_COST &gt;= #{price.lower, jdbcType=DECIMAL}
+			</if>
+			
+			<if test="price.upper != null">
+				AND MAX_COST &lt;= #{price.upper, jdbcType=DECIMAL}
+			</if>
+			
+			<if test="tradeType != null and tradeType != '00'">
+				AND TRADE_SE = #{tradeType, jdbcType=VARCHAR}
+			</if>
+			
+			<if test="tradeStartDate != null">
+				AND SALE_START_DATE &gt;= STR_TO_DATE(#{tradeStartDate, jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+			
+			<if test="tradeEndDate != null">
+				AND SALE_END_DATE &lt;= STR_TO_DATE(#{tradeEndDate, jdbcType=VARCHAR},'%Y-%m-%d')
+			</if>
+		</where>		
 	</select>
 	
 </mapper>

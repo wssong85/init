@@ -114,7 +114,6 @@ public class HashtagServiceImpl implements HashtagService {
 	@Override
 	public List<Map<String, Object>> selectTbProduct(Map<String, Object> map) throws Exception {
 		
-		map.put("isEmpty", map.isEmpty());
 		return hashtagMapper.selecTbProduct(map);
 	}
 }
