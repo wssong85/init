@@ -68,6 +68,8 @@ $(function(){
 				grTbGroupCode.getSelectionRowIndex = this.doindex;
 				grTbGroupCode.getSelectionItem = this.item;
 				
+				console.log(this.item);
+				
 				if(!grTbGroupCode.getSelectionItem["CRUD"]) {
 					grTbGroupCode.updateRow($.extend({}, grTbGroupCode.list[grTbGroupCode.getSelectionRowIndex], {"CRUD": "U"}), grTbGroupCode.getSelectionRowIndex);
 				}
@@ -80,7 +82,7 @@ $(function(){
 				if(this.key == "GROUP_CD") {
 					
 					//길이체크
-					if(_vGrValidation.lengthCheck(this.value, 3)
+					if(_vGrValidation.lengthCheck(this.value, 10)
 							//영문자숫자체크
 							&& _vGrValidation.engNumcheck(this.value)
 							//중복체크
@@ -136,13 +138,13 @@ $(function(){
 			enableFilter: true,
             editor: {
             	type:"text",
-				disabled: function () {
-					if(this.item["CRUD"] && this.item["CRUD"] != "D") {
-						return false;
-					} else {
-						return true;
-					}
-				} 
+// 				disabled: function () {
+// 					if(this.item["CRUD"] && this.item["CRUD"] != "D") {
+// 						return false;
+// 					} else {
+// 						return true;
+// 					}
+// 				} 
             }
 		},{
 			key: "CD_DC",
@@ -217,6 +219,7 @@ $(function(){
 				
 			},
 			onDataChanged: function(){
+				console.log(1);
 				
 				grTbDetailCode.getSelectionRowIndex = this.doindex;
 				grTbDetailCode.getSelectionItem = this.item;
