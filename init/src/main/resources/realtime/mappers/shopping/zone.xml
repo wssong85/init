@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="realtime.shopping.place.mapper.PlaceMapper">
+	
+	<select id="selectTbTrail" resultType="map">
+	<![CDATA[
+		SELECT TRAIL_NAME as address, TRAIL_CODE, TRAIL_COORDINATE
+		FROM TB_TRAIL
+		WHERE TRAIL_NAME LIKE '%' #{TRAIL_NAME} '%'
+		AND USE_YN = 'Y'
+	]]> 
+	</select>
+	
+</mapper>

@@ -1,6 +1,7 @@
 package realtime.shopping.hashtag.web;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -39,8 +40,6 @@ public class HashtagController {
 			
 		} catch (Exception e) {
 			
-			System.out.println(e.getLocalizedMessage());
-			
 			result.put("success", false);
 			result.put("message", e.getLocalizedMessage());
 		}
@@ -65,6 +64,34 @@ public class HashtagController {
 			hashtagService.insertTbIfHashtagInterest(map);
 			
 			result.put("success", true);
+			
+		} catch (Exception e) {
+			
+			result.put("success", false);
+			result.put("message", e.getLocalizedMessage());
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 테스트
+	 * 
+	 */
+	@RequestMapping(value = "/shopping/hastag/apitest.do")
+	@ResponseBody 
+	public Map<String , Object> selectBuyList(@RequestBody Map<String, Object> map) throws Exception {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+
+		System.out.println(map);
+		
+		try {
+			
+			List<Map<String, Object>> productMap = hashtagService.selectTbProduct(map);
+			
+			result.put("success", true);
+			result.put("products", productMap);
 			
 		} catch (Exception e) {
 			
