@@ -105,8 +105,9 @@
 		</foreach>
 	</delete>
 	
-	<select id="selecTbProduct" parameterType="map" resultType="map">
-		SELECT PRODUCT_SEQ, TITLE
+	<select id="selecBuyTbProductList" parameterType="map" resultType="map">
+		SELECT
+			PRODUCT_SEQ, TITLE
 			, MIN_COST, MAX_COST, TRADE_SE
 			, SALE_LOC, SALE_COORDINATE
 			, DELEGATE_FILE_ID, FILE_ID
@@ -142,7 +143,19 @@
 			<if test="tradeEndDate != null">
 				AND SALE_END_DATE &lt;= STR_TO_DATE(#{tradeEndDate, jdbcType=VARCHAR},'%Y-%m-%d')
 			</if>
-		</where>		
+		</where>
+		
+		ORDER BY PRODUCT_SEQ DESC		
+		
+		<choose>
+    		<when test="page != null and lineSize != null">
+      			LIMIT #{lineSize, jdbcType=INTEGER} OFFSET #{page, jdbcType=INTEGER} 
+    		</when>
+		    <otherwise>
+      			LIMIT 2 OFFSET 0 
+    		</otherwise>
+  		</choose>
+  		
 	</select>
 	
 </mapper>

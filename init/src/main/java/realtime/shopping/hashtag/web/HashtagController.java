@@ -75,10 +75,11 @@ public class HashtagController {
 	}
 	
 	/**
-	 * 테스트
+	 * 구매 목록 가져오기
+	 * 추후 product 쪽으로 이동 해야 함
 	 * 
 	 */
-	@RequestMapping(value = "/shopping/hastag/apitest.do")
+	@RequestMapping(value = "/shopping/hastag/apiSelectBuyProduct.do")
 	@ResponseBody 
 	public Map<String , Object> selectBuyList(@RequestBody Map<String, Object> map) throws Exception {
 		
@@ -88,7 +89,7 @@ public class HashtagController {
 		
 		try {
 			
-			List<Map<String, Object>> productMap = hashtagService.selectTbProduct(map);
+			List<Map<String, Object>> productMap = hashtagService.selecBuyTbProductList(map);
 			
 			result.put("success", true);
 			result.put("products", productMap);

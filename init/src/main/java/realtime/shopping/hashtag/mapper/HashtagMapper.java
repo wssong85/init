@@ -27,6 +27,6 @@ public interface HashtagMapper {
 	void updateTbInterest(Map<String, Object> map) throws Exception;
 	
 	void deleteTbIfHashtagInterest(Map<String, Object> map) throws Exception;
-	
-	List<Map<String, Object>> selecTbProduct(Map<String, Object> map) throws Exception;
+
+	List<Map<String, Object>> selecBuyTbProductList(Map<String, Object> map) throws Exception;
 }

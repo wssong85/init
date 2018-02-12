@@ -9,5 +9,5 @@ public interface HashtagService {
 	
 	void insertTbIfHashtagInterest(Map<String, Object> map) throws Exception;
 	
-	List<Map<String, Object>> selectTbProduct(Map<String, Object> map) throws Exception;
+	List<Map<String, Object>> selecBuyTbProductList(Map<String, Object> map) throws Exception;
 }

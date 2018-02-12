@@ -112,8 +112,9 @@ public class HashtagServiceImpl implements HashtagService {
 	}
 
 	@Override
-	public List<Map<String, Object>> selectTbProduct(Map<String, Object> map) throws Exception {
+	public List<Map<String, Object>> selecBuyTbProductList(Map<String, Object> map) throws Exception {
 		
-		return hashtagMapper.selecTbProduct(map);
+		// TODO: 해쉬태그 명 검색 추가
+		return hashtagMapper.selecBuyTbProductList(map);
 	}
 }
