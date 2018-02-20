@@ -119,9 +119,30 @@
 			, READ_CNT
 			, INTEREST_CNT
 			, LAST_BUYER_ID
-		FROM TB_PRODUCT
+			, (
+				SELECT CONCAT('#', (GROUP_CONCAT(HASHTAG SEPARATOR ', #')))  
+        		FROM TB_HASHTAG H JOIN TB_IF_HASHTAG_PRODUCT IHP
+        		ON H.HASHTAG_SEQ = IHP.HASHTAG_SEQ
+        		WHERE IHP.PRODUCT_SEQ = P.PRODUCT_SEQ
+                GROUP BY IHP.PRODUCT_SEQ
+			) AS HASHTAG
+		FROM TB_PRODUCT P
 
 		<where>
+		
+			<if test="hashtag != null and !hashtag.equalsIgnoreCase('')">
+				PRODUCT_SEQ IN (
+        			SELECT P.PRODUCT_SEQ
+        			FROM TB_HASHTAG H JOIN TB_IF_HASHTAG_PRODUCT P
+        			ON H.HASHTAG_SEQ = P.HASHTAG_SEQ
+        			WHERE HASHTAG IN 
+        			
+        			<foreach item="item" index="index" collection="hashtagList" separator="," open="(" close=")">
+						#{item}
+					</foreach>
+        		)  
+			</if>
+		
 			<if test="price != null">
 				<if test="price.lower != null">
 					AND MIN_COST &gt;= #{price.lower, jdbcType=DECIMAL}

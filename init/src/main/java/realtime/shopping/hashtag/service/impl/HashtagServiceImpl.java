@@ -114,7 +114,30 @@ public class HashtagServiceImpl implements HashtagService {
 	@Override
 	public List<Map<String, Object>> selecBuyTbProductList(Map<String, Object> map) throws Exception {
 		
-		// TODO: 해쉬태그 명 검색 추가
+		String hashtag = (String) map.get("hashtag");
+		
+		if (hashtag != null) {
+			
+			List<String> hashtagList = new ArrayList<>();
+			
+			// 해쉬태그 값은 #으로 구분
+			String[] hashtags = hashtag.split("#"); 							
+			
+			// 공백이 있는 경우가 있을 수 있으므로 for문으로 함
+			for (String tag : hashtags) {
+				
+				tag = tag.trim();
+				
+				if (tag.length() == 0) {
+					continue;
+				}
+				
+				hashtagList.add(tag);
+			}
+
+			map.put("hashtagList", hashtagList); 
+		}
+
 		return hashtagMapper.selecBuyTbProductList(map);
 	}
 }
