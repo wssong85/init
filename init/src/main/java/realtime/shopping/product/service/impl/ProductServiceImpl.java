@@ -43,7 +43,6 @@ public class ProductServiceImpl implements ProductService {
 		String StrproductSeq = tbProductSeq.getNextStringId();
 		
 		map.put("productSeq", StrproductSeq);  //일련번호
-		map.put("inId", "admin");   //TODO 추후세션변경
 		
 		return productMapper.insertSellProduct(map);
 	}

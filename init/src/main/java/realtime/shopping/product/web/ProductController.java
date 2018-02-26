@@ -1,6 +1,7 @@
 package realtime.shopping.product.web;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -33,8 +34,12 @@ public class ProductController {
 		
 		try {
 			
+			map.put("userId", "admin");	  //TODO 추후세션변경
+			
+			List<Map<String, Object>> productList = productService.selectSellProductList(map);
+			
+			result.put("data", productList);       //판매품목목록
 			result.put("success", true);
-			result.put("data", "");  //판매품목목록
 			
 		} catch (Exception e) {
 			
@@ -83,6 +88,7 @@ public class ProductController {
 		
 		try {
 			
+			map.put("userId", "admin");   //TODO 추후세션변경
 			int resultCnt = productService.insertSellProduct(map);
 			if (resultCnt>0) {
 				result.put("success", true);

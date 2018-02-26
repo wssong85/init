@@ -27,6 +27,7 @@
 		     , INTEREST_CNT         /* 찜한횟수         */
 		     , LAST_BUYER_ID        /* 최종구매자아이디 */
 		FROM TB_PRODUCT
+		WHERE IN_ID = #{userId}
 	
 	</select>
 	
@@ -98,9 +99,9 @@
 		, #{fileId}
 		, #{content}
 		, #{saleSe}
-		, #{inId}
+		, #{userId}
 		, NOW()
-		, #{upId}
+		, #{userId}
 		, NOW()
 		, NOW()
 		, #{saleEndDate}
@@ -110,5 +111,53 @@
 		)
 	
 	</insert>
+	
+<!-- 		insert into -->
+<!--  		tb_product -->
+<!--  		( -->
+<!-- 		  PRODUCT_SEQ -->
+<!-- 		, TITLE -->
+<!-- 		, MIN_COST -->
+<!-- 		, MAX_COST -->
+<!-- 		, TRADE_SE -->
+<!-- 		, SALE_LOC -->
+<!-- 		, SALE_COORDINATE -->
+<!-- 		, DELEGATE_FILE_ID -->
+<!-- 		, FILE_ID -->
+<!-- 		, CONTENT -->
+<!-- 		, SALE_SE -->
+<!-- 		, IN_ID -->
+<!-- 		, IN_DT -->
+<!-- 		, UP_ID -->
+<!-- 		, UP_DT -->
+<!-- 		, SALE_START_DATE -->
+<!-- 		, SALE_END_DATE -->
+<!-- 		, READ_CNT -->
+<!-- 		, INTEREST_CNT -->
+<!-- 		, LAST_BUYER_ID -->
+<!-- 		) -->
+	
+<!-- 	values(  -->
+<!-- 	  1 -->
+<!-- 	, '테스트' -->
+<!-- 	, 100000 -->
+<!-- 	, 150000 -->
+<!-- 	, '01' /* 직거래 */ -->
+<!-- 	, '신도림역 2번출구 토스트가게 앞' -->
+<!-- 	, '37.5078451,126.8911148' -->
+<!-- 	, '' -->
+<!-- 	, '' -->
+<!-- 	, '아디다스 판매합니다.' -->
+<!-- 	, '1' -->
+<!-- 	, 'admin' -->
+<!-- 	, NOW() -->
+<!-- 	, 'admin' -->
+<!-- 	, NOW() -->
+<!-- 	, NOW() -->
+<!-- 	, null -->
+<!-- 	, null -->
+<!-- 	, null -->
+<!-- 	, null -->
+<!-- 	); -->
 
 </mapper>
