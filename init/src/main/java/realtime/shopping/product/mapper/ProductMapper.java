@@ -9,6 +9,14 @@ import egovframework.rte.psl.dataaccess.mapper.Mapper;
 public interface ProductMapper {
 	
 	/**
+	 * 판매품목 시퀀스 조회
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	Map<String, Object> getMaxProductSeq(Map<String, Object> map) throws Exception;
+	
+	/**
 	 * 판매품목목록 조회
 	 * @param map
 	 * @return

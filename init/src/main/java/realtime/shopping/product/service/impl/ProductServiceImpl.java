@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 import realtime.shopping.product.mapper.ProductMapper;
 import realtime.shopping.product.service.ProductService;
 
@@ -23,8 +22,8 @@ public class ProductServiceImpl implements ProductService {
 	/**
 	 * 상품목록일련번호
 	 */
-	@Resource(name = "TB_INTEREST_SEQ")
-	private EgovIdGnrService tbProductSeq;
+//	@Resource(name = "TB_INTEREST_SEQ")
+//	private EgovIdGnrService tbProductSeq;
 
 	@Override
 	public List<Map<String, Object>> selectSellProductList(Map<String, Object> map) throws Exception {
@@ -40,9 +39,13 @@ public class ProductServiceImpl implements ProductService {
 	public int insertSellProduct(Map<String, Object> map) throws Exception {
 		
 		//시퀀스생성
-		String StrproductSeq = tbProductSeq.getNextStringId();
+		Map<String, Object> result = productMapper.getMaxProductSeq(map);
 		
-		map.put("productSeq", StrproductSeq);  //일련번호
+		if (result == null) {
+			map.put("productSeq", 1);  //일련번호
+		} else {
+			map.put("productSeq", result.get("productSeq"));  //일련번호
+		}
 		
 		return productMapper.insertSellProduct(map);
 	}

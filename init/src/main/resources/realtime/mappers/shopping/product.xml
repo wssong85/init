@@ -3,9 +3,16 @@
 
 <mapper namespace="realtime.shopping.product.mapper.ProductMapper">
 
+	<select id="getMaxProductSeq" parameterType="map" resultType="map" >
+	
+		/* ProductMapper.getMaxProductSeq : 판매품목 시퀀스 조회 */
+		SELECT MAX(PRODUCT_SEQ)+1 productSeq  /* 상품목록일련번호 */
+		FROM TB_PRODUCT
+		
+	</select>
 	<select id="selectSellProductList" parameterType="map" resultType="map" >
 		
-		/* ProductMapper.selectSellProduct : 판매품목 상세조회  */
+		/* ProductMapper.selectSellProduct : 판매품목 상세조회 */
 		SELECT PRODUCT_SEQ			/* 상품목록일련번호 */
 		     , TITLE                /* 제목             */ 
 		     , MIN_COST             /* 최소가격         */
@@ -28,6 +35,7 @@
 		     , LAST_BUYER_ID        /* 최종구매자아이디 */
 		FROM TB_PRODUCT
 		WHERE IN_ID = #{userId}
+		ORDER BY PRODUCT_SEQ DESC
 	
 	</select>
 	
@@ -90,8 +98,8 @@
 		(
 		  #{productSeq}
 		, #{title}
-		, #{minCost}
-		, #{maxCost}
+		, #{cash.lower}
+		, #{cash.upper}
 		, #{tradeSe}
 		, #{saleLoc}
 		, #{saleCoordinate}
