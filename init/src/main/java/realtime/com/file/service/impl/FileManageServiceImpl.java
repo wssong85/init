@@ -138,8 +138,8 @@ public class FileManageServiceImpl implements FileManageService{
 			}
 		}
 		
-		
 		return list;
+		
 	}
 	
 	@Override
