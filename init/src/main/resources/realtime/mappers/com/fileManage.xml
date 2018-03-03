@@ -30,7 +30,7 @@
 	<![CDATA[
 	INSERT
 	INTO
-	TB_FILE_MASTER
+	TB_FILE_DETAIL
 	(
 	FILE_ID
 	,FILE_DETAIL_ID
@@ -56,5 +56,27 @@
 	)
 	]]>
 	</insert>
+	
+	<delete id="deleteTbFileDetail" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_FILE_DETAIL 
+	WHERE FILE_ID = #{FILE_ID, jdbcType=VARCHAR}  
+	AND FILE_DETAIL_ID = #{FILE_DETAIL_ID, jdbcType=VARCHAR}
+	]]> 
+	</delete>
+	
+	<select id="selectTbFileMasterCount" parameterType="map" resultType="int">
+	<![CDATA[
+	SELECT COUNT(*) FROM TB_FILE_DETAIL
+	WHERE FILE_ID = #{FILE_ID, jdbcType=VARCHAR}  
+	]]> 
+	</select>
+	
+	<delete id="deleteTbFileMaster" parameterType="map">
+	<![CDATA[
+	DELETE FROM TB_FILE_MASTER
+	WHERE FILE_ID = #{FILE_ID, jdbcType=VARCHAR}
+	]]>
+	</delete>
 	
 </mapper>

@@ -10,5 +10,11 @@ public interface FileManageMapper {
 	void insertTbFileMaster(Map<String, String> map);
 	
 	void insertTbFileDetail(Map<String, String> map);
+
+	void deleteTbFileDetail(Map<String, String> iMap);
+	
+	int selectTbFileMasterCount(Map<String, String> map);
+	
+	void deleteTbFileMaster(Map<String, String> map);
 	
 }
