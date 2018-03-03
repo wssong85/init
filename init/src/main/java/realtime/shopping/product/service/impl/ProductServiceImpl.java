@@ -1,5 +1,8 @@
 package realtime.shopping.product.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,22 +35,63 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Map<String, Object> selectSellProduct(Map<String, Object> map) throws Exception {
+		//조회수증가
+		productMapper.updateSellReadCnt(map);
+		
 		return productMapper.selectSellProduct(map);
 	}
 
 	@Override
 	public int insertSellProduct(Map<String, Object> map) throws Exception {
 		
-		//시퀀스생성
-		Map<String, Object> result = productMapper.getMaxProductSeq(map);
+		int resultCnt = 0;
 		
-		if (result == null) {
+		/******************************
+		 * 판매품목 등록
+		 ******************************/
+		//판매품목 시퀀스생성
+		Map<String, Object> productResult = productMapper.getMaxProductSeq(map);
+		if (productResult == null) {
 			map.put("productSeq", 1);  //일련번호
 		} else {
-			map.put("productSeq", result.get("productSeq"));  //일련번호
+			map.put("productSeq", productResult.get("productSeq"));  //일련번호
 		}
 		
-		return productMapper.insertSellProduct(map);
+		//상품 등록
+		resultCnt = productMapper.insertSellProduct(map);
+		
+		/******************************
+		 * 해시태그 판매품목 등록
+		 ******************************/
+		List<String> hashtagList = new ArrayList<String>();
+		hashtagList = Arrays.asList(map.get("hashtag").toString().split(","));
+		
+		int hashtagSeq = 0;
+		Map<String, Object> hashtagParam = new HashMap<String, Object>();
+		
+		for (int i=1; i<hashtagList.size(); i++) {
+			
+			//해시태그 시퀀스생성
+			Map<String, Object> hashtagResult = productMapper.getMaxHashtagSeq(map);
+			if (hashtagResult == null) {
+				hashtagSeq = 1;  //일련번호
+			} else {
+				hashtagSeq = Integer.parseInt(hashtagResult.get("hashtagSeq").toString());  //일련번호
+			}
+			
+			hashtagParam.put("productSeq", map.get("productSeq"));
+			hashtagParam.put("hashtagSeq", hashtagSeq);
+			hashtagParam.put("hashtag"   , hashtagList.get(i));
+			hashtagList.get(i);
+			
+			//해시태그 등록
+			productMapper.insertHashtag(hashtagParam);
+			
+			//해시태그상품 등록
+			productMapper.insertHashtagProduct(hashtagParam);
+		}
+		
+		return resultCnt;
 	}
 
 }

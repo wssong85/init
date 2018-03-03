@@ -10,6 +10,15 @@
 		FROM TB_PRODUCT
 		
 	</select>
+	
+	<select id="getMaxHashtagSeq" parameterType="map" resultType="map" >
+	
+		/* ProductMapper.getMaxHashtagSeq : 해시태그 시퀀스 조회 */
+		SELECT MAX(HASHTAG_SEQ)+1 hashtagSeq  /* 해시태그일련번호 */
+		FROM TB_HASHTAG
+		
+	</select>
+	
 	<select id="selectSellProductList" parameterType="map" resultType="map" >
 		
 		/* ProductMapper.selectSellProduct : 판매품목 상세조회 */
@@ -67,8 +76,19 @@
     
 	</select>
 	
+	<update id="updateSellReadCnt" parameterType="map">
+	
+		/* updateSellReadCnt : 판매품목 조회수증가 */
+		UPDATE TB_PRODUCT
+		SET READ_CNT
+		WHERE
+		WHERE PRODUCT_SEQ = #{PRODUCT_SEQ}
+		
+	</update>
+	
 	<insert id="insertSellProduct" parameterType="map">
 
+		/* ProductMapper.insertSellProduct : 판매품목 등록 */
  		INSERT INTO
  		TB_PRODUCT
  		(
@@ -93,7 +113,6 @@
 		, INTEREST_CNT
 		, LAST_BUYER_ID
 		)
-		
 		VALUES
 		(
 		  #{productSeq}
@@ -116,6 +135,40 @@
 		, 0
 		, 0
 		, #{lastBuyerId}
+		)
+	
+	</insert>
+	
+	<insert id="insertHashtag" parameterType="map">
+		
+		/* insertHashtag : 해시태그등록 */
+		INSERT INTO 
+		TB_HASHTAG
+		(
+		  HASHTAG_SEQ
+		, HASHTAG
+		)
+		VALUES
+		(
+		  #{hashtagSeq}
+		, #{hashtag}
+		)
+	
+	</insert>
+	
+	<insert id="insertHashtagProduct" parameterType="map">
+	
+		/* insertHashtagProduct : 해시태그상품등록 */
+		INSERT INTO 
+		TB_IF_HASHTAG_PRODUCT
+		(
+		  HASHTAG_SEQ
+		, PRODUCT_SEQ
+		)
+		VALUES
+		(
+		  #{hashtagSeq}
+		, #{productSeq}
 		)
 	
 	</insert>
