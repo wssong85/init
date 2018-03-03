@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="realtime.com.file.mapper.FileManageMapper">
+
+	<insert id="insertTbFileMaster" parameterType="map">
+	<![CDATA[
+	INSERT
+	INTO
+	TB_FILE_MASTER
+	(
+	FILE_ID
+	,IN_DT
+	,UP_DT
+	,WRITE_ID
+	,USE_YN
+	)
+	VALUES
+	(
+	#{FILE_ID, jdbcType=VARCHAR}
+	,NOW()
+	,NOW()
+	,#{USER_ID, jdbcType=VARCHAR}
+	,'N'
+	)
+	]]>
+	</insert>
+	
+	<insert id="insertTbFileDetail" parameterType="map">
+	<![CDATA[
+	INSERT
+	INTO
+	TB_FILE_MASTER
+	(
+	FILE_ID
+	,FILE_DETAIL_ID
+	,FILE_SEQ
+	,FILE_PATH
+	,FILE_NAME
+	,FILE_EXT
+	,IN_DT
+	,UP_DT
+	,WRITE_ID
+  	)
+	VALUES
+	(
+	 #{FILE_ID       , jdbcType=VARCHAR}       
+	,#{FILE_DETAIL_ID, jdbcType=VARCHAR}
+	,#{FILE_SEQ      , jdbcType=VARCHAR}
+	,#{FILE_PATH     , jdbcType=VARCHAR}
+	,#{FILE_NAME     , jdbcType=VARCHAR}
+	,#{FILE_EXT      , jdbcType=VARCHAR}
+	,NOW()
+	,NOW()
+	,#{WRITE_ID      , jdbcType=VARCHAR}
+	)
+	]]>
+	</insert>
+	
+</mapper>
