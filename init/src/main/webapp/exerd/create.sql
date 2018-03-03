@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS `tb_file_master` (
   `FILE_ID` varchar(50) NOT NULL,
   `IN_DT` datetime DEFAULT NULL,
   `UP_DT` datetime DEFAULT NULL,
-  `WRITE_ID` varchar(50) DEFAULT NULL
+  `WRITE_ID` varchar(50) DEFAULT NULL,
+  `USE_YN` varchar(1)
 );
 
 CREATE TABLE IF NOT EXISTS `tb_group_code` (
