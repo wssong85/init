@@ -10,4 +10,6 @@ public interface HashtagService {
 	void insertTbIfHashtagInterest(Map<String, Object> map) throws Exception;
 	
 	List<Map<String, Object>> selecBuyTbProductList(Map<String, Object> map) throws Exception;
+	
+	String requestReverseGeocoding(String query) throws Exception;
 }

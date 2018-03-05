@@ -1,5 +1,10 @@
 package realtime.shopping.hashtag.service.impl;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -139,5 +144,45 @@ public class HashtagServiceImpl implements HashtagService {
 		}
 
 		return hashtagMapper.selecBuyTbProductList(map);
+	}
+
+	@Override
+	public String requestReverseGeocoding(String query) throws Exception {
+		
+		String clientId = "OxE4JUX2i2dvl8gmVS_U";	//애플리케이션 클라이언트 아이디값";
+        String clientSecret = "Dx6Bws_4fE";			//애플리케이션 클라이언트 시크릿값";
+        
+        StringBuffer response = new StringBuffer();
+        
+        String lonLat = URLEncoder.encode(query, "UTF-8");
+        String apiURL = "https://openapi.naver.com/v1/map/reversegeocode?query=" + lonLat; //json
+        
+        System.out.println(apiURL);
+        
+        URL url = new URL(apiURL);
+        HttpURLConnection con = (HttpURLConnection)url.openConnection();
+        
+        con.setRequestMethod("GET");
+        con.setRequestProperty("X-Naver-Client-Id", clientId);
+        con.setRequestProperty("X-Naver-Client-Secret", clientSecret);
+        
+        int responseCode = con.getResponseCode();
+        BufferedReader br;
+        
+        if(responseCode==200) { 
+            br = new BufferedReader(new InputStreamReader(con.getInputStream())); // 정상 호출
+        } else {  
+            br = new BufferedReader(new InputStreamReader(con.getErrorStream())); // 에러 발생
+        }
+        
+        String inputLine;
+        while ((inputLine = br.readLine()) != null) {
+            response.append(inputLine);
+        }
+        
+        br.close();
+        System.out.println(response.toString());
+        
+		return response.toString();
 	}
 }

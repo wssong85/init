@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import realtime.shopping.hashtag.service.HashtagService;
@@ -93,6 +94,37 @@ public class HashtagController {
 			
 			result.put("success", true);
 			result.put("products", productMap);
+			
+		} catch (Exception e) {
+			
+			System.out.println(e.getLocalizedMessage());
+			
+			result.put("success", false);
+			result.put("message", e.getLocalizedMessage());
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 네이버 리버스 지오코딩 API 호출
+	 * 
+	 */
+	@RequestMapping(value = "/shopping/hastag/apiRequestReverseGeocoding.do")
+	@ResponseBody 
+	public Map<String , Object> requestReverseGeocoding(@RequestParam Map<String, Object> map) throws Exception {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+
+		System.out.println(map);
+		
+		try {
+			
+			// 값은 반드시 있다고 가정함
+			String resp = hashtagService.requestReverseGeocoding((String) map.get("query"));
+			
+			result.put("success", true);
+			result.put("result", resp);
 			
 		} catch (Exception e) {
 			
