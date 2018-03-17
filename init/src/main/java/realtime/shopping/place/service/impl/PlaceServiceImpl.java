@@ -33,8 +33,8 @@ public class PlaceServiceImpl implements PlaceService{
 			
 			mapTmp = new HashMap<String, Object>();
 			
-			mapTmp.put("x", arrTmp[0]);
-			mapTmp.put("y", arrTmp[1]);
+			mapTmp.put("x", arrTmp[1]);
+			mapTmp.put("y", arrTmp[0]);
 			
 			iMap.put("point", mapTmp);
 			
