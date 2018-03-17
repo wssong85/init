@@ -64,7 +64,7 @@ public class ProductController {
 		try {
 			
 			result.put("success", true);
-			result.put("data", "");  //판매품목상세
+			result.put("data", productService.selectSellProduct(map));  //판매품목상세
 			
 		} catch (Exception e) {
 			

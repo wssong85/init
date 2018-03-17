@@ -21,7 +21,7 @@
 	
 	<select id="selectSellProductList" parameterType="map" resultType="map" >
 		
-		/* ProductMapper.selectSellProduct : 판매품목 상세조회 */
+		/* ProductMapper.selectSellProduct : 판매품목 목록조회 */
 		SELECT PRODUCT_SEQ			/* 상품목록일련번호 */
 		     , TITLE                /* 제목             */ 
 		     , MIN_COST             /* 최소가격         */
@@ -50,29 +50,34 @@
 	
 	<select id="selectSellProduct" parameterType="map" resultType="map" >
 		
-		/* ProductMapper.selectSellProduct : 판매품목 상세조회  */
-		SELECT PRODUCT_SEQ			/* 상품목록일련번호 */
-		     , TITLE                /* 제목             */ 
-		     , MIN_COST             /* 최소가격         */
-		     , MAX_COST             /* 최대가격         */
-		     , TRADE_SE			    /* 거래종류         */
-		     , SALE_LOC             /* 판매위치         */
-		     , SALE_COORDINATE      /* 판매좌표         */
-		     , DELEGATE_FILE_ID     /* 대표파일아이디   */
-		     , FILE_ID			    /* 파일아이디       */
-		     , CONTENT			    /* 내용             */
-		     , SALE_SE              /* 판매여부         */
-		     , IN_ID                /* 등록아이디       */
-		     , IN_DT                /* 등록일           */
-		     , UP_ID                /* 수정아이디       */
-		     , UP_DT DATE           /* 수정일           */
-		     , SALE_START_DATE      /* 판매시작날짜     */
-		     , SALE_END_DATE        /* 판매종료날짜     */
-		     , READ_CNT             /* 읽은횟수         */
-		     , INTEREST_CNT         /* 찜한횟수         */
-		     , LAST_BUYER_ID        /* 최종구매자아이디 */
-		FROM TB_PRODUCT
-		WHERE PRODUCT_SEQ = #{PRODUCT_SEQ}
+		/* ProductMapper.selectSellProduct : 판매품목 상세조회 */
+		SELECT A.PRODUCT_SEQ		   /* 상품목록일련번호 */
+		     , A.TITLE             /* 제목             */ 
+		     , A.MIN_COST          /* 최소가격         */
+		     , A.MAX_COST          /* 최대가격         */
+		     , A.TRADE_SE		   /* 거래종류         */
+		     , A.SALE_LOC          /* 판매위치         */
+		     , A.SALE_COORDINATE   /* 판매좌표         */
+		     , A.DELEGATE_FILE_ID  /* 대표파일아이디   */
+		     , A.FILE_ID		   /* 파일아이디       */
+		     , A.CONTENT		   /* 내용             */
+		     , A.SALE_SE           /* 판매여부         */
+		     , A.IN_ID             /* 등록아이디       */
+		     , A.IN_DT             /* 등록일           */
+		     , A.UP_ID             /* 수정아이디       */
+		     , A.UP_DT DATE        /* 수정일           */
+		     , A.SALE_START_DATE   /* 판매시작날짜     */
+		     , A.SALE_END_DATE     /* 판매종료날짜     */
+		     , A.READ_CNT          /* 읽은횟수         */
+		     , A.INTEREST_CNT      /* 찜한횟수         */
+		     , A.LAST_BUYER_ID     /* 최종구매자아이디 */
+		     , (SELECT GROUP_CONCAT('#',H.HASHTAG)                                  
+				FROM TB_HASHTAG H                                                       
+				LEFT OUTER JOIN TB_IF_HASHTAG_PRODUCT B ON B.HASHTAG_SEQ = H.HASHTAG_SEQ
+				WHERE B.PRODUCT_SEQ = #{PRODUCT_SEQ}
+			 ) AS HASHTAG
+		FROM TB_PRODUCT A
+		WHERE A.PRODUCT_SEQ = #{PRODUCT_SEQ}
     
 	</select>
 	
@@ -80,8 +85,7 @@
 	
 		/* updateSellReadCnt : 판매품목 조회수증가 */
 		UPDATE TB_PRODUCT
-		SET READ_CNT
-		WHERE
+		SET READ_CNT = READ_CNT+1
 		WHERE PRODUCT_SEQ = #{PRODUCT_SEQ}
 		
 	</update>
