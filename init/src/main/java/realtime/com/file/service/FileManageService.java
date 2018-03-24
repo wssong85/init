@@ -11,4 +11,6 @@ public interface FileManageService {
 
 	void deleteTbFileMaster(List<Map<String, String>> list) throws Exception;
 
+	Map<String, String> selectTbFileDetail(Map<String, String> map)throws Exception;
+
 }

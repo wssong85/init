@@ -20,7 +20,7 @@
 	#{FILE_ID, jdbcType=VARCHAR}
 	,NOW()
 	,NOW()
-	,#{USER_ID, jdbcType=VARCHAR}
+	,#{WRITE_ID, jdbcType=VARCHAR}
 	,'N'
 	)
 	]]>
@@ -78,5 +78,15 @@
 	WHERE FILE_ID = #{FILE_ID, jdbcType=VARCHAR}
 	]]>
 	</delete>
+	
+	<select id="selectTbFileDetail" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT FILE_PATH, FILE_NAME, FILE_EXT
+	FROM TB_FILE_DETAIL
+	WHERE FILE_ID = #{FILE_ID, jdbcType=VARCHAR}
+	AND FILE_DETAIL_ID = #{FILE_DETAIL_ID, jdbcType=VARCHAR}
+	AND FILE_SEQ = #{FILE_SEQ, jdbcType=VARCHAR}
+	]]>
+	</select>
 	
 </mapper>

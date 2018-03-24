@@ -16,5 +16,7 @@ public interface FileManageMapper {
 	int selectTbFileMasterCount(Map<String, String> map);
 	
 	void deleteTbFileMaster(Map<String, String> map);
+
+	Map<String, String> selectTbFileDetail(Map<String, String> map);
 	
 }

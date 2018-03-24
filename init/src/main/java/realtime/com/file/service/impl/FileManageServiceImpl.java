@@ -78,8 +78,11 @@ public class FileManageServiceImpl implements FileManageService{
 		@SuppressWarnings("unchecked")
 		Map<String, Object> loginMap = (Map<String, Object>) Util.getHttpSession().getAttribute("loginMap");
 		
+		loginMap = new HashMap<String, Object>();
+		loginMap.put("USER_ID", "vvv");
+		
 		uploadMap.put("FILE_ID", strSeqFileId);
-		uploadMap.put("USER_ID", loginMap.get("USER_ID").toString());
+		uploadMap.put("WRITE_ID", loginMap.get("USER_ID").toString());
 		
 		//파일마스터 입력
 		if("C".equals(EgovStringUtil.isNullToString(map.get("PROCESS_SE")))) {
@@ -113,7 +116,7 @@ public class FileManageServiceImpl implements FileManageService{
 				ixFstr = file.getOriginalFilename().indexOf(".");
 				
 				uploadMap.put("FILE_ID", strSeqFileId);
-				uploadMap.put("USER_ID", loginMap.get("USER_ID").toString());
+				uploadMap.put("WRITE_ID", loginMap.get("USER_ID").toString());
 				
 				uploadMap.put("FILE_DETAIL_ID", strSeqFileDetailId);
 				uploadMap.put("FILE_SEQ", fStr.substring(0, ixFstr).substring(fStr.substring(0, ixFstr).length()-1, fStr.substring(0, ixFstr).length()));
@@ -155,10 +158,17 @@ public class FileManageServiceImpl implements FileManageService{
 		
 	}
 	
+	@Override
+	public Map<String, String> selectTbFileDetail(Map<String, String> map) throws Exception {
+		return fileManageMapper.selectTbFileDetail(map);
+	}
+
+	
 	public static void main(String[] args) {
 //		String strFileIdTest = "test_1";
 //		System.out.println(strFileIdTest.substring(strFileIdTest.length()-1, strFileIdTest.length()));
 //		System.out.println(strFileIdTest.substring(0, strFileIdTest.length()-2));
 	}
+
 
 }
