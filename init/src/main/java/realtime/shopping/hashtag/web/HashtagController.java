@@ -85,7 +85,9 @@ public class HashtagController {
 	public Map<String , Object> selectBuyList(@RequestBody Map<String, Object> map) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
-
+		
+		map.put("userId", "admin");	  //TODO 추후세션변경
+		
 		System.out.println(map);
 		
 		try {

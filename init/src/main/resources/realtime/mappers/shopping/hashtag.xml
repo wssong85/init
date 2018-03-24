@@ -127,10 +127,19 @@
         		WHERE IHP.PRODUCT_SEQ = P.PRODUCT_SEQ
                 GROUP BY IHP.PRODUCT_SEQ
 			) AS HASHTAG
+			
+			<if test="x != null and y != null">
+				, (6371 * acos( 
+					cos(radians(#{y, jdbcType=DECIMAL})) * cos(radians(CAST(SUBSTRING_INDEX(SALE_COORDINATE, ',', -1) AS DOUBLE))) 
+					* cos(
+						radians(CAST(SUBSTRING_INDEX(SALE_COORDINATE, ',', 1) AS DOUBLE)) - radians(#{x, jdbcType=DECIMAL})
+					) 
+					+ sin(radians(#{y, jdbcType=DECIMAL})) * sin(radians(CAST(SUBSTRING_INDEX(SALE_COORDINATE, ',', -1) AS DOUBLE)))
+				)) AS distance
+			</if>
 		FROM TB_PRODUCT P
 
 		<where>
-		
 			<if test="hashtag != null and !hashtag.equalsIgnoreCase('')">
 				PRODUCT_SEQ IN (
         			SELECT P.PRODUCT_SEQ
@@ -166,6 +175,11 @@
 				AND SALE_END_DATE &lt;= STR_TO_DATE(#{tradeEndDate, jdbcType=VARCHAR},'%Y-%m-%d')
 			</if>
 		</where>
+		
+		<if test="x != null and y != null">
+			<!-- 1km = 1 -->
+			HAVING distance &lt;= #{radius, jdbcType=INTEGER}
+		</if>
 		
 		ORDER BY PRODUCT_SEQ DESC		
 		
