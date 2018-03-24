@@ -63,6 +63,22 @@ public interface ProductMapper {
 	 * @throws Exception
 	 */
 	int insertHashtagProduct(Map<String, Object> map);
+	
+	/**
+	 * 해시태그 삭제
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	int deleteHashtag(Map<String, Object> map);
+	
+	/**
+	 * 해시태그상품 삭제
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	int deleteHashtagProduct(Map<String, Object> map);
 
 	/**
 	 * 조회수 증가
@@ -71,5 +87,13 @@ public interface ProductMapper {
 	 * @throws Exception
 	 */
 	void updateSellReadCnt(Map<String, Object> map);
+
+	/**
+	 * 판매품목 수정
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	int updateSellProduct(Map<String, Object> map);
 
 }

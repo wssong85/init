@@ -73,8 +73,9 @@
 		     , A.LAST_BUYER_ID     /* 최종구매자아이디 */
 		     , (SELECT GROUP_CONCAT('#',H.HASHTAG)                                  
 				FROM TB_HASHTAG H                                                       
-				LEFT OUTER JOIN TB_IF_HASHTAG_PRODUCT B ON B.HASHTAG_SEQ = H.HASHTAG_SEQ
-				WHERE B.PRODUCT_SEQ = #{PRODUCT_SEQ}
+				WHERE H.HASHTAG_SEQ IN (SELECT B.HASHTAG_SEQ 
+										FROM TB_IF_HASHTAG_PRODUCT B 
+										WHERE B.PRODUCT_SEQ = #{PRODUCT_SEQ})
 			 ) AS HASHTAG
 		FROM TB_PRODUCT A
 		WHERE A.PRODUCT_SEQ = #{PRODUCT_SEQ}
@@ -143,6 +144,29 @@
 	
 	</insert>
 	
+	
+	<update id="updateSellProduct" parameterType="map">
+
+		/* ProductMapper.updateSellProduct : 판매품목 수정 */
+ 		UPDATE TB_PRODUCT
+ 		SET TITLE             = #{title}
+		  , MIN_COST          = #{cash.lower}
+		  , MAX_COST          = #{cash.upper}
+		  , TRADE_SE          = #{tradeSe}
+		  , SALE_LOC          = #{saleLoc}
+		  , SALE_COORDINATE   = #{saleCoordinate}
+		  , DELEGATE_FILE_ID  = #{delegateFileId}
+		  , FILE_ID           = #{fileId}
+		  , CONTENT           = #{content}
+		  , SALE_SE           = #{saleSe}
+		  , UP_ID             = #{userId}
+		  , UP_DT             = NOW()
+<!-- 		  , SALE_START_DATE   = #{saleStartDate}    -->
+<!-- 		  , SALE_END_DATE     = #{saleEndDate} -->
+		WHERE PRODUCT_SEQ = #{productSeq}
+			
+	</update>
+	
 	<insert id="insertHashtag" parameterType="map">
 		
 		/* insertHashtag : 해시태그등록 */
@@ -176,6 +200,28 @@
 		)
 	
 	</insert>
+	
+	<delete id="deleteHashtag" parameterType="map">
+		
+		/* deleteHashtag : 해시태그삭제 */
+		DELETE FROM
+		TB_HASHTAG
+		WHERE HASHTAG_SEQ IN
+		(
+	     SELECT HASHTAG_SEQ 
+		 FROM TB_IF_HASHTAG_PRODUCT
+		 WHERE PRODUCT_SEQ = #{productSeq}
+		)
+	</delete>
+	
+	<delete id="deleteHashtagProduct" parameterType="map">
+	
+		/* deleteHashtagProduct : 해시태그상품삭제 */
+		DELETE FROM
+		TB_IF_HASHTAG_PRODUCT
+		WHERE PRODUCT_SEQ = #{productSeq}
+	
+	</delete>
 	
 <!-- 		insert into -->
 <!--  		tb_product -->

@@ -29,4 +29,12 @@ public interface ProductService {
 	 */
 	public int insertSellProduct(Map<String, Object> map) throws Exception;
 
+	/**
+	 * 판매품목 수정
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateSellProduct(Map<String, Object> map) throws Exception;
+
 }

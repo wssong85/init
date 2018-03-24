@@ -106,4 +106,36 @@ public class ProductController {
 		
 		return result;
 	}
+	
+	/**
+	 * 판매품목을 수정한다.
+	 * @param param
+	 * @return
+	 */
+	@RequestMapping("/shopping/product/updateSellProduct.do")
+	@ResponseBody 
+	public Map<String, Object> updateSellProduct(@RequestBody Map<String, Object> map) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		try {
+			
+			map.put("userId", "admin");   //TODO 추후세션변경
+			int resultCnt = productService.updateSellProduct(map);
+			if (resultCnt>0) {
+				result.put("success", true);
+			} else {
+				
+				result.put("success", false);
+				result.put("message", "수정 실패, 관리자문의");
+			}
+			
+		} catch (Exception e) {
+			
+			result.put("success", false);
+			result.put("message", e.getLocalizedMessage());
+		}
+		
+		return result;
+	}
 }

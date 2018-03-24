@@ -94,4 +94,47 @@ public class ProductServiceImpl implements ProductService {
 		return resultCnt;
 	}
 
+	@Override
+	public int updateSellProduct(Map<String, Object> map) throws Exception {
+		
+		int resultCnt = 0;
+		
+		/******************************
+		 * 판매품목 수정
+		 ******************************/
+		//상품 수정
+		resultCnt = productMapper.updateSellProduct(map);
+		
+		/******************************
+		 * 해시태그 판매품목 삭제 후 등록
+		 ******************************/
+		//해시태그 삭제
+		productMapper.deleteHashtag(map);
+		
+		//해시태그상품 삭제
+		productMapper.deleteHashtagProduct(map);
+		
+		List<String> hashtagList = new ArrayList<String>();
+		hashtagList = Arrays.asList(map.get("hashtag").toString().split(","));
+		
+		int hashtagSeq = 1;
+		Map<String, Object> hashtagParam = new HashMap<String, Object>();
+		
+		for (int i=1; i<hashtagList.size(); i++) {
+			
+			hashtagParam.put("productSeq", map.get("productSeq"));
+			hashtagParam.put("hashtagSeq", hashtagSeq);
+			hashtagParam.put("hashtag"   , hashtagList.get(i));
+			hashtagList.get(i);
+			
+			//해시태그 등록
+			productMapper.insertHashtag(hashtagParam);
+			
+			//해시태그상품 등록
+			productMapper.insertHashtagProduct(hashtagParam);
+		}
+		
+		return resultCnt;
+	}
+
 }
