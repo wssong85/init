@@ -35,10 +35,17 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Map<String, Object> selectSellProduct(Map<String, Object> map) throws Exception {
+		
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+		
 		//조회수증가
 		productMapper.updateSellReadCnt(map);
 		
-		return productMapper.selectSellProduct(map);
+		returnMap.put("product", productMapper.selectSellProduct(map));
+		
+		returnMap.put("file", productMapper.selectFileList(map));
+		
+		return returnMap;
 	}
 
 	@Override

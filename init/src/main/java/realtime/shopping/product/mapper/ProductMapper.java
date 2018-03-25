@@ -96,4 +96,11 @@ public interface ProductMapper {
 	 */
 	int updateSellProduct(Map<String, Object> map);
 
+	/**
+	 * 판매품목 파일목록 조회
+	 * @param map
+	 * @return
+	 */
+	List<Map<String, Object>> selectFileList(Map<String, Object> map);
+
 }
