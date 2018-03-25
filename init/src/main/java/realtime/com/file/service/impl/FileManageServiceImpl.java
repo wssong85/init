@@ -111,6 +111,10 @@ public class FileManageServiceImpl implements FileManageService{
 					strSeqFileDetailId = seqFileDetailId.getNextStringId();
 				}
 				
+				if(strSeqFileDetailId.equals("")) {
+					strSeqFileDetailId = seqFileDetailId.getNextStringId();
+				}
+				
 				uploadFileNm = strSeqFileId + "_" + strSeqFileDetailId;
 				fStr = file.getOriginalFilename();
 				ixFstr = file.getOriginalFilename().indexOf(".");
