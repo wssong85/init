@@ -122,6 +122,7 @@
 	
 		<form class="form-signin" id="loginFrm" name="loginFrm" action="<c:url value='/com/login/processLoginUsr.do'/>" method="post">
 			<h1 class="form-signin-heading text-muted">시스템 관리</h1>
+			
 			<input id="loginId" name="loginId" type="text" class="form-control" placeholder="Id" required="" autofocus="">
 			<input id="loginPassword" name="loginPassword" type="password" class="form-control" placeholder="Password" required="">
 <!-- 			<button class="btn btn-lg btn-primary btn-block" type="submit"> -->
