@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.aspectj.lang.JoinPoint;
 
+import realtime.com.util.Util;
 import realtime.shopping.user.mapper.UserMapper;
 
 public class ApiAop {
@@ -16,6 +17,11 @@ public class ApiAop {
 	
 	public void loginCheck(JoinPoint joinPoint) throws Throwable {
 		
+		//로그인 체크시에만 예외처리한다.
+		if("/shopping/user/apiSelectTbUserCountForCheck.do".equals(Util.getHttpServletRequest().getRequestURI())) {
+			return;
+		}
+		
 		Object params[] = joinPoint.getArgs();
         for(Object param : params) {
         	
@@ -24,7 +30,7 @@ public class ApiAop {
         		
         		if(userMapper.selectTbUserCountForCheck2((Map<String, Object>)(Object)param) == 0) {
         			throw new Exception("not user...");
-        		}
+        		} 
         		
         	}
         	

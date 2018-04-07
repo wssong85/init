@@ -19,4 +19,14 @@ public class Util {
 		return request.getSession();
 	}
 	
+	/**
+	 * 요청정보를 가져온다.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public static HttpServletRequest getHttpServletRequest() throws Exception {
+		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+	}
+	
 }
