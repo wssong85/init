@@ -26,9 +26,9 @@ public class ProductController {
 	 * @param param
 	 * @return
 	 */
-	@RequestMapping("/shopping/product/selectSellProductList.do")
+	@RequestMapping("/shopping/product/apiSelectSellProductList.do")
 	@ResponseBody
-	public Map<String, Object> selectSellProductList(@RequestParam Map<String, Object> map) {
+	public Map<String, Object> apiSelectSellProductList(@RequestParam Map<String, Object> map) {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
@@ -36,7 +36,7 @@ public class ProductController {
 			
 			map.put("userId", "admin");	  //TODO 추후세션변경
 			
-			List<Map<String, Object>> productList = productService.selectSellProductList(map);
+			List<Map<String, Object>> productList = productService.apiSelectSellProductList(map);
 			
 			result.put("data", productList);       //판매품목목록
 			result.put("success", true);
@@ -55,16 +55,16 @@ public class ProductController {
 	 * @param param
 	 * @return
 	 */
-	@RequestMapping("/shopping/product/selectSellProduct.do")
+	@RequestMapping("/shopping/product/apiSelectSellProduct.do")
 	@ResponseBody
-	public Map<String, Object> selectSellProduct(@RequestBody Map<String, Object> map) {
+	public Map<String, Object> apiSelectSellProduct(@RequestBody Map<String, Object> map) {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		try {
 			
 			result.put("success", true);
-			result.put("data", productService.selectSellProduct(map));  //판매품목상세
+			result.put("data", productService.apiSelectSellProduct(map));  //판매품목상세
 			
 		} catch (Exception e) {
 			
@@ -80,16 +80,16 @@ public class ProductController {
 	 * @param param
 	 * @return
 	 */
-	@RequestMapping("/shopping/product/insertSellProduct.do")
+	@RequestMapping("/shopping/product/apiInsertSellProduct.do")
 	@ResponseBody 
-	public Map<String, Object> insertSellProduct(@RequestBody Map<String, Object> map) {
+	public Map<String, Object> apiInsertSellProduct(@RequestBody Map<String, Object> map) {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		try {
 			
 			map.put("userId", "admin");   //TODO 추후세션변경
-			int resultCnt = productService.insertSellProduct(map);
+			int resultCnt = productService.apiInsertSellProduct(map);
 			if (resultCnt>0) {
 				result.put("success", true);
 			} else {
@@ -112,16 +112,16 @@ public class ProductController {
 	 * @param param
 	 * @return
 	 */
-	@RequestMapping("/shopping/product/updateSellProduct.do")
+	@RequestMapping("/shopping/product/apiUpdateSellProduct.do")
 	@ResponseBody 
-	public Map<String, Object> updateSellProduct(@RequestBody Map<String, Object> map) {
+	public Map<String, Object> apiUpdateSellProduct(@RequestBody Map<String, Object> map) {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		try {
 			
 			map.put("userId", "admin");   //TODO 추후세션변경
-			int resultCnt = productService.updateSellProduct(map);
+			int resultCnt = productService.apiUpdateSellProduct(map);
 			if (resultCnt>0) {
 				result.put("success", true);
 			} else {

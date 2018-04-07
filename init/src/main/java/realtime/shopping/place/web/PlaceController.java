@@ -33,7 +33,7 @@ public class PlaceController {
 	 */
 	@RequestMapping(value = "/shopping/zone/apiSelectTbTrail.do")
 	@ResponseBody 
-	public Map<String , Object> selectTbTrail(@RequestBody Map<String, Object> map) throws Exception {
+	public Map<String , Object> apiSelectTbTrail(@RequestBody Map<String, Object> map) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 
@@ -43,7 +43,7 @@ public class PlaceController {
 		
 		try {
 			
-			List<Map<String, Object>> list = placeService.selectTbTrail(map);
+			List<Map<String, Object>> list = placeService.apiSelectTbTrail(map);
 			
 			result.put("success", true);
 			result.put("result", list);
@@ -67,7 +67,7 @@ public class PlaceController {
 	 */
 	@RequestMapping(value = "/shopping/zone/apiSelectNaverPlace.do")
 	@ResponseBody
-	public Map<String, Object> selectNaverPlace(@RequestBody Map<String, Object> map) throws Exception {
+	public Map<String, Object> apiSelectNaverPlace(@RequestBody Map<String, Object> map) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		

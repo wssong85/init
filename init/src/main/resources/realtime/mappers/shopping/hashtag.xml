@@ -177,7 +177,7 @@
 		</where>
 		
 		<if test="x != null and y != null">
-			<!-- 1km = 1 -->
+			<!-- km 단위 -->
 			HAVING distance &lt;= #{radius, jdbcType=INTEGER}
 		</if>
 		

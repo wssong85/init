@@ -26,7 +26,7 @@ public class HashtagController {
 	 */
 	@RequestMapping(value = "/shopping/hastag/apiSelectTbIfHashtagInterest.do")
 	@ResponseBody 
-	public Map<String , Object> selectTbIfHashtagInterest(@RequestBody Map<String, Object> map) throws Exception {
+	public Map<String , Object> apiSelectTbIfHashtagInterest(@RequestBody Map<String, Object> map) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 
@@ -34,7 +34,7 @@ public class HashtagController {
 		
 		try {
 			
-			Map<String, Object> interestMap = hashtagService.selectTbIfHashtagInterest(map);
+			Map<String, Object> interestMap = hashtagService.apiSelectTbIfHashtagInterest(map);
 			
 			result.put("success", true);
 			result.put("interest", interestMap);
@@ -54,7 +54,7 @@ public class HashtagController {
 	 */
 	@RequestMapping(value = "/shopping/hastag/apiInsertTbIfHashtagInterest.do")
 	@ResponseBody 
-	public Map<String , Object> insertTbIfHashtagInterest(@RequestBody Map<String, Object> map) throws Exception {
+	public Map<String , Object> apiInsertTbIfHashtagInterest(@RequestBody Map<String, Object> map) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 
@@ -62,7 +62,7 @@ public class HashtagController {
 		
 		try {
 			
-			hashtagService.insertTbIfHashtagInterest(map);
+			hashtagService.apiInsertTbIfHashtagInterest(map);
 			
 			result.put("success", true);
 			
@@ -82,7 +82,7 @@ public class HashtagController {
 	 */
 	@RequestMapping(value = "/shopping/hastag/apiSelectBuyProduct.do")
 	@ResponseBody 
-	public Map<String , Object> selectBuyList(@RequestBody Map<String, Object> map) throws Exception {
+	public Map<String , Object> apiSelectBuyProduct(@RequestBody Map<String, Object> map) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
@@ -92,7 +92,7 @@ public class HashtagController {
 		
 		try {
 			
-			List<Map<String, Object>> productMap = hashtagService.selecBuyTbProductList(map);
+			List<Map<String, Object>> productMap = hashtagService.apiSelecBuyTbProductList(map);
 			
 			result.put("success", true);
 			result.put("products", productMap);
@@ -114,7 +114,7 @@ public class HashtagController {
 	 */
 	@RequestMapping(value = "/shopping/hastag/apiRequestReverseGeocoding.do")
 	@ResponseBody 
-	public Map<String , Object> requestReverseGeocoding(@RequestParam Map<String, Object> map) throws Exception {
+	public Map<String , Object> apiRequestReverseGeocoding(@RequestParam Map<String, Object> map) throws Exception {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 
@@ -123,7 +123,7 @@ public class HashtagController {
 		try {
 			
 			// 값은 반드시 있다고 가정함
-			String resp = hashtagService.requestReverseGeocoding((String) map.get("query"));
+			String resp = hashtagService.apiRequestReverseGeocoding((String) map.get("query"));
 			
 			result.put("success", true);
 			result.put("result", resp);

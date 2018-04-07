@@ -30,13 +30,13 @@ public class HashtagServiceImpl implements HashtagService {
 	private EgovIdGnrService tbInterestSeq;
 	
 	@Override
-	public Map<String, Object> selectTbIfHashtagInterest(Map<String, Object> map) throws Exception {
+	public Map<String, Object> apiSelectTbIfHashtagInterest(Map<String, Object> map) throws Exception {
 		
 		return hashtagMapper.selectTbIfHashtagInterest(map);
 	}
 
 	@Override
-	public void insertTbIfHashtagInterest(Map<String, Object> map) throws Exception {
+	public void apiInsertTbIfHashtagInterest(Map<String, Object> map) throws Exception {
 		
 		// TODO: 추후 세션 값으로 변경
 		// 아이디를 가져옴
@@ -117,7 +117,7 @@ public class HashtagServiceImpl implements HashtagService {
 	}
 
 	@Override
-	public List<Map<String, Object>> selecBuyTbProductList(Map<String, Object> map) throws Exception {
+	public List<Map<String, Object>> apiSelecBuyTbProductList(Map<String, Object> map) throws Exception {
 		
 		String hashtag = (String) map.get("hashtag");
 		
@@ -147,7 +147,7 @@ public class HashtagServiceImpl implements HashtagService {
 	}
 
 	@Override
-	public String requestReverseGeocoding(String query) throws Exception {
+	public String apiRequestReverseGeocoding(String query) throws Exception {
 		
 		String clientId = "OxE4JUX2i2dvl8gmVS_U";	//애플리케이션 클라이언트 아이디값";
         String clientSecret = "Dx6Bws_4fE";			//애플리케이션 클라이언트 시크릿값";

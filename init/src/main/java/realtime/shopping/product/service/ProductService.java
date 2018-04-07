@@ -11,7 +11,7 @@ public interface ProductService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Map<String, Object>> selectSellProductList(Map<String, Object> map) throws Exception;
+	public List<Map<String, Object>> apiSelectSellProductList(Map<String, Object> map) throws Exception;
 	
 	/**
 	 * 판매품목상세 조회
@@ -19,7 +19,7 @@ public interface ProductService {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, Object> selectSellProduct(Map<String, Object> map) throws Exception;
+	public Map<String, Object> apiSelectSellProduct(Map<String, Object> map) throws Exception;
 	
 	/**
 	 * 판매품목 등록
@@ -27,7 +27,7 @@ public interface ProductService {
 	 * @return
 	 * @throws Exception
 	 */
-	public int insertSellProduct(Map<String, Object> map) throws Exception;
+	public int apiInsertSellProduct(Map<String, Object> map) throws Exception;
 
 	/**
 	 * 판매품목 수정
@@ -35,6 +35,6 @@ public interface ProductService {
 	 * @return
 	 * @throws Exception
 	 */
-	public int updateSellProduct(Map<String, Object> map) throws Exception;
+	public int apiUpdateSellProduct(Map<String, Object> map) throws Exception;
 
 }

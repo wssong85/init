@@ -19,7 +19,7 @@ public class PlaceServiceImpl implements PlaceService{
 	private PlaceMapper placeMapper;
 
 	@Override
-	public List<Map<String, Object>> selectTbTrail(Map<String, Object> map) {
+	public List<Map<String, Object>> apiSelectTbTrail(Map<String, Object> map) {
 		List<Map<String, Object>> list = placeMapper.selectTbTrail(map);
 		
 		String strTmp = "";

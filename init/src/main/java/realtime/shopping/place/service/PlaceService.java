@@ -5,6 +5,6 @@ import java.util.Map;
 
 public interface PlaceService {
 
-	List<Map<String, Object>> selectTbTrail(Map<String, Object> map) throws Exception;
+	List<Map<String, Object>> apiSelectTbTrail(Map<String, Object> map) throws Exception;
 
 }

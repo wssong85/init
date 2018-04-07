@@ -29,12 +29,12 @@ public class ProductServiceImpl implements ProductService {
 //	private EgovIdGnrService tbProductSeq;
 
 	@Override
-	public List<Map<String, Object>> selectSellProductList(Map<String, Object> map) throws Exception {
+	public List<Map<String, Object>> apiSelectSellProductList(Map<String, Object> map) throws Exception {
 		return productMapper.selectSellProductList(map);
 	}
 
 	@Override
-	public Map<String, Object> selectSellProduct(Map<String, Object> map) throws Exception {
+	public Map<String, Object> apiSelectSellProduct(Map<String, Object> map) throws Exception {
 		
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		
@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public int insertSellProduct(Map<String, Object> map) throws Exception {
+	public int apiInsertSellProduct(Map<String, Object> map) throws Exception {
 		
 		int resultCnt = 0;
 		
@@ -102,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public int updateSellProduct(Map<String, Object> map) throws Exception {
+	public int apiUpdateSellProduct(Map<String, Object> map) throws Exception {
 		
 		int resultCnt = 0;
 		

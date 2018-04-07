@@ -5,11 +5,11 @@ import java.util.Map;
 
 public interface HashtagService {
 
-	Map<String, Object> selectTbIfHashtagInterest(Map<String, Object> map) throws Exception;
+	Map<String, Object> apiSelectTbIfHashtagInterest(Map<String, Object> map) throws Exception;
 	
-	void insertTbIfHashtagInterest(Map<String, Object> map) throws Exception;
+	void apiInsertTbIfHashtagInterest(Map<String, Object> map) throws Exception;
 	
-	List<Map<String, Object>> selecBuyTbProductList(Map<String, Object> map) throws Exception;
+	List<Map<String, Object>> apiSelecBuyTbProductList(Map<String, Object> map) throws Exception;
 	
-	String requestReverseGeocoding(String query) throws Exception;
+	String apiRequestReverseGeocoding(String query) throws Exception;
 }
