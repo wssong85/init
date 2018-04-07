@@ -13,8 +13,7 @@
 	AND USE_YN = 'Y'
 	]]> 
 	</select>
-	
-	
+
 	<select id="selectTbUserCountForCheck2" parameterType="map" resultType="int">
 	<![CDATA[
 	SELECT COUNT(*)
@@ -22,6 +21,28 @@
 	WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
 	AND PASSWORD = #{PASSWORD, jdbcType=VARCHAR}
 	AND USE_YN = 'Y'
+	]]> 
+	</select>
+	
+	<select id="selectTbUserByPK" parameterType="map" resultType="map">
+	<![CDATA[
+		SELECT 
+		U.USER_ID,
+	    USER_NAME,
+	    PASSWORD,
+	    USE_YN,
+	    U.IN_DT,
+	    U.WRITE_ID,
+	    BIRTH_DT,
+	    AGE,
+	    PHONE,
+	    ADDR,
+	    EMAIL,
+	    EMAIL_YN,
+	    FILE_ID
+		FROM TB_USER U JOIN TB_USER_DETAIL D
+		ON U.USER_ID = D.USER_ID
+		WHERE U.USER_ID = #{username, jdbcType=VARCHAR}
 	]]> 
 	</select>
 	

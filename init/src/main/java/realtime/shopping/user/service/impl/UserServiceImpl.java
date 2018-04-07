@@ -6,7 +6,6 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import realtime.com.user.mapper.UserManageMapper;
 import realtime.shopping.user.mapper.UserMapper;
 import realtime.shopping.user.service.UserService;
 
@@ -21,5 +20,8 @@ public class UserServiceImpl implements UserService{
 		return userMapper.selectTbUserCountForCheck(map);
 	}
 
-	
+	@Override
+	public Map<String, Object> apiSelectTbUserByPK(Map<String, Object> map) {
+		return userMapper.selectTbUserByPK(map);
+	}
 }

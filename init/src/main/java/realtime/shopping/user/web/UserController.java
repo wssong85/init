@@ -38,11 +38,18 @@ public class UserController {
 		try {
 			
 			if(userService.apiSelectTbUserCountForCheck(map) > 0) {
+				
+				Map<String, Object> userInfo = userService.apiSelectTbUserByPK(map);
+				
+				System.out.println("User => "+ userInfo);
+				
 				result.put("success", true);
-				result.put("result", true);	
+				result.put("result", true);
+				result.put("user", userInfo);
 			} else {
 				result.put("success", true);
-				result.put("result", false);	
+				result.put("result", false);
+				result.put("message", "로그인 정보가 없습니다.");	
 			}
 			
 		} catch (Exception e) {
