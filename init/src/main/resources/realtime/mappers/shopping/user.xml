@@ -14,4 +14,15 @@
 	]]> 
 	</select>
 	
+	
+	<select id="selectTbUserCountForCheck2" parameterType="map" resultType="int">
+	<![CDATA[
+	SELECT COUNT(*)
+	FROM TB_USER
+	WHERE USER_ID = #{USER_ID, jdbcType=VARCHAR}
+	AND PASSWORD = #{PASSWORD, jdbcType=VARCHAR}
+	AND USE_YN = 'Y'
+	]]> 
+	</select>
+	
 </mapper>
