@@ -3,14 +3,12 @@
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
-	<bean id="apiAop" class="realtime.common.aop.ApiAop"/>
+<!-- 	<bean id="apiAop" class="realtime.common.aop.ApiAop"/> -->
 	
-	<aop:config>
-		<aop:aspect id="loginCheckAspect" ref="apiAop">
-			<aop:before pointcut="execution(public * realtime..impl.*Impl.api*(..))" method="loginCheck" />
-<!-- 			<aop:before pointcut="execution(public * realtime..impl.*Impl.select*(..))" method="loginCheck" /> -->
-<!-- 			<aop:before pointcut="execution(public * realtime..web.*Controller.*(..))" method="loginCheck" /> -->
-		</aop:aspect>
-	</aop:config>
+<!-- 	<aop:config> -->
+<!-- 		<aop:aspect id="loginCheckAspect" ref="apiAop"> -->
+<!-- 			<aop:before pointcut="execution(public * realtime..impl.*Impl.api*(..))" method="loginCheck" /> -->
+<!-- 		</aop:aspect> -->
+<!-- 	</aop:config> -->
 	
 </beans>
