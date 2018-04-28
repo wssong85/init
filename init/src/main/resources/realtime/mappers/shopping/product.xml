@@ -21,7 +21,7 @@
 	
 	<select id="selectSellProductList" parameterType="map" resultType="map" >
 		
-		/* ProductMapper.selectSellProduct : 판매품목 목록조회 */
+		/* ProductMapper.selectSellProductList : 판매품목 목록조회 */
 		SELECT A.PRODUCT_SEQ		  /* 상품목록일련번호 */
 		     , A.TITLE                /* 제목             */ 
 		     , A.MIN_COST             /* 최소가격         */
@@ -47,9 +47,9 @@
 		     , B.FILE_SEQ             /* 파일시퀀스       */
 		FROM TB_PRODUCT A
 		LEFT OUTER JOIN TB_FILE_DETAIL B ON (B.FILE_DETAIL_ID = A.DELEGATE_FILE_ID)
-		WHERE A.IN_ID = #{userId}
+		WHERE A.IN_ID = #{USER_ID}
 		ORDER BY A.PRODUCT_SEQ DESC
-	
+		
 	</select>
 	
 	<select id="selectSellProduct" parameterType="map" resultType="map" >

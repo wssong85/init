@@ -28,13 +28,13 @@ public class ProductController {
 	 */
 	@RequestMapping("/shopping/product/apiSelectSellProductList.do")
 	@ResponseBody
-	public Map<String, Object> apiSelectSellProductList(@RequestParam Map<String, Object> map) {
+	public Map<String, Object> apiSelectSellProductList(@RequestBody Map<String, Object> map) {
 		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		try {
 			
-			map.put("userId", "admin");	  //TODO 추후세션변경
+			//map.put("userId", "admin");	  //TODO 추후세션변경
 			
 			List<Map<String, Object>> productList = productService.apiSelectSellProductList(map);
 			
